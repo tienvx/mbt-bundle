@@ -1,0 +1,42 @@
+framework:
+    secret:          secret
+    workflows:
+        shopping_cart:
+            type: 'workflow'
+            supports:
+                - Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
+            places:
+                # start will be initial place.
+                - start
+                - products
+                - product
+                - cart
+                - checkout
+            transitions:
+                open:
+                    from: start
+                    to: products
+                browse:
+                    from: product
+                    to: products
+                continue:
+                    from: cart
+                    to: products
+                view:
+                    from: products
+                    to: product
+                addFromProductsPage:
+                    from: products
+                    to: products
+                addFromProductPage:
+                    from: product
+                    to: product
+                add:
+                    from: cart
+                    to: cart
+                remove:
+                    from: cart
+                    to: cart
+                checkout:
+                    from: cart
+                    to: checkout

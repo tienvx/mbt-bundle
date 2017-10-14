@@ -12,24 +12,25 @@
         }
     ],
     "require": {
-        "php": "^7.0.8",
+        "beberlei/assert": "^2.7",
+        "graphp/algorithms": "^0.8.1",
+        "php": "^7.1.0",
         "symfony/console": "^3.3",
         "symfony/framework-bundle": "^3.3",
         "symfony/workflow": "^3.3",
         "symfony/yaml": "^3.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.4",
-        "mockery/mockery": "^1.0"
+        "phpunit/phpunit": "^6.4"
     },
     "autoload": {
         "psr-4": {
-            "Tienvx\\bundle\\MbtBundle\\": ""
+            "Tienvx\\Bundle\\MbtBundle\\": ""
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tienvx\\bundle\\MbtBundle\\Tests\\": "Tests/"
+            "Tienvx\\Bundle\\MbtBundle\\Tests\\": "Tests/"
         }
     },
     "scripts": {

@@ -1,3 +1,8 @@
 /.idea/
 /vendor/
+/composer.lock
+/phpunit.xml
 
+# Ignore files created during tests
+/Tests/App/cache/
+/Tests/App/logs/
