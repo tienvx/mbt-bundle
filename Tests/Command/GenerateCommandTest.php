@@ -26,6 +26,6 @@ class GenerateCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('TODO Update this', $output);
+        $this->assertContains('TODO: Update this', $output);
     }
 }

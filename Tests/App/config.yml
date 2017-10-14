@@ -1,5 +1,6 @@
 framework:
     secret:          secret
+    test:            ~
     workflows:
         shopping_cart:
             type: 'workflow'

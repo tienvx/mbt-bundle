@@ -1,4 +1,10 @@
-# MbtBundle
+# MbtBundle [![Build Status](https://travis-ci.org/tienvx/mbt-bundle.svg?branch=master)](https://travis-ci.org/tienvx/mbt-bundle)
+
+This Bundle provides ability to test your application using Model Based Testing
+techique. Before testing your project, you need to create new **symfony project**
+to load this bundle. Then by defining workflows (the way your system work) and
+entities (the way to interact with your system) in that project, it will test
+your project for you.
 
 ## Installation
 
@@ -31,7 +37,7 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-            new tienvx\bundle\mbt-bundle(),
+            new Tienvx\Bundle\MbtBundle\TienvxMbtBundle(),
         );
 
         // ...
@@ -42,7 +48,8 @@ class AppKernel extends Kernel
 ```
 
 ### Note
-If you are using symfony version 4 or later, this step is not required. Symfony do it automatically for you.
+If you are using symfony version 4 or later, this step is not required. Symfony do it
+automatically for you.
 
 ## Resources
 
