@@ -54,7 +54,7 @@ abstract class AbstractTraversal
             foreach ($transition->getFroms() as $from) {
                 foreach ($transition->getTos() as $to) {
                     $edge = $graph->getVertex($from)->createEdgeTo($graph->getVertex($to));
-                    $edge->setAttribute('id', "{$transition->getName()}({$from}:{$to})");
+                    $edge->setAttribute('id', "{$transition->getName()}[{$from}=>{$to}]");
                     $weight = null;
                     $edge->setWeight($weight);
                 }

@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -18,14 +19,34 @@ class GenerateCommandTest extends KernelTestCase
         $application->add(new GenerateCommand());
 
         $command = $application->find('mbt:generate');
+        $this->assertCoverage($command, 100, 24, 100, 5);
+        $this->assertCoverage($command, 60, 15, 80, 4);
+        $this->assertCoverage($command, 75, 18, 60, 3);
+    }
+
+    public function assertCoverage(Command $command, $edgeCoverage, $edgeCount, $vertexCoverage, $vertexCount)
+    {
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            '--model'      => 'shopping_cart',
-            '--traversal'  => 'random(50,50)'
+            'model'      => 'shopping_cart',
+            '--traversal'  => "random({$edgeCoverage},$vertexCoverage)"
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('TODO: Update this', $output);
+        preg_match_all('/(place:|transition:)(.*)/', $output, $matches);
+
+        $edges = [];
+        $vertices = [];
+        foreach ($matches[1] as $index => $type) {
+            if ($type === 'place:' && !in_array($matches[2][$index], $vertices)) {
+                $vertices[] = $matches[2][$index];
+            }
+            if ($type === 'transition:' && !in_array($matches[2][$index], $edges)) {
+                $edges[] = $matches[2][$index];
+            }
+        }
+        $this->assertGreaterThanOrEqual($edgeCount, count($edges));
+        $this->assertGreaterThanOrEqual($vertexCount, count($vertices));
     }
 }

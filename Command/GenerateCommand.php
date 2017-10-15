@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,13 +20,13 @@ class GenerateCommand extends ContainerAwareCommand
             ->setName('mbt:generate')
             ->setDescription('Generate test sequence from a model using a specific traversal.')
             ->setHelp('This command allows you to generate test sequence without actually testing the system.')
-            ->addOption('model', 'm', InputOption::VALUE_REQUIRED, 'The model to generate.')
+            ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
             ->addOption('traversal', 't', InputOption::VALUE_OPTIONAL, 'The way to traverse through model to generate test sequence.', 'random(100,100)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getOption('model');
+        $model = $input->getArgument('model');
         $workflow = $this->getContainer()->get("workflow.{$model}");
         if (!$workflow instanceof Workflow) {
             $message = sprintf('Can not load model by id "%s".', $model);
@@ -33,8 +34,7 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $output->writeln([
-            sprintf('Generated test sequence for model "%s"', $model),
-            '============',
+            sprintf('Generating test sequence for model "%s"', $model),
             '',
         ]);
 
@@ -45,6 +45,12 @@ class GenerateCommand extends ContainerAwareCommand
         $traversal->setWorkflow($workflow);
         $traversal->setProgress($progress);
         $result = $traversal->run();
+
+        $output->writeln([
+            '',
+            sprintf('Generated test sequence:'),
+            '============',
+        ]);
 
         $output->writeln($result);
     }

@@ -71,8 +71,8 @@ class RandomTraversal extends AbstractTraversal
                 $this->visitedEdges[] = $edge->getAttribute('id');
             }
 
-            $results[] = $currentVertex->getId();
-            $results[] = $edge->getAttribute('id');
+            $results[] = 'place:' . $currentVertex->getId();
+            $results[] = 'transition:' . $edge->getAttribute('id');
 
             $edgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
             $vertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
