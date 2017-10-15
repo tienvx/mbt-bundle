@@ -1,0 +1,2 @@
+app:
+    resource: '@TienvxMbtBundle/Resources/config/routing.yml'
