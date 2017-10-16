@@ -1,0 +1,45 @@
+framework:
+    workflows:
+        # https://demo.opencart.com
+        shopping_cart:
+            type: 'workflow'
+            supports:
+                - Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
+            places:
+                - home
+                - category
+                - product
+                - cart
+                - checkout
+            initial_place: home
+            transitions:
+                viewCategory:
+                    from: [home, category, product, cart]
+                    to: category
+                viewProduct:
+                    from: [home, category, cart]
+                    to: product
+                viewCart:
+                    from: [home, category, product, checkout]
+                    to: cart
+                checkout:
+                    from: [home, category, product, cart]
+                    to: checkout
+                backToHome:
+                    from: [category, product, cart, checkout]
+                    to: home
+                update:
+                    from: cart
+                    to: cart
+                remove:
+                    from: cart
+                    to: cart
+                addFromHome:
+                    from: home
+                    to: home
+                addFromCategory:
+                    from: category
+                    to: category
+                addFromProduct:
+                    from: product
+                    to: product
