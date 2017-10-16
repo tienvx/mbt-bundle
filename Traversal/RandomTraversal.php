@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Traversal;
 
 use Assert\Assert;
-use Fhaculty\Graph\Edge\Directed as DirectedBase;
+use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Tienvx\Bundle\MbtBundle\Exception\TraversalException;
 
@@ -18,6 +18,16 @@ class RandomTraversal extends AbstractTraversal
      * @var int
      */
     protected $vertexCoverage;
+
+    /**
+     * @var int
+     */
+    protected $currentEdgeCoverage;
+
+    /**
+     * @var int
+     */
+    protected $currentVertexCoverage;
 
     /**
      * @var array
@@ -38,51 +48,54 @@ class RandomTraversal extends AbstractTraversal
         $this->vertexCoverage = $args[1];
         $this->visitedEdges = [];
         $this->visitedVertices = [];
+        $this->currentEdgeCoverage = 0;
+        $this->currentVertexCoverage = 0;
     }
 
-    public function run(): array
+    public function getNextStep(): array
     {
-        $this->graph = $this->buildGraph();
-        return parent::run();
-    }
-
-    protected function getResults(): array
-    {
-        $this->progress->setMessage('Start traverse graph randomly');
-        $this->progress->start($this->edgeCoverage + $this->vertexCoverage);
-        $edgeCoverage = 0;
-        $vertexCoverage = 0;
-        $results = [];
-        $currentVertex = $this->graph->getVertex($this->workflow->getDefinition()->getInitialPlace());
-        while ($edgeCoverage < $this->edgeCoverage || $vertexCoverage < $this->vertexCoverage) {
-            if (!in_array($currentVertex->getId(), $this->visitedVertices)) {
-                $this->visitedVertices[] = $currentVertex->getId();
-            }
-
-            /** @var Edges $edges */
-            $edges = $currentVertex->getEdgesOut();
-            if ($edges->isEmpty()) {
-                throw new TraversalException('Can not traverse more');
-            }
-
-            /** @var DirectedBase $edge */
-            $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
-            if (!in_array($edge->getAttribute('id'), $this->visitedEdges)) {
-                $this->visitedEdges[] = $edge->getAttribute('id');
-            }
-
-            $results[] = 'place:' . $currentVertex->getId();
-            $results[] = 'transition:' . $edge->getAttribute('id');
-
-            $edgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
-            $vertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
-
-            $currentVertex = $edge->getVertexEnd();
-
-            $this->progress->setMessage(sprintf('Current edge coverage: %s, vertex coverage %s', $edgeCoverage, $vertexCoverage));
-            $this->progress->setProgress(floor($edgeCoverage + $vertexCoverage));
+        /** @var Edges $edges */
+        $edges = $this->currentVertex->getEdgesOut();
+        if ($edges->isEmpty()) {
+            throw new TraversalException('Can not get next step: there are no edges to choose from.');
         }
-        $this->progress->finish();
-        return $results;
+
+        /** @var Directed $edge */
+        $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
+
+        if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
+            $this->visitedVertices[] = $this->currentVertex->getId();
+        }
+        if (!in_array($edge->getAttribute('key'), $this->visitedEdges)) {
+            $this->visitedEdges[] = $edge->getAttribute('key');
+        }
+
+        $this->currentEdgeCoverage = floor(count($this->visitedEdges) / count($this->graph->getEdges()) * 100);
+        $this->currentVertexCoverage = floor(count($this->visitedVertices) / count($this->graph->getVertices()) * 100);
+        $this->currentVertex = $edge->getVertexEnd();
+
+        // [vertex, edge] pair.
+        return [$this->currentVertex, $edge];
+    }
+
+    public function hasNextStep(): bool
+    {
+        return $this->currentEdgeCoverage < $this->edgeCoverage || $this->currentVertexCoverage < $this->vertexCoverage;
+    }
+
+    public function getMaxProgress(): int
+    {
+        return $this->edgeCoverage + $this->vertexCoverage;
+    }
+
+    public function getCurrentProgress(): int
+    {
+        return ($this->currentEdgeCoverage > $this->edgeCoverage ? $this->edgeCoverage : $this->currentEdgeCoverage) +
+            ($this->currentVertexCoverage > $this->vertexCoverage ? $this->vertexCoverage : $this->currentVertexCoverage);
+    }
+
+    public function getCurrentProgressMessage(): string
+    {
+        return sprintf('Current edge coverage: %s, vertex coverage %s', $this->currentEdgeCoverage, $this->currentVertexCoverage);
     }
 }
