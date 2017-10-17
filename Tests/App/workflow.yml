@@ -2,7 +2,7 @@ framework:
     workflows:
         # https://demo.opencart.com
         shopping_cart:
-            type: 'workflow'
+            type: 'state_machine'
             supports:
                 - Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
             places:

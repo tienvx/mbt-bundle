@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Traversal;
 
+use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Workflow\Workflow;
@@ -28,14 +29,23 @@ abstract class AbstractTraversal
         $this->workflow = $workflow;
     }
 
-    public function getNextStep(): array
+    public function getCurrentVertex(): Vertex
     {
-        return [];
+        return $this->currentVertex;
+    }
+
+    public function getNextStep(): Directed
+    {
+        return null;
     }
 
     public function hasNextStep(): bool
     {
         return false;
+    }
+
+    public function goToNextStep(Directed $edge)
+    {
     }
 
     public function getMaxProgress(): int
@@ -51,6 +61,11 @@ abstract class AbstractTraversal
     public function getCurrentProgressMessage(): string
     {
         return '';
+    }
+
+    public function meetStopCondition(): bool
+    {
+        return false;
     }
 
     public function init()

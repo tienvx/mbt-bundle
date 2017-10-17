@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Vertex;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +28,7 @@ class GenerateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $model = $input->getArgument('model');
-        $workflow = $this->getContainer()->get("workflow.{$model}");
+        $workflow = $this->getContainer()->get("state_machine.{$model}");
         if (!$workflow instanceof Workflow) {
             $message = sprintf('Can not load model by id "%s".', $model);
             throw new ModelNotFoundException($message);
@@ -45,12 +44,13 @@ class GenerateCommand extends ContainerAwareCommand
         $progress->start($traversal->getMaxProgress());
 
         $testSequence = [];
-        while ($traversal->hasNextStep()) {
-            /** @var Vertex $vertex */
+        $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
+        while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
             /** @var Directed $edge */
-            list($vertex, $edge) = $traversal->getNextStep();
-            $testSequence[] = $vertex->getAttribute('text');
+            $edge = $traversal->getNextStep();
             $testSequence[] = $edge->getAttribute('text');
+            $traversal->goToNextStep($edge);
+            $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
             $progress->setMessage($traversal->getCurrentProgressMessage());
             $progress->setProgress($traversal->getCurrentProgress());
         }

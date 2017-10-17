@@ -52,7 +52,7 @@ class RandomTraversal extends AbstractTraversal
         $this->currentVertexCoverage = 0;
     }
 
-    public function getNextStep(): array
+    public function getNextStep(): Directed
     {
         /** @var Edges $edges */
         $edges = $this->currentVertex->getEdgesOut();
@@ -63,6 +63,11 @@ class RandomTraversal extends AbstractTraversal
         /** @var Directed $edge */
         $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
 
+        return $edge;
+    }
+
+    public function goToNextStep(Directed $edge)
+    {
         if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
             $this->visitedVertices[] = $this->currentVertex->getId();
         }
@@ -73,14 +78,13 @@ class RandomTraversal extends AbstractTraversal
         $this->currentEdgeCoverage = floor(count($this->visitedEdges) / count($this->graph->getEdges()) * 100);
         $this->currentVertexCoverage = floor(count($this->visitedVertices) / count($this->graph->getVertices()) * 100);
         $this->currentVertex = $edge->getVertexEnd();
-
-        // [vertex, edge] pair.
-        return [$this->currentVertex, $edge];
     }
 
     public function hasNextStep(): bool
     {
-        return $this->currentEdgeCoverage < $this->edgeCoverage || $this->currentVertexCoverage < $this->vertexCoverage;
+        /** @var Edges $edges */
+        $edges = $this->currentVertex->getEdgesOut();
+        return !$edges->isEmpty();
     }
 
     public function getMaxProgress(): int
@@ -97,5 +101,10 @@ class RandomTraversal extends AbstractTraversal
     public function getCurrentProgressMessage(): string
     {
         return sprintf('Current edge coverage: %s, vertex coverage %s', $this->currentEdgeCoverage, $this->currentVertexCoverage);
+    }
+
+    public function meetStopCondition(): bool
+    {
+        return $this->currentEdgeCoverage >= $this->edgeCoverage && $this->currentVertexCoverage >= $this->vertexCoverage;
     }
 }
