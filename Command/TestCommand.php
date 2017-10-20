@@ -46,8 +46,8 @@ class TestCommand extends ContainerAwareCommand
         $testSequence = [];
         $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
 
-        $class = $model->getInstance();
-        $subject = new $class();
+        $subjectClass = $model->getSubject();
+        $subject = new $subjectClass();
 
         try {
             while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {

@@ -1,4 +1,7 @@
 services:
-#    tienvx_mbt.example:
-#        class: Tienvx\Bundle\MbtBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    tienvx_mbt.expression_language:
+        class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
+    tienvx_mbt.audit_trail_listener:
+        class: Tienvx\Bundle\MbtBundle\EventListener\WorkflowListener
+        tags:
+            - { name: kernel.event_subscriber }

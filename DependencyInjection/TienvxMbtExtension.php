@@ -11,8 +11,8 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Workflow;
+use Tienvx\Bundle\MbtBundle\EventListener\GuardListener;
 use Tienvx\Bundle\MbtBundle\Model;
 
 /**
@@ -64,11 +64,11 @@ class TienvxMbtExtension extends Extension
         foreach ($models as $name => $model) {
             $type = 'state_machine';
 
-            $transitions = array();
+            $transitions = [];
             foreach ($model['transitions'] as $transition) {
                 foreach ($transition['from'] as $from) {
                     foreach ($transition['to'] as $to) {
-                        $transitions[] = new Definition(Model\Transition::class, array($transition['name'], $from, $to, $transition['weight']));
+                        $transitions[] = new Definition(Model\Transition::class, [$transition['name'], $from, $to, $transition['weight']]);
                     }
                 }
             }
@@ -78,22 +78,22 @@ class TienvxMbtExtension extends Extension
             $definitionDefinition->setPublic(false);
             $definitionDefinition->addArgument($model['places']);
             $definitionDefinition->addArgument($transitions);
-            $definitionDefinition->addTag('workflow.definition', array(
+            $definitionDefinition->addTag('workflow.definition', [
                 'name' => $name,
                 'type' => $type,
                 'marking_store' => null,
-            ));
+            ]);
             if (isset($model['initial_place'])) {
                 $definitionDefinition->addArgument($model['initial_place']);
             }
 
             // Create Model
-            if (!isset($model['instance']) || !class_exists($model['instance'])) {
-                throw new RuntimeException(sprintf('Instance "%s" must be an existing class.', $model['instance']));
+            if (!isset($model['subject']) || !class_exists($model['subject'])) {
+                throw new RuntimeException(sprintf('Subject "%s" must be an existing class.', $model['subject']));
             }
             $modelDefinition = new Definition(Model\Model::class);
             $modelDefinition->addArgument($definitionDefinition);
-            $modelDefinition->addArgument($model['instance']);
+            $modelDefinition->addArgument($model['subject']);
             $modelDefinition->addArgument(new Reference('event_dispatcher'));
             $modelDefinition->addArgument($name);
             foreach ($model['tags'] as $tag) {
@@ -106,13 +106,13 @@ class TienvxMbtExtension extends Extension
             $container->setDefinition(sprintf('%s.definition', $modelId), $definitionDefinition);
 
             // Add workflow to Registry
-            $strategyDefinition = new Definition(Workflow\SupportStrategy\ClassInstanceSupportStrategy::class, array($model['instance']));
+            $strategyDefinition = new Definition(Workflow\SupportStrategy\ClassInstanceSupportStrategy::class, [$model['subject']]);
             $strategyDefinition->setPublic(false);
-            $registryDefinition->addMethodCall('add', array(new Reference($modelId), $strategyDefinition));
+            $registryDefinition->addMethodCall('add', [new Reference($modelId), $strategyDefinition]);
 
             // Add Guard Listener
-            $guard = new Definition(Workflow\EventListener\GuardListener::class);
-            $configuration = array();
+            $guard = new Definition(GuardListener::class);
+            $configuration = [];
             foreach ($model['transitions'] as $transitionName => $config) {
                 if (!isset($config['guard'])) {
                     continue;
@@ -122,26 +122,17 @@ class TienvxMbtExtension extends Extension
                     throw new LogicException('Cannot guard models as the ExpressionLanguage component is not installed.');
                 }
 
-                if (!class_exists(Security::class)) {
-                    throw new LogicException('Cannot guard workflows as the Security component is not installed.');
-                }
-
                 $eventName = sprintf('workflow.%s.guard.%s', $name, $transitionName);
-                $guard->addTag('kernel.event_listener', array('event' => $eventName, 'method' => 'onTransition'));
+                $guard->addTag('kernel.event_listener', ['event' => $eventName, 'method' => 'onTransition']);
                 $configuration[$eventName] = $config['guard'];
             }
             if ($configuration) {
-                $guard->setArguments(array(
+                $guard->setArguments([
                     $configuration,
-                    new Reference('workflow.security.expression_language'),
-                    new Reference('security.token_storage'),
-                    new Reference('security.authorization_checker'),
-                    new Reference('security.authentication.trust_resolver'),
-                    new Reference('security.role_hierarchy'),
-                ));
+                    new Reference('tienvx_mbt.expression_language'),
+                ]);
 
                 $container->setDefinition(sprintf('%s.listener.guard', $modelId), $guard);
-                $container->setParameter('workflow.has_guard_listeners', true);
             }
         }
     }

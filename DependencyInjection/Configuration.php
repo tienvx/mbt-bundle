@@ -43,7 +43,7 @@ class Configuration implements ConfigurationInterface
                                     ->cannotBeEmpty()
                                 ->end()
                             ->end()
-                            ->scalarNode('instance')
+                            ->scalarNode('subject')
                                 ->cannotBeEmpty()
                                 ->info('A class that implement the model')
                                 ->example('MyBundle\\Entity\\ShoppingCart')
@@ -120,9 +120,9 @@ class Configuration implements ConfigurationInterface
                         ->end()
                         ->validate()
                             ->ifTrue(function ($v) {
-                                return !$v['instance'];
+                                return !$v['subject'];
                             })
-                            ->thenInvalid('"instance" should be configured.')
+                            ->thenInvalid('"subject" should be configured.')
                         ->end()
                     ->end()
                 ->end()

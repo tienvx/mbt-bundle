@@ -2,7 +2,7 @@ tienvx_mbt:
     models:
         # https://demo.opencart.com
         shopping_cart:
-            instance: Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
+            subject: Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
             tags: [shopping-cart, demo, testing, model-based-testing]
             places:
                 - home
@@ -16,8 +16,12 @@ tienvx_mbt:
                     from: [home, category, product, cart]
                     to: category
                 viewProduct:
-                    from: [home, category, cart]
+                    from: [home, cart]
                     to: product
+                viewProductFromCategory:
+                    from: category
+                    to: product
+                    guard: subject.categoryHasProduct()
                 viewCart:
                     from: [home, category, product, checkout]
                     to: cart
@@ -30,9 +34,11 @@ tienvx_mbt:
                 update:
                     from: cart
                     to: cart
+                    guard: subject.cartHasProduct()
                 remove:
                     from: cart
                     to: cart
+                    guard: subject.cartHasProduct()
                     weight: 9
                 addFromHome:
                     from: home
@@ -40,6 +46,8 @@ tienvx_mbt:
                 addFromCategory:
                     from: category
                     to: category
+                    guard: subject.categoryHasProduct()
                 addFromProduct:
                     from: product
                     to: product
+                    guard: subject.viewingProduct()

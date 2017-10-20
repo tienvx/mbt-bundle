@@ -9,16 +9,16 @@ use Symfony\Component\Workflow\StateMachine;
 
 class Model extends StateMachine
 {
-    private $instance;
+    private $subject;
 
-    public function __construct(Definition $definition, string $instance, EventDispatcherInterface $dispatcher = null, $name = 'unnamed')
+    public function __construct(Definition $definition, string $subject, EventDispatcherInterface $dispatcher = null, $name = 'unnamed')
     {
-        $this->instance = $instance;
+        $this->subject = $subject;
         parent::__construct($definition, new SingleStateMarkingStore(), $dispatcher, $name);
     }
 
-    public function getInstance()
+    public function getSubject()
     {
-        return $this->instance;
+        return $this->subject;
     }
 }
