@@ -2,10 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
 
 class TestCommandTest extends KernelTestCase

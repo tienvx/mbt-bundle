@@ -1,8 +1,0 @@
-imports:
-    - { resource: workflow.yml }
-
-framework:
-    secret:          secret
-    test:            ~
-    router:          { resource: "%kernel.root_dir%/routing.yml" }
-    templating:      { engines: ['twig'] }

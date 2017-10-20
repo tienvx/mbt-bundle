@@ -9,8 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Traversal\TraversalFactory;
 
 class GenerateCommand extends ContainerAwareCommand
@@ -27,20 +27,20 @@ class GenerateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getArgument('model');
-        $workflow = $this->getContainer()->get("state_machine.{$model}");
-        if (!$workflow instanceof Workflow) {
-            $message = sprintf('Can not load model by id "%s".', $model);
+        $modelArgument = $input->getArgument('model');
+        $model = $this->getContainer()->get("model.{$modelArgument}");
+        if (!$model instanceof Model) {
+            $message = sprintf('Can not load model by id "%s".', $modelArgument);
             throw new ModelNotFoundException($message);
         }
 
         $traversalOption = $input->getOption('traversal');
         $traversal = TraversalFactory::create($traversalOption);
-        $traversal->setWorkflow($workflow);
+        $traversal->setModel($model);
         $traversal->init();
 
         $progress = new ProgressBar($output);
-        $progress->setMessage(sprintf('Generating test sequence for model "%s"', $model));
+        $progress->setMessage(sprintf('Generating test sequence for model "%s"', $modelArgument));
         $progress->start($traversal->getMaxProgress());
 
         $testSequence = [];
@@ -58,7 +58,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         $output->writeln([
             '',
-            sprintf('Generated test sequence for model "%s"', $model),
+            sprintf('Generated test sequence for model "%s"', $modelArgument),
             '============',
         ]);
 

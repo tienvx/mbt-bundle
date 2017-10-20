@@ -9,9 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
-use Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Traversal\TraversalFactory;
 
 class TestCommand extends ContainerAwareCommand
@@ -28,34 +27,36 @@ class TestCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getArgument('model');
-        $workflow = $this->getContainer()->get("state_machine.{$model}");
-        if (!$workflow instanceof Workflow) {
-            $message = sprintf('Can not load model by id "%s".', $model);
+        $modelArgument = $input->getArgument('model');
+        $model = $this->getContainer()->get("model.{$modelArgument}");
+        if (!$model instanceof Model) {
+            $message = sprintf('Can not load model by id "%s".', $modelArgument);
             throw new ModelNotFoundException($message);
         }
 
         $traversalOption = $input->getOption('traversal');
         $traversal = TraversalFactory::create($traversalOption);
-        $traversal->setWorkflow($workflow);
+        $traversal->setModel($model);
         $traversal->init();
 
         $progress = new ProgressBar($output);
-        $progress->setMessage(sprintf('Testing system defined by model "%s"', $model));
+        $progress->setMessage(sprintf('Testing system defined by model "%s"', $modelArgument));
         $progress->start($traversal->getMaxProgress());
 
-        $shoppingCart = new ShoppingCart();
         $testSequence = [];
         $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
+
+        $class = $model->getInstance();
+        $subject = new $class();
 
         try {
             while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
                 /** @var Directed $edge */
                 $edge = $traversal->getNextStep();
-                if ($workflow->can($shoppingCart, $edge->getAttribute('name'))) {
+                if ($model->can($subject, $edge->getAttribute('name'))) {
                     $testSequence[] = $edge->getAttribute('text');
                     $traversal->goToNextStep($edge);
-                    $workflow->apply($shoppingCart, $edge->getAttribute('name'));
+                    $model->apply($subject, $edge->getAttribute('name'));
                     $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
                     $progress->setMessage($traversal->getCurrentProgressMessage());
                     $progress->setProgress($traversal->getCurrentProgress());

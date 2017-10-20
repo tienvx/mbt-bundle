@@ -1,10 +1,9 @@
-framework:
-    workflows:
+tienvx_mbt:
+    models:
         # https://demo.opencart.com
         shopping_cart:
-            type: 'state_machine'
-            supports:
-                - Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
+            instance: Tienvx\Bundle\MbtBundle\Tests\App\Entity\ShoppingCart
+            tags: [shopping-cart, demo, testing, model-based-testing]
             places:
                 - home
                 - category
@@ -34,6 +33,7 @@ framework:
                 remove:
                     from: cart
                     to: cart
+                    weight: 9
                 addFromHome:
                     from: home
                     to: home

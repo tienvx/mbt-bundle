@@ -5,14 +5,15 @@ namespace Tienvx\Bundle\MbtBundle\Traversal;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
-use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\Transition;
 
 abstract class AbstractTraversal
 {
     /**
-     * @var Workflow
+     * @var Model
      */
-    protected $workflow;
+    protected $model;
 
     /**
      * @var Graph
@@ -24,9 +25,9 @@ abstract class AbstractTraversal
      */
     protected $currentVertex;
 
-    public function setWorkflow(Workflow $workflow)
+    public function setModel(Model $model)
     {
-        $this->workflow = $workflow;
+        $this->model = $model;
     }
 
     public function getCurrentVertex(): Vertex
@@ -71,12 +72,12 @@ abstract class AbstractTraversal
     public function init()
     {
         $this->graph = $this->buildGraph();
-        $this->currentVertex = $this->graph->getVertex($this->workflow->getDefinition()->getInitialPlace());
+        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
     }
 
     protected function buildGraph(): Graph
     {
-        $definition = $this->workflow->getDefinition();
+        $definition = $this->model->getDefinition();
         $graph = new Graph();
         foreach ($definition->getPlaces() as $place) {
             $vertex = $graph->createVertex($place);
@@ -84,6 +85,7 @@ abstract class AbstractTraversal
             $vertex->setAttribute('key', $place);
             $vertex->setAttribute('text', "place:$place");
         }
+            /** @var Transition $transition */
         foreach ($definition->getTransitions() as $transition) {
             foreach ($transition->getFroms() as $from) {
                 foreach ($transition->getTos() as $to) {
@@ -91,8 +93,7 @@ abstract class AbstractTraversal
                     $edge->setAttribute('name', $transition->getName());
                     $edge->setAttribute('key', "{$transition->getName()}:$from:$to");
                     $edge->setAttribute('text', "transition:{$transition->getName()}[$from=>$to]");
-                    $weight = null;
-                    $edge->setWeight($weight);
+                    $edge->setWeight($transition->getWeight());
                 }
             }
         }

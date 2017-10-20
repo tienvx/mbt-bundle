@@ -1,0 +1,55 @@
+digraph workflow {
+  ratio="compress" rankdir="LR"
+  node [fontsize="9" fontname="Arial" color="#333333" fillcolor="lightblue" fixedsize="1" width="1"];
+  edge [fontsize="9" fontname="Arial" color="#333333" arrowhead="normal" arrowsize="0.5"];
+
+  place_home [label="home", shape=circle, style="filled"];
+  place_category [label="category", shape=circle];
+  place_product [label="product", shape=circle];
+  place_cart [label="cart", shape=circle];
+  place_checkout [label="checkout", shape=circle];
+  transition_viewcategory [label="viewCategory", shape=box, shape="box", regular="1"];
+  transition_viewproduct [label="viewProduct", shape=box, shape="box", regular="1"];
+  transition_viewcart [label="viewCart", shape=box, shape="box", regular="1"];
+  transition_checkout [label="checkout", shape=box, shape="box", regular="1"];
+  transition_backtohome [label="backToHome", shape=box, shape="box", regular="1"];
+  transition_update [label="update", shape=box, shape="box", regular="1"];
+  transition_remove [label="remove", shape=box, shape="box", regular="1"];
+  transition_addfromhome [label="addFromHome", shape=box, shape="box", regular="1"];
+  transition_addfromcategory [label="addFromCategory", shape=box, shape="box", regular="1"];
+  transition_addfromproduct [label="addFromProduct", shape=box, shape="box", regular="1"];
+  place_home -> transition_viewcategory [style="solid"];
+  place_category -> transition_viewcategory [style="solid"];
+  place_product -> transition_viewcategory [style="solid"];
+  place_cart -> transition_viewcategory [style="solid"];
+  transition_viewcategory -> place_category [style="solid"];
+  place_home -> transition_viewproduct [style="solid"];
+  place_category -> transition_viewproduct [style="solid"];
+  place_cart -> transition_viewproduct [style="solid"];
+  transition_viewproduct -> place_product [style="solid"];
+  place_home -> transition_viewcart [style="solid"];
+  place_category -> transition_viewcart [style="solid"];
+  place_product -> transition_viewcart [style="solid"];
+  place_checkout -> transition_viewcart [style="solid"];
+  transition_viewcart -> place_cart [style="solid"];
+  place_home -> transition_checkout [style="solid"];
+  place_category -> transition_checkout [style="solid"];
+  place_product -> transition_checkout [style="solid"];
+  place_cart -> transition_checkout [style="solid"];
+  transition_checkout -> place_checkout [style="solid"];
+  place_category -> transition_backtohome [style="solid"];
+  place_product -> transition_backtohome [style="solid"];
+  place_cart -> transition_backtohome [style="solid"];
+  place_checkout -> transition_backtohome [style="solid"];
+  transition_backtohome -> place_home [style="solid"];
+  place_cart -> transition_update [style="solid"];
+  transition_update -> place_cart [style="solid"];
+  place_cart -> transition_remove [style="solid"];
+  transition_remove -> place_cart [style="solid"];
+  place_home -> transition_addfromhome [style="solid"];
+  transition_addfromhome -> place_home [style="solid"];
+  place_category -> transition_addfromcategory [style="solid"];
+  transition_addfromcategory -> place_category [style="solid"];
+  place_product -> transition_addfromproduct [style="solid"];
+  transition_addfromproduct -> place_product [style="solid"];
+}
