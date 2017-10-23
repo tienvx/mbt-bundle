@@ -63,9 +63,9 @@ class TestCommand extends ContainerAwareCommand
                 }
             }
         }
-        catch (\Exception $exception) {
+        catch (\Throwable $throwable) {
             $output->writeln([
-                'Found a bug: ' . $exception,
+                'Found a bug: ' . $throwable,
             ]);
         }
         finally {
