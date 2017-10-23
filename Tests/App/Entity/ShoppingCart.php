@@ -81,10 +81,7 @@ class ShoppingCart
      * @var array
      */
     protected $inStock = [
-        '40', // 'iPhone',
-        '42', //'Apple Cinema 30',
-        '30', //'Canon EOS 5D',
-        '43', //'MacBook',
+        // No products are available in stock.
     ];
 
     public function __construct()
@@ -176,7 +173,7 @@ class ShoppingCart
     {
         $product = array_rand($this->cart);
         if (!in_array($product, $this->inStock)) {
-            throw new \Exception('You added a out-of-stock product into cart! We can not update this product');
+            throw new \Exception('You added an out-of-stock product into cart! It can not be updated');
         }
         $this->cart[$product] = rand(1, 99);
     }

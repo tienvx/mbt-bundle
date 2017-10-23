@@ -65,9 +65,7 @@ class TestCommand extends ContainerAwareCommand
         }
         catch (\Exception $exception) {
             $output->writeln([
-                'Found a bug:',
-                sprintf('Message: "%s"', $exception->getMessage()),
-                sprintf('Code: "%s"', $exception->getCode()),
+                'Found a bug: ' . $exception,
             ]);
         }
         finally {
