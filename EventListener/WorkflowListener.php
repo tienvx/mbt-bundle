@@ -23,19 +23,9 @@ class WorkflowListener implements EventSubscriberInterface
         }
     }
 
-    public function onLeave(Event $event)
-    {
-        foreach ($event->getTransition()->getTos() as $place) {
-            if (method_exists($event->getSubject(), "{$place}OnLeave")) {
-                call_user_func([$event->getSubject(), "{$place}OnLeave"]);
-            }
-        }
-    }
-
     public static function getSubscribedEvents()
     {
         return array(
-            'workflow.leave' => array('onLeave'),
             'workflow.transition' => array('onTransition'),
             'workflow.enter' => array('onEnter'),
         );

@@ -12,7 +12,7 @@ tienvx_mbt:
                 - checkout
             initial_place: home
             transitions:
-                viewCategory:
+                viewCategory: # Or view other category
                     from: [home, category, product, cart]
                     to: category
                 viewProduct:
@@ -50,4 +50,3 @@ tienvx_mbt:
                 addFromProduct:
                     from: product
                     to: product
-                    guard: subject.viewingProduct()

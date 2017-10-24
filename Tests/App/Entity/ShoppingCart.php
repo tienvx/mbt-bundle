@@ -15,12 +15,12 @@ class ShoppingCart
     protected $cart;
 
     /**
-     * @var string
+     * @var string Current viewing product
      */
     protected $product;
 
     /**
-     * @var string
+     * @var string Current viewing category
      */
     protected $category;
 
@@ -94,6 +94,7 @@ class ShoppingCart
     public function viewCategory()
     {
         $this->category = array_rand($this->categories);
+        $this->product = null;
     }
 
     public function viewProduct()
@@ -104,11 +105,30 @@ class ShoppingCart
     public function viewProductFromCategory()
     {
         $this->product = array_rand($this->productsInCategory[$this->category]);
+        $this->category = null;
     }
 
     public function categoryHasProduct()
     {
         return !empty($this->productsInCategory[$this->category]);
+    }
+
+    public function viewCart()
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    public function checkout()
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    public function backToHome()
+    {
+        $this->category = null;
+        $this->product = null;
     }
 
     public function cartHasProduct()
@@ -118,39 +138,24 @@ class ShoppingCart
 
     public function addFromHome()
     {
-        $this->product = array_rand($this->products);
-        if (!isset($this->cart[$this->product])) {
-            $this->cart[$this->product] = 1;
+        $product = array_rand($this->products);
+        if (!isset($this->cart[$product])) {
+            $this->cart[$product] = 1;
         }
         else {
-            $this->cart[$this->product]++;
+            $this->cart[$product]++;
         }
     }
 
     public function addFromCategory()
     {
-        $this->product = array_rand($this->productsInCategory[$this->category]);
-        if (!isset($this->cart[$this->product])) {
-            $this->cart[$this->product] = 1;
+        $product = array_rand($this->productsInCategory[$this->category]);
+        if (!isset($this->cart[$product])) {
+            $this->cart[$product] = 1;
         }
         else {
-            $this->cart[$this->product]++;
+            $this->cart[$product]++;
         }
-    }
-
-    public function productOnLeave()
-    {
-        $this->product = null;
-    }
-
-    public function categoryOnLeave()
-    {
-        $this->category = null;
-    }
-
-    public function viewingProduct()
-    {
-        return !empty($this->product);
     }
 
     public function addFromProduct()
