@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
-use Tienvx\Bundle\MbtBundle\EventListener\GuardListener;
+use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Model;
 
 /**
@@ -66,11 +66,7 @@ class TienvxMbtExtension extends Extension
 
             $transitions = [];
             foreach ($model['transitions'] as $transition) {
-                foreach ($transition['from'] as $from) {
-                    foreach ($transition['to'] as $to) {
-                        $transitions[] = new Definition(Model\Transition::class, [$transition['name'], $from, $to, $transition['weight']]);
-                    }
-                }
+                $transitions[] = new Definition(Model\Transition::class, [$transition['name'], $transition['from'], $transition['to'], $transition['weight'], $transition['label']]);
             }
 
             // Create a Definition
@@ -111,28 +107,36 @@ class TienvxMbtExtension extends Extension
             $registryDefinition->addMethodCall('add', [new Reference($modelId), $strategyDefinition]);
 
             // Add Guard Listener
-            $guard = new Definition(GuardListener::class);
+            $listener = new Definition(ExpressionListener::class);
             $configuration = [];
             foreach ($model['transitions'] as $transitionName => $config) {
-                if (!isset($config['guard'])) {
+                if (!isset($config['guard']) && !isset($config['data'])) {
                     continue;
                 }
 
                 if (!class_exists(ExpressionLanguage::class)) {
-                    throw new LogicException('Cannot guard models as the ExpressionLanguage component is not installed.');
+                    throw new LogicException('Cannot guard or apply models as the ExpressionLanguage component is not installed.');
                 }
 
-                $eventName = sprintf('workflow.%s.guard.%s', $name, $transitionName);
-                $guard->addTag('kernel.event_listener', ['event' => $eventName, 'method' => 'onTransition']);
-                $configuration[$eventName] = $config['guard'];
+                if (isset($config['guard'])) {
+                    $guardEventName = sprintf('workflow.%s.guard.%s', $name, $transitionName);
+                    $listener->addTag('kernel.event_listener', ['event' => $guardEventName, 'method' => 'onGuard']);
+                    $configuration['guard'][$guardEventName] = $config['guard'];
+                }
+
+                if (isset($config['data'])) {
+                    $transitionEventName = sprintf('workflow.%s.transition.%s', $name, $transitionName);
+                    $listener->addTag('kernel.event_listener', ['event' => $transitionEventName, 'method' => 'onTransition', 'priority' => 100]);
+                    $configuration['data'][$transitionEventName] = $config['data'];
+                }
             }
             if ($configuration) {
-                $guard->setArguments([
+                $listener->setArguments([
                     $configuration,
                     new Reference('tienvx_mbt.expression_language'),
                 ]);
 
-                $container->setDefinition(sprintf('%s.listener.guard', $modelId), $guard);
+                $container->setDefinition(sprintf('%s.listener.expression', $modelId), $listener);
             }
         }
     }

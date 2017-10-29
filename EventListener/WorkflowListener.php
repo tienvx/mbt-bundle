@@ -4,21 +4,26 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
+use Tienvx\Bundle\MbtBundle\Model\Transition;
 
 class WorkflowListener implements EventSubscriberInterface
 {
-    public function onTransition(Event $event)
+    public function onAnnounce(Event $event)
     {
-        if (method_exists($event->getSubject(), $event->getTransition()->getName())) {
-            call_user_func([$event->getSubject(), $event->getTransition()->getName()]);
+        $transition = $event->getTransition();
+        if ($transition instanceof Transition && (method_exists($event->getSubject(), $transition->getName()))) {
+            call_user_func([$event->getSubject(), $transition->getName()], $transition->getData());
         }
     }
 
-    public function onEnter(Event $event)
+    public function onEnterd(Event $event)
     {
-        foreach ($event->getTransition()->getTos() as $place) {
-            if (method_exists($event->getSubject(), $place)) {
-                call_user_func([$event->getSubject(), $place]);
+        $transition = $event->getTransition();
+        if ($transition instanceof Transition) {
+            foreach ($transition->getTos() as $place) {
+                if (method_exists($event->getSubject(), $place)) {
+                    call_user_func([$event->getSubject(), $place]);
+                }
             }
         }
     }
@@ -26,8 +31,8 @@ class WorkflowListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'workflow.transition' => array('onTransition'),
-            'workflow.enter' => array('onEnter'),
+            'workflow.announce' => array('onAnnounce', 0),
+            'workflow.entered' => array('onEnterd'),
         );
     }
 }

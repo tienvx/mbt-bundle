@@ -7,6 +7,7 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Model\Transition;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 abstract class AbstractTraversal
 {
@@ -25,19 +26,29 @@ abstract class AbstractTraversal
      */
     protected $currentVertex;
 
+    /**
+     * @var Directed
+     */
+    protected $currentEdge;
+
+    /**
+     * @var array
+     */
+    protected $testSequence;
+
+    /**
+     * @var Subject
+     */
+    protected $subject;
+
     public function setModel(Model $model)
     {
         $this->model = $model;
     }
 
-    public function getCurrentVertex(): Vertex
+    public function getTestSequence(): array
     {
-        return $this->currentVertex;
-    }
-
-    public function getNextStep(): Directed
-    {
-        return null;
+        return $this->testSequence;
     }
 
     public function hasNextStep(): bool
@@ -45,13 +56,18 @@ abstract class AbstractTraversal
         return false;
     }
 
-    public function goToNextStep(Directed $edge)
+    public function canGoNextStep(): bool
+    {
+        return false;
+    }
+
+    public function goToNextStep(bool $callSUT)
     {
     }
 
     public function getMaxProgress(): int
     {
-        return 0;
+        return 100;
     }
 
     public function getCurrentProgress(): int
@@ -73,6 +89,12 @@ abstract class AbstractTraversal
     {
         $this->graph = $this->buildGraph();
         $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
+
+        $this->testSequence = [];
+        $this->testSequence[] = $this->currentVertex->getAttribute('name');
+
+        $subjectClass = $this->model->getSubject();
+        $this->subject = new $subjectClass();
     }
 
     protected function buildGraph(): Graph
@@ -82,8 +104,6 @@ abstract class AbstractTraversal
         foreach ($definition->getPlaces() as $place) {
             $vertex = $graph->createVertex($place);
             $vertex->setAttribute('name', $place);
-            $vertex->setAttribute('key', $place);
-            $vertex->setAttribute('text', "place:$place");
         }
             /** @var Transition $transition */
         foreach ($definition->getTransitions() as $transition) {
@@ -91,8 +111,6 @@ abstract class AbstractTraversal
                 foreach ($transition->getTos() as $to) {
                     $edge = $graph->getVertex($from)->createEdgeTo($graph->getVertex($to));
                     $edge->setAttribute('name', $transition->getName());
-                    $edge->setAttribute('key', "{$transition->getName()}:$from:$to");
-                    $edge->setAttribute('text', "transition:{$transition->getName()}[$from=>$to]");
                     $edge->setWeight($transition->getWeight());
                 }
             }

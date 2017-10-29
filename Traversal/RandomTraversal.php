@@ -6,6 +6,7 @@ use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Tienvx\Bundle\MbtBundle\Exception\TraversalException;
+use Tienvx\Bundle\MbtBundle\Model\Transition;
 
 class RandomTraversal extends AbstractTraversal
 {
@@ -52,7 +53,47 @@ class RandomTraversal extends AbstractTraversal
         $this->currentVertexCoverage = 0;
     }
 
-    public function getNextStep(): Directed
+    public function goToNextStep(bool $callSUT = false)
+    {
+        if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
+            $this->visitedVertices[] = $this->currentVertex->getId();
+        }
+        if (!in_array($this->currentEdge->getAttribute('name'), $this->visitedEdges)) {
+            $this->visitedEdges[] = $this->currentEdge->getAttribute('name');
+        }
+
+        $this->currentEdgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
+        $this->currentVertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
+        $this->currentVertex = $this->currentEdge->getVertexEnd();
+
+        $this->subject->setCallSUT($callSUT);
+        $this->model->apply($this->subject, $this->currentEdge->getAttribute('name'));
+
+        // Update test sequence.
+        $transitionName = $this->currentEdge->getAttribute('name');
+        $transitionData = [];
+        foreach ($this->model->getDefinition()->getTransitions() as $transition) {
+            if ($transitionName === $transition->getName() && $transition instanceof Transition) {
+                $data = $transition->getData();
+                array_walk($data, function (&$value, $key) {
+                    $value = "$key=$value";
+                });
+                $transitionData = implode(',', $data);
+            }
+        }
+        $this->testSequence[] = "$transitionName($transitionData)";
+        $placeName = $this->currentVertex->getAttribute('name');
+        $this->testSequence[] = $placeName;
+    }
+
+    public function hasNextStep(): bool
+    {
+        /** @var Edges $edges */
+        $edges = $this->currentVertex->getEdgesOut();
+        return !$edges->isEmpty();
+    }
+
+    public function canGoNextStep(): bool
     {
         /** @var Edges $edges */
         $edges = $this->currentVertex->getEdgesOut();
@@ -63,39 +104,19 @@ class RandomTraversal extends AbstractTraversal
         /** @var Directed $edge */
         $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
 
-        return $edge;
-    }
-
-    public function goToNextStep(Directed $edge)
-    {
-        if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
-            $this->visitedVertices[] = $this->currentVertex->getId();
+        $canGo = $this->model->can($this->subject, $edge->getAttribute('name'));
+        if ($canGo) {
+            // Prepare for jumping to the next step.
+            $this->currentEdge = $edge;
         }
-        if (!in_array($edge->getAttribute('key'), $this->visitedEdges)) {
-            $this->visitedEdges[] = $edge->getAttribute('key');
-        }
-
-        $this->currentEdgeCoverage = floor(count($this->visitedEdges) / count($this->graph->getEdges()) * 100);
-        $this->currentVertexCoverage = floor(count($this->visitedVertices) / count($this->graph->getVertices()) * 100);
-        $this->currentVertex = $edge->getVertexEnd();
-    }
-
-    public function hasNextStep(): bool
-    {
-        /** @var Edges $edges */
-        $edges = $this->currentVertex->getEdgesOut();
-        return !$edges->isEmpty();
-    }
-
-    public function getMaxProgress(): int
-    {
-        return $this->edgeCoverage + $this->vertexCoverage;
+        return $canGo;
     }
 
     public function getCurrentProgress(): int
     {
-        return ($this->currentEdgeCoverage > $this->edgeCoverage ? $this->edgeCoverage : $this->currentEdgeCoverage) +
-            ($this->currentVertexCoverage > $this->vertexCoverage ? $this->vertexCoverage : $this->currentVertexCoverage);
+        return (int) floor((($this->currentEdgeCoverage > $this->edgeCoverage ? $this->edgeCoverage : $this->currentEdgeCoverage) +
+            ($this->currentVertexCoverage > $this->vertexCoverage ? $this->vertexCoverage : $this->currentVertexCoverage)) /
+            $this->edgeCoverage + $this->vertexCoverage);
     }
 
     public function getCurrentProgressMessage(): string

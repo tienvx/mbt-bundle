@@ -35,29 +35,16 @@ class TestCommand extends ContainerAwareCommand
         }
 
         $traversalOption = $input->getOption('traversal');
-        $traversal = TraversalFactory::create($traversalOption);
-        $traversal->setModel($model);
-        $traversal->init();
+        $traversal = TraversalFactory::create($traversalOption, $model);
 
         $progress = new ProgressBar($output);
         $progress->setMessage(sprintf('Testing system defined by model "%s"', $modelArgument));
         $progress->start($traversal->getMaxProgress());
 
-        $testSequence = [];
-        $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
-
-        $subjectClass = $model->getSubject();
-        $subject = new $subjectClass();
-
         try {
             while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
-                /** @var Directed $edge */
-                $edge = $traversal->getNextStep();
-                if ($model->can($subject, $edge->getAttribute('name'))) {
-                    $testSequence[] = $edge->getAttribute('text');
-                    $traversal->goToNextStep($edge);
-                    $model->apply($subject, $edge->getAttribute('name'));
-                    $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
+                if ($traversal->canGoNextStep()) {
+                    $traversal->goToNextStep(true);
                     $progress->setMessage($traversal->getCurrentProgressMessage());
                     $progress->setProgress($traversal->getCurrentProgress());
                 }

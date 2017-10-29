@@ -35,33 +35,23 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $traversalOption = $input->getOption('traversal');
-        $traversal = TraversalFactory::create($traversalOption);
-        $traversal->setModel($model);
-        $traversal->init();
+        $traversal = TraversalFactory::create($traversalOption, $model);
 
         $progress = new ProgressBar($output);
         $progress->setMessage(sprintf('Generating test sequence for model "%s"', $modelArgument));
         $progress->start($traversal->getMaxProgress());
 
-        $testSequence = [];
-        $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
         while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
-            /** @var Directed $edge */
-            $edge = $traversal->getNextStep();
-            $testSequence[] = $edge->getAttribute('text');
-            $traversal->goToNextStep($edge);
-            $testSequence[] = $traversal->getCurrentVertex()->getAttribute('text');
-            $progress->setMessage($traversal->getCurrentProgressMessage());
-            $progress->setProgress($traversal->getCurrentProgress());
+            if ($traversal->canGoNextStep()) {
+                $traversal->goToNextStep();
+                $progress->setMessage($traversal->getCurrentProgressMessage());
+                $progress->setProgress($traversal->getCurrentProgress());
+            }
         }
         $progress->finish();
 
-        $output->writeln([
-            '',
-            sprintf('Generated test sequence for model "%s"', $modelArgument),
-            '============',
-        ]);
-
-        $output->writeln($testSequence);
+        $output->write('===Begin generated test sequence===', true);
+        $output->write(implode(' ', $traversal->getTestSequence()), true);
+        $output->write('===End generated test sequence===', true);
     }
 }

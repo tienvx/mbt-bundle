@@ -34,16 +34,17 @@ class GenerateCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        preg_match_all('/(place:|transition:)(.*)/', $output, $matches);
+        preg_match('/===Begin generated test sequence===\s(.*)\s===End generated test sequence===/', $output, $matches);
 
         $edges = [];
         $vertices = [];
-        foreach ($matches[1] as $index => $type) {
-            if ($type === 'place:' && !in_array($matches[2][$index], $vertices)) {
-                $vertices[] = $matches[2][$index];
+        foreach (explode(' ', $matches[1]) as $step) {
+            $pos = strpos($step, '(');
+            if ($pos === false) {
+                $vertices[] = $step;
             }
-            if ($type === 'transition:' && !in_array($matches[2][$index], $edges)) {
-                $edges[] = $matches[2][$index];
+            else {
+                $edges[] = substr($step, 0, $pos);
             }
         }
         $this->assertGreaterThanOrEqual($edgeCount, count($edges));
