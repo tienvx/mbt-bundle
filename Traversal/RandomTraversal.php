@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Traversal;
 use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
+use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Exception\TraversalException;
 use Tienvx\Bundle\MbtBundle\Model\Transition;
 
@@ -40,6 +41,16 @@ class RandomTraversal extends AbstractTraversal
      */
     protected $visitedVertices;
 
+    /**
+     * @var array
+     */
+    protected $unvisitedEdges;
+
+    /**
+     * @var array
+     */
+    protected $unvisitedVertices;
+
     public function __construct($args)
     {
         Assert::that($args)->isArray()->count(2);
@@ -55,6 +66,7 @@ class RandomTraversal extends AbstractTraversal
 
     public function goToNextStep(bool $callSUT = false)
     {
+        // Update visited edges and vertices.
         if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
             $this->visitedVertices[] = $this->currentVertex->getId();
         }
@@ -62,10 +74,26 @@ class RandomTraversal extends AbstractTraversal
             $this->visitedEdges[] = $this->currentEdge->getAttribute('name');
         }
 
+        // Update unvisited edges and vertices.
+        $allEdges = [];
+        foreach ($this->graph->getEdges()->getIterator() as $edge) {
+            /* @var $edge Directed */
+            $allEdges[] = $edge->getAttribute('name');
+        }
+        $this->unvisitedEdges = array_diff($allEdges, $this->visitedEdges);
+        $allVertices = [];
+        foreach ($this->graph->getVertices()->getIterator() as $vertex) {
+            /* @var $vertex Vertex */
+            $allVertices[] = $vertex->getAttribute('name');
+        }
+        $this->unvisitedVertices = array_diff($allVertices, $this->visitedVertices);
+
+        // Update progress.
         $this->currentEdgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
         $this->currentVertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
         $this->currentVertex = $this->currentEdge->getVertexEnd();
 
+        // Apply model. Call SUT if needed.
         $this->subject->setCallSUT($callSUT);
         $this->model->apply($this->subject, $this->currentEdge->getAttribute('name'));
 
