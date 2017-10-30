@@ -40,6 +40,7 @@ class TestCommand extends ContainerAwareCommand
         $progress->setMessage(sprintf('Testing system defined by model "%s"', $modelArgument));
         $progress->start($traversal->getMaxProgress());
 
+        $message = 'No bug found';
         try {
             while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
                 if ($traversal->canGoNextStep()) {
@@ -50,12 +51,16 @@ class TestCommand extends ContainerAwareCommand
             }
         }
         catch (\Throwable $throwable) {
-            $output->writeln([
-                'Found a bug: ' . $throwable,
-            ]);
+            $message = 'Found a bug: ' . $throwable;
         }
         finally {
             $progress->finish();
         }
+
+        $output->writeln([
+            '===Begin test results===',
+            $message,
+            '===End test results==='
+        ]);
     }
 }

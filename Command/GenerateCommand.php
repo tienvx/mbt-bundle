@@ -49,8 +49,10 @@ class GenerateCommand extends ContainerAwareCommand
         }
         $progress->finish();
 
-        $output->write('===Begin generated test sequence===', true);
-        $output->write(implode(' ', $traversal->getTestSequence()), true);
-        $output->write('===End generated test sequence===', true);
+        $output->writeln([
+            '===Begin generated test sequence===',
+            implode(' ', $traversal->getTestSequence()),
+            '===End generated test sequence==='
+        ]);
     }
 }

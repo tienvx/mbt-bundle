@@ -6,7 +6,7 @@ use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Exception\TraversalException;
+use Tienvx\Bundle\MbtBundle\Exception\EmptyEdgesException;
 use Tienvx\Bundle\MbtBundle\Model\Transition;
 
 class RandomTraversal extends AbstractTraversal
@@ -126,7 +126,7 @@ class RandomTraversal extends AbstractTraversal
         /** @var Edges $edges */
         $edges = $this->currentVertex->getEdgesOut();
         if ($edges->isEmpty()) {
-            throw new TraversalException('Can not get next step: there are no edges to choose from.');
+            throw new EmptyEdgesException('Can not get next step: there are no edges to choose from.');
         }
 
         /** @var Directed $edge */

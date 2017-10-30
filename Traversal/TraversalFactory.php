@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Traversal;
 
-use Tienvx\Bundle\MbtBundle\Exception\TraversalException;
+use Tienvx\Bundle\MbtBundle\Exception\TraversalNotSupportedException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class TraversalFactory
@@ -22,7 +22,7 @@ class TraversalFactory
                 $traversal = new RandomTraversal($args);
                 break;
             default:
-                throw new TraversalException('Algorithm is not supported');
+                throw new TraversalNotSupportedException('Traversal is not supported');
         }
         $traversal->setModel($model);
         $traversal->init();

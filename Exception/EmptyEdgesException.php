@@ -3,6 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Exception;
 
 
-class TraversalException extends \Exception
+class EmptyEdgesException extends \Exception
 {
 }
