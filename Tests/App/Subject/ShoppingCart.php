@@ -328,25 +328,26 @@ class ShoppingCart extends Subject
 
     public function getRandomProduct()
     {
-        $product = array_rand($this->products);
+        $product = $this->products[array_rand($this->products)];
         return $product;
     }
 
     public function getRandomCategory()
     {
-        $category = array_rand($this->categories);
+        $category = $this->categories[array_rand($this->categories)];
         return $category;
     }
 
     public function getRandomProductFromCart()
     {
-        $product = array_rand($this->cart);
+        $product = $this->cart[array_rand($this->cart)];
         return $product;
     }
 
     public function getRandomProductFromCategory()
     {
-        $product = array_rand($this->productsInCategory[$this->category]);
+        $products = $this->productsInCategory[$this->category];
+        $product = $products[array_rand($products)];
         return $product;
     }
 }

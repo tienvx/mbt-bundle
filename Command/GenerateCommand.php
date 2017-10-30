@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Fhaculty\Graph\Edge\Directed;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
