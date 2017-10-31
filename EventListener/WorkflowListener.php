@@ -5,24 +5,29 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 use Tienvx\Bundle\MbtBundle\Model\Transition;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class WorkflowListener implements EventSubscriberInterface
 {
     public function onAnnounce(Event $event)
     {
+        /* @var $subject Subject */
+        $subject = $event->getSubject();
         $transition = $event->getTransition();
-        if ($transition instanceof Transition && (method_exists($event->getSubject(), $transition->getName()))) {
-            call_user_func([$event->getSubject(), $transition->getName()], $transition->getData());
+        if ($subject instanceof Subject && $transition instanceof Transition && (method_exists($subject, $transition->getName()))) {
+            call_user_func([$subject, $transition->getName()], $subject->getData());
         }
     }
 
     public function onEnterd(Event $event)
     {
+        /* @var $subject Subject */
+        $subject = $event->getSubject();
         $transition = $event->getTransition();
         if ($transition instanceof Transition) {
             foreach ($transition->getTos() as $place) {
-                if (method_exists($event->getSubject(), $place)) {
-                    call_user_func([$event->getSubject(), $place]);
+                if ($subject instanceof Subject && method_exists($subject, $place)) {
+                    call_user_func([$subject, $place]);
                 }
             }
         }

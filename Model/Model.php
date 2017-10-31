@@ -25,19 +25,4 @@ class Model extends StateMachine
     {
         return $this->subject;
     }
-
-    /**
-     * @param string $transitionName
-     * @return null|Transition
-     */
-    public function getTransition($transitionName)
-    {
-        foreach ($this->getDefinition()->getTransitions() as $transition) {
-            if ($transitionName === $transition->getName()) {
-                return $transition;
-            }
-        }
-
-        return null;
-    }
 }

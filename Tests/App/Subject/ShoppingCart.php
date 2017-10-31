@@ -340,7 +340,7 @@ class ShoppingCart extends Subject
 
     public function getRandomProductFromCart()
     {
-        $product = $this->cart[array_rand($this->cart)];
+        $product = array_rand($this->cart);
         return $product;
     }
 

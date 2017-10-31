@@ -108,7 +108,8 @@ class TienvxMbtExtension extends Extension
 
             // Add Guard Listener
             $listener = new Definition(ExpressionListener::class);
-            $configuration = [];
+            $guardConfiguration = [];
+            $dataConfiguration = [];
             foreach ($model['transitions'] as $transitionName => $config) {
                 if (!isset($config['guard']) && !isset($config['data'])) {
                     continue;
@@ -121,22 +122,27 @@ class TienvxMbtExtension extends Extension
                 if (isset($config['guard'])) {
                     $guardEventName = sprintf('workflow.%s.guard.%s', $name, $transitionName);
                     $listener->addTag('kernel.event_listener', ['event' => $guardEventName, 'method' => 'onGuard']);
-                    $configuration['guard'][$guardEventName] = $config['guard'];
+                    $guardConfiguration[$guardEventName] = $config['guard'];
                 }
 
                 if (isset($config['data'])) {
-                    $transitionEventName = sprintf('workflow.%s.transition.%s', $name, $transitionName);
-                    $listener->addTag('kernel.event_listener', ['event' => $transitionEventName, 'method' => 'onTransition', 'priority' => 100]);
-                    $configuration['data'][$transitionEventName] = $config['data'];
+                    $dataConfiguration[$name][$transitionName] = $config['data'];
                 }
             }
-            if ($configuration) {
+            if ($guardConfiguration) {
                 $listener->setArguments([
-                    $configuration,
+                    $guardConfiguration,
                     new Reference('tienvx_mbt.expression_language'),
                 ]);
 
                 $container->setDefinition(sprintf('%s.listener.expression', $modelId), $listener);
+            }
+            if ($dataConfiguration) {
+                $dataProviderDefinition = $container->getDefinition('tienvx_mbt.data_provider');
+                $dataProviderDefinition->setArguments([
+                    $dataConfiguration,
+                    new Reference('tienvx_mbt.expression_language'),
+                ]);
             }
         }
     }

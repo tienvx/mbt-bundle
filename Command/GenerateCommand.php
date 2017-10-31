@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Traversal\TraversalFactory;
+use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
 class GenerateCommand extends ContainerAwareCommand
 {
@@ -34,7 +34,9 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $traversalOption = $input->getOption('traversal');
-        $traversal = TraversalFactory::create($traversalOption, $model);
+        /** @var TraversalFactory $factory */
+        $factory = $this->getContainer()->get('tienvx_mbt.traversal_factory');
+        $traversal = $factory->get($this->getContainer(), $traversalOption, $model);
 
         $progress = new ProgressBar($output);
         $progress->setMessage(sprintf('Generating test sequence for model "%s"', $modelArgument));

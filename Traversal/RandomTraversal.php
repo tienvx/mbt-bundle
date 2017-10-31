@@ -7,7 +7,6 @@ use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Exception\EmptyEdgesException;
-use Tienvx\Bundle\MbtBundle\Model\Transition;
 
 class RandomTraversal extends AbstractTraversal
 {
@@ -51,7 +50,7 @@ class RandomTraversal extends AbstractTraversal
      */
     protected $unvisitedVertices;
 
-    public function __construct($args)
+    public function setArgs($args)
     {
         Assert::that($args)->isArray()->count(2);
         Assert::that($args[0])->numeric()->between(0, 100);
@@ -66,12 +65,14 @@ class RandomTraversal extends AbstractTraversal
 
     public function goToNextStep(bool $callSUT = false)
     {
+        $transitionName = $this->currentEdge->getAttribute('name');
+
         // Update visited edges and vertices.
         if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
             $this->visitedVertices[] = $this->currentVertex->getId();
         }
-        if (!in_array($this->currentEdge->getAttribute('name'), $this->visitedEdges)) {
-            $this->visitedEdges[] = $this->currentEdge->getAttribute('name');
+        if (!in_array($transitionName, $this->visitedEdges)) {
+            $this->visitedEdges[] = $transitionName;
         }
 
         // Update unvisited edges and vertices.
@@ -93,22 +94,19 @@ class RandomTraversal extends AbstractTraversal
         $this->currentVertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
         $this->currentVertex = $this->currentEdge->getVertexEnd();
 
+        // Set data to subject.
+        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
+        $this->subject->setData($data);
+
         // Apply model. Call SUT if needed.
         $this->subject->setCallSUT($callSUT);
-        $this->model->apply($this->subject, $this->currentEdge->getAttribute('name'));
+        $this->model->apply($this->subject, $transitionName);
 
         // Update test sequence.
-        $transitionName = $this->currentEdge->getAttribute('name');
-        $transitionData = [];
-        foreach ($this->model->getDefinition()->getTransitions() as $transition) {
-            if ($transitionName === $transition->getName() && $transition instanceof Transition) {
-                $data = $transition->getData();
-                array_walk($data, function (&$value, $key) {
-                    $value = "$key=$value";
-                });
-                $transitionData = implode(',', $data);
-            }
-        }
+        array_walk($data, function (&$value, $key) {
+            $value = "$key=$value";
+        });
+        $transitionData = implode(',', $data);
         $this->testSequence[] = "$transitionName($transitionData)";
         $placeName = $this->currentVertex->getAttribute('name');
         $this->testSequence[] = $placeName;

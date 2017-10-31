@@ -69,9 +69,8 @@ class ExecuteCommand extends ContainerAwareCommand
                     }
                 }
                 if ($model->can($subject, $transition)) {
-                    $transitionObject = $model->getTransition($transition);
-                    $transitionObject->setData($data);
                     try {
+                        $subject->setData($data);
                         $model->apply($subject, $transition);
                     }
                     catch (\Throwable $throwable) {

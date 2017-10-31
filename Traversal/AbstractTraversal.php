@@ -7,10 +7,16 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Model\Transition;
+use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 abstract class AbstractTraversal
 {
+    /**
+     * @var DataProvider
+     */
+    protected $dataProvider;
+
     /**
      * @var Model
      */
@@ -41,6 +47,15 @@ abstract class AbstractTraversal
      */
     protected $subject;
 
+    public function __construct(DataProvider $dataProvider)
+    {
+        $this->dataProvider = $dataProvider;
+    }
+
+    public function setArgs($args)
+    {
+    }
+
     public function setModel(Model $model)
     {
         $this->model = $model;
@@ -61,7 +76,7 @@ abstract class AbstractTraversal
         return false;
     }
 
-    public function goToNextStep(bool $callSUT)
+    public function goToNextStep(bool $callSUT = false)
     {
     }
 
@@ -105,7 +120,7 @@ abstract class AbstractTraversal
             $vertex = $graph->createVertex($place);
             $vertex->setAttribute('name', $place);
         }
-            /** @var Transition $transition */
+        /** @var Transition $transition */
         foreach ($definition->getTransitions() as $transition) {
             foreach ($transition->getFroms() as $from) {
                 foreach ($transition->getTos() as $to) {

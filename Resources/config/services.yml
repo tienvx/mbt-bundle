@@ -1,7 +1,15 @@
 services:
     tienvx_mbt.expression_language:
         class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
-    tienvx_mbt.audit_trail_listener:
+    tienvx_mbt.workflow_listener:
         class: Tienvx\Bundle\MbtBundle\EventListener\WorkflowListener
         tags:
             - { name: kernel.event_subscriber }
+    tienvx_mbt.data_provider:
+        class: Tienvx\Bundle\MbtBundle\Service\DataProvider
+    tienvx_mbt.traversal_factory:
+        class: Tienvx\Bundle\MbtBundle\Service\TraversalFactory
+    tienvx_mbt.traversal.random:
+        class: Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal
+        arguments:
+            - '@tienvx_mbt.data_provider'

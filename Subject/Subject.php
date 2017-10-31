@@ -9,6 +9,11 @@ class Subject
      */
     protected $callSUT;
 
+    /**
+     * @var array
+     */
+    protected $data;
+
     public function __construct()
     {
         $this->callSUT = false;
@@ -20,5 +25,21 @@ class Subject
     public function setCallSUT($callSUT)
     {
         $this->callSUT = $callSUT;
+    }
+
+    /**
+     * @param $data array
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }
