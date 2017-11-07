@@ -63,9 +63,9 @@ class RandomTraversal extends AbstractTraversal
         $this->currentVertexCoverage = 0;
     }
 
-    public function goToNextStep(bool $callSUT = false)
+    public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
     {
-        $transitionName = $this->currentEdge->getAttribute('name');
+        $transitionName = $currentEdge->getAttribute('name');
 
         // Update visited edges and vertices.
         if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
@@ -92,7 +92,7 @@ class RandomTraversal extends AbstractTraversal
         // Update progress.
         $this->currentEdgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
         $this->currentVertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
-        $this->currentVertex = $this->currentEdge->getVertexEnd();
+        $this->currentVertex = $currentEdge->getVertexEnd();
 
         // Set data to subject.
         $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
@@ -103,39 +103,26 @@ class RandomTraversal extends AbstractTraversal
         $this->model->apply($this->subject, $transitionName);
 
         // Update test sequence.
-        array_walk($data, function (&$value, $key) {
-            $value = "$key=$value";
-        });
-        $transitionData = implode(',', $data);
-        $this->testSequence[] = "$transitionName($transitionData)";
-        $placeName = $this->currentVertex->getAttribute('name');
-        $this->testSequence[] = $placeName;
+        $currentEdge->setAttribute('data', $data);
+        $this->edges[] = $currentEdge;
     }
 
-    public function hasNextStep(): bool
+    public function canGoNextStep(Directed $currentEdge): bool
     {
-        /** @var Edges $edges */
-        $edges = $this->currentVertex->getEdgesOut();
-        return !$edges->isEmpty();
+        return $this->model->can($this->subject, $currentEdge->getAttribute('name'));
     }
 
-    public function canGoNextStep(): bool
+    public function getNextStep(): ?Directed
     {
         /** @var Edges $edges */
         $edges = $this->currentVertex->getEdgesOut();
         if ($edges->isEmpty()) {
-            throw new EmptyEdgesException('Can not get next step: there are no edges to choose from.');
+            return null;
         }
 
         /** @var Directed $edge */
         $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
-
-        $canGo = $this->model->can($this->subject, $edge->getAttribute('name'));
-        if ($canGo) {
-            // Prepare for jumping to the next step.
-            $this->currentEdge = $edge;
-        }
-        return $canGo;
+        return $edge;
     }
 
     public function getCurrentProgress(): int

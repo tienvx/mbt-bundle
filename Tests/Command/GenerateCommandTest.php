@@ -34,11 +34,10 @@ class GenerateCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        preg_match('/===Begin generated test sequence===\s(.*)\s===End generated test sequence===/', $output, $matches);
 
         $edges = [];
         $vertices = [];
-        foreach (explode(' ', $matches[1]) as $step) {
+        foreach (explode(' ', $output) as $step) {
             $pos = strpos($step, '(');
             if ($pos === false) {
                 $vertices[] = $step;

@@ -26,6 +26,6 @@ class TestCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Found a bug: Exception: You added an out-of-stock product into cart! It can not be updated', $output);
+        $this->assertContains('Found a bug: You added an out-of-stock product into cart! It can not be updated', $output);
     }
 }

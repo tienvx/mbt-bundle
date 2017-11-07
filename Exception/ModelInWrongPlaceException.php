@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Exception;
 
 
-class ModelNotInPlaceException extends \Exception
+class ModelInWrongPlaceException extends \Exception
 {
 
 }
