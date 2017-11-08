@@ -4,9 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Vertex;
-use Fhaculty\Graph\Walk;
 use Tienvx\Bundle\MbtBundle\Exception\ModelInWrongPlaceException;
 use Tienvx\Bundle\MbtBundle\Exception\TransitionCanNotBeAppliedException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
@@ -22,14 +22,14 @@ class PathRunner
         $this->dataProvider = $dataProvider;
     }
 
-    public function run(Walk $walk, Model $model)
+    public function run(Path $path, Model $model)
     {
         $subjectClass = $model->getSubject();
         /* @var $subject Subject */
         $subject = new $subjectClass();
         $subject->setCallSUT(true);
 
-        $steps = $walk->getAlternatingSequence();
+        $steps = $path->getAlternatingSequence();
         foreach ($steps as $step) {
             $marking = $model->getMarking($subject);
             if ($step instanceof Vertex) {
@@ -52,13 +52,13 @@ class PathRunner
         }
     }
 
-    public function canWalk(Walk $walk, Model $model)
+    public function canWalk(Path $path, Model $model)
     {
         $subjectClass = $model->getSubject();
         /* @var $subject Subject */
         $subject = new $subjectClass();
 
-        $steps = $walk->getAlternatingSequence();
+        $steps = $path->getAlternatingSequence();
         foreach ($steps as $step) {
             $marking = $model->getMarking($subject);
             if ($step instanceof Vertex) {

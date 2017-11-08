@@ -3,15 +3,14 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Walk;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
@@ -52,8 +51,8 @@ class TestCommand extends ContainerAwareCommand
         catch (\Throwable $throwable) {
             /** @var $reducer PathReducer */
             $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
-            $walk = Walk::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
-            $walk = $reducer->reduce($walk, $model, $throwable);
+            $path = Path::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
+            $path = $reducer->reduce($path, $model, $throwable);
 
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
@@ -61,7 +60,7 @@ class TestCommand extends ContainerAwareCommand
             $table = new Table($output);
             $table->setHeaders(array('Step', 'Label', 'Data'));
             /** @var $edge Directed */
-            foreach ($walk->getEdges() as $index => $edge) {
+            foreach ($path->getEdges() as $index => $edge) {
                 $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($edge->getAttribute('data'))]);
             }
             $table->render();

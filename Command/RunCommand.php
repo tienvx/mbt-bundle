@@ -3,12 +3,12 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Walk;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
@@ -62,12 +62,12 @@ class RunCommand extends ContainerAwareCommand
                 $edges[] = $edge;
             }
         }
-        $walk = Walk::factoryFromEdges($edges, $startVertex);
+        $path = Path::factoryFromEdges($edges, $startVertex);
 
         /* @var $runner PathRunner */
         $runner = $this->getContainer()->get('tienvx_mbt.path_runner');
         try {
-            $runner->run($walk, $model);
+            $runner->run($path, $model);
         }
         catch (\Throwable $throwable) {
             $output->write('Found a bug: ' . $throwable->getMessage());

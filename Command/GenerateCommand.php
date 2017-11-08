@@ -4,14 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Vertex;
-use Fhaculty\Graph\Walk;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
@@ -48,8 +47,8 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $sequence = [];
-        $walk = Walk::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
-        $steps = $walk->getAlternatingSequence();
+        $path = Path::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
+        $steps = $path->getAlternatingSequence();
         foreach ($steps as $step) {
             if ($step instanceof Vertex) {
                 $sequence[] = $step->getAttribute('name');

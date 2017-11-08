@@ -6,7 +6,6 @@ use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Exception\EmptyEdgesException;
 
 class RandomTraversal extends AbstractTraversal
 {
