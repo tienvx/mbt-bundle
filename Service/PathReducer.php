@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Fhaculty\Graph\Set\Vertices;
 use Fhaculty\Graph\Walk;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
 use Tienvx\Bundle\MbtBundle\Model\Model;
@@ -44,12 +43,17 @@ class PathReducer
         // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
         // it does not return random key.
         $verticesVector = $walk->getVertices()->getVector();
-        $firstVertexIndex = array_rand($verticesVector);
-        $firstVertex = $verticesVector[$firstVertexIndex];
-        $secondVertexIndex = array_rand($verticesVector);
-        while ($firstVertexIndex >= $secondVertexIndex) {
+        $firstVertexIndex = $secondVertexIndex = 0;
+        while ($firstVertexIndex === $secondVertexIndex) {
+            $firstVertexIndex = array_rand($verticesVector);
             $secondVertexIndex = array_rand($verticesVector);
         }
+        if ($firstVertexIndex > $secondVertexIndex) {
+            $tempIndex = $firstVertexIndex;
+            $firstVertexIndex = $secondVertexIndex;
+            $secondVertexIndex = $tempIndex;
+        }
+        $firstVertex = $verticesVector[$firstVertexIndex];
         $secondVertex = $verticesVector[$secondVertexIndex];
 
         // Remove any edges between first vertex and second vertex.
@@ -71,14 +75,14 @@ class PathReducer
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
         $newWalk = Walk::factoryFromEdges($edges, $startVertex);
 
+        $result = null;
         try {
             $this->runner->run($newWalk, $model);
         } catch (\Throwable $newThrowable) {
-            if ($newThrowable === $throwable) {
-                return $newWalk;
+            if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                $result = $newWalk;
             }
-        } finally {
-            return null;
         }
+        return $result;
     }
 }
