@@ -13,6 +13,8 @@ services:
         class: Tienvx\Bundle\MbtBundle\Service\TraversalFactory
     tienvx_mbt.path_runner:
         class: Tienvx\Bundle\MbtBundle\Service\PathRunner
+        arguments:
+            - '@tienvx_mbt.data_provider'
     tienvx_mbt.path_reducer:
         class: Tienvx\Bundle\MbtBundle\Service\PathReducer
         arguments:

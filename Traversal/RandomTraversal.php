@@ -98,13 +98,13 @@ class RandomTraversal extends AbstractTraversal
         $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
         $this->subject->setData($data);
 
-        // Apply model. Call SUT if needed.
-        $this->subject->setCallSUT($callSUT);
-        $this->model->apply($this->subject, $transitionName);
-
         // Update test sequence.
         $currentEdge->setAttribute('data', $data);
         $this->edges[] = $currentEdge;
+
+        // Apply model. Call SUT if needed.
+        $this->subject->setCallSUT($callSUT);
+        $this->model->apply($this->subject, $transitionName);
     }
 
     public function canGoNextStep(Directed $currentEdge): bool

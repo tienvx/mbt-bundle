@@ -8,6 +8,9 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class PathReducer
 {
+    /**
+     * @var PathRunner
+     */
     protected $runner;
 
     public function __construct(PathRunner $runner)
@@ -24,7 +27,7 @@ class PathReducer
 
         $try = $walk->getVertices()->count();
         while ($try > 0) {
-            $newWalk = $this->findNewWalk($walk, $model, $throwable);
+            $newWalk = $this->tryToFindNewWalk($walk, $model, $throwable);
             if ($newWalk) {
                 // The shorter the walk is, the less times we need to try.
                 $walk = $newWalk;
@@ -37,14 +40,34 @@ class PathReducer
         return $walk;
     }
 
-    protected function findNewWalk(Walk $walk, Model $model, \Throwable $throwable): ?Walk
+    protected function tryToFindNewWalk(Walk $walk, Model $model, \Throwable $throwable): ?Walk
+    {
+        $newWalk = $this->randomNewWalk($walk);
+        while (!$this->runner->canWalk($newWalk, $model)) {
+            $newWalk = $this->randomNewWalk($walk);
+        }
+
+        $result = null;
+        try {
+            $this->runner->run($newWalk, $model);
+        } catch (\Throwable $newThrowable) {
+            if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                $result = $newWalk;
+            }
+        }
+        return $result;
+    }
+
+    protected function randomNewWalk(Walk $walk)
     {
         $startVertex = $walk->getVertices()->getVertexFirst();
         // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
         // it does not return random key.
         $verticesVector = $walk->getVertices()->getVector();
         $firstVertexIndex = $secondVertexIndex = 0;
-        while ($firstVertexIndex === $secondVertexIndex) {
+        // Exclude the last vertex and the last edge, because they will always in the reproduce path (at the end).
+        while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $walk->getVertices()->count() - 1) ||
+            ($secondVertexIndex === $walk->getVertices()->count() - 1)) {
             $firstVertexIndex = array_rand($verticesVector);
             $secondVertexIndex = array_rand($verticesVector);
         }
@@ -74,15 +97,6 @@ class PathReducer
         }
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
         $newWalk = Walk::factoryFromEdges($edges, $startVertex);
-
-        $result = null;
-        try {
-            $this->runner->run($newWalk, $model);
-        } catch (\Throwable $newThrowable) {
-            if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                $result = $newWalk;
-            }
-        }
-        return $result;
+        return $newWalk;
     }
 }

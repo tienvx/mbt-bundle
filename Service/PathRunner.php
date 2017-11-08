@@ -12,6 +12,16 @@ use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class PathRunner
 {
+    /**
+     * @var DataProvider
+     */
+    protected $dataProvider;
+
+    public function __construct(DataProvider $dataProvider)
+    {
+        $this->dataProvider = $dataProvider;
+    }
+
     public function run(Walk $walk, Model $model)
     {
         $subjectClass = $model->getSubject();
@@ -40,5 +50,36 @@ class PathRunner
                 }
             }
         }
+    }
+
+    public function canWalk(Walk $walk, Model $model)
+    {
+        $subjectClass = $model->getSubject();
+        /* @var $subject Subject */
+        $subject = new $subjectClass();
+
+        $steps = $walk->getAlternatingSequence();
+        foreach ($steps as $step) {
+            $marking = $model->getMarking($subject);
+            if ($step instanceof Vertex) {
+                $place = $step->getAttribute('name');
+                if (!$marking->has($place)) {
+                    return false;
+                }
+            }
+            else if ($step instanceof Directed) {
+                $transition = $step->getAttribute('name');
+                if ($model->can($subject, $transition)) {
+                    $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
+                    $subject->setData($data);
+                    $step->setAttribute('data', $data);
+                    $model->apply($subject, $transition);
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
