@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tienvx\Bundle\MbtBundle\Exception\TraversalNotSupportedException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Traversal\AbstractTraversal;
+use Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal;
 
 class TraversalFactory
 {
@@ -20,9 +21,12 @@ class TraversalFactory
         $name = $matches[1];
         $args = explode(',', $matches[2]);
 
-        $traversal = $container->get(sprintf('tienvx_mbt.traversal.%s', $name));
-        if (!$traversal || !($traversal instanceof AbstractTraversal)) {
-            throw new TraversalNotSupportedException(sprintf('Traversal "%s" is not supported', $name));
+        switch ($name) {
+            case static::RANDOM:
+                $traversal = new RandomTraversal($container->get('tienvx_mbt.data_provider'), $container->get('tienvx_mbt.graph_builder'));
+                break;
+            default:
+                throw new TraversalNotSupportedException('Traversal is not supported');
         }
 
         $traversal->setArgs($args);

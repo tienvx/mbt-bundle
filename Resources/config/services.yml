@@ -11,11 +11,6 @@ services:
         class: Tienvx\Bundle\MbtBundle\Service\GraphBuilder
     tienvx_mbt.traversal_factory:
         class: Tienvx\Bundle\MbtBundle\Service\TraversalFactory
-    tienvx_mbt.traversal.random:
-        class: Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal
-        arguments:
-            - '@tienvx_mbt.data_provider'
-            - '@tienvx_mbt.graph_builder'
     tienvx_mbt.path_runner:
         class: Tienvx\Bundle\MbtBundle\Service\PathRunner
     tienvx_mbt.path_reducer:

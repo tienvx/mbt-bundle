@@ -62,7 +62,7 @@ class TestCommand extends ContainerAwareCommand
             $table->setHeaders(array('Step', 'Label', 'Data'));
             /** @var $edge Directed */
             foreach ($walk->getEdges() as $index => $edge) {
-                $table->addRow([$index + 1, $edge->getAttribute('label'), $edge->getAttribute('data')]);
+                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($edge->getAttribute('data'))]);
             }
             $table->render();
         }
