@@ -123,8 +123,10 @@ class Configuration implements ConfigurationInterface
                                                 ->thenInvalid('Invalid place name')
                                             ->end()
                                         ->end()
-                                        ->scalarNode('weight')
-                                            ->defaultNull()
+                                        ->integerNode('weight')
+                                            // 1 for one step to go from a place to other place.
+                                            ->defaultValue(1)
+                                            ->min(1)
                                         ->end()
                                         ->scalarNode('label')
                                             ->defaultNull()

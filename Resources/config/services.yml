@@ -7,9 +7,15 @@ services:
             - { name: kernel.event_subscriber }
     tienvx_mbt.data_provider:
         class: Tienvx\Bundle\MbtBundle\Service\DataProvider
+    tienvx_mbt.graph_builder:
+        class: Tienvx\Bundle\MbtBundle\Service\GraphBuilder
     tienvx_mbt.traversal_factory:
         class: Tienvx\Bundle\MbtBundle\Service\TraversalFactory
-    tienvx_mbt.traversal.random:
-        class: Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal
+    tienvx_mbt.path_runner:
+        class: Tienvx\Bundle\MbtBundle\Service\PathRunner
         arguments:
             - '@tienvx_mbt.data_provider'
+    tienvx_mbt.path_reducer:
+        class: Tienvx\Bundle\MbtBundle\Service\PathReducer
+        arguments:
+            - '@tienvx_mbt.path_runner'

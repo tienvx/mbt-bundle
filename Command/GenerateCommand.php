@@ -2,13 +2,15 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Vertex;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
@@ -34,27 +36,31 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $traversalOption = $input->getOption('traversal');
-        /** @var TraversalFactory $factory */
+        /** @var $factory TraversalFactory */
         $factory = $this->getContainer()->get('tienvx_mbt.traversal_factory');
         $traversal = $factory->get($this->getContainer(), $traversalOption, $model);
 
-        $progress = new ProgressBar($output);
-        $progress->setMessage(sprintf('Generating test sequence for model "%s"', $modelArgument));
-        $progress->start($traversal->getMaxProgress());
-
-        while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
-            if ($traversal->canGoNextStep()) {
-                $traversal->goToNextStep();
-                $progress->setMessage($traversal->getCurrentProgressMessage());
-                $progress->setProgress($traversal->getCurrentProgress());
+        while (!$traversal->meetStopCondition() && $edge = $traversal->getNextStep()) {
+            if ($traversal->canGoNextStep($edge)) {
+                $traversal->goToNextStep($edge);
             }
         }
-        $progress->finish();
 
-        $output->writeln([
-            '===Begin generated test sequence===',
-            implode(' ', $traversal->getTestSequence()),
-            '===End generated test sequence==='
-        ]);
+        $sequence = [];
+        $path = Path::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
+        $steps = $path->getAlternatingSequence();
+        foreach ($steps as $step) {
+            if ($step instanceof Vertex) {
+                $sequence[] = $step->getAttribute('name');
+            }
+            else if ($step instanceof Directed) {
+                $data = $step->getAttribute('data');
+                array_walk($data, function (&$value, $key) {
+                    $value = "$key=$value";
+                });
+                $sequence[] = $step->getAttribute('name') . '(' . implode(',', $data) . ')';
+            }
+        }
+        $output->writeln(implode(' ', $sequence));
     }
 }

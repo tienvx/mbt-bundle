@@ -6,8 +6,8 @@ use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Model\Transition;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 abstract class AbstractTraversal
@@ -16,6 +16,11 @@ abstract class AbstractTraversal
      * @var DataProvider
      */
     protected $dataProvider;
+
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
 
     /**
      * @var Model
@@ -40,16 +45,22 @@ abstract class AbstractTraversal
     /**
      * @var array
      */
-    protected $testSequence;
+    protected $edges;
+
+    /**
+     * @var Vertex
+     */
+    protected $startVertex;
 
     /**
      * @var Subject
      */
     protected $subject;
 
-    public function __construct(DataProvider $dataProvider)
+    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder)
     {
         $this->dataProvider = $dataProvider;
+        $this->graphBuilder = $graphBuilder;
     }
 
     public function setArgs($args)
@@ -61,22 +72,27 @@ abstract class AbstractTraversal
         $this->model = $model;
     }
 
-    public function getTestSequence(): array
+    public function getEdges(): array
     {
-        return $this->testSequence;
+        return $this->edges;
     }
 
-    public function hasNextStep(): bool
+    public function getStartVertex(): Vertex
+    {
+        return $this->startVertex;
+    }
+
+    public function canGoNextStep(Directed $currentEdge): bool
     {
         return false;
     }
 
-    public function canGoNextStep(): bool
+    public function getNextStep(): ?Directed
     {
-        return false;
+        return null;
     }
 
-    public function goToNextStep(bool $callSUT = false)
+    public function goToNextStep(Directed $edge, bool $callSUT = false)
     {
     }
 
@@ -102,34 +118,12 @@ abstract class AbstractTraversal
 
     public function init()
     {
-        $this->graph = $this->buildGraph();
-        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
+        $this->graph = $this->graphBuilder->build($this->model);
+        $this->startVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
 
-        $this->testSequence = [];
-        $this->testSequence[] = $this->currentVertex->getAttribute('name');
+        $this->currentVertex = $this->startVertex;
 
         $subjectClass = $this->model->getSubject();
         $this->subject = new $subjectClass();
-    }
-
-    protected function buildGraph(): Graph
-    {
-        $definition = $this->model->getDefinition();
-        $graph = new Graph();
-        foreach ($definition->getPlaces() as $place) {
-            $vertex = $graph->createVertex($place);
-            $vertex->setAttribute('name', $place);
-        }
-        /** @var Transition $transition */
-        foreach ($definition->getTransitions() as $transition) {
-            foreach ($transition->getFroms() as $from) {
-                foreach ($transition->getTos() as $to) {
-                    $edge = $graph->getVertex($from)->createEdgeTo($graph->getVertex($to));
-                    $edge->setAttribute('name', $transition->getName());
-                    $edge->setWeight($transition->getWeight());
-                }
-            }
-        }
-        return $graph;
     }
 }

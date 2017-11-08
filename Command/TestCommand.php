@@ -2,14 +2,17 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Fhaculty\Graph\Edge\Directed;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
 class TestCommand extends ContainerAwareCommand
@@ -38,31 +41,29 @@ class TestCommand extends ContainerAwareCommand
         $factory = $this->getContainer()->get('tienvx_mbt.traversal_factory');
         $traversal = $factory->get($this->getContainer(), $traversalOption, $model);
 
-        $progress = new ProgressBar($output);
-        $progress->setMessage(sprintf('Testing system defined by model "%s"', $modelArgument));
-        $progress->start($traversal->getMaxProgress());
-
-        $message = 'No bug found';
         try {
-            while (!$traversal->meetStopCondition() && $traversal->hasNextStep()) {
-                if ($traversal->canGoNextStep()) {
-                    $traversal->goToNextStep(true);
-                    $progress->setMessage($traversal->getCurrentProgressMessage());
-                    $progress->setProgress($traversal->getCurrentProgress());
+            while (!$traversal->meetStopCondition() && $edge = $traversal->getNextStep()) {
+                if ($traversal->canGoNextStep($edge)) {
+                    $traversal->goToNextStep($edge, true);
                 }
             }
         }
         catch (\Throwable $throwable) {
-            $message = 'Found a bug: ' . $throwable;
-        }
-        finally {
-            $progress->finish();
-        }
+            /** @var $reducer PathReducer */
+            $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
+            $path = Path::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
+            $path = $reducer->reduce($path, $model, $throwable);
 
-        $output->writeln([
-            '===Begin test results===',
-            $message,
-            '===End test results==='
-        ]);
+            $output->writeln('Found a bug: ' . $throwable->getMessage());
+
+            $output->writeln('Steps to reproduce:');
+            $table = new Table($output);
+            $table->setHeaders(array('Step', 'Label', 'Data'));
+            /** @var $edge Directed */
+            foreach ($path->getEdges() as $index => $edge) {
+                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($edge->getAttribute('data'))]);
+            }
+            $table->render();
+        }
     }
 }
