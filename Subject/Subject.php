@@ -5,6 +5,11 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 class Subject
 {
     /**
+     * @var string Required by workflow component
+     */
+    public $marking;
+
+    /**
      * @var boolean
      */
     protected $callSUT;

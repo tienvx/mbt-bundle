@@ -64,7 +64,7 @@ class RunCommand extends ContainerAwareCommand
         }
         $path = Path::factoryFromEdges($edges, $startVertex);
 
-        /* @var $runner PathRunner */
+        /* @var PathRunner $runner */
         $runner = $this->getContainer()->get('tienvx_mbt.path_runner');
         try {
             $runner->run($path, $model);

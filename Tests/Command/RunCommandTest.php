@@ -20,8 +20,8 @@ class RunCommandTest extends KernelTestCase
 
         $command = $application->find('mbt:run');
         $this->assertRunning($command, 'home viewProductFromHome(product=28) product addFromProduct() product viewCartFromProduct() cart', '');
-        $this->assertRunning($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=28) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout', '');
-        $this->assertRunning($command, 'home addFromHome(product=30) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=30) cart checkoutFromCart() checkout', 'Found a bug: You added an out-of-stock product into cart! It can not be updated');
+        $this->assertRunning($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout', '');
+        $this->assertRunning($command, 'home addFromHome(product=28) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home', 'Found a bug: You added an out-of-stock product into cart! Can not checkout');
     }
 
     public function assertRunning(Command $command, $steps, $message)

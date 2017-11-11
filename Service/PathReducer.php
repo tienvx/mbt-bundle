@@ -20,18 +20,18 @@ class PathReducer
 
     public function reduce(Path $path, Model $model, \Throwable $throwable): Path
     {
-        if ($path->getVertices()->count() <= 2) {
+        if ($path->countVertices() <= 2) {
             // There is no way to reduce a path that have less than or equals 2 nodes.
             return $path;
         }
 
-        $try = $path->getVertices()->count();
+        $try = $path->countVertices();
         while ($try > 0) {
             $newPath = $this->tryToFindNewPath($path, $model, $throwable);
             if ($newPath) {
                 // The shorter the path is, the less times we need to try.
                 $path = $newPath;
-                $try = $path->getVertices()->count();
+                $try = $path->countVertices();
             }
             else {
                 $try--;
@@ -64,12 +64,12 @@ class PathReducer
     {
         $startVertex = $path->getVertices()->getVertexFirst();
         // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
-        // it does not return random key.
-        $verticesVector = $path->getVertices()->getVector();
+        // it does not return (random) key.
+        $verticesVector = $path->getVertices();
         $firstVertexIndex = $secondVertexIndex = 0;
         // Exclude the last vertex and the last edge, because they will always in the reproduce path (at the end).
-        while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $path->getVertices()->count() - 1) ||
-            ($secondVertexIndex === $path->getVertices()->count() - 1)) {
+        while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $path->countVertices() - 1) ||
+            ($secondVertexIndex === $path->countVertices() - 1)) {
             $firstVertexIndex = array_rand($verticesVector);
             $secondVertexIndex = array_rand($verticesVector);
         }

@@ -25,7 +25,7 @@ class PathRunner
     public function run(Path $path, Model $model)
     {
         $subjectClass = $model->getSubject();
-        /* @var $subject Subject */
+        /* @var Subject $subject */
         $subject = new $subjectClass();
         $subject->setCallSUT(true);
 
@@ -55,7 +55,7 @@ class PathRunner
     public function canWalk(Path $path, Model $model)
     {
         $subjectClass = $model->getSubject();
-        /* @var $subject Subject */
+        /* @var Subject $subject */
         $subject = new $subjectClass();
 
         $steps = $path->getAlternatingSequence();

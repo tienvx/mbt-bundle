@@ -26,7 +26,7 @@ class TestCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Found a bug: You added an out-of-stock product into cart! It can not be updated', $output);
+        $this->assertContains('Found a bug: You added an out-of-stock product into cart! Can not checkout', $output);
 
         // Assert steps.
         $steps = [];
@@ -36,7 +36,7 @@ class TestCommandTest extends KernelTestCase
                 // Table rows.
                 $cells = explode('|', $line);
                 $cells = array_map('trim', array_values(array_filter($cells)));
-                if (['Step', 'Label', 'Data'] !== $cells) {
+                if (['Step', 'Label', 'Data Input'] !== $cells) {
                     // Not table header row.
                     $step = [];
                     foreach ($cells as $cell) {
@@ -46,61 +46,30 @@ class TestCommandTest extends KernelTestCase
                 }
             }
         }
-        if (count($steps) === 3) {
-            $this->assertEquals(['1', '2', '3'], array_column($steps, 0));
-            $this->assertEquals([
-                'From home page, choose a random product and add it to cart',
-                'From home page, open cart to view it',
-                'From cart page, choose a random product and update it with a random number from 1 to 99',
-            ], array_column($steps, 1));
-            $column3 = array_column($steps, 2);
-            $this->assertArrayHasKey('product', json_decode($column3[0], true));
-            $this->assertEquals([], json_decode($column3[1], true));
-            $this->assertArrayHasKey('product', json_decode($column3[2], true));
+        $productsAddedToCart = [];
+        $productsOutOfStock = [28, 40, 41, 33];
+        foreach ($steps as $index => $step) {
+            if (strpos($step[1], 'add it to cart') !== false) {
+                if ($step[1] === 'From product page, add it to cart') {
+                    $data = json_decode($steps[$index - 1][2], true);
+                }
+                else {
+                    $data = json_decode($step[2], true);
+                }
+                $this->assertArrayHasKey('product', $data);
+                if (!in_array((int) $data['product'], $productsAddedToCart)) {
+                    $productsAddedToCart[] = (int) $data['product'];
+                }
+            }
+            else if (strpos($step[1], 'remove it') !== false) {
+                $data = json_decode($step[2], true);
+                $this->assertArrayHasKey('product', $data);
+                $productsAddedToCart = array_diff($productsAddedToCart, [(int) $data['product']]);
+            }
         }
-        if (count($steps) === 4 && $steps[0][1] === 'From home page, choose a random category and open it') {
-            $this->assertEquals(['1', '2', '3', '4'], array_column($steps, 0));
-            $this->assertEquals([
-                'From home page, choose a random category and open it',
-                'From category page, choose a random product and add it to cart',
-                'From category page, open cart to view it',
-                'From cart page, choose a random product and update it with a random number from 1 to 99',
-            ], array_column($steps, 1));
-            $column3 = array_column($steps, 2);
-            $this->assertArrayHasKey('category', json_decode($column3[0], true));
-            $this->assertArrayHasKey('product', json_decode($column3[1], true));
-            $this->assertEquals([], json_decode($column3[2], true));
-            $this->assertArrayHasKey('product', json_decode($column3[3], true));
-        }
-        if (count($steps) === 4 && $steps[0][1] === 'From home page, choose a random product and open it') {
-            $this->assertEquals(['1', '2', '3', '4'], array_column($steps, 0));
-            $this->assertEquals([
-                'From home page, choose a random product and open it',
-                'From product page, add it to cart',
-                'From product page, open cart to view it',
-                'From cart page, choose a random product and update it with a random number from 1 to 99',
-            ], array_column($steps, 1));
-            $column3 = array_column($steps, 2);
-            $this->assertArrayHasKey('product', json_decode($column3[0], true));
-            $this->assertEquals([], json_decode($column3[1], true));
-            $this->assertEquals([], json_decode($column3[2], true));
-            $this->assertArrayHasKey('product', json_decode($column3[3], true));
-        }
-        if (count($steps) === 5) {
-            $this->assertEquals(['1', '2', '3', '4', '5'], array_column($steps, 0));
-            $this->assertEquals([
-                'From home page, choose a random category and open it',
-                'From category page, choose a random product and open it',
-                'From product page, add it to cart',
-                'From product page, open cart to view it',
-                'From cart page, choose a random product and update it with a random number from 1 to 99',
-            ], array_column($steps, 1));
-            $column3 = array_column($steps, 2);
-            $this->assertArrayHasKey('category', json_decode($column3[0], true));
-            $this->assertArrayHasKey('product', json_decode($column3[1], true));
-            $this->assertEquals([], json_decode($column3[2], true));
-            $this->assertEquals([], json_decode($column3[3], true));
-            $this->assertArrayHasKey('product', json_decode($column3[4], true));
-        }
+        $productsOutOfStockAddedToCart = array_intersect($productsAddedToCart, $productsOutOfStock);
+        $this->assertNotEmpty($productsOutOfStockAddedToCart);
+        $lastStep = end($steps);
+        $this->assertContains('open checkout page', $lastStep[1]);
     }
 }

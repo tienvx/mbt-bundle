@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Traversal;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -43,14 +44,9 @@ abstract class AbstractTraversal
     protected $currentEdge;
 
     /**
-     * @var array
+     * @var Path
      */
-    protected $edges;
-
-    /**
-     * @var Vertex
-     */
-    protected $startVertex;
+    protected $path;
 
     /**
      * @var Subject
@@ -61,6 +57,7 @@ abstract class AbstractTraversal
     {
         $this->dataProvider = $dataProvider;
         $this->graphBuilder = $graphBuilder;
+        $this->path = new Path();
     }
 
     public function setArgs($args)
@@ -72,14 +69,9 @@ abstract class AbstractTraversal
         $this->model = $model;
     }
 
-    public function getEdges(): array
+    public function getPath(): Path
     {
-        return $this->edges;
-    }
-
-    public function getStartVertex(): Vertex
-    {
-        return $this->startVertex;
+        return $this->path;
     }
 
     public function canGoNextStep(Directed $currentEdge): bool
@@ -119,9 +111,9 @@ abstract class AbstractTraversal
     public function init()
     {
         $this->graph = $this->graphBuilder->build($this->model);
-        $this->startVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
+        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
 
-        $this->currentVertex = $this->startVertex;
+        $this->path->addVertex($this->currentVertex);
 
         $subjectClass = $this->model->getSubject();
         $this->subject = new $subjectClass();

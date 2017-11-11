@@ -47,14 +47,13 @@ class GenerateCommand extends ContainerAwareCommand
         }
 
         $sequence = [];
-        $path = Path::factoryFromEdges($traversal->getEdges(), $traversal->getStartVertex());
-        $steps = $path->getAlternatingSequence();
-        foreach ($steps as $step) {
+        $path = $traversal->getPath();
+        foreach ($path as $position => $step) {
             if ($step instanceof Vertex) {
                 $sequence[] = $step->getAttribute('name');
             }
             else if ($step instanceof Directed) {
-                $data = $step->getAttribute('data');
+                $data = $path->getData($position);
                 array_walk($data, function (&$value, $key) {
                     $value = "$key=$value";
                 });
