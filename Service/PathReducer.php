@@ -62,43 +62,51 @@ class PathReducer
 
     protected function randomNewPath(Path $path)
     {
-        $startVertex = $path->getVertices()->getVertexFirst();
+        $vertices = $path->getVertices();
+        $edges = $path->getEdges();
+        $allData = $path->getAllData();
         // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
         // it does not return (random) key.
-        $verticesVector = $path->getVertices();
         $firstVertexIndex = $secondVertexIndex = 0;
         // Exclude the last vertex and the last edge, because they will always in the reproduce path (at the end).
         while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $path->countVertices() - 1) ||
             ($secondVertexIndex === $path->countVertices() - 1)) {
-            $firstVertexIndex = array_rand($verticesVector);
-            $secondVertexIndex = array_rand($verticesVector);
+            $firstVertexIndex = array_rand($vertices);
+            $secondVertexIndex = array_rand($vertices);
         }
         if ($firstVertexIndex > $secondVertexIndex) {
             $tempIndex = $firstVertexIndex;
             $firstVertexIndex = $secondVertexIndex;
             $secondVertexIndex = $tempIndex;
         }
-        $firstVertex = $verticesVector[$firstVertexIndex];
-        $secondVertex = $verticesVector[$secondVertexIndex];
+        $firstVertex = $vertices[$firstVertexIndex];
+        $secondVertex = $vertices[$secondVertexIndex];
 
         // Remove any edges between first vertex and second vertex.
         $algorithm = new Dijkstra($firstVertex);
-        $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
         $beginEdges = [];
+        $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
         $endEdges = [];
-        foreach ($path->getEdges() as $index => $edge) {
+        $beginData = [];
+        $middleData = array_fill(0, count($middleEdges), null);
+        $endData = [];
+        foreach ($edges as $index => $edge) {
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
+                $beginData[] = $allData[$index];
             }
             elseif ($index < $secondVertexIndex) {
-                // Ignore, replaced by middle edges.
+                // Middle edges are replaced by algorithm.
             }
             else {
                 $endEdges[] = $edge;
+                $endData[] = $allData[$index];
             }
         }
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
-        $newPath = Path::factoryFromEdges($edges, $startVertex);
+        $newPath = Path::factoryFromEdges($edges, $vertices[0]);
+        $allData = array_merge($beginData, $middleData, $endData);
+        $newPath->setAllData($allData);
         return $newPath;
     }
 }

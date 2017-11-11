@@ -12,7 +12,7 @@ class Path implements Iterator
      *
      * @var array
      */
-    protected $data;
+    protected $allData;
 
     /**
      *
@@ -36,7 +36,7 @@ class Path implements Iterator
     {
         $this->vertices = $vertices;
         $this->edges    = $edges;
-        $this->data     = $data;
+        $this->allData     = $data;
         $this->position = 0;
     }
 
@@ -52,7 +52,7 @@ class Path implements Iterator
 
     public function addData(array $data)
     {
-        $this->data[] = $data;
+        $this->allData[] = $data;
     }
 
     public function countVertices()
@@ -70,31 +70,72 @@ class Path implements Iterator
         return $this->edges;
     }
 
-    public function getData(int $position)
+    public function getAllData()
     {
-        if ($position % 2 === 1 && isset($this->data[($position - 1) / 2])) {
-            return $this->data[($position - 1) / 2];
+        return $this->allData;
+    }
+
+    public function setAllData(array $allData)
+    {
+        $this->allData = $allData;
+    }
+
+    public function getDataAtPosition(int $position)
+    {
+        if ($position % 2 === 1 && isset($this->allData[($position - 1) / 2])) {
+            return $this->allData[($position - 1) / 2];
         }
         return null;
     }
 
+    public function hasDataAtPosition(int $position)
+    {
+        return ($position % 2 === 1 && isset($this->allData[($position - 1) / 2]));
+    }
+
+    public function setDataAtPosition(int $position, array $data)
+    {
+        if ($position % 2 === 1) {
+            $this->allData[($position - 1) / 2] = $data;
+        }
+    }
+
+    /**
+     * Code cloned from Fhaculty\Graph\Walk
+     *
+     * @param  Directed[]         $edges
+     * @param  Vertex             $startVertex
+     * @return Path
+     */
+    public static function factoryFromEdges($edges, Vertex $startVertex)
+    {
+        $vertices = [$startVertex];
+        $vertexCurrent = $startVertex;
+        foreach ($edges as $edge) {
+            $vertexCurrent = $edge->getVertexToFrom($vertexCurrent);
+            $vertices[] = $vertexCurrent;
+        }
+
+        return new self($vertices, $edges);
+    }
+
     public function equals(Path $path): bool
     {
-        $verticesVector = $path->getVertices()->getVector();
-        foreach ($this->vertices->getVector() as $index => $vertex) {
-            if (!isset($verticesVector[$index]) || $verticesVector[$index]->getId() !== $vertex->getId()) {
+        $vertices = $path->getVertices();
+        foreach ($this->vertices as $index => $vertex) {
+            if (!isset($vertices[$index]) || $vertices[$index]->getId() !== $vertex->getId()) {
                 return false;
             }
         }
 
-        $edgesVector = $path->getEdges()->getVector();
-        foreach ($this->edges->getVector() as $index => $edge) {
-            if (!isset($edgesVector[$index]) || $edgesVector[$index]->getAttribute('name') !== $edge->getAttribute('name')) {
+        $edges = $path->getEdges();
+        foreach ($this->edges as $index => $edge) {
+            if (!isset($edges[$index]) || $edges[$index]->getAttribute('name') !== $edge->getAttribute('name')) {
                 return false;
             }
         }
 
-        return true;
+        return $this->allData === $path->getAllData();
     }
 
     public function current()
@@ -119,7 +160,7 @@ class Path implements Iterator
 
     public function valid()
     {
-        return ($this->position > 0) && ($this->position < (count($this->vertices) + count($this->edges)));
+        return ($this->position >= 0) && ($this->position < (count($this->vertices) + count($this->edges)));
     }
 
     public function rewind()

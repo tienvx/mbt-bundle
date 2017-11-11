@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
@@ -59,9 +58,11 @@ class TestCommand extends ContainerAwareCommand
             $output->writeln('Steps to reproduce:');
             $table = new Table($output);
             $table->setHeaders(array('Step', 'Label', 'Data Input'));
-            /** @var $edge Directed */
-            foreach ($path->getEdges() as $index => $edge) {
-                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($edge->getAttribute('data'))]);
+            /** @var Directed[] $edges */
+            $edges = $path->getEdges();
+            $allData = $path->getAllData();
+            foreach ($edges as $index => $edge) {
+                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
             }
             $table->render();
         }

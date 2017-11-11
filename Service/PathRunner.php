@@ -29,18 +29,17 @@ class PathRunner
         $subject = new $subjectClass();
         $subject->setCallSUT(true);
 
-        $steps = $path->getAlternatingSequence();
-        foreach ($steps as $step) {
-            $marking = $model->getMarking($subject);
+        foreach ($path as $position => $step) {
             if ($step instanceof Vertex) {
                 $place = $step->getAttribute('name');
+                $marking = $model->getMarking($subject);
                 if (!$marking->has($place)) {
                     throw new ModelInWrongPlaceException(sprintf('Expected current place to be "%s", but got "%s"', $place, $marking->getPlaces()[0]));
                 }
             }
             else if ($step instanceof Directed) {
                 $transition = $step->getAttribute('name');
-                $data = $step->getAttribute('data');
+                $data = $path->getDataAtPosition($position);
                 if ($model->can($subject, $transition)) {
                     $subject->setData($data);
                     $model->apply($subject, $transition);
@@ -58,11 +57,10 @@ class PathRunner
         /* @var Subject $subject */
         $subject = new $subjectClass();
 
-        $steps = $path->getAlternatingSequence();
-        foreach ($steps as $step) {
-            $marking = $model->getMarking($subject);
+        foreach ($path as $position => $step) {
             if ($step instanceof Vertex) {
                 $place = $step->getAttribute('name');
+                $marking = $model->getMarking($subject);
                 if (!$marking->has($place)) {
                     return false;
                 }
@@ -70,9 +68,14 @@ class PathRunner
             else if ($step instanceof Directed) {
                 $transition = $step->getAttribute('name');
                 if ($model->can($subject, $transition)) {
-                    $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
+                    if (!$path->hasDataAtPosition($position)) {
+                        $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
+                        $path->setDataAtPosition($position, $data);
+                    }
+                    else {
+                        $data = $path->getDataAtPosition($position);
+                    }
                     $subject->setData($data);
-                    $step->setAttribute('data', $data);
                     $model->apply($subject, $transition);
                 }
                 else {

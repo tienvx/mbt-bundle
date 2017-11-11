@@ -34,7 +34,6 @@ class GenerateCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        echo $output . "\n";
 
         $edges = [];
         $vertices = [];
