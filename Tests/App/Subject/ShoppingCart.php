@@ -7,11 +7,6 @@ use Tienvx\Bundle\MbtBundle\Subject\Subject;
 class ShoppingCart extends Subject
 {
     /**
-     * @var string Required by workflow component
-     */
-    public $marking;
-
-    /**
      * @var array
      */
     protected $cart;
@@ -83,7 +78,11 @@ class ShoppingCart extends Subject
      * @var array
      */
     protected $stock = [
-        // No products are available in stock.
+        '29', // 'Palm Treo Pro',
+        '42', // 'Apple Cinema 30',
+        '30', // 'Canon EOS 5D',
+        '31', // 'Nikon D300',
+        '43', // 'MacBook',
     ];
 
     public function __construct()
@@ -300,9 +299,6 @@ class ShoppingCart extends Subject
     public function update($data)
     {
         $product = $data['product'];
-        if ($this->callSUT && !in_array($product, $this->stock)) {
-            throw new \Exception('You added an out-of-stock product into cart! It can not be updated');
-        }
         $this->cart[$product] = rand(1, 99);
     }
 
@@ -324,6 +320,13 @@ class ShoppingCart extends Subject
 
     public function checkout()
     {
+        if ($this->callSUT) {
+            foreach ($this->cart as $product => $quantity) {
+                if (!in_array($product, $this->stock)) {
+                    throw new \Exception('You added an out-of-stock product into cart! Can not checkout');
+                }
+            }
+        }
     }
 
     public function getRandomProduct()

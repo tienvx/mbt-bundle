@@ -38,13 +38,12 @@ class RunCommand extends ContainerAwareCommand
         $graphBuilder = $this->getContainer()->get('tienvx_mbt.graph_builder');
         $graph = $graphBuilder->build($model);
 
-        $initialPlace = $model->getDefinition()->getInitialPlace();
-        $startVertex = $graph->getVertex($initialPlace);
-
         $edges = [];
+        $vertices = [];
+        $allData = [];
         $steps = $input->getArgument('steps');
         $steps = explode(' ', $steps);
-        foreach ($steps as $step) {
+        foreach ($steps as $index => $step) {
             if (preg_match('/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\((.*)\)/', $step, $matches)) {
                 $transition = $matches[1];
                 $data = [];
@@ -58,13 +57,17 @@ class RunCommand extends ContainerAwareCommand
                 $edge = $graph->getEdges()->getEdgeMatch(function (Directed $edge) use ($transition) {
                     return $edge->getAttribute('name') === $transition;
                 });
-                $edge->setAttribute('data', $data);
+                $allData[] = $data;
                 $edges[] = $edge;
             }
+            else {
+                $vertex = $graph->getVertex($step);
+                $vertices[] = $vertex;
+            }
         }
-        $path = Path::factoryFromEdges($edges, $startVertex);
+        $path = new Path($vertices, $edges, $allData);
 
-        /* @var $runner PathRunner */
+        /* @var PathRunner $runner */
         $runner = $this->getContainer()->get('tienvx_mbt.path_runner');
         try {
             $runner->run($path, $model);

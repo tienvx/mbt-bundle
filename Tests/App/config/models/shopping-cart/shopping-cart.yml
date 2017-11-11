@@ -112,7 +112,7 @@ tienvx_mbt:
                     from: cart
                     to: cart
                     guard: "subject.cartHasProduct()"
-                    label: "From cart page, choose a random product and update it with a random number from 1 to 99"
+                    label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                     data:
                         product: "subject.getRandomProductFromCart()"
                 remove:

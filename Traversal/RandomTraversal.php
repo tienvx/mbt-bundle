@@ -77,13 +77,13 @@ class RandomTraversal extends AbstractTraversal
         // Update unvisited edges and vertices.
         $allEdges = [];
         foreach ($this->graph->getEdges()->getIterator() as $edge) {
-            /* @var $edge Directed */
+            /* @var Directed $edge */
             $allEdges[] = $edge->getAttribute('name');
         }
         $this->unvisitedEdges = array_diff($allEdges, $this->visitedEdges);
         $allVertices = [];
         foreach ($this->graph->getVertices()->getIterator() as $vertex) {
-            /* @var $vertex Vertex */
+            /* @var Vertex $vertex */
             $allVertices[] = $vertex->getAttribute('name');
         }
         $this->unvisitedVertices = array_diff($allVertices, $this->visitedVertices);
@@ -98,8 +98,9 @@ class RandomTraversal extends AbstractTraversal
         $this->subject->setData($data);
 
         // Update test sequence.
-        $currentEdge->setAttribute('data', $data);
-        $this->edges[] = $currentEdge;
+        $this->path->addEdge($currentEdge);
+        $this->path->addVertex($this->currentVertex);
+        $this->path->addData($data);
 
         // Apply model. Call SUT if needed.
         $this->subject->setCallSUT($callSUT);

@@ -11,7 +11,7 @@ class WorkflowListener implements EventSubscriberInterface
 {
     public function onAnnounce(Event $event)
     {
-        /* @var $subject Subject */
+        /* @var Subject $subject */
         $subject = $event->getSubject();
         $transition = $event->getTransition();
         if ($subject instanceof Subject && $transition instanceof Transition && (method_exists($subject, $transition->getName()))) {
@@ -21,7 +21,7 @@ class WorkflowListener implements EventSubscriberInterface
 
     public function onEnterd(Event $event)
     {
-        /* @var $subject Subject */
+        /* @var Subject $subject */
         $subject = $event->getSubject();
         $transition = $event->getTransition();
         if ($transition instanceof Transition) {
