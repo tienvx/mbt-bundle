@@ -46,7 +46,7 @@ class PathReducer
             $distance--;
         }
 
-        // Can not reduce path.
+        // Can not reduce reproduce path (any more).
         return $path;
     }
 

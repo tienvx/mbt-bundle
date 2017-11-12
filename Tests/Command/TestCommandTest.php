@@ -57,7 +57,41 @@ class TestCommandTest extends KernelTestCase
                 }
             }
         }
-        //$productsOutOfStock = [28, 40, 41, 33];
+        $productsOutOfStock = [28, 40, 41, 33];
+        if (count($steps) === 2) {
+            $this->assertEquals(['1', '2'], array_column($steps, 0));
+            $this->assertEquals([
+                'From home page, choose a random product and add it to cart',
+                'From home page, open checkout page',
+            ], array_column($steps, 1));
+            $column3 = array_column($steps, 2);
+            $this->assertContains(json_decode($column3[0])->product, $productsOutOfStock);
+            $this->assertEquals([], json_decode($column3[1], true));
+        }
+        if (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random product and open it') {
+            $this->assertEquals(['1', '2', '3'], array_column($steps, 0));
+            $this->assertEquals([
+                'From home page, choose a random product and open it',
+                'From product page, add it to cart',
+                'From product page, open checkout page',
+            ], array_column($steps, 1));
+            $column3 = array_column($steps, 2);
+            $this->assertContains(json_decode($column3[0])->product, $productsOutOfStock);
+            $this->assertEquals([], json_decode($column3[1], true));
+            $this->assertEquals([], json_decode($column3[2], true));
+        }
+        if (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random category and open it') {
+            $this->assertEquals(['1', '2', '3'], array_column($steps, 0));
+            $this->assertEquals([
+                'From home page, choose a random category and open it',
+                'From category page, choose a random product and add it to cart',
+                'From category page, open checkout page',
+            ], array_column($steps, 1));
+            $column3 = array_column($steps, 2);
+            $this->assertArrayHasKey('category', json_decode($column3[0], true));
+            $this->assertContains(json_decode($column3[1])->product, $productsOutOfStock);
+            $this->assertEquals([], json_decode($column3[2], true));
+        }
         $lastStep = end($steps);
         $this->assertContains('open checkout page', $lastStep[1]);
     }
