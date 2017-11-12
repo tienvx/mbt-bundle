@@ -51,9 +51,9 @@ class RandomTraversal extends AbstractTraversal
 
     public function setArgs($args)
     {
-        Assert::that($args)->isArray()->count(2);
-        Assert::that($args[0])->numeric()->between(0, 100);
-        Assert::that($args[1])->numeric()->between(0, 100);
+        if (!is_array($args) || count($args) !== 2 || $args[0] < 0 || $args[0] > 100 || $args[1] < 0 || $args[1] > 100) {
+            throw new InvalidTraversalArguments('Invalid edge coverage or vertex coverage');
+        }
         $this->edgeCoverage = $args[0];
         $this->vertexCoverage = $args[1];
         $this->visitedEdges = [];
