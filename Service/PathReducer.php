@@ -68,9 +68,7 @@ class PathReducer
         // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
         // it does not return (random) key.
         $firstVertexIndex = $secondVertexIndex = 0;
-        // Exclude the last vertex and the last edge, because they will always in the reproduce path (at the end).
-        while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $path->countVertices() - 1) ||
-            ($secondVertexIndex === $path->countVertices() - 1)) {
+        while ($firstVertexIndex === $secondVertexIndex) {
             $firstVertexIndex = array_rand($vertices);
             $secondVertexIndex = array_rand($vertices);
         }
