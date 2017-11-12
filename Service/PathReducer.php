@@ -20,63 +20,36 @@ class PathReducer
 
     public function reduce(Path $path, Model $model, \Throwable $throwable): Path
     {
-        if ($path->countVertices() <= 2) {
-            // There is no way to reduce a path that have less than or equals 2 nodes.
-            return $path;
+        $distance = $path->countVertices() - 1;
+
+        while ($distance > 1) {
+            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+                for ($j = $path->countVertices() - 1; $j >= ($i + $distance); $j--) {
+                    $newPath = $this->getNewPath($path, $i, $j);
+                    // Make sure new path walkable.
+                    if ($this->runner->canWalk($newPath, $model)) {
+                        try {
+                            $this->runner->run($newPath, $model);
+                        } catch (\Throwable $newThrowable) {
+                            if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                                return $newPath;
+                            }
+                        }
+                    }
+                }
+            }
+            $distance--;
         }
 
-        $try = $path->countVertices();
-        while ($try > 0) {
-            $newPath = $this->tryToFindNewPath($path, $model, $throwable);
-            if ($newPath) {
-                // The shorter the path is, the less times we need to try.
-                $path = $newPath;
-                $try = $path->countVertices();
-            }
-            else {
-                $try--;
-            }
-        }
+        // Can not reduce path.
         return $path;
     }
 
-    protected function tryToFindNewPath(Path $path, Model $model, \Throwable $throwable): ?Path
-    {
-        $newPath = $this->randomNewPath($path);
-        while (!$this->runner->canWalk($newPath, $model)) {
-            $newPath = $this->randomNewPath($path);
-        }
-
-        $result = null;
-        if (!$path->equals($newPath)) {
-            try {
-                $this->runner->run($newPath, $model);
-            } catch (\Throwable $newThrowable) {
-                if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                    $result = $newPath;
-                }
-            }
-        }
-        return $result;
-    }
-
-    protected function randomNewPath(Path $path)
+    protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): Path
     {
         $vertices = $path->getVertices();
         $edges = $path->getEdges();
         $allData = $path->getAllData();
-        // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
-        // it does not return (random) key.
-        $firstVertexIndex = $secondVertexIndex = 0;
-        while ($firstVertexIndex === $secondVertexIndex) {
-            $firstVertexIndex = array_rand($vertices);
-            $secondVertexIndex = array_rand($vertices);
-        }
-        if ($firstVertexIndex > $secondVertexIndex) {
-            $tempIndex = $firstVertexIndex;
-            $firstVertexIndex = $secondVertexIndex;
-            $secondVertexIndex = $tempIndex;
-        }
         $firstVertex = $vertices[$firstVertexIndex];
         $secondVertex = $vertices[$secondVertexIndex];
 

@@ -119,25 +119,6 @@ class Path implements Iterator
         return new self($vertices, $edges);
     }
 
-    public function equals(Path $path): bool
-    {
-        $vertices = $path->getVertices();
-        foreach ($this->vertices as $index => $vertex) {
-            if (!isset($vertices[$index]) || $vertices[$index]->getId() !== $vertex->getId()) {
-                return false;
-            }
-        }
-
-        $edges = $path->getEdges();
-        foreach ($this->edges as $index => $edge) {
-            if (!isset($edges[$index]) || $edges[$index]->getAttribute('name') !== $edge->getAttribute('name')) {
-                return false;
-            }
-        }
-
-        return $this->allData === $path->getAllData();
-    }
-
     public function current()
     {
         if ($this->position % 2 === 1) {
