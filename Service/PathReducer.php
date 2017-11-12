@@ -24,15 +24,17 @@ class PathReducer
 
         while ($distance > 1) {
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
-                for ($j = $path->countVertices() - 1; $j >= ($i + $distance); $j--) {
-                    $newPath = $this->getNewPath($path, $i, $j);
-                    // Make sure new path walkable.
-                    if ($this->runner->canWalk($newPath, $model)) {
-                        try {
-                            $this->runner->run($newPath, $model);
-                        } catch (\Throwable $newThrowable) {
-                            if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                                return $newPath;
+                for ($j = $path->countVertices() - 1; $j > $i; $j--) {
+                    if (($j - $i) === $distance) {
+                        $newPath = $this->getNewPath($path, $i, $j);
+                        // Make sure new path walkable.
+                        if ($this->runner->canWalk($newPath, $model)) {
+                            try {
+                                $this->runner->run($newPath, $model);
+                            } catch (\Throwable $newThrowable) {
+                                if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                                    return $newPath;
+                                }
                             }
                         }
                     }

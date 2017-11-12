@@ -148,4 +148,22 @@ class Path implements Iterator
     {
         $this->position = 0;
     }
+
+    public function __toString()
+    {
+        $sequence = [];
+        foreach ($this as $position => $step) {
+            if ($step instanceof Vertex) {
+                $sequence[] = $step->getAttribute('name');
+            }
+            else if ($step instanceof Directed) {
+                $data = $this->getDataAtPosition($position);
+                array_walk($data, function (&$value, $key) {
+                    $value = "$key=$value";
+                });
+                $sequence[] = $step->getAttribute('name') . '(' . implode(',', $data) . ')';
+            }
+        }
+        return implode(' ', $sequence);
+    }
 }
