@@ -2,8 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Vertex;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,20 +43,7 @@ class GenerateCommand extends ContainerAwareCommand
             }
         }
 
-        $sequence = [];
         $path = $traversal->getPath();
-        foreach ($path as $position => $step) {
-            if ($step instanceof Vertex) {
-                $sequence[] = $step->getAttribute('name');
-            }
-            else if ($step instanceof Directed) {
-                $data = $path->getDataAtPosition($position);
-                array_walk($data, function (&$value, $key) {
-                    $value = "$key=$value";
-                });
-                $sequence[] = $step->getAttribute('name') . '(' . implode(',', $data) . ')';
-            }
-        }
-        $output->writeln(implode(' ', $sequence));
+        $output->writeln((string) $path);
     }
 }

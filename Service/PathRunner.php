@@ -40,8 +40,8 @@ class PathRunner
             else if ($step instanceof Directed) {
                 $transition = $step->getAttribute('name');
                 $data = $path->getDataAtPosition($position);
+                $subject->setData($data);
                 if ($model->can($subject, $transition)) {
-                    $subject->setData($data);
                     $model->apply($subject, $transition);
                 }
                 else {
@@ -67,15 +67,15 @@ class PathRunner
             }
             else if ($step instanceof Directed) {
                 $transition = $step->getAttribute('name');
+                if (!$path->hasDataAtPosition($position)) {
+                    $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
+                    $path->setDataAtPosition($position, $data);
+                }
+                else {
+                    $data = $path->getDataAtPosition($position);
+                }
+                $subject->setData($data);
                 if ($model->can($subject, $transition)) {
-                    if (!$path->hasDataAtPosition($position)) {
-                        $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
-                        $path->setDataAtPosition($position, $data);
-                    }
-                    else {
-                        $data = $path->getDataAtPosition($position);
-                    }
-                    $subject->setData($data);
                     $model->apply($subject, $transition);
                 }
                 else {

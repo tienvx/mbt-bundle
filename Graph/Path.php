@@ -119,25 +119,6 @@ class Path implements Iterator
         return new self($vertices, $edges);
     }
 
-    public function equals(Path $path): bool
-    {
-        $vertices = $path->getVertices();
-        foreach ($this->vertices as $index => $vertex) {
-            if (!isset($vertices[$index]) || $vertices[$index]->getId() !== $vertex->getId()) {
-                return false;
-            }
-        }
-
-        $edges = $path->getEdges();
-        foreach ($this->edges as $index => $edge) {
-            if (!isset($edges[$index]) || $edges[$index]->getAttribute('name') !== $edge->getAttribute('name')) {
-                return false;
-            }
-        }
-
-        return $this->allData === $path->getAllData();
-    }
-
     public function current()
     {
         if ($this->position % 2 === 1) {
@@ -166,5 +147,23 @@ class Path implements Iterator
     public function rewind()
     {
         $this->position = 0;
+    }
+
+    public function __toString()
+    {
+        $sequence = [];
+        foreach ($this as $position => $step) {
+            if ($step instanceof Vertex) {
+                $sequence[] = $step->getAttribute('name');
+            }
+            else if ($step instanceof Directed) {
+                $data = $this->getDataAtPosition($position);
+                array_walk($data, function (&$value, $key) {
+                    $value = "$key=$value";
+                });
+                $sequence[] = $step->getAttribute('name') . '(' . implode(',', $data) . ')';
+            }
+        }
+        return implode(' ', $sequence);
     }
 }

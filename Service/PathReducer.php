@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
+use Fhaculty\Graph\Vertex;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
@@ -20,89 +21,77 @@ class PathReducer
 
     public function reduce(Path $path, Model $model, \Throwable $throwable): Path
     {
-        if ($path->countVertices() <= 2) {
-            // There is no way to reduce a path that have less than or equals 2 nodes.
-            return $path;
+        $distance = $path->countVertices() - 1;
+
+        while ($distance > 0) {
+            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+                for ($j = $path->countVertices() - 1; $j > $i; $j--) {
+                    if (($j - $i) === $distance) {
+                        $newPath = $this->getNewPath($path, $i, $j);
+                        // Make sure new path walkable.
+                        if ($newPath instanceof Path && $this->runner->canWalk($newPath, $model)) {
+                            try {
+                                $this->runner->run($newPath, $model);
+                            } catch (\Throwable $newThrowable) {
+                                if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                                    $path = $newPath;
+                                    $distance = $path->countVertices() - 1;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $distance--;
         }
 
-        $try = $path->countVertices();
-        while ($try > 0) {
-            $newPath = $this->tryToFindNewPath($path, $model, $throwable);
-            if ($newPath) {
-                // The shorter the path is, the less times we need to try.
-                $path = $newPath;
-                $try = $path->countVertices();
-            }
-            else {
-                $try--;
-            }
-        }
+        // Can not reduce path.
         return $path;
     }
 
-    protected function tryToFindNewPath(Path $path, Model $model, \Throwable $throwable): ?Path
-    {
-        $newPath = $this->randomNewPath($path);
-        while (!$this->runner->canWalk($newPath, $model)) {
-            $newPath = $this->randomNewPath($path);
-        }
-
-        $result = null;
-        if (!$path->equals($newPath)) {
-            try {
-                $this->runner->run($newPath, $model);
-            } catch (\Throwable $newThrowable) {
-                if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                    $result = $newPath;
-                }
-            }
-        }
-        return $result;
-    }
-
-    protected function randomNewPath(Path $path)
+    protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): ?Path
     {
         $vertices = $path->getVertices();
         $edges = $path->getEdges();
         $allData = $path->getAllData();
-        // Get first random vertex and second random vertex. We can't use getVertexOrder(Vertices::ORDER_RANDOM) because
-        // it does not return (random) key.
-        $firstVertexIndex = $secondVertexIndex = 0;
-        // Exclude the last vertex and the last edge, because they will always in the reproduce path (at the end).
-        while ($firstVertexIndex === $secondVertexIndex || ($firstVertexIndex === $path->countVertices() - 1) ||
-            ($secondVertexIndex === $path->countVertices() - 1)) {
-            $firstVertexIndex = array_rand($vertices);
-            $secondVertexIndex = array_rand($vertices);
-        }
-        if ($firstVertexIndex > $secondVertexIndex) {
-            $tempIndex = $firstVertexIndex;
-            $firstVertexIndex = $secondVertexIndex;
-            $secondVertexIndex = $tempIndex;
-        }
+        /** @var Vertex $firstVertex */
         $firstVertex = $vertices[$firstVertexIndex];
+        /** @var Vertex $secondVertex */
         $secondVertex = $vertices[$secondVertexIndex];
 
-        // Remove any edges between first vertex and second vertex.
-        $algorithm = new Dijkstra($firstVertex);
+        if ($secondVertexIndex - $firstVertexIndex === 1 && $firstVertex->getId() !== $secondVertex->getId()) {
+            // 2 vertices are near in the path, it does not worth to reduce the path.
+            return null;
+        }
+
         $beginEdges = [];
-        $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
         $endEdges = [];
         $beginData = [];
-        $middleData = array_fill(0, count($middleEdges), null);
         $endData = [];
         foreach ($edges as $index => $edge) {
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
                 $beginData[] = $allData[$index];
             }
-            elseif ($index < $secondVertexIndex) {
-                // Middle edges are replaced by algorithm.
-            }
-            else {
+            elseif ($index >= $secondVertexIndex) {
                 $endEdges[] = $edge;
                 $endData[] = $allData[$index];
             }
         }
+
+        if ($firstVertex->getId() !== $secondVertex->getId()) {
+            // Replace all edges between first vertex and second vertex by algorithm.
+            $algorithm = new Dijkstra($firstVertex);
+            $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
+            $middleData = array_fill(0, count($middleEdges), null);
+        }
+        else {
+            // Remove all edges between first vertex and second vertex.
+            $middleEdges = [];
+            $middleData = [];
+        }
+
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
         $newPath = Path::factoryFromEdges($edges, $vertices[0]);
         $allData = array_merge($beginData, $middleData, $endData);

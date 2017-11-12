@@ -163,9 +163,14 @@ class ShoppingCart extends Subject
         $this->category = null;
     }
 
-    public function categoryHasProduct()
+    public function categoryHasProduct($data)
     {
-        return !empty($this->productsInCategory[$this->category]);
+        if (!isset($data['product'])) {
+            return false;
+        }
+        $product = $data['product'];
+        return !empty($this->productsInCategory[$this->category]) &&
+            in_array($product, $this->productsInCategory[$this->category]);
     }
 
     public function viewCartFromHome()
@@ -240,9 +245,13 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
-    public function cartHasProduct()
+    public function cartHasProduct($data)
     {
-        return !empty($this->cart);
+        if (!isset($data['product'])) {
+            return false;
+        }
+        $product = $data['product'];
+        return !empty($this->cart[$product]);
     }
 
     /**
@@ -331,25 +340,40 @@ class ShoppingCart extends Subject
 
     public function getRandomProduct()
     {
+        if (empty($this->products)) {
+            return null;
+        }
         $product = $this->products[array_rand($this->products)];
         return $product;
     }
 
     public function getRandomCategory()
     {
+        if (empty($this->categories)) {
+            return null;
+        }
         $category = $this->categories[array_rand($this->categories)];
         return $category;
     }
 
     public function getRandomProductFromCart()
     {
+        if (empty($this->cart)) {
+            return null;
+        }
         $product = array_rand($this->cart);
         return $product;
     }
 
     public function getRandomProductFromCategory()
     {
+        if (!isset($this->productsInCategory[$this->category])) {
+            return null;
+        }
         $products = $this->productsInCategory[$this->category];
+        if (empty($products)) {
+            return null;
+        }
         $product = $products[array_rand($products)];
         return $product;
     }

@@ -10,6 +10,22 @@ use Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal;
 
 class TraversalFactory
 {
+    /**
+     * @var DataProvider
+     */
+    protected $dataProvider;
+
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
+
+    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder)
+    {
+        $this->dataProvider = $dataProvider;
+        $this->graphBuilder = $graphBuilder;
+    }
+
     const RANDOM = 'random';
     const WEIGHTED_RANDOM = 'weighted-random';
     const ALL_TRANSITIONS = 'all-transitions';
@@ -23,7 +39,7 @@ class TraversalFactory
 
         switch ($name) {
             case static::RANDOM:
-                $traversal = new RandomTraversal($container->get('tienvx_mbt.data_provider'), $container->get('tienvx_mbt.graph_builder'));
+                $traversal = new RandomTraversal($this->dataProvider, $this->graphBuilder);
                 break;
             default:
                 throw new TraversalNotSupportedException('Traversal is not supported');

@@ -49,14 +49,14 @@ tienvx_mbt:
                 viewProductFromCart:
                     from: cart
                     to: product
-                    guard: "subject.cartHasProduct()"
+                    guard: "subject.cartHasProduct(data)"
                     label: "From cart page, choose a random product and open it"
                     data:
                         product: "subject.getRandomProductFromCart()"
                 viewProductFromCategory:
                     from: category
                     to: product
-                    guard: "subject.categoryHasProduct()"
+                    guard: "subject.categoryHasProduct(data)"
                     label: "From category page, choose a random product and open it"
                     data:
                         product: "subject.getRandomProductFromCategory()"
@@ -111,14 +111,14 @@ tienvx_mbt:
                 update:
                     from: cart
                     to: cart
-                    guard: "subject.cartHasProduct()"
+                    guard: "subject.cartHasProduct(data)"
                     label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                     data:
                         product: "subject.getRandomProductFromCart()"
                 remove:
                     from: cart
                     to: cart
-                    guard: "subject.cartHasProduct()"
+                    guard: "subject.cartHasProduct(data)"
                     weight: 9
                     label: "From cart page, choose a random product and remove it"
                     data:
@@ -132,7 +132,7 @@ tienvx_mbt:
                 addFromCategory:
                     from: category
                     to: category
-                    guard: "subject.categoryHasProduct()"
+                    guard: "subject.categoryHasProduct(data)"
                     label: "From category page, choose a random product and add it to cart"
                     data:
                         product: "subject.getRandomProductFromCategory()"
