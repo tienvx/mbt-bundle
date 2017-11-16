@@ -1,3 +1,0 @@
-tienvx_mbt_homepage:
-    path:     /
-    defaults: { _controller: TienvxMbtBundle:Default:index }

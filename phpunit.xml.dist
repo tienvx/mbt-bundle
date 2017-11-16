@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./Tests/bootstrap.php" colors="true">
+<phpunit bootstrap="./tests/bootstrap.php" colors="true">
     <php>
-        <server name="KERNEL_DIR" value="Tests/App" />
+        <server name="KERNEL_DIR" value="tests/App" />
         <env    name="APP_ENV"    value="test" />
         <env    name="APP_DEBUG"  value="false" />
     </php>
 
     <testsuites>
         <testsuite name="MbtBundle test suite">
-            <directory suffix="Test.php">./Tests</directory>
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
 
@@ -17,9 +17,10 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
+                <directory>./src/Resources</directory>
+                <directory>./tests</directory>
                 <directory>./vendor</directory>
+                <directory>./doc</directory>
             </exclude>
         </whitelist>
     </filter>
