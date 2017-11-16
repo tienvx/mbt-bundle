@@ -1,0 +1,4 @@
+tienvx_mbt_dashboard:
+    resource: "@EasyAdminBundle/Controller/AdminController.php"
+    type:     annotation
+    prefix:   /mbt

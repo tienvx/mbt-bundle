@@ -1,8 +1,0 @@
-imports:
-    - { resource: models/shopping-cart/shopping-cart.yml }
-
-framework:
-    secret:          secret
-    test:            ~
-    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
-    templating:      { engines: ['twig'] }
