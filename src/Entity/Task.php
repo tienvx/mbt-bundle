@@ -79,7 +79,7 @@ class Task
 
     public function getStatus()
     {
-        return $this->progress;
+        return $this->status;
     }
 
     public function setStatus($status)
