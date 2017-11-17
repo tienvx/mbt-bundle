@@ -22,3 +22,6 @@ services:
         class: Tienvx\Bundle\MbtBundle\Service\PathReducer
         arguments:
             - '@tienvx_mbt.path_runner'
+    tienvx_mbt.task_listener:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
