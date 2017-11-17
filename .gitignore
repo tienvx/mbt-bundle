@@ -4,5 +4,5 @@
 /phpunit.xml
 
 # Ignore files created during tests
-/Tests/App/cache/
-/Tests/App/logs/
+/tests/App/cache/
+/tests/App/logs/

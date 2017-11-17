@@ -12,7 +12,6 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
             new Tienvx\Bundle\MbtBundle\TienvxMbtBundle(),
         );
 

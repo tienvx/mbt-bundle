@@ -24,7 +24,8 @@
         "symfony/yaml": "^3.3",
         "symfony/expression-language": "^3.3",
         "symfony/templating": "^3.3",
-        "javiereguiluz/easyadmin-bundle": "^1.17"
+        "symfony/twig-bundle": "^3.3",
+        "doctrine/doctrine-bundle": "^1.8"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.4",
