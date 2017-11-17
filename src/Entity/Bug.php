@@ -26,7 +26,7 @@ class Bug
     /** @ORM\Column(type="string", length=255) */
     private $title;
 
-    /** @ORM\Column(type="message", length=255) */
+    /** @ORM\Column(type="string", length=255) */
     private $message;
 
     /** @ORM\Column(type="array") */
