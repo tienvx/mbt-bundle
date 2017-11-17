@@ -35,12 +35,17 @@ class Bug
     /** @ORM\Column(type="smallint") */
     private $status;
 
+    public function __construct()
+    {
+        $this->paths = [];
+    }
+
     public function getId()
     {
         return $this->id;
     }
 
-    public function getTask(): Task
+    public function getTask(): ?Task
     {
         return $this->task;
     }
