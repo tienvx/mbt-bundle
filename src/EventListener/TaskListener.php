@@ -18,7 +18,7 @@ class TaskListener
 
         $model = $object->getModel();
         $algorithm = $object->getAlgorithm();
-        $process = new Process("bin/console mbt:test {$model} --traversal {$algorithm}");
+        $process = new Process("bin/console mbt:test {$model} --traversal='{$algorithm}'");
         $process->run();
     }
 }
