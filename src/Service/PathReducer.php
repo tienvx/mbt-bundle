@@ -24,21 +24,34 @@ class PathReducer
         $distance = $path->countVertices() - 1;
 
         while ($distance > 0) {
+            $pairs = [];
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
                 for ($j = $path->countVertices() - 1; $j > $i; $j--) {
-                    if (($j - $i) === $distance) {
-                        $newPath = $this->getNewPath($path, $i, $j);
-                        // Make sure new path walkable.
-                        if ($newPath instanceof Path && $this->runner->canWalk($newPath, $model)) {
-                            try {
-                                $this->runner->run($newPath, $model);
-                            } catch (\Throwable $newThrowable) {
-                                if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                                    $path = $newPath;
-                                    $distance = $path->countVertices() - 1;
-                                    break 2;
-                                }
-                            }
+                    if ($path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
+                        $pairs[] = [$i, $j];
+                    }
+                }
+            }
+            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+                for ($j = $path->countVertices() - 1; $j > $i; $j--) {
+                    // Ignore 2 vertices are near in the path, it does not worth to reduce the path.
+                    if ($path->getVertexAt($i)->getId() !== $path->getVertexAt($j)->getId() && $distance > 1 && ($j - $i) === $distance) {
+                        $pairs[] = [$i, $j];
+                    }
+                }
+            }
+            foreach ($pairs as $pair) {
+                list($i, $j) = $pair;
+                $newPath = $this->getNewPath($path, $i, $j);
+                // Make sure new path walkable.
+                if ($this->runner->canWalk($newPath, $model)) {
+                    try {
+                        $this->runner->run($newPath, $model);
+                    } catch (\Throwable $newThrowable) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                            $path = $newPath;
+                            $distance = $path->countVertices() - 1;
+                            break;
                         }
                     }
                 }
@@ -50,26 +63,17 @@ class PathReducer
         return $path;
     }
 
-    protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): ?Path
+    protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): Path
     {
-        $vertices = $path->getVertices();
-        $edges = $path->getEdges();
         $allData = $path->getAllData();
-        /** @var Vertex $firstVertex */
-        $firstVertex = $vertices[$firstVertexIndex];
-        /** @var Vertex $secondVertex */
-        $secondVertex = $vertices[$secondVertexIndex];
-
-        if ($secondVertexIndex - $firstVertexIndex === 1 && $firstVertex->getId() !== $secondVertex->getId()) {
-            // 2 vertices are near in the path, it does not worth to reduce the path.
-            return null;
-        }
+        $firstVertex = $path->getVertexAt($firstVertexIndex);
+        $secondVertex = $path->getVertexAt($secondVertexIndex);
 
         $beginEdges = [];
         $endEdges = [];
         $beginData = [];
         $endData = [];
-        foreach ($edges as $index => $edge) {
+        foreach ($path->getEdges() as $index => $edge) {
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
                 $beginData[] = $allData[$index];
@@ -93,7 +97,7 @@ class PathReducer
         }
 
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
-        $newPath = Path::factoryFromEdges($edges, $vertices[0]);
+        $newPath = Path::factoryFromEdges($edges, $path->getVertexAt(0));
         $allData = array_merge($beginData, $middleData, $endData);
         $newPath->setAllData($allData);
         return $newPath;
