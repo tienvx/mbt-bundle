@@ -28,10 +28,12 @@ class PathReducer
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
                 for ($j = $path->countVertices() - 1; $j > $i; $j--) {
                     if ($path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                        $pairs[] = [$i, $j];
+                        $pairs[$j - $i] = [$i, $j];
                     }
                 }
             }
+            krsort($pairs);
+            $pairs = array_values($pairs);
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
                 for ($j = $path->countVertices() - 1; $j > $i; $j--) {
                     // Ignore 2 vertices are near in the path, it does not worth to reduce the path.
