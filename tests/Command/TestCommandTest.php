@@ -68,7 +68,7 @@ class TestCommandTest extends KernelTestCase
             $this->assertContains(json_decode($column3[0])->product, $productsOutOfStock);
             $this->assertEquals([], json_decode($column3[1], true));
         }
-        if (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random product and open it') {
+        elseif (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random product and open it') {
             $this->assertEquals(['1', '2', '3'], array_column($steps, 0));
             $this->assertEquals([
                 'From home page, choose a random product and open it',
@@ -80,7 +80,7 @@ class TestCommandTest extends KernelTestCase
             $this->assertEquals([], json_decode($column3[1], true));
             $this->assertEquals([], json_decode($column3[2], true));
         }
-        if (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random category and open it') {
+        elseif (count($steps) === 3 && $steps[1][0] === 'From home page, choose a random category and open it') {
             $this->assertEquals(['1', '2', '3'], array_column($steps, 0));
             $this->assertEquals([
                 'From home page, choose a random category and open it',
@@ -92,7 +92,9 @@ class TestCommandTest extends KernelTestCase
             $this->assertContains(json_decode($column3[1])->product, $productsOutOfStock);
             $this->assertEquals([], json_decode($column3[2], true));
         }
-        $lastStep = end($steps);
-        $this->assertContains('open checkout page', $lastStep[1]);
+        else {
+            $lastStep = end($steps);
+            $this->assertContains('open checkout page', $lastStep[1]);
+        }
     }
 }

@@ -4,13 +4,16 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
 class RunCommand extends ContainerAwareCommand
@@ -22,7 +25,8 @@ class RunCommand extends ContainerAwareCommand
             ->setDescription('Run test sequence generated from mbt:generate command.')
             ->setHelp('This command allows you to run test sequence that is generated from mbt:generate command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to run.')
-            ->addArgument('steps', InputArgument::REQUIRED, 'The test steps to run.');
+            ->addArgument('steps', InputArgument::REQUIRED, 'The test steps to run.')
+            ->addOption('reduce', 'r', InputOption::VALUE_NONE, 'Whether to reduce the path or not.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -73,7 +77,25 @@ class RunCommand extends ContainerAwareCommand
             $runner->run($path, $model);
         }
         catch (\Throwable $throwable) {
-            $output->write('Found a bug: ' . $throwable->getMessage());
+            $output->writeln('Found a bug: ' . $throwable->getMessage());
+
+            $reduce = $input->getOption('reduce');
+            if ($reduce) {
+                /** @var $reducer PathReducer */
+                $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
+                $path = $reducer->reduce($path, $model, $throwable);
+
+                $output->writeln('Steps to reproduce:');
+                $table = new Table($output);
+                $table->setHeaders(array('Step', 'Label', 'Data Input'));
+                /** @var Directed[] $edges */
+                $edges = $path->getEdges();
+                $allData = $path->getAllData();
+                foreach ($edges as $index => $edge) {
+                    $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
+                }
+                $table->render();
+            }
         }
     }
 }

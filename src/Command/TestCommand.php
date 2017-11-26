@@ -48,12 +48,12 @@ class TestCommand extends ContainerAwareCommand
             }
         }
         catch (\Throwable $throwable) {
+            $output->writeln('Found a bug: ' . $throwable->getMessage());
+
             /** @var $reducer PathReducer */
             $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
             $path = $traversal->getPath();
             $path = $reducer->reduce($path, $model, $throwable);
-
-            $output->writeln('Found a bug: ' . $throwable->getMessage());
 
             $output->writeln('Steps to reproduce:');
             $table = new Table($output);

@@ -24,18 +24,21 @@ class PathReducer
         $distance = $path->countVertices() - 1;
 
         while ($distance > 0) {
-            $pairs = [];
-            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
-                for ($j = $path->countVertices() - 1; $j > $i; $j--) {
+            $pairsByDistance = [];
+            for ($i = 0; $i < $distance; $i++) {
+                for ($j = $distance; $j > $i; $j--) {
                     if ($path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                        $pairs[$j - $i] = [$i, $j];
+                        $pairsByDistance[$j - $i][] = [$i, $j];
                     }
                 }
             }
-            krsort($pairs);
-            $pairs = array_values($pairs);
-            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
-                for ($j = $path->countVertices() - 1; $j > $i; $j--) {
+            krsort($pairsByDistance);
+            $pairs = [];
+            foreach ($pairsByDistance as $array) {
+                $pairs = array_merge($pairs, $array);
+            }
+            for ($i = 0; $i < $distance; $i++) {
+                for ($j = $distance; $j > $i; $j--) {
                     // Ignore 2 vertices are near in the path, it does not worth to reduce the path.
                     if ($path->getVertexAt($i)->getId() !== $path->getVertexAt($j)->getId() && $distance > 1 && ($j - $i) === $distance) {
                         $pairs[] = [$i, $j];
