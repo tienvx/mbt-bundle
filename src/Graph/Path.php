@@ -65,6 +65,11 @@ class Path implements Iterator
         return $this->vertices;
     }
 
+    public function getVertexAt($index): Vertex
+    {
+        return $this->vertices[$index] ?? null;
+    }
+
     public function getEdges()
     {
         return $this->edges;
