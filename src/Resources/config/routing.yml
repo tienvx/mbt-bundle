@@ -1,6 +1,27 @@
-tienvx_mbt_start:
-    path:     /mbt/start-task/{id}
-    defaults: { _controller: TienvxMbtBundle:Task:start }
-tienvx_mbt_stop:
-    path:     /mbt/stop-task/{id}
-    defaults: { _controller: TienvxMbtBundle:Task:stop }
+tienvx_mbt_job_index:
+    path:     /mbt/job
+    defaults: { _controller: TienvxMbtBundle:Job:indexAction }
+tienvx_mbt_task_index:
+    path:     /mbt/task
+    defaults: { _controller: TienvxMbtBundle:Task:indexAction }
+tienvx_mbt_bug_index:
+    path:     /mbt/bug
+    defaults: { _controller: TienvxMbtBundle:Bug:indexAction }
+tienvx_mbt_model_index:
+    path:     /mbt/model
+    defaults: { _controller: TienvxMbtBundle:Model:indexAction }
+tienvx_mbt_task_create:
+    path:     /mbt/task/{id}
+    defaults: { _controller: TienvxMbtBundle:Task:createAction }
+    methods:    [GET,POST]
+tienvx_mbt_task_edit:
+    path:     /mbt/task/{id}
+    defaults: { _controller: TienvxMbtBundle:Task:editAction }
+    methods:    [GET,PUT]
+tienvx_mbt_task_delete:
+    path:     /mbt/task/{id}
+    defaults: { _controller: TienvxMbtBundle:Task:deleteAction }
+    methods:    [GET,DELETE]
+tienvx_mbt_task_show:
+    path:     /mbt/task/{id}
+    defaults: { _controller: TienvxMbtBundle:Task:showAction }

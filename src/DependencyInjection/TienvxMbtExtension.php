@@ -74,10 +74,15 @@ class TienvxMbtExtension extends Extension
             $definitionDefinition->setPublic(false);
             $definitionDefinition->addArgument($model['places']);
             $definitionDefinition->addArgument($transitions);
-            $definitionDefinition->addTag('workflow.definition', [
-                'name' => $name,
-                'type' => $type,
-                'marking_store' => null,
+            $definitionDefinition->setTags([
+                'workflow.definition' => [
+                    'name' => $name,
+                    'type' => $type,
+                    'marking_store' => null,
+                ],
+                'model.definition' => [
+                    'name' => $name,
+                ]
             ]);
             if (isset($model['initial_place'])) {
                 $definitionDefinition->addArgument($model['initial_place']);
@@ -92,6 +97,7 @@ class TienvxMbtExtension extends Extension
             $modelDefinition->addArgument($model['subject']);
             $modelDefinition->addArgument(new Reference('event_dispatcher'));
             $modelDefinition->addArgument($name);
+            $modelDefinition->addArgument($model['label']);
             foreach ($model['tags'] as $tag) {
                 $modelDefinition->addTag($tag);
             }
@@ -113,10 +119,6 @@ class TienvxMbtExtension extends Extension
             foreach ($model['transitions'] as $transitionName => $config) {
                 if (!isset($config['guard']) && !isset($config['data'])) {
                     continue;
-                }
-
-                if (!class_exists(ExpressionLanguage::class)) {
-                    throw new LogicException('Cannot guard or apply models as the ExpressionLanguage component is not installed.');
                 }
 
                 if (isset($config['guard'])) {

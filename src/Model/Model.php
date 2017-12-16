@@ -15,14 +15,25 @@ class Model extends StateMachine
      */
     protected $subject;
 
-    public function __construct(Definition $definition, string $subject, EventDispatcherInterface $dispatcher = null, $name = 'unnamed')
+    /**
+     * @var string
+     */
+    protected $label;
+
+    public function __construct(Definition $definition, string $subject, EventDispatcherInterface $dispatcher = null, $name = 'unnamed', $label = '')
     {
         $this->subject = $subject;
+        $this->label = $label;
         parent::__construct($definition, new SingleStateMarkingStore(), $dispatcher, $name);
     }
 
     public function getSubject()
     {
         return $this->subject;
+    }
+
+    public function getLabel()
+    {
+        return $this->label;
     }
 }

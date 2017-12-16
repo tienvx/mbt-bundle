@@ -3,10 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepository;
 
 /**
  * @ORM\Table()
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="TaskRepository")
  */
 class Task
 {
