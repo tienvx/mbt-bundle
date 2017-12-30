@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
+use Tienvx\Bundle\MbtBundle\Command\DumpCommand;
 
 class DumpCommandTest extends KernelTestCase
 {
@@ -15,7 +15,7 @@ class DumpCommandTest extends KernelTestCase
         $kernel->boot();
 
         $application = new Application($kernel);
-        $application->add(new GenerateCommand());
+        $application->add(new DumpCommand($kernel->getContainer()->get('tienvx_mbt.model_registry.test')));
 
         $command = $application->find('mbt:dump');
         $commandTester = new CommandTester($command);

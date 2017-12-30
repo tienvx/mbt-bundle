@@ -22,5 +22,5 @@ services:
         class: Tienvx\Bundle\MbtBundle\Service\PathReducer
         arguments:
             - '@tienvx_mbt.path_runner'
-    tienvx_mbt.model_container:
-        class: Tienvx\Bundle\MbtBundle\Service\ModelContainer
+    tienvx_mbt.model_registry:
+        class: Tienvx\Bundle\MbtBundle\Service\ModelRegistry

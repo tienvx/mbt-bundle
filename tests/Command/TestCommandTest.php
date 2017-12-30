@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestCommand;
 
 class TestCommandTest extends KernelTestCase
 {
@@ -14,8 +14,12 @@ class TestCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
+        $modelRegistry = $kernel->getContainer()->get('tienvx_mbt.model_registry.test');
+        $traversalFactory = $kernel->getContainer()->get('tienvx_mbt.traversal_factory.test');
+        $pathReducer = $kernel->getContainer()->get('tienvx_mbt.path_reducer.test');
+
         $application = new Application($kernel);
-        $application->add(new GenerateCommand());
+        $application->add(new TestCommand($modelRegistry, $traversalFactory, $pathReducer));
 
         $command = $application->find('mbt:test');
         $commandTester = new CommandTester($command);

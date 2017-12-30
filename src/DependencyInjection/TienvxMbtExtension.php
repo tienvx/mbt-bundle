@@ -9,11 +9,11 @@ use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Model;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -52,14 +52,7 @@ class TienvxMbtExtension extends Extension
             throw new LogicException('Model support cannot be enabled as the Workflow component is not installed.');
         }
 
-        if ($container->hasDefinition('workflow.registry')) {
-            $registryDefinition = $container->getDefinition('workflow.registry');
-        }
-        else {
-            // No workflows have been defined. Create service definition manually.
-            $registryDefinition = new Definition(Workflow\Registry::class);
-            $container->setDefinition('workflow.registry', $registryDefinition);
-        }
+        $registryDefinition = $container->getDefinition('tienvx_mbt.model_registry');
 
         foreach ($models as $name => $model) {
             $type = 'state_machine';
@@ -74,15 +67,10 @@ class TienvxMbtExtension extends Extension
             $definitionDefinition->setPublic(false);
             $definitionDefinition->addArgument($model['places']);
             $definitionDefinition->addArgument($transitions);
-            $definitionDefinition->setTags([
-                'workflow.definition' => [
-                    'name' => $name,
-                    'type' => $type,
-                    'marking_store' => null,
-                ],
-                'model.definition' => [
-                    'name' => $name,
-                ]
+            $definitionDefinition->addTag('workflow.definition', [
+                'name' => $name,
+                'type' => $type,
+                'marking_store' => null,
             ]);
             if (isset($model['initial_place'])) {
                 $definitionDefinition->addArgument($model['initial_place']);
@@ -108,9 +96,7 @@ class TienvxMbtExtension extends Extension
             $container->setDefinition(sprintf('%s.definition', $modelId), $definitionDefinition);
 
             // Add workflow to Registry
-            $strategyDefinition = new Definition(Workflow\SupportStrategy\ClassInstanceSupportStrategy::class, [$model['subject']]);
-            $strategyDefinition->setPublic(false);
-            $registryDefinition->addMethodCall('add', [new Reference($modelId), $strategyDefinition]);
+            $registryDefinition->addMethodCall('add', [$name, new Reference($modelId)]);
 
             // Add Guard Listener
             $listener = new Definition(ExpressionListener::class);

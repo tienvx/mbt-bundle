@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tienvx\Bundle\MbtBundle\Exception\TraversalNotSupportedException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Traversal\AbstractTraversal;
@@ -31,7 +30,7 @@ class TraversalFactory
     const ALL_TRANSITIONS = 'all-transitions';
     const ALL_PATH_OF_LENGTH_N = 'all-path-of-legth-n';
 
-    public function get(ContainerInterface $container, $option, Model $model): AbstractTraversal
+    public function get($option, Model $model): AbstractTraversal
     {
         preg_match('/^(.*?)\((.*?)\)$/', $option, $matches);
         $name = $matches[1];

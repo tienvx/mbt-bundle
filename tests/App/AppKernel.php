@@ -1,18 +1,24 @@
 <?php
 
+namespace Tienvx\Bundle\MbtBundle\Tests\App;
+
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Tienvx\Bundle\MbtBundle\TienvxMbtBundle;
 
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
         $bundles = array(
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Tienvx\Bundle\MbtBundle\TienvxMbtBundle(),
+            new FrameworkBundle(),
+            new DoctrineBundle(),
+            new TwigBundle(),
+            new TienvxMbtBundle(),
         );
 
         return $bundles;
@@ -22,18 +28,10 @@ class AppKernel extends Kernel
     {
         $loader->load(__DIR__.'/config/config.yml');
 
-        // graciously stolen from https://github.com/javiereguiluz/EasyAdminBundle/blob/master/Tests/Fixtures/App/AppKernel.php#L39-L45
-        if ($this->isSymfony3()) {
-            $loader->load(function (ContainerBuilder $container) {
-                $container->loadFromExtension('framework', array(
-                    'assets' => false,
-                ));
-            });
-        }
-    }
-
-    protected function isSymfony3()
-    {
-        return 3 === Kernel::MAJOR_VERSION;
+        $loader->load(function (ContainerBuilder $container) {
+            $container->loadFromExtension('framework', array(
+                'assets' => false,
+            ));
+        });
     }
 }
