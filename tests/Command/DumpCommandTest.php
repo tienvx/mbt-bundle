@@ -15,7 +15,7 @@ class DumpCommandTest extends KernelTestCase
         $kernel->boot();
 
         $application = new Application($kernel);
-        $application->add(new DumpCommand($kernel->getContainer()->get('tienvx_mbt.model_registry.test')));
+        $application->add(new DumpCommand($kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test')));
 
         $command = $application->find('mbt:dump');
         $commandTester = new CommandTester($command);

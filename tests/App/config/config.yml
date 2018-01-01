@@ -6,25 +6,32 @@ framework:
     test:            ~
     router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     templating:      { engines: ['twig'] }
+    assets:          ~
 
 doctrine:
     dbal:
         driver: pdo_sqlite
         path:   'sqlite:///:memory:'
+        memory:   true
+    orm: ~
 
 services:
-    tienvx_mbt.model_registry.test:
-        alias: 'tienvx_mbt.model_registry'
+    Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\ModelRegistry'
         public: true
-    tienvx_mbt.traversal_factory.test:
-        alias: 'tienvx_mbt.traversal_factory'
+    Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\TraversalFactory'
         public: true
-    tienvx_mbt.graph_builder.test:
-        alias: 'tienvx_mbt.graph_builder'
+    Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\GraphBuilder'
         public: true
-    tienvx_mbt.path_runner.test:
-        alias: 'tienvx_mbt.path_runner'
+    Tienvx\Bundle\MbtBundle\Service\PathRunner.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\PathRunner'
         public: true
-    tienvx_mbt.path_reducer.test:
-        alias: 'tienvx_mbt.path_reducer'
+    Tienvx\Bundle\MbtBundle\Service\PathReducer.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\PathReducer'
         public: true
+    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\TaskFixtures:
+        tags: [doctrine.fixture.orm]
+    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\BugFixtures:
+        tags: [doctrine.fixture.orm]

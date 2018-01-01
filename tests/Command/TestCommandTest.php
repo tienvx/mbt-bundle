@@ -14,9 +14,9 @@ class TestCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('tienvx_mbt.model_registry.test');
-        $traversalFactory = $kernel->getContainer()->get('tienvx_mbt.traversal_factory.test');
-        $pathReducer = $kernel->getContainer()->get('tienvx_mbt.path_reducer.test');
+        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
+        $traversalFactory = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test');
+        $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
 
         $application = new Application($kernel);
         $application->add(new TestCommand($modelRegistry, $traversalFactory, $pathReducer));

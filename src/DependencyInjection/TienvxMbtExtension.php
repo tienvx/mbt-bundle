@@ -9,10 +9,12 @@ use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Model;
+use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 /**
@@ -52,7 +54,7 @@ class TienvxMbtExtension extends Extension
             throw new LogicException('Model support cannot be enabled as the Workflow component is not installed.');
         }
 
-        $registryDefinition = $container->getDefinition('tienvx_mbt.model_registry');
+        $registryDefinition = $container->getDefinition(ModelRegistry::class);
 
         foreach ($models as $name => $model) {
             $type = 'state_machine';
@@ -120,16 +122,16 @@ class TienvxMbtExtension extends Extension
             if ($guardConfiguration) {
                 $listener->setArguments([
                     $guardConfiguration,
-                    new Reference('tienvx_mbt.expression_language'),
+                    new Reference(ExpressionLanguage::class),
                 ]);
 
                 $container->setDefinition(sprintf('%s.listener.expression', $modelId), $listener);
             }
             if ($dataConfiguration) {
-                $dataProviderDefinition = $container->getDefinition('tienvx_mbt.data_provider');
+                $dataProviderDefinition = $container->getDefinition(DataProvider::class);
                 $dataProviderDefinition->setArguments([
                     $dataConfiguration,
-                    new Reference('tienvx_mbt.expression_language'),
+                    new Reference(ExpressionLanguage::class),
                 ]);
             }
         }

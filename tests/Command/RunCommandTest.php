@@ -15,10 +15,10 @@ class RunCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('tienvx_mbt.model_registry.test');
-        $graphBuilder = $kernel->getContainer()->get('tienvx_mbt.graph_builder.test');
-        $pathRunner = $kernel->getContainer()->get('tienvx_mbt.path_runner.test');
-        $pathReducer = $kernel->getContainer()->get('tienvx_mbt.path_reducer.test');
+        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
+        $graphBuilder = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test');
+        $pathRunner = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathRunner.test');
+        $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
 
         $application = new Application($kernel);
         $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducer));

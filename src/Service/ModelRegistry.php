@@ -21,6 +21,11 @@ class ModelRegistry
         $this->models[$name] = $model;
     }
 
+    public function has($name)
+    {
+        return isset($this->models[$name]);
+    }
+
     public function get($name)
     {
         return $this->models[$name];

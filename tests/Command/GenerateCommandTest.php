@@ -15,8 +15,8 @@ class GenerateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('tienvx_mbt.model_registry.test');
-        $traversalFactory = $kernel->getContainer()->get('tienvx_mbt.traversal_factory.test');
+        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
+        $traversalFactory = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test');
 
         $application = new Application($kernel);
         $application->add(new GenerateCommand($modelRegistry, $traversalFactory));
