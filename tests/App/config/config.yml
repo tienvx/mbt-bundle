@@ -13,7 +13,8 @@ doctrine:
         driver:      pdo_sqlite
         path:        :memory:
         memory:      true
-    orm: ~
+    orm:
+        auto_mapping: true
 
 services:
     Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test:

@@ -6,45 +6,21 @@ class TaskTest extends AbstractApiTestCase
 {
     public function testGetTasks()
     {
-        $client = static::createClient();
-
-        $client->request(
-            'GET',
-            '/mbt/tasks',
-            [],
-            [],
-            [
-                'HTTP_ACCEPT'  => 'application/json',
-                'CONTENT_TYPE' => 'application/json'
-            ]
-        );
-
-        $this->assertContains('abc', $client->getResponse()->getContent());
+        $response = $this->makeApiRequest('GET', '/mbt/tasks');
+        $this->assertEquals('[{"id":1,"title":"Task 1","model":"shopping_cart","algorithm":"random","progress":0,"status":"not-started","bugs":["\/mbt\/bugs\/1","\/mbt\/bugs\/2"]},{"id":2,"title":"Task 2","model":"shopping_cart","algorithm":"random","progress":64,"status":"in-progress","bugs":[]},{"id":3,"title":"Task 3","model":"shopping_cart","algorithm":"random","progress":100,"status":"completed","bugs":["\/mbt\/bugs\/3"]}]', $response->getContent());
     }
 
     public function testCreateTasks()
     {
-        $client = static::createClient();
+        $response = $this->makeApiRequest('POST', '/mbt/tasks', '
+        {
+          "title": "Test shopping cart",
+          "model": "shopping_cart",
+          "algorithm": "random",
+          "progress": 0,
+          "status": "not-started"
+        }');
 
-        $client->request(
-            'POST',
-            '/mbt/tasks',
-            [],
-            [],
-            [
-                'HTTP_ACCEPT'  => 'application/json',
-                'CONTENT_TYPE' => 'application/json'
-            ],
-            '
-            {
-              "title": "Test shopping cart",
-              "model": "shopping_cart",
-              "algorithm": "random",
-              "progress": 0,
-              "status": "not-started"
-            }'
-        );
-
-        $this->assertContains('abc', $client->getResponse()->getContent());
+        $this->assertEquals('{"id":4,"title":"Test shopping cart","model":"shopping_cart","algorithm":"random","progress":0,"status":"not-started","bugs":[]}', $response->getContent());
     }
 }

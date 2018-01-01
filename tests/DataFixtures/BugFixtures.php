@@ -17,7 +17,6 @@ class BugFixtures extends Fixture
         $bug1->setStatus('unverified');
         $bug1->setTask($this->getReference('task1'));
         $manager->persist($bug1);
-        $manager->flush();
 
         $bug2 = new Bug();
         $bug2->setTitle('Bug 2');
@@ -26,7 +25,6 @@ class BugFixtures extends Fixture
         $bug2->setStatus('valid');
         $bug2->setTask($this->getReference('task1'));
         $manager->persist($bug2);
-        $manager->flush();
 
         $bug3 = new Bug();
         $bug3->setTitle('Bug 3');
@@ -35,6 +33,7 @@ class BugFixtures extends Fixture
         $bug3->setStatus('invalid');
         $bug3->setTask($this->getReference('task3'));
         $manager->persist($bug3);
+
         $manager->flush();
     }
 }

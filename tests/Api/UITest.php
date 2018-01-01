@@ -2,30 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
-class UITest extends WebTestCase
+class UITest extends AbstractApiTestCase
 {
     public function testGet()
     {
-        $client = static::createClient();
+        $this->client->request('GET', '/mbt');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertContains('swagger-ui', $response);
+        $this->assertContains('/mbt/index.jsonld', $response);
+        $this->assertContains('/mbt/index.json', $response);
+        $this->assertContains('/mbt/index.html', $response);
 
-        $client->request('GET', '/mbt');
-        $this->assertContains('swagger-ui', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/index.jsonld', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/index.json', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/index.html', $client->getResponse()->getContent());
+        $this->client->request('GET', '/mbt/tasks');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertContains('swagger-ui', $response);
+        $this->assertContains('/mbt/tasks.jsonld', $response);
+        $this->assertContains('/mbt/tasks.json', $response);
+        $this->assertContains('/mbt/tasks.html', $response);
 
-        $client->request('GET', '/mbt/tasks');
-        $this->assertContains('swagger-ui', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/tasks.jsonld', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/tasks.json', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/tasks.html', $client->getResponse()->getContent());
-
-        $client->request('GET', '/mbt/bugs');
-        $this->assertContains('swagger-ui', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/bugs.jsonld', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/bugs.json', $client->getResponse()->getContent());
-        $this->assertContains('/mbt/bugs.html', $client->getResponse()->getContent());
+        $this->client->request('GET', '/mbt/bugs');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertContains('swagger-ui', $response);
+        $this->assertContains('/mbt/bugs.jsonld', $response);
+        $this->assertContains('/mbt/bugs.json', $response);
+        $this->assertContains('/mbt/bugs.html', $response);
     }
 }

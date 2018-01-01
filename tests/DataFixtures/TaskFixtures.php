@@ -17,7 +17,6 @@ class TaskFixtures extends Fixture
         $task1->setProgress(0);
         $task1->setStatus('not-started');
         $manager->persist($task1);
-        $manager->flush();
         $this->addReference('task1', $task1);
 
         $task2 = new Task();
@@ -27,7 +26,6 @@ class TaskFixtures extends Fixture
         $task2->setProgress(64);
         $task2->setStatus('in-progress');
         $manager->persist($task2);
-        $manager->flush();
         $this->addReference('task2', $task2);
 
         $task3 = new Task();
@@ -37,7 +35,8 @@ class TaskFixtures extends Fixture
         $task3->setProgress(100);
         $task3->setStatus('completed');
         $manager->persist($task3);
-        $manager->flush();
         $this->addReference('task3', $task3);
+
+        $manager->flush();
     }
 }
