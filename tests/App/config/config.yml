@@ -10,9 +10,9 @@ framework:
 
 doctrine:
     dbal:
-        driver: pdo_sqlite
-        path:   'sqlite:///:memory:'
-        memory:   true
+        driver:      pdo_sqlite
+        path:        :memory:
+        memory:      true
     orm: ~
 
 services:
