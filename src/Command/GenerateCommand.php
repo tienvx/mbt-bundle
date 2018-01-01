@@ -2,17 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
-class GenerateCommand extends ContainerAwareCommand
+class GenerateCommand extends Command
 {
+    private $modelRegistry;
+    private $traversalFactory;
+
+    public function __construct(ModelRegistry $modelRegistry, TraversalFactory $traversalFactory)
+    {
+        $this->modelRegistry = $modelRegistry;
+        $this->traversalFactory = $traversalFactory;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -26,16 +38,14 @@ class GenerateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $modelArgument = $input->getArgument('model');
-        $model = $this->getContainer()->get("model.{$modelArgument}");
+        $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
             $message = sprintf('Can not load model by id "%s".', $modelArgument);
             throw new ModelNotFoundException($message);
         }
 
         $traversalOption = $input->getOption('traversal');
-        /** @var $factory TraversalFactory */
-        $factory = $this->getContainer()->get('tienvx_mbt.traversal_factory');
-        $traversal = $factory->get($this->getContainer(), $traversalOption, $model);
+        $traversal = $this->traversalFactory->get($traversalOption, $model);
 
         while (!$traversal->meetStopCondition() && $edge = $traversal->getNextStep()) {
             if ($traversal->canGoNextStep($edge)) {

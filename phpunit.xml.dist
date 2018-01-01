@@ -2,9 +2,9 @@
 
 <phpunit bootstrap="./tests/bootstrap.php" colors="true">
     <php>
-        <server name="KERNEL_DIR" value="tests/App" />
-        <env    name="APP_ENV"    value="test" />
-        <env    name="APP_DEBUG"  value="false" />
+        <server name="KERNEL_CLASS" value="Tienvx\Bundle\MbtBundle\Tests\App\AppKernel" />
+        <env    name="APP_ENV"      value="test" />
+        <env    name="APP_DEBUG"    value="false" />
     </php>
 
     <testsuites>

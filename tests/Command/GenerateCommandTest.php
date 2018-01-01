@@ -15,8 +15,11 @@ class GenerateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
+        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
+        $traversalFactory = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test');
+
         $application = new Application($kernel);
-        $application->add(new GenerateCommand());
+        $application->add(new GenerateCommand($modelRegistry, $traversalFactory));
 
         $command = $application->find('mbt:generate');
         $this->assertCoverage($command, 100, 24, 100, 5);

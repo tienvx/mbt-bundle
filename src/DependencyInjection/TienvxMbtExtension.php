@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Model;
+use Tienvx\Bundle\MbtBundle\Service\DataProvider;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -52,14 +54,7 @@ class TienvxMbtExtension extends Extension
             throw new LogicException('Model support cannot be enabled as the Workflow component is not installed.');
         }
 
-        if ($container->hasDefinition('workflow.registry')) {
-            $registryDefinition = $container->getDefinition('workflow.registry');
-        }
-        else {
-            // No workflows have been defined. Create service definition manually.
-            $registryDefinition = new Definition(Workflow\Registry::class);
-            $container->setDefinition('workflow.registry', $registryDefinition);
-        }
+        $registryDefinition = $container->getDefinition(ModelRegistry::class);
 
         foreach ($models as $name => $model) {
             $type = 'state_machine';
@@ -92,6 +87,7 @@ class TienvxMbtExtension extends Extension
             $modelDefinition->addArgument($model['subject']);
             $modelDefinition->addArgument(new Reference('event_dispatcher'));
             $modelDefinition->addArgument($name);
+            $modelDefinition->addArgument($model['label']);
             foreach ($model['tags'] as $tag) {
                 $modelDefinition->addTag($tag);
             }
@@ -102,9 +98,7 @@ class TienvxMbtExtension extends Extension
             $container->setDefinition(sprintf('%s.definition', $modelId), $definitionDefinition);
 
             // Add workflow to Registry
-            $strategyDefinition = new Definition(Workflow\SupportStrategy\ClassInstanceSupportStrategy::class, [$model['subject']]);
-            $strategyDefinition->setPublic(false);
-            $registryDefinition->addMethodCall('add', [new Reference($modelId), $strategyDefinition]);
+            $registryDefinition->addMethodCall('add', [$name, new Reference($modelId)]);
 
             // Add Guard Listener
             $listener = new Definition(ExpressionListener::class);
@@ -113,10 +107,6 @@ class TienvxMbtExtension extends Extension
             foreach ($model['transitions'] as $transitionName => $config) {
                 if (!isset($config['guard']) && !isset($config['data'])) {
                     continue;
-                }
-
-                if (!class_exists(ExpressionLanguage::class)) {
-                    throw new LogicException('Cannot guard or apply models as the ExpressionLanguage component is not installed.');
                 }
 
                 if (isset($config['guard'])) {
@@ -132,16 +122,16 @@ class TienvxMbtExtension extends Extension
             if ($guardConfiguration) {
                 $listener->setArguments([
                     $guardConfiguration,
-                    new Reference('tienvx_mbt.expression_language'),
+                    new Reference(ExpressionLanguage::class),
                 ]);
 
                 $container->setDefinition(sprintf('%s.listener.expression', $modelId), $listener);
             }
             if ($dataConfiguration) {
-                $dataProviderDefinition = $container->getDefinition('tienvx_mbt.data_provider');
+                $dataProviderDefinition = $container->getDefinition(DataProvider::class);
                 $dataProviderDefinition->setArguments([
                     $dataConfiguration,
-                    new Reference('tienvx_mbt.expression_language'),
+                    new Reference(ExpressionLanguage::class),
                 ]);
             }
         }

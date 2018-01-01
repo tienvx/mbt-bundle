@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
+use Tienvx\Bundle\MbtBundle\Command\RunCommand;
 
 class RunCommandTest extends KernelTestCase
 {
@@ -15,8 +15,13 @@ class RunCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
+        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
+        $graphBuilder = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test');
+        $pathRunner = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathRunner.test');
+        $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
+
         $application = new Application($kernel);
-        $application->add(new GenerateCommand());
+        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducer));
 
         $command = $application->find('mbt:run');
         $output = $this->runCommand($command, 'home viewProductFromHome(product=28) product addFromProduct() product viewCartFromProduct() cart', false);

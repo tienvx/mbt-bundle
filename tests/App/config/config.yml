@@ -6,8 +6,33 @@ framework:
     test:            ~
     router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     templating:      { engines: ['twig'] }
+    assets:          ~
 
 doctrine:
     dbal:
-        driver: pdo_sqlite
-        path:   'sqlite:///:memory:'
+        driver:      pdo_sqlite
+        path:        :memory:
+        memory:      true
+    orm:
+        auto_mapping: true
+
+services:
+    Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\ModelRegistry'
+        public: true
+    Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\TraversalFactory'
+        public: true
+    Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\GraphBuilder'
+        public: true
+    Tienvx\Bundle\MbtBundle\Service\PathRunner.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\PathRunner'
+        public: true
+    Tienvx\Bundle\MbtBundle\Service\PathReducer.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\PathReducer'
+        public: true
+    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\TaskFixtures:
+        tags: [doctrine.fixture.orm]
+    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\BugFixtures:
+        tags: [doctrine.fixture.orm]

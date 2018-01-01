@@ -3,6 +3,7 @@ tienvx_mbt:
         # https://demo.opencart.com
         shopping_cart:
             subject: Tienvx\Bundle\MbtBundle\Tests\App\Subject\ShoppingCart
+            label: "Shopping Cart"
             tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]
             places:
                 - home

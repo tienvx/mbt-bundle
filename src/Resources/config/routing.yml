@@ -1,6 +1,4 @@
-tienvx_mbt_start:
-    path:     /mbt/start-task/{id}
-    defaults: { _controller: TienvxMbtBundle:Task:start }
-tienvx_mbt_stop:
-    path:     /mbt/stop-task/{id}
-    defaults: { _controller: TienvxMbtBundle:Task:stop }
+mbt:
+    resource: '.'
+    type: 'api_platform'
+    prefix: '/mbt'

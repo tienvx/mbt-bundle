@@ -2,11 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table()
- * @ORM\Entity()
+ * @ApiResource
+ * @ORM\Entity
  */
 class Bug
 {
@@ -18,21 +20,33 @@ class Bug
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Task")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Task", inversedBy="bugs")
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
      */
     private $task;
 
-    /** @ORM\Column(type="string", length=255) */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
     private $title;
 
-    /** @ORM\Column(type="string", length=255) */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
     private $message;
 
-    /** @ORM\Column(type="array") */
+    /**
+     * @ORM\Column(type="array")
+     * @Assert\NotBlank
+     */
     private $paths;
 
-    /** @ORM\Column(type="smallint") */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\Choice({"unverified", "valid", "invalid"})
+     */
     private $status;
 
     public function __construct()
@@ -45,7 +59,7 @@ class Bug
         return $this->id;
     }
 
-    public function getTask(): ?Task
+    public function getTask(): Task
     {
         return $this->task;
     }

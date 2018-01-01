@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,11 +11,25 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\TraversalFactory;
 
-class TestCommand extends ContainerAwareCommand
+class TestCommand extends Command
 {
+    private $modelRegistry;
+    private $traversalFactory;
+    private $pathReducer;
+
+    public function __construct(ModelRegistry $modelRegistry, TraversalFactory $traversalFactory, PathReducer $pathReducer)
+    {
+        $this->modelRegistry = $modelRegistry;
+        $this->traversalFactory = $traversalFactory;
+        $this->pathReducer = $pathReducer;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -29,16 +43,14 @@ class TestCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $modelArgument = $input->getArgument('model');
-        $model = $this->getContainer()->get("model.{$modelArgument}");
+        $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
             $message = sprintf('Can not load model by id "%s".', $modelArgument);
             throw new ModelNotFoundException($message);
         }
 
         $traversalOption = $input->getOption('traversal');
-        /** @var TraversalFactory $factory */
-        $factory = $this->getContainer()->get('tienvx_mbt.traversal_factory');
-        $traversal = $factory->get($this->getContainer(), $traversalOption, $model);
+        $traversal = $this->traversalFactory->get($traversalOption, $model);
 
         try {
             while (!$traversal->meetStopCondition() && $edge = $traversal->getNextStep()) {
@@ -50,10 +62,8 @@ class TestCommand extends ContainerAwareCommand
         catch (\Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
-            /** @var $reducer PathReducer */
-            $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
             $path = $traversal->getPath();
-            $path = $reducer->reduce($path, $model, $throwable);
+            $path = $this->pathReducer->reduce($path, $model, $throwable);
 
             $output->writeln('Steps to reproduce:');
             $table = new Table($output);

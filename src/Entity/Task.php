@@ -2,11 +2,16 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
- * @ORM\Table()
- * @ORM\Entity()
+ * @ApiResource
+ * @ORM\Entity
  */
 class Task
 {
@@ -17,20 +22,62 @@ class Task
      */
     private $id;
 
-    /** @ORM\Column(type="string", length=255) */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
     private $title;
 
-    /** @ORM\Column(type="string", length=255) */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Model
+     */
     private $model;
 
-    /** @ORM\Column(type="string", length=255) */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @Assert\Choice({"random"})
+     */
     private $algorithm;
 
-    /** @ORM\Column(type="integer") */
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 100
+     * )
+     */
     private $progress;
 
-    /** @ORM\Column(type="smallint") */
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\Choice({"not-started", "in-progress", "completed"})
+     */
     private $status;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})
+     */
+    private $bugs;
+
+    public function __construct()
+    {
+        $this->bugs = new ArrayCollection();
+    }
+
+    public function addOffer(Bug $bug): void
+    {
+        $bug->setTask($this);
+        $this->bugs->add($bug);
+    }
+
+    public function removeOffer(Bug $bug): void
+    {
+        $bug->setTask(null);
+        $this->bugs->removeElement($bug);
+    }
 
     public function getId()
     {
@@ -85,5 +132,13 @@ class Task
     public function setStatus($status)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return Collection|Bug[]
+     */
+    public function getBugs()
+    {
+        return $this->bugs;
     }
 }

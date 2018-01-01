@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Fhaculty\Graph\Edge\Directed;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +13,27 @@ use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducer;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
-class RunCommand extends ContainerAwareCommand
+class RunCommand extends Command
 {
+    private $modelRegistry;
+    private $graphBuilder;
+    private $pathRunner;
+    private $pathReducer;
+
+    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducer $pathReducer)
+    {
+        $this->modelRegistry = $modelRegistry;
+        $this->graphBuilder = $graphBuilder;
+        $this->pathRunner = $pathRunner;
+        $this->pathReducer = $pathReducer;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -32,15 +48,13 @@ class RunCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $modelArgument = $input->getArgument('model');
-        $model = $this->getContainer()->get("model.{$modelArgument}");
+        $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
             $message = sprintf('Can not load model by id "%s".', $modelArgument);
             throw new ModelNotFoundException($message);
         }
 
-        /* @var GraphBuilder $graphBuilder */
-        $graphBuilder = $this->getContainer()->get('tienvx_mbt.graph_builder');
-        $graph = $graphBuilder->build($model);
+        $graph = $this->graphBuilder->build($model);
 
         $edges = [];
         $vertices = [];
@@ -71,19 +85,15 @@ class RunCommand extends ContainerAwareCommand
         }
         $path = new Path($vertices, $edges, $allData);
 
-        /* @var PathRunner $runner */
-        $runner = $this->getContainer()->get('tienvx_mbt.path_runner');
         try {
-            $runner->run($path, $model);
+            $this->pathRunner->run($path, $model);
         }
         catch (\Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
             $reduce = $input->getOption('reduce');
             if ($reduce) {
-                /** @var $reducer PathReducer */
-                $reducer = $this->getContainer()->get('tienvx_mbt.path_reducer');
-                $path = $reducer->reduce($path, $model, $throwable);
+                $path = $this->pathReducer->reduce($path, $model, $throwable);
 
                 $output->writeln('Steps to reproduce:');
                 $table = new Table($output);
