@@ -38,9 +38,9 @@ class Task
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
-     * @Assert\Choice({"random"})
+     * @MbtAssert\Generator
      */
-    private $algorithm;
+    private $generator;
 
     /**
      * @ORM\Column(type="integer")
@@ -67,13 +67,13 @@ class Task
         $this->bugs = new ArrayCollection();
     }
 
-    public function addOffer(Bug $bug): void
+    public function addBug(Bug $bug): void
     {
         $bug->setTask($this);
         $this->bugs->add($bug);
     }
 
-    public function removeOffer(Bug $bug): void
+    public function removeBug(Bug $bug): void
     {
         $bug->setTask(null);
         $this->bugs->removeElement($bug);
@@ -104,14 +104,14 @@ class Task
         $this->model = $model;
     }
 
-    public function getAlgorithm()
+    public function getGenerator()
     {
-        return $this->algorithm;
+        return $this->generator;
     }
 
-    public function setAlgorithm($algorithm)
+    public function setGenerator($generator)
     {
-        $this->algorithm = $algorithm;
+        $this->generator = $generator;
     }
 
     public function getProgress()

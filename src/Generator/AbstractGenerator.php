@@ -1,17 +1,18 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Traversal;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
-abstract class AbstractTraversal
+abstract class AbstractGenerator implements GeneratorInterface
 {
     /**
      * @var DataProvider

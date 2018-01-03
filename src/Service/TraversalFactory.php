@@ -4,8 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Tienvx\Bundle\MbtBundle\Exception\TraversalNotSupportedException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Traversal\AbstractTraversal;
-use Tienvx\Bundle\MbtBundle\Traversal\RandomTraversal;
+use Tienvx\Bundle\MbtBundle\Generator\AbstractGenerator;
+use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 
 class TraversalFactory
 {
@@ -30,7 +30,7 @@ class TraversalFactory
     const ALL_TRANSITIONS = 'all-transitions';
     const ALL_PATH_OF_LENGTH_N = 'all-path-of-legth-n';
 
-    public function get($option, Model $model): AbstractTraversal
+    public function get($option, Model $model): AbstractGenerator
     {
         preg_match('/^(.*?)\((.*?)\)$/', $option, $matches);
         $name = $matches[1];
@@ -38,7 +38,7 @@ class TraversalFactory
 
         switch ($name) {
             case static::RANDOM:
-                $traversal = new RandomTraversal($this->dataProvider, $this->graphBuilder);
+                $traversal = new RandomGenerator($this->dataProvider, $this->graphBuilder);
                 break;
             default:
                 throw new TraversalNotSupportedException('Traversal is not supported');

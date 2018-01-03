@@ -1,13 +1,19 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Traversal;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
+use Tienvx\Bundle\MbtBundle\Annotation\Generator;
 
-class RandomTraversal extends AbstractTraversal
+/**
+ * @Generator(
+ *     name = "random",
+ *     label = "Random"
+ * )
+ */
+class RandomGenerator extends AbstractGenerator
 {
     /**
      * @var int
