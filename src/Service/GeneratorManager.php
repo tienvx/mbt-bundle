@@ -11,10 +11,22 @@ class GeneratorManager
      */
     private $discovery;
 
+    /**
+     * @var DataProvider
+     */
+    private $dataProvider;
 
-    public function __construct(GeneratorDiscovery $discovery)
+    /**
+     * @var GraphBuilder
+     */
+    private $graphBuilder;
+
+
+    public function __construct(GeneratorDiscovery $discovery, DataProvider $dataProvider, GraphBuilder $graphBuilder)
     {
         $this->discovery = $discovery;
+        $this->dataProvider = $dataProvider;
+        $this->graphBuilder = $graphBuilder;
     }
 
     /**
@@ -22,7 +34,7 @@ class GeneratorManager
      *
      * @return array
      */
-    public function getGenerators() {
+    public function getGenerators(): array {
         return $this->discovery->getGenerators();
     }
 
@@ -34,13 +46,24 @@ class GeneratorManager
      *
      * @throws \Exception
      */
-    public function getGenerator($name) {
+    public function getGenerator($name): array {
         $generators = $this->discovery->getGenerators();
         if (isset($generators[$name])) {
             return $generators[$name];
         }
 
         throw new \Exception('Generator not found.');
+    }
+
+    /**
+     * Check if there is a generator by name
+     *
+     * @param $name
+     * @return bool
+     */
+    public function hasGenerator($name): bool {
+        $generators = $this->discovery->getGenerators();
+        return isset($generators[$name]);
     }
 
     /**
@@ -58,7 +81,7 @@ class GeneratorManager
             if (!class_exists($class)) {
                 throw new \Exception('Generator class does not exist.');
             }
-            return new $class();
+            return new $class($this->dataProvider, $this->graphBuilder);
         }
 
         throw new \Exception('Generator does not exist.');

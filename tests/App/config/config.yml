@@ -20,8 +20,8 @@ services:
     Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test:
         alias: 'Tienvx\Bundle\MbtBundle\Service\ModelRegistry'
         public: true
-    Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\TraversalFactory'
+    Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\GeneratorManager'
         public: true
     Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test:
         alias: 'Tienvx\Bundle\MbtBundle\Service\GraphBuilder'

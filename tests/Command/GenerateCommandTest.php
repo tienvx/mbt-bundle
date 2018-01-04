@@ -16,10 +16,10 @@ class GenerateCommandTest extends KernelTestCase
         $kernel->boot();
 
         $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
-        $traversalFactory = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test');
+        $generatorManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test');
 
         $application = new Application($kernel);
-        $application->add(new GenerateCommand($modelRegistry, $traversalFactory));
+        $application->add(new GenerateCommand($modelRegistry, $generatorManager));
 
         $command = $application->find('mbt:generate');
         $this->assertCoverage($command, 100, 24, 100, 5);
@@ -32,8 +32,9 @@ class GenerateCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'model'      => 'shopping_cart',
-            '--traversal'  => "random({$edgeCoverage},$vertexCoverage)"
+            'model'        => 'shopping_cart',
+            '--generator'  => "random",
+            '--arguments'  => '{"edgeCoverage":' . $edgeCoverage . ',"vertexCoverage":' . $vertexCoverage . '}'
         ]);
 
         $output = $commandTester->getDisplay();

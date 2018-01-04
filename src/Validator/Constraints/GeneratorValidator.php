@@ -4,26 +4,26 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 
 /**
  * @Annotation
  */
-class ModelValidator extends ConstraintValidator
+class GeneratorValidator extends ConstraintValidator
 {
     /**
-     * @var ModelRegistry
+     * @var GeneratorManager
      */
-    protected $modelRegistry;
+    protected $generatorManager;
 
-    public function __construct($options = null, ModelRegistry $modelRegistry)
+    public function __construct($options = null, GeneratorManager $generatorManager)
     {
-        $this->modelRegistry = $modelRegistry;
+        $this->generatorManager = $generatorManager;
     }
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$this->modelRegistry->has($value)) {
+        if (!$this->generatorManager->hasGenerator($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();

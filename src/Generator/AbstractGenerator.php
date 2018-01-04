@@ -61,7 +61,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->path = new Path();
     }
 
-    public function setArgs($args)
+    public function setArgs(array $args)
     {
     }
 

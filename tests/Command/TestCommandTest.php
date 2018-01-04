@@ -15,18 +15,19 @@ class TestCommandTest extends KernelTestCase
         $kernel->boot();
 
         $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
-        $traversalFactory = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\TraversalFactory.test');
+        $generatorManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test');
         $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
 
         $application = new Application($kernel);
-        $application->add(new TestCommand($modelRegistry, $traversalFactory, $pathReducer));
+        $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducer));
 
         $command = $application->find('mbt:test');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
             'model'      => 'shopping_cart',
-            '--traversal'  => "random(100,100)"
+            '--generator'  => "random",
+            '--arguments'  => '{"edgeCoverage":100,"vertexCoverage":100}'
         ]);
 
         $output = $commandTester->getDisplay();
