@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
+use Tienvx\Bundle\MbtBundle\Annotation\Generator;
+
 /**
  * @Generator(
  *     name = "all-paths-n-length",

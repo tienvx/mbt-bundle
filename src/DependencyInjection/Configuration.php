@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('mbt');
 
         $this->addModelSection($rootNode);
+        //$this->addGeneratorSection($rootNode);
 
         return $treeBuilder;
     }
@@ -152,6 +153,20 @@ class Configuration implements ConfigurationInterface
                             })
                             ->thenInvalid('"subject" should be configured.')
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function addGeneratorSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->fixXmlConfig('path')
+            ->children()
+                ->arrayNode('paths')
+                    ->prototype('scalar')
+                        ->cannotBeEmpty()
                     ->end()
                 ->end()
             ->end()

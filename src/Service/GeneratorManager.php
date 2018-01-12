@@ -34,7 +34,8 @@ class GeneratorManager
      *
      * @return array
      */
-    public function getGenerators(): array {
+    public function getGenerators(): array
+    {
         return $this->discovery->getGenerators();
     }
 
@@ -46,7 +47,8 @@ class GeneratorManager
      *
      * @throws \Exception
      */
-    public function getGenerator($name): array {
+    public function getGenerator($name): array
+    {
         $generators = $this->discovery->getGenerators();
         if (isset($generators[$name])) {
             return $generators[$name];
@@ -61,7 +63,8 @@ class GeneratorManager
      * @param $name
      * @return bool
      */
-    public function hasGenerator($name): bool {
+    public function hasGenerator($name): bool
+    {
         $generators = $this->discovery->getGenerators();
         return isset($generators[$name]);
     }
@@ -74,7 +77,8 @@ class GeneratorManager
      *
      * @throws \Exception
      */
-    public function create($name) {
+    public function create($name)
+    {
         $generators = $this->discovery->getGenerators();
         if (array_key_exists($name, $generators)) {
             $class = $generators[$name]['class'];

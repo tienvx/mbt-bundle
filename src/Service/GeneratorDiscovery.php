@@ -25,6 +25,16 @@ class GeneratorDiscovery
      */
     private $cache;
 
+    /**
+     * @var FileHelper
+     */
+    private $fileHelper;
+
+    /**
+     * @var array
+     */
+    private $dirs;
+
 
     /**
      * WorkerDiscovery constructor.
@@ -32,16 +42,19 @@ class GeneratorDiscovery
      * @param Reader $annotationReader
      * @param AdapterInterface $cache
      */
-    public function __construct(Reader $annotationReader, AdapterInterface $cache)
+    public function __construct(Reader $annotationReader, AdapterInterface $cache, FileHelper $fileHelper, array $dirs = [])
     {
         $this->annotationReader = $annotationReader;
         $this->cache = $cache;
+        $this->fileHelper = $fileHelper;
+        $this->dirs = $dirs;
     }
 
     /**
      * Returns all the workers
      */
-    public function getGenerators() {
+    public function getGenerators()
+    {
         if (!$this->generators) {
             $this->discoverGenerators();
         }
@@ -52,15 +65,16 @@ class GeneratorDiscovery
     /**
      * Discovers generators
      */
-    private function discoverGenerators() {
+    private function discoverGenerators()
+    {
         $generators = $this->cache->getItem('mbt.generators');
         if ($generators->isHit()) {
             $this->generators = $generators->get();
         }
         else {
-            foreach (get_declared_classes() as $class) {
-                if ($class instanceof GeneratorInterface) {
-                    $annotation = $this->annotationReader->getClassAnnotation(new \ReflectionClass($class), 'Tienvx\Bundle\MbtBundle\Annotation\Generator');
+            foreach ($this->fileHelper->getAllFcqns($this->dirs) as $class) {
+                if (class_exists($class) && in_array(GeneratorInterface::class, class_implements($class))) {
+                    $annotation = $this->annotationReader->getClassAnnotation(new \ReflectionClass($class), Generator::class);
                     if (!$annotation) {
                         continue;
                     }
