@@ -10,13 +10,11 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorDiscovery;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 /**
@@ -34,16 +32,8 @@ class TienvxMbtExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $bundleLoader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $bundleLoader->load('services.yml');
-
-        /*foreach ($config['paths'] as $path) {
-            $path = $container->getParameterBag()->resolveValue($path);
-            $loader = new YamlFileLoader($container, new FileLocator($path));
-            foreach (Finder::create()->followLinks()->files()->in($path)->name('/\.(ya?ml)$/') as $file) {
-                $loader->load($file->getRealPath());
-            }
-        }*/
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
 
         $this->registerModelConfiguration($config['models'], $container);
     }
