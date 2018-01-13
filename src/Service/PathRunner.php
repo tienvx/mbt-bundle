@@ -4,8 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Exception\ModelInWrongPlaceException;
-use Tienvx\Bundle\MbtBundle\Exception\TransitionCanNotBeAppliedException;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
@@ -34,7 +32,7 @@ class PathRunner
                 $place = $step->getAttribute('name');
                 $marking = $model->getMarking($subject);
                 if (!$marking->has($place)) {
-                    throw new ModelInWrongPlaceException(sprintf('Expected current place to be "%s", but got "%s"', $place, $marking->getPlaces()[0]));
+                    throw new \Exception(sprintf('Expected current place to be "%s", but got "%s"', $place, $marking->getPlaces()[0]));
                 }
             }
             else if ($step instanceof Directed) {
@@ -45,7 +43,7 @@ class PathRunner
                     $model->apply($subject, $transition);
                 }
                 else {
-                    throw new TransitionCanNotBeAppliedException(sprintf('Can not apply transition "%s" with data "%s"', $transition, json_encode($data)));
+                    throw new \Exception(sprintf('Can not apply transition "%s" with data "%s"', $transition, json_encode($data)));
                 }
             }
         }

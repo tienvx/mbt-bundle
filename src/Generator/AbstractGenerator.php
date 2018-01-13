@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Traversal;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
@@ -11,7 +11,7 @@ use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
-abstract class AbstractTraversal
+abstract class AbstractGenerator implements GeneratorInterface
 {
     /**
      * @var DataProvider
@@ -60,7 +60,7 @@ abstract class AbstractTraversal
         $this->path = new Path();
     }
 
-    public function setArgs($args)
+    public function setArgs(array $args)
     {
     }
 

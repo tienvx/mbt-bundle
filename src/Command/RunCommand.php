@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -50,8 +49,7 @@ class RunCommand extends Command
         $modelArgument = $input->getArgument('model');
         $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
-            $message = sprintf('Can not load model by id "%s".', $modelArgument);
-            throw new ModelNotFoundException($message);
+            throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
         }
 
         $graph = $this->graphBuilder->build($model);

@@ -15,7 +15,7 @@ class TaskTest extends AbstractApiTestCase
             "id": 1,
             "title": "Task 1",
             "model": "shopping_cart",
-            "algorithm": "random",
+            "generator": "random",
             "progress": 0,
             "status": "not-started",
             "bugs": [
@@ -27,7 +27,7 @@ class TaskTest extends AbstractApiTestCase
             "id": 2,
             "title": "Task 2",
             "model": "shopping_cart",
-            "algorithm": "random",
+            "generator": "random",
             "progress": 64,
             "status": "in-progress",
             "bugs": []
@@ -36,7 +36,7 @@ class TaskTest extends AbstractApiTestCase
             "id": 3,
             "title": "Task 3",
             "model": "shopping_cart",
-            "algorithm": "random",
+            "generator": "random",
             "progress": 100,
             "status": "completed",
             "bugs": [
@@ -52,7 +52,7 @@ class TaskTest extends AbstractApiTestCase
         {
           "title": "Test shopping cart",
           "model": "shopping_cart",
-          "algorithm": "random",
+          "generator": "random",
           "progress": 0,
           "status": "not-started"
         }');
@@ -64,7 +64,7 @@ class TaskTest extends AbstractApiTestCase
           "id": 4,
           "title": "Test shopping cart",
           "model": "shopping_cart",
-          "algorithm": "random",
+          "generator": "random",
           "progress": 0,
           "status": "not-started",
           "bugs": []
@@ -77,7 +77,7 @@ class TaskTest extends AbstractApiTestCase
         {
           "title": "Test shopping cart",
           "model": "shopping_cart",
-          "algorithm": "all-transitions",
+          "generator": "invalid-generator",
           "progress": 111,
           "status": "not-supported"
         }');
@@ -88,11 +88,11 @@ class TaskTest extends AbstractApiTestCase
         {
           "type": "https://tools.ietf.org/html/rfc2616#section-10",
           "title": "An error occurred",
-          "detail": "algorithm: The value you selected is not a valid choice.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
+          "detail": "generator: \"invalid-generator\" is not a valid generator.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
           "violations": [
             {
-              "propertyPath": "algorithm",
-              "message": "The value you selected is not a valid choice."
+              "propertyPath": "generator",
+              "message": "\"invalid-generator\" is not a valid generator."
             },
             {
               "propertyPath": "progress",

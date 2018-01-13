@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Dumper\GraphvizDumper;
-use Tienvx\Bundle\MbtBundle\Exception\ModelNotFoundException;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
@@ -36,8 +35,7 @@ class DumpCommand extends Command
         $modelArgument = $input->getArgument('model');
         $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
-            $message = sprintf('Can not load model by id "%s".', $modelArgument);
-            throw new ModelNotFoundException($message);
+            throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
         }
 
         $dumper = new GraphvizDumper();

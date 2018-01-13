@@ -1,65 +1,75 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Traversal;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Assert\Assert;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
+use Tienvx\Bundle\MbtBundle\Annotation\Generator;
 
-class RandomTraversal extends AbstractTraversal
+/**
+ * @Generator(
+ *     name = "random",
+ *     label = "Random"
+ * )
+ */
+class RandomGenerator extends AbstractGenerator
 {
     /**
      * @var int
      */
-    protected $edgeCoverage;
+    protected $edgeCoverage = 100;
 
     /**
      * @var int
      */
-    protected $vertexCoverage;
+    protected $vertexCoverage = 100;
 
     /**
      * @var int
      */
-    protected $currentEdgeCoverage;
+    protected $currentEdgeCoverage = 0;
 
     /**
      * @var int
      */
-    protected $currentVertexCoverage;
+    protected $currentVertexCoverage = 0;
 
     /**
      * @var array
      */
-    protected $visitedEdges;
+    protected $visitedEdges = [];
 
     /**
      * @var array
      */
-    protected $visitedVertices;
+    protected $visitedVertices = [];
 
     /**
      * @var array
      */
-    protected $unvisitedEdges;
+    protected $unvisitedEdges = [];
 
     /**
      * @var array
      */
-    protected $unvisitedVertices;
+    protected $unvisitedVertices = [];
 
-    public function setArgs($args)
+    public function setArgs(array $args)
     {
-        if (!is_array($args) || count($args) !== 2 || $args[0] < 0 || $args[0] > 100 || $args[1] < 0 || $args[1] > 100) {
-            throw new InvalidTraversalArguments('Invalid edge coverage or vertex coverage');
+        foreach ($args as $arg => $value) {
+            if (in_array($arg, ['edgeCoverage', 'vertexCoverage'])) {
+                if ($value >= 0 && $value <= 100) {
+                    $this->{$arg} = $value;
+                }
+                else {
+                    throw new \Exception(sprintf('Invalid coverage "%s".', $value));
+                }
+            }
+            else {
+                throw new \Exception(sprintf('Random generator does not support argument "%s".', $arg));
+            }
         }
-        $this->edgeCoverage = $args[0];
-        $this->vertexCoverage = $args[1];
-        $this->visitedEdges = [];
-        $this->visitedVertices = [];
-        $this->currentEdgeCoverage = 0;
-        $this->currentVertexCoverage = 0;
     }
 
     public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
