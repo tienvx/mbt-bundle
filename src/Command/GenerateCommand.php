@@ -28,7 +28,7 @@ class GenerateCommand extends Command
     {
         $this
             ->setName('mbt:generate')
-            ->setDescription('Generate test sequence from a model using a specific traversal.')
+            ->setDescription('Generate test sequence from a model using a specific generator.')
             ->setHelp('This command allows you to generate test sequence without actually testing the system.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The way to generate test sequence from model.', 'random')
@@ -37,20 +37,22 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $generatorOption = $input->getOption('generator');
+        $generator = $this->generatorManager->create($generatorOption);
+
         $modelArgument = $input->getArgument('model');
         $model = $this->modelRegistry->get($modelArgument);
         if (!$model instanceof Model) {
             throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
         }
-
-        $generatorOption = $input->getOption('generator');
-        $generator = $this->generatorManager->create($generatorOption);
+        $generator->setModel($model);
 
         $argumentsOption = $input->getOption('arguments');
-        $args = json_decode($argumentsOption, true);
+        if (is_string($argumentsOption)) {
+            $args = json_decode($argumentsOption, true);
+            $generator->setArgs($args);
+        }
 
-        $generator->setArgs($args);
-        $generator->setModel($model);
         $generator->init();
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
