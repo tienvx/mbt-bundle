@@ -22,19 +22,20 @@ class GenerateCommandTest extends KernelTestCase
         $application->add(new GenerateCommand($modelRegistry, $generatorManager));
 
         $command = $application->find('mbt:generate');
-        $this->assertCoverage($command, 100, 24, 100, 5);
-        $this->assertCoverage($command, 60, 15, 80, 4);
-        $this->assertCoverage($command, 75, 18, 60, 3);
+        $this->assertCoverage($command, 'random', '{"edgeCoverage":100,"vertexCoverage":100}', 24, 5);
+        $this->assertCoverage($command, 'random', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
+        $this->assertCoverage($command, 'random', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);
+        $this->assertCoverage($command, 'all-places', null, 0, 5);
     }
 
-    public function assertCoverage(Command $command, $edgeCoverage, $edgeCount, $vertexCoverage, $vertexCount)
+    public function assertCoverage(Command $command, string $generator, $arguments, $edgeCount, $vertexCount)
     {
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
             'model'        => 'shopping_cart',
-            '--generator'  => "random",
-            '--arguments'  => '{"edgeCoverage":' . $edgeCoverage . ',"vertexCoverage":' . $vertexCoverage . '}'
+            '--generator'  => $generator,
+            '--arguments'  => $arguments
         ]);
 
         $output = $commandTester->getDisplay();
