@@ -11,11 +11,6 @@ use Graphp\Algorithms\Eulerian as BaseEulerian;
 
 class Eulerian extends BaseEulerian
 {
-    protected function getVertexStart()
-    {
-        return $this->graph->getVertices()->getVertexFirst();
-    }
-
     /**
      * Get best path (list of edges) connecting all edges.
      *
@@ -64,11 +59,11 @@ class Eulerian extends BaseEulerian
             }
 
             // Then get Euler path.
-            $vertex = $this->getVertexStart();
+            $vertex = $resultGraph->getVertices()->getVertexFirst();
             while ($edge = $this->getUnvisitedEdge($vertex)) {
                 $returnEdges[] = $edge;
                 $edge->setAttribute('visited', true);
-                $vertex = $edge->getVertexToFrom($vertex);
+                $vertex = $edge->getVertexEnd();
             }
         }
 
