@@ -26,6 +26,7 @@ class GenerateCommandTest extends KernelTestCase
         $this->assertCoverage($command, 'random', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
         $this->assertCoverage($command, 'random', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);
         $this->assertCoverage($command, 'all-places', null, 0, 5);
+        $this->assertCoverage($command, 'all-transitions', null, 24, 0);
     }
 
     public function assertCoverage(Command $command, string $generator, $arguments, $edgeCount, $vertexCount)

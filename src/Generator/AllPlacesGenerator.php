@@ -25,7 +25,6 @@ class AllPlacesGenerator extends AbstractGenerator
         parent::init();
 
         $algorithm = new Bruteforce($this->graph);
-        /** @var Edges $edges */
         $edges = $algorithm->getEdges();
         $this->edges = $edges->getVector();
     }
