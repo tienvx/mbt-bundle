@@ -24,6 +24,7 @@ class AllTransitionsGenerator extends AbstractGenerator
         parent::init();
 
         $algorithm = new Eulerian($this->graph);
+        $algorithm->setStartVertex($this->currentVertex);
         $edges = $algorithm->getEdges();
         $this->edges = $edges->getVector();
     }

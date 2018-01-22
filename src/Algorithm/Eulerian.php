@@ -12,6 +12,16 @@ use Graphp\Algorithms\Eulerian as BaseEulerian;
 class Eulerian extends BaseEulerian
 {
     /**
+     * @var Vertex
+     */
+    protected $startVertex;
+
+    public function setStartVertex(Vertex $vertex)
+    {
+        $this->startVertex = $vertex;
+    }
+
+    /**
      * Get best path (list of edges) connecting all edges.
      *
      * @return Edges
@@ -27,13 +37,16 @@ class Eulerian extends BaseEulerian
                 $balance = 0;
                 $minWeightEdgeIn = $minWeightEdgeOut = null;
                 foreach ($vertex->getEdges() as $edge) {
+                    if ($edge->getAttribute('duplicated')) {
+                        continue;
+                    }
                     if ($edge->hasVertexTarget($vertex)) {
                         $balance++;
                         if (is_null($minWeightEdgeIn) || $minWeightEdgeIn->getWeight() < $edge->getWeight()) {
                             $minWeightEdgeIn = $edge;
                         }
                     }
-                    elseif ($edge->hasVertexStart($vertex)) {
+                    if ($edge->hasVertexStart($vertex)) {
                         $balance--;
                         if (is_null($minWeightEdgeOut) || $minWeightEdgeOut->getWeight() < $edge->getWeight()) {
                             $minWeightEdgeOut = $edge;
@@ -47,19 +60,21 @@ class Eulerian extends BaseEulerian
                         $edge->setWeight($minWeightEdgeOut->getWeight());
                         $edge->setAttribute('name', $minWeightEdgeOut->getAttribute('name'));
                         $edge->setAttribute('label', $minWeightEdgeOut->getAttribute('label'));
+                        $edge->setAttribute('duplicated', true);
                         $balance--;
                     } elseif ($balance < 0) {
                         $edge = $minWeightEdgeIn->getVertexStart()->createEdgeTo($vertex);
                         $edge->setWeight($minWeightEdgeIn->getWeight());
                         $edge->setAttribute('name', $minWeightEdgeIn->getAttribute('name'));
                         $edge->setAttribute('label', $minWeightEdgeIn->getAttribute('label'));
+                        $edge->setAttribute('duplicated', true);
                         $balance++;
                     }
                 }
             }
 
             // Then get Euler path.
-            $vertex = $resultGraph->getVertices()->getVertexFirst();
+            $vertex = $resultGraph->getVertex($this->startVertex->getId());
             while ($edge = $this->getUnvisitedEdge($vertex)) {
                 $returnEdges[] = $edge;
                 $edge->setAttribute('visited', true);
