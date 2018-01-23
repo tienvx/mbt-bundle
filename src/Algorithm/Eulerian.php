@@ -8,6 +8,7 @@ use Fhaculty\Graph\Vertex;
 use Fhaculty\Graph\Edge\Base as Edge;
 use Graphp\Algorithms\ConnectedComponents;
 use Graphp\Algorithms\Eulerian as BaseEulerian;
+use Graphp\Algorithms\ShortestPath\Dijkstra;
 
 class Eulerian extends BaseEulerian
 {
@@ -32,45 +33,41 @@ class Eulerian extends BaseEulerian
         $components = new ConnectedComponents($this->graph);
         if ($components->isSingle()) {
             // Balance the graph.
+            $balanceMap = [];
             $resultGraph = $this->graph->createGraphClone();
             foreach ($resultGraph->getVertices() as $vertex) {
                 $balance = 0;
-                $minWeightEdgeIn = $minWeightEdgeOut = null;
                 foreach ($vertex->getEdges() as $edge) {
-                    if ($edge->getAttribute('duplicated')) {
-                        continue;
-                    }
                     if ($edge->hasVertexTarget($vertex)) {
                         $balance++;
-                        if (is_null($minWeightEdgeIn) || $minWeightEdgeIn->getWeight() < $edge->getWeight()) {
-                            $minWeightEdgeIn = $edge;
-                        }
                     }
                     if ($edge->hasVertexStart($vertex)) {
                         $balance--;
-                        if (is_null($minWeightEdgeOut) || $minWeightEdgeOut->getWeight() < $edge->getWeight()) {
-                            $minWeightEdgeOut = $edge;
-                        }
                     }
                 }
+                $vertex->setBalance($balance);
+                $balanceMap[$vertex->getId()] = $balance;
+            }
+            asort($balanceMap);
 
-                while ($balance !== 0) {
-                    if ($balance > 0) {
-                        $edge = $vertex->createEdgeTo($minWeightEdgeOut->getVertexEnd());
-                        $edge->setWeight($minWeightEdgeOut->getWeight());
-                        $edge->setAttribute('name', $minWeightEdgeOut->getAttribute('name'));
-                        $edge->setAttribute('label', $minWeightEdgeOut->getAttribute('label'));
-                        $edge->setAttribute('duplicated', true);
-                        $balance--;
-                    } elseif ($balance < 0) {
-                        $edge = $minWeightEdgeIn->getVertexStart()->createEdgeTo($vertex);
-                        $edge->setWeight($minWeightEdgeIn->getWeight());
-                        $edge->setAttribute('name', $minWeightEdgeIn->getAttribute('name'));
-                        $edge->setAttribute('label', $minWeightEdgeIn->getAttribute('label'));
-                        $edge->setAttribute('duplicated', true);
-                        $balance++;
-                    }
+            while (reset($balanceMap) < 0 && end($balanceMap) > 0) {
+                reset($balanceMap);
+                $first = key($balanceMap);
+                end($balanceMap);
+                $last = key($balanceMap);
+                $algorithm = new Dijkstra($this->graph->getVertex($last));
+                $edges = $algorithm->getEdgesTo($this->graph->getVertex($first))->getVector();
+                foreach ($edges as $edge) {
+                    $vertexStart = $resultGraph->getVertex($edge->getVertexStart()->getId());
+                    $vertexEnd = $resultGraph->getVertex($edge->getVertexEnd()->getId());
+                    $cloneEdge = $vertexStart->createEdgeTo($vertexEnd);
+                    $cloneEdge->setWeight($edge->getWeight());
+                    $cloneEdge->setAttribute('name', $edge->getAttribute('name'));
+                    $cloneEdge->setAttribute('label', $edge->getAttribute('label'));
                 }
+                $balanceMap[$first]++;
+                $balanceMap[$last]--;
+                asort($balanceMap);
             }
 
             // Then get Euler path.
