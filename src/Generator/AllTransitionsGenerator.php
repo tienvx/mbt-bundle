@@ -43,6 +43,29 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
     }
 
+    public function canGoNextStep(Directed $currentEdge): bool
+    {
+        $transitionName = $currentEdge->getAttribute('name');
+
+        // Set data to subject.
+        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
+        $this->subject->setData($data);
+
+        $canGo = $this->model->can($this->subject, $currentEdge->getAttribute('name'));
+
+        if ($canGo) {
+            // Update test sequence.
+            $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($currentEdge) {
+                return $edge->getAttribute('name') === $currentEdge->getAttribute('name');
+            });
+            $this->path->addEdge($currentEdgeInPath);
+            $this->path->addVertex($currentEdgeInPath->getVertexEnd());
+            $this->path->addData($data);
+        }
+
+        return $canGo;
+    }
+
     public function getNextStep(): ?Directed
     {
         return $this->getRandomUnvisitedEdge($this->currentVertex);
