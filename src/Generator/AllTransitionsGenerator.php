@@ -68,12 +68,25 @@ class AllTransitionsGenerator extends AbstractGenerator
 
     public function getNextStep(): ?Directed
     {
-        return $this->getRandomUnvisitedEdge($this->currentVertex);
+        try {
+            /** @var Directed $edge */
+            $edge = $this->currentVertex->getEdges()->getEdgesMatch(function (Edge $edge) {
+                return $edge->hasVertexStart($this->currentVertex) && !$edge->getAttribute('visited') && !$edge->getAttribute('tried');
+            })->getEdgeOrder(Edges::ORDER_RANDOM);
+            $edge->setAttribute('tried', true);
+            return $edge;
+        }
+        catch (UnderflowException $e) {
+            return null;
+        }
     }
 
     public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
     {
         $currentEdge->setAttribute('visited', true);
+        foreach ($this->currentVertex->getEdgesOut() as $edge) {
+            $edge->setAttribute('tried', false);
+        }
         $this->currentVertex = $currentEdge->getVertexEnd();
 
         parent::goToNextStep($currentEdge, $callSUT);
@@ -82,19 +95,5 @@ class AllTransitionsGenerator extends AbstractGenerator
     public function meetStopCondition(): bool
     {
         return !$this->singleComponent;
-    }
-
-    protected function getRandomUnvisitedEdge(Vertex $vertex): ?Directed
-    {
-        try {
-            /** @var Directed $edge */
-            $edge = $vertex->getEdges()->getEdgesMatch(function (Edge $edge) use ($vertex) {
-                return $edge->hasVertexStart($vertex) && !$edge->getAttribute('visited');
-            })->getEdgeOrder(Edges::ORDER_RANDOM);
-            return $edge;
-        }
-        catch (UnderflowException $e) {
-            return null;
-        }
     }
 }
