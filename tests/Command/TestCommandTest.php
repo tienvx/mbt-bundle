@@ -25,6 +25,7 @@ class TestCommandTest extends KernelTestCase
         $command = $application->find('mbt:test');
         $this->assertReproducePath($command, 'random', '{"edgeCoverage":100,"vertexCoverage":100}');
         $this->assertReproducePath($command, 'all-places', null);
+        $this->assertReproducePath($command, 'all-transitions', null);
     }
 
     public function assertReproducePath(Command $command, string $generator, $arguments)
