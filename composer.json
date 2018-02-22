@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "api-platform/core": "^2.1",
+        "api-platform/core": "^2.2",
         "graphp/algorithms": "^0.8.1",
         "php": "^7.1.0",
         "symfony/framework-bundle": "^4.0",
