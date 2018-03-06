@@ -10,7 +10,7 @@ class DataProvider
     protected $configuration;
     protected $expressionLanguage;
 
-    public function __construct($configuration, ExpressionLanguage $expressionLanguage)
+    public function __construct(ExpressionLanguage $expressionLanguage, array $configuration = [])
     {
         $this->configuration = $configuration;
         $this->expressionLanguage = $expressionLanguage;

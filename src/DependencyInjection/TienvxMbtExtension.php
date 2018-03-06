@@ -121,8 +121,8 @@ class TienvxMbtExtension extends Extension
             }
             if ($guardConfiguration) {
                 $listener->setArguments([
-                    $guardConfiguration,
                     new Reference(ExpressionLanguage::class),
+                    $guardConfiguration,
                 ]);
 
                 $container->setDefinition(sprintf('%s.listener.expression', $modelId), $listener);
@@ -130,8 +130,8 @@ class TienvxMbtExtension extends Extension
             if ($dataConfiguration) {
                 $dataProviderDefinition = $container->getDefinition(DataProvider::class);
                 $dataProviderDefinition->setArguments([
-                    $dataConfiguration,
                     new Reference(ExpressionLanguage::class),
+                    $dataConfiguration,
                 ]);
             }
         }
