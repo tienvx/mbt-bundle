@@ -27,9 +27,11 @@ class TienvxMbtBundle extends Bundle
         if (is_dir($path)) {
             $paths[] = $path;
         }
-        $loader = new YamlFileLoader($container, new FileLocator($paths));
-        foreach (Finder::create()->followLinks()->files()->in($paths)->name('/\.(ya?ml)$/') as $file) {
-            $loader->load($file->getRelativePathname());
+        if ($paths) {
+            $loader = new YamlFileLoader($container, new FileLocator($paths));
+            foreach (Finder::create()->followLinks()->files()->in($paths)->name('/\.(ya?ml)$/') as $file) {
+                $loader->load($file->getRelativePathname());
+            }
         }
     }
 }
