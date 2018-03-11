@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\App;
+namespace Tienvx\Bundle\MbtBundle\Tests;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
@@ -29,6 +29,21 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/config.yml');
+        $loader->load(dirname(__DIR__) . '/config/config.yml');
+    }
+
+    public function getCacheDir()
+    {
+        return dirname(__DIR__) . '/var/cache/' . $this->environment;
+    }
+
+    public function getProjectDir()
+    {
+        return dirname(__DIR__);
+    }
+
+    public function getLogDir()
+    {
+        return dirname(__DIR__) . '/var/logs';
     }
 }

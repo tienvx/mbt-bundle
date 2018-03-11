@@ -44,7 +44,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tienvx\\Bundle\\MbtBundle\\Tests\\": "tests/"
+            "Tienvx\\Bundle\\MbtBundle\\Tests\\": ["tests", "tests/app/src"]
         }
     },
     "scripts": {

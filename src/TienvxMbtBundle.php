@@ -23,7 +23,7 @@ class TienvxMbtBundle extends Bundle
                 $paths[] = $path;
             }
         }
-        $path = $container->getParameter('kernel.root_dir') . '/config/models';
+        $path = $container->getParameter('kernel.project_dir') . '/config/models';
         if (is_dir($path)) {
             $paths[] = $path;
         }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./tests/bootstrap.php" colors="true">
+<phpunit bootstrap="./tests/app/bootstrap.php" colors="true">
     <php>
-        <server name="KERNEL_CLASS" value="Tienvx\Bundle\MbtBundle\Tests\App\AppKernel" />
+        <server name="KERNEL_CLASS" value="Tienvx\Bundle\MbtBundle\Tests\AppKernel" />
         <env    name="APP_ENV"      value="test" />
         <env    name="APP_DEBUG"    value="false" />
     </php>
