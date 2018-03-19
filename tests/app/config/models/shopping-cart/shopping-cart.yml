@@ -46,7 +46,7 @@ tienvx_mbt:
                     to: product
                     label: "From home page, choose a random product and open it"
                     data:
-                        product: "subject.getRandomProduct()"
+                        product: "subject.getRandomProductFromHome()"
                 viewProductFromCart:
                     from: cart
                     to: product
@@ -129,7 +129,7 @@ tienvx_mbt:
                     to: home
                     label: "From home page, choose a random product and add it to cart"
                     data:
-                        product: "subject.getRandomProduct()"
+                        product: "subject.getRandomProductFromHome()"
                 addFromCategory:
                     from: category
                     to: category
