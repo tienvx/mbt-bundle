@@ -61,11 +61,6 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->stopConditionManager = $stopConditionManager;
     }
 
-    public function setModel(Model $model)
-    {
-        $this->model = $model;
-    }
-
     public function getPath(): Path
     {
         return $this->path;
@@ -105,8 +100,10 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->model->apply($this->subject, $transitionName);
     }
 
-    public function init(array $arguments)
+    public function init(Model $model, array $arguments)
     {
+        $this->model = $model;
+
         $this->graph = $this->graphBuilder->build($this->model);
         $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
 

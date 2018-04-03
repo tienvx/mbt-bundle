@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class StopConditionPass implements CompilerPassInterface
 {
@@ -26,7 +25,7 @@ class StopConditionPass implements CompilerPassInterface
             return;
         }
 
-        if (!$stopConditions = $this->findTaggedServices($this->stopConditionTag, StopConditionInterface::class, $container)) {
+        if (!$stopConditions = $this->findTaggedServices($this->stopConditionTag, $container)) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->stopConditionTag, $this->stopConditionService));
         }
 

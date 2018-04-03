@@ -3,12 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\RunCommand;
 
-class RunCommandTest extends KernelTestCase
+class RunCommandTest extends CommandTestCase
 {
     public function testRun()
     {

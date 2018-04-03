@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Fhaculty\Graph\Edge\Directed;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class AllPlacesGenerator extends AbstractGenerator
 {
@@ -12,9 +13,9 @@ class AllPlacesGenerator extends AbstractGenerator
      */
     protected $edges = [];
 
-    public function init(array $arguments)
+    public function init(Model $model, array $arguments)
     {
-        parent::init($arguments);
+        parent::init($model, $arguments);
 
         $algorithm = new Bruteforce($this->graph);
         $edges = $algorithm->getEdges();

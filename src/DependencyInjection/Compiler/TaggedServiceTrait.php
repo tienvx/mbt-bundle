@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 trait TaggedServiceTrait
 {
-    private function findTaggedServices(string $tagName, string $interface, ContainerBuilder $container)
+    private function findTaggedServices(string $tagName, ContainerBuilder $container)
     {
         $services = [];
         foreach ($container->findTaggedServiceIds($tagName, true) as $serviceId => $attributes) {
@@ -20,11 +20,8 @@ trait TaggedServiceTrait
             if (!$r = $container->getReflectionClass($class)) {
                 throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $serviceId));
             }
-            if (!method_exists($interface, 'getName')) {
-                throw new InvalidArgumentException(sprintf('Interface "%s" must has method "%s".', $interface, 'getName'));
-            }
-            if (!$r->isSubclassOf($interface)) {
-                throw new InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $serviceId, $interface));
+            if (!$r->isSubclassOf(PluginInterface::class)) {
+                throw new InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $serviceId, PluginInterface::class));
             }
             $class = $r->name;
 

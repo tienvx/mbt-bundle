@@ -3,12 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\TestCommand;
 
-class TestCommandTest extends KernelTestCase
+class TestCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
@@ -23,7 +22,8 @@ class TestCommandTest extends KernelTestCase
         $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducer));
 
         $command = $application->find('mbt:test');
-        $this->assertReproducePath($command, 'random', '{"edgeCoverage":100,"vertexCoverage":100}');
+        $this->assertReproducePath($command, 'random', $this->getCoverageStopCondition(100, 100));
+        $this->assertReproducePath($command, 'random', $this->getFoundBugStopCondition());
         $this->assertReproducePath($command, 'all-places', null);
         $this->assertReproducePath($command, 'all-transitions', null);
     }

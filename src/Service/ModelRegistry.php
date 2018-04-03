@@ -26,8 +26,12 @@ class ModelRegistry
         return isset($this->models[$name]);
     }
 
-    public function get($name)
+    public function get($name): Model
     {
-        return $this->models[$name];
+        if (isset($this->models[$name])) {
+            return $this->models[$name];
+        }
+
+        throw new \Exception(sprintf('Model %s does not exist.', $name));
     }
 }

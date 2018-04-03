@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class RandomGenerator extends AbstractGenerator
@@ -126,12 +127,12 @@ class RandomGenerator extends AbstractGenerator
         return 'random';
     }
 
-    public function init(array $arguments)
+    public function init(Model $model, array $arguments)
     {
-        parent::init($arguments);
+        parent::init($model, $arguments);
 
-        $this->stopCondition = $this->stopConditionManager->getStopCondition('coverage');
-        $this->stopCondition->setArguments($arguments);
+        $this->stopCondition = $this->stopConditionManager->getStopCondition($arguments['stop']['on']);
+        $this->stopCondition->setArguments($arguments['stop']['at'] ?? []);
 
         $this->edgeCoverage = 0;
         $this->vertexCoverage = 0;

@@ -3,12 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
 
-class GenerateCommandTest extends KernelTestCase
+class GenerateCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
@@ -22,9 +21,9 @@ class GenerateCommandTest extends KernelTestCase
         $application->add(new GenerateCommand($modelRegistry, $generatorManager));
 
         $command = $application->find('mbt:generate');
-        $this->assertCoverage($command, 'random', '{"edgeCoverage":100,"vertexCoverage":100}', 24, 5);
-        $this->assertCoverage($command, 'random', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
-        $this->assertCoverage($command, 'random', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);
+        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(100, 100), 24, 5);
+        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(60, 80), 15, 4);
+        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(75, 60), 18, 3);
         $this->assertCoverage($command, 'all-places', null, 0, 5);
         $this->assertCoverage($command, 'all-transitions', null, 24, 0);
     }

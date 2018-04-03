@@ -9,6 +9,7 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -22,9 +23,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(array $arguments)
+    public function init(Model $model, array $arguments)
     {
-        parent::init($arguments);
+        parent::init($model, $arguments);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();

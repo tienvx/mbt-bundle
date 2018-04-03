@@ -37,20 +37,13 @@ class TestCommand extends Command
             ->setHelp('This command test the system step by step defined by a model using a specific generator, then report bug if found.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The way to generate test sequence from model to test.', 'random')
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments pass to generator.', '{"edgeCoverage":100,"vertexCoverage":100}');
+            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments pass to generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $generatorOption = $input->getOption('generator');
-        $generator = $this->generatorManager->getGenerator($generatorOption);
-
-        $modelArgument = $input->getArgument('model');
-        $model = $this->modelRegistry->get($modelArgument);
-        if (!$model instanceof Model) {
-            throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
-        }
-        $generator->setModel($model);
+        $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
+        $model = $this->modelRegistry->get($input->getArgument('model'));
 
         $arguments = $input->getOption('arguments');
         if (is_string($arguments)) {
@@ -60,7 +53,7 @@ class TestCommand extends Command
             $arguments = [];
         }
 
-        $generator->init($arguments);
+        $generator->init($model, $arguments);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
