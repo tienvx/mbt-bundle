@@ -8,5 +8,5 @@ interface StopConditionInterface
 
     public function setArguments(array $arguments);
 
-    public function meet(array $context);
+    public function meet(array $context): bool;
 }

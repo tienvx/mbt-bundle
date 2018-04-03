@@ -33,7 +33,7 @@ class CoverageStopCondition implements StopConditionInterface
 
     public function meet(array $context): bool
     {
-        return $this->edgeCoverage >= $context['edgeCoverage'] && $this->vertexCoverage >= $context['vertexCoverage'];
+        return $context['edgeCoverage'] >= $this->edgeCoverage && $context['vertexCoverage'] >= $this->vertexCoverage;
     }
 
     public static function getName()
