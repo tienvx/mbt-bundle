@@ -45,11 +45,6 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $currentVertex;
 
     /**
-     * @var Directed
-     */
-    protected $currentEdge;
-
-    /**
      * @var Path
      */
     protected $path;
@@ -64,7 +59,6 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->dataProvider = $dataProvider;
         $this->graphBuilder = $graphBuilder;
         $this->stopConditionManager = $stopConditionManager;
-        $this->path = new Path();
     }
 
     public function setModel(Model $model)
@@ -116,6 +110,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->graph = $this->graphBuilder->build($this->model);
         $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
 
+        $this->path = new Path();
         $this->path->addVertex($this->currentVertex);
 
         $subjectClass = $this->model->getSubject();

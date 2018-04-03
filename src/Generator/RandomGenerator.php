@@ -132,5 +132,12 @@ class RandomGenerator extends AbstractGenerator
 
         $this->stopCondition = $this->stopConditionManager->getStopCondition('coverage');
         $this->stopCondition->setArguments($arguments);
+
+        $this->edgeCoverage = 0;
+        $this->vertexCoverage = 0;
+        $this->visitedEdges = [];
+        $this->visitedVertices = [];
+        $this->unvisitedEdges = [];
+        $this->unvisitedVertices = [];
     }
 }
