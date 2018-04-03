@@ -10,7 +10,7 @@ class FoundBugStopCondition implements StopConditionInterface
 
     public function meet(array $context): bool
     {
-        return false;
+        return $context['pathLength'] >= 500;
     }
 
     public static function getName()

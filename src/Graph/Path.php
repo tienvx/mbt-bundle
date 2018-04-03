@@ -60,6 +60,11 @@ class Path implements Iterator
         return count($this->vertices);
     }
 
+    public function countEdges()
+    {
+        return count($this->edges);
+    }
+
     public function getVertices()
     {
         return $this->vertices;

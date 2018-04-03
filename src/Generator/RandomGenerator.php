@@ -119,6 +119,7 @@ class RandomGenerator extends AbstractGenerator
         return $this->stopCondition->meet([
             'edgeCoverage' => $this->edgeCoverage,
             'vertexCoverage' => $this->vertexCoverage,
+            'pathLength' => $this->path->countEdges(),
         ]);
     }
 
