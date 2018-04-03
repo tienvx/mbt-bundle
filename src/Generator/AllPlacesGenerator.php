@@ -3,16 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
-use Tienvx\Bundle\MbtBundle\Annotation\Generator;
 
-/**
- * @Generator(
- *     name = "all-places",
- *     label = "All Places"
- * )
- */
 class AllPlacesGenerator extends AbstractGenerator
 {
     /**
@@ -20,9 +12,9 @@ class AllPlacesGenerator extends AbstractGenerator
      */
     protected $edges = [];
 
-    public function init()
+    public function init(array $arguments)
     {
-        parent::init();
+        parent::init($arguments);
 
         $algorithm = new Bruteforce($this->graph);
         $edges = $algorithm->getEdges();
@@ -37,5 +29,10 @@ class AllPlacesGenerator extends AbstractGenerator
     public function meetStopCondition(): bool
     {
         return empty($this->edges);
+    }
+
+    public static function getName()
+    {
+        return 'all-places';
     }
 }

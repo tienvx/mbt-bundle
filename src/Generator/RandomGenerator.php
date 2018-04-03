@@ -5,35 +5,24 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Annotation\Generator;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
-/**
- * @Generator(
- *     name = "random",
- *     label = "Random"
- * )
- */
 class RandomGenerator extends AbstractGenerator
 {
     /**
-     * @var int
+     * @var StopConditionInterface
      */
-    protected $edgeCoverage = 100;
+    protected $stopCondition;
 
     /**
      * @var int
      */
-    protected $vertexCoverage = 100;
+    protected $edgeCoverage = 0;
 
     /**
      * @var int
      */
-    protected $currentEdgeCoverage = 0;
-
-    /**
-     * @var int
-     */
-    protected $currentVertexCoverage = 0;
+    protected $vertexCoverage = 0;
 
     /**
      * @var array
@@ -54,23 +43,6 @@ class RandomGenerator extends AbstractGenerator
      * @var array
      */
     protected $unvisitedVertices = [];
-
-    public function setArgs(array $args)
-    {
-        foreach ($args as $arg => $value) {
-            if (in_array($arg, ['edgeCoverage', 'vertexCoverage'])) {
-                if ($value >= 0 && $value <= 100) {
-                    $this->{$arg} = $value;
-                }
-                else {
-                    throw new \Exception(sprintf('Invalid coverage "%s".', $value));
-                }
-            }
-            else {
-                throw new \Exception(sprintf('Random generator does not support argument "%s".', $arg));
-            }
-        }
-    }
 
     public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
     {
@@ -99,9 +71,9 @@ class RandomGenerator extends AbstractGenerator
         $this->unvisitedVertices = array_diff($allVertices, $this->visitedVertices);
 
         // Update progress.
-        $this->currentEdgeCoverage = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
-        $this->currentVertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
-        $this->currentVertex = $currentEdge->getVertexEnd();
+        $this->edgeCoverage   = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
+        $this->vertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
+        $this->currentVertex  = $currentEdge->getVertexEnd();
 
         // Apply model. Call SUT if needed.
         $this->subject->setCallSUT($callSUT);
@@ -141,20 +113,24 @@ class RandomGenerator extends AbstractGenerator
         return $edge;
     }
 
-    public function getCurrentProgress(): int
-    {
-        return (int) floor((($this->currentEdgeCoverage > $this->edgeCoverage ? $this->edgeCoverage : $this->currentEdgeCoverage) +
-            ($this->currentVertexCoverage > $this->vertexCoverage ? $this->vertexCoverage : $this->currentVertexCoverage)) /
-            $this->edgeCoverage + $this->vertexCoverage);
-    }
-
-    public function getCurrentProgressMessage(): string
-    {
-        return sprintf('Current edge coverage: %s, vertex coverage %s', $this->currentEdgeCoverage, $this->currentVertexCoverage);
-    }
-
     public function meetStopCondition(): bool
     {
-        return $this->currentEdgeCoverage >= $this->edgeCoverage && $this->currentVertexCoverage >= $this->vertexCoverage;
+        return $this->stopCondition->meet([
+            'edgeCoverage' => $this->edgeCoverage,
+            'vertexCoverage' => $this->vertexCoverage,
+        ]);
+    }
+
+    public static function getName()
+    {
+        return 'random';
+    }
+
+    public function init(array $arguments)
+    {
+        parent::init($arguments);
+
+        $this->stopCondition = $this->stopConditionManager->getStopCondition('coverage');
+        $this->stopCondition->setArguments($arguments);
     }
 }

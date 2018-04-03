@@ -7,15 +7,17 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -32,8 +34,15 @@ class TienvxMbtExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.xml');
+
+        $container->registerForAutoconfiguration(GeneratorInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.generator');
+        $container->registerForAutoconfiguration(StopConditionInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.stop_condition');
 
         $this->registerModelConfiguration($config['models'], $container);
     }

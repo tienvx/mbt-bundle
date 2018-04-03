@@ -7,13 +7,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\AddGeneratorDirectoriesCompilerPass;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\GeneratorPass;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\StopConditionPass;
 
 class TienvxMbtBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new AddGeneratorDirectoriesCompilerPass());
+        $container->addCompilerPass(new GeneratorPass());
+        $container->addCompilerPass(new StopConditionPass());
 
         // Read models configurations. Add these code in a compiler pass is too late.
         $paths = [];

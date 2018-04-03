@@ -38,7 +38,7 @@ class GenerateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $generatorOption = $input->getOption('generator');
-        $generator = $this->generatorManager->create($generatorOption);
+        $generator = $this->generatorManager->getGenerator($generatorOption);
 
         $modelArgument = $input->getArgument('model');
         $model = $this->modelRegistry->get($modelArgument);
@@ -47,13 +47,15 @@ class GenerateCommand extends Command
         }
         $generator->setModel($model);
 
-        $argumentsOption = $input->getOption('arguments');
-        if (is_string($argumentsOption)) {
-            $args = json_decode($argumentsOption, true);
-            $generator->setArgs($args);
+        $arguments = $input->getOption('arguments');
+        if (is_string($arguments)) {
+            $arguments = json_decode($arguments, true);
+        }
+        else {
+            $arguments = [];
         }
 
-        $generator->init();
+        $generator->init($arguments);
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
             if ($generator->canGoNextStep($edge)) {

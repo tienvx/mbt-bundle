@@ -9,6 +9,7 @@ use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 abstract class AbstractGenerator implements GeneratorInterface
@@ -22,6 +23,11 @@ abstract class AbstractGenerator implements GeneratorInterface
      * @var GraphBuilder
      */
     protected $graphBuilder;
+
+    /**
+     * @var StopConditionManager
+     */
+    protected $stopConditionManager;
 
     /**
      * @var Model
@@ -53,15 +59,12 @@ abstract class AbstractGenerator implements GeneratorInterface
      */
     protected $subject;
 
-    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder)
+    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager)
     {
         $this->dataProvider = $dataProvider;
         $this->graphBuilder = $graphBuilder;
+        $this->stopConditionManager = $stopConditionManager;
         $this->path = new Path();
-    }
-
-    public function setArgs(array $args)
-    {
     }
 
     public function setModel(Model $model)
@@ -108,27 +111,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->model->apply($this->subject, $transitionName);
     }
 
-    public function getMaxProgress(): int
-    {
-        return 100;
-    }
-
-    public function getCurrentProgress(): int
-    {
-        return 0;
-    }
-
-    public function getCurrentProgressMessage(): string
-    {
-        return '';
-    }
-
-    public function meetStopCondition(): bool
-    {
-        return false;
-    }
-
-    public function init()
+    public function init(array $arguments)
     {
         $this->graph = $this->graphBuilder->build($this->model);
         $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
@@ -137,5 +120,10 @@ abstract class AbstractGenerator implements GeneratorInterface
 
         $subjectClass = $this->model->getSubject();
         $this->subject = new $subjectClass();
+    }
+
+    public function meetStopCondition(): bool
+    {
+        return false;
     }
 }

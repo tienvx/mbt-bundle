@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false" />
+
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject}" />
+
+        <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
+
+        <service id="mbt.generator_manager" class="Tienvx\Bundle\MbtBundle\Service\GeneratorManager" public="true" autowire="true">
+            <argument type="collection" />
+        </service>
+        <service id="Tienvx\Bundle\MbtBundle\Service\GeneratorManager" alias="mbt.generator_manager" />
+
+        <service id="mbt.stop_condition_manager" class="Tienvx\Bundle\MbtBundle\Service\StopConditionManager" public="true" autowire="true">
+            <argument type="collection" />
+        </service>
+        <service id="Tienvx\Bundle\MbtBundle\Service\StopConditionManager" alias="mbt.stop_condition_manager" />
+    </services>
+</container>
