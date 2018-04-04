@@ -7,12 +7,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 class GenerateCommand extends Command
 {
+    use ModelArgumentsTrait;
+
     private $modelRegistry;
     private $generatorManager;
 
@@ -39,14 +40,7 @@ class GenerateCommand extends Command
     {
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
         $model = $this->modelRegistry->get($input->getArgument('model'));
-
-        $arguments = $input->getOption('arguments');
-        if (is_string($arguments)) {
-            $arguments = json_decode($arguments, true);
-        }
-        else {
-            $arguments = [];
-        }
+        $arguments = $this->parseModelArguments($input->getOption('arguments'));
 
         $generator->init($model, $arguments);
 
