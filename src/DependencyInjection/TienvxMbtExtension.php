@@ -15,6 +15,7 @@ use Symfony\Component\Workflow;
 use Tienvx\Bundle\MbtBundle\EventListener\ExpressionListener;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Model;
+use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
@@ -43,6 +44,9 @@ class TienvxMbtExtension extends Extension
         $container->registerForAutoconfiguration(StopConditionInterface::class)
             ->setLazy(true)
             ->addTag('mbt.stop_condition');
+        $container->registerForAutoconfiguration(PathReducerInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.path_reducer');
 
         $this->registerModelConfiguration($config['models'], $container);
     }

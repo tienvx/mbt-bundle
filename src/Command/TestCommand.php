@@ -9,9 +9,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\PathReducer;
+use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
 class TestCommand extends Command
 {
@@ -19,13 +20,13 @@ class TestCommand extends Command
 
     private $modelRegistry;
     private $generatorManager;
-    private $pathReducer;
+    private $pathReducerManager;
 
-    public function __construct(ModelRegistry $modelRegistry, GeneratorManager $generatorManager, PathReducer $pathReducer)
+    public function __construct(ModelRegistry $modelRegistry, GeneratorManager $generatorManager, PathReducerManager $pathReducerManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
-        $this->pathReducer = $pathReducer;
+        $this->pathReducerManager = $pathReducerManager;
 
         parent::__construct();
     }
@@ -38,7 +39,8 @@ class TestCommand extends Command
             ->setHelp('This command test the system step by step defined by a model using a specific generator, then report bug if found.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The way to generate test sequence from model to test.', 'random')
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments pass to generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}');
+            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments pass to generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}')
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The way to reduce the reproduce path.', 'loop-first');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -56,11 +58,15 @@ class TestCommand extends Command
                 }
             }
         }
-        catch (\Throwable $throwable) {
+        catch (Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
             $path = $generator->getPath();
-            $path = $this->pathReducer->reduce($path, $model, $throwable);
+            $reducer = $input->getOption('reducer');
+            if ($reducer) {
+                $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
+                $path = $pathReducer->reduce($path, $model, $throwable);
+            }
 
             $output->writeln('Steps to reproduce:');
             $table = new Table($output);

@@ -11,7 +11,6 @@ class GeneratorManager
      */
     private $generators;
 
-
     public function __construct(array $generators = [])
     {
         $this->generators = $generators;

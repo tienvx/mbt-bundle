@@ -11,7 +11,6 @@ class StopConditionManager
      */
     private $stopConditions;
 
-
     public function __construct(array $stopConditions = [])
     {
         $this->stopConditions = $stopConditions;

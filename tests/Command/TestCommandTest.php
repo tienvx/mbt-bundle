@@ -16,10 +16,10 @@ class TestCommandTest extends CommandTestCase
 
         $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
         $generatorManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test');
-        $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
+        $pathReducerManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test');
 
         $application = new Application($kernel);
-        $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducer));
+        $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducerManager));
 
         $command = $application->find('mbt:test');
         $this->assertReproducePath($command, 'random', $this->getCoverageStopCondition(100, 100));

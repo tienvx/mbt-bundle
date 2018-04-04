@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Dumper\GraphvizDumper;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 class DumpCommand extends Command
@@ -32,11 +31,7 @@ class DumpCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $modelArgument = $input->getArgument('model');
-        $model = $this->modelRegistry->get($modelArgument);
-        if (!$model instanceof Model) {
-            throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
-        }
+        $model = $this->modelRegistry->get($input->getArgument('model'));
 
         $dumper = new GraphvizDumper();
         $output->write($dumper->dump($model->getDefinition()));

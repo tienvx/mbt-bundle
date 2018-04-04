@@ -17,19 +17,19 @@ class RunCommandTest extends CommandTestCase
         $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
         $graphBuilder = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test');
         $pathRunner = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathRunner.test');
-        $pathReducer = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducer.test');
+        $pathReducerManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test');
 
         $application = new Application($kernel);
-        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducer));
+        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager));
 
         $command = $application->find('mbt:run');
-        $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart', false);
+        $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');
         $this->assertEquals('', $output);
-        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout', false);
+        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout');
         $this->assertEquals('', $output);
-        $output = $this->runCommand($command, 'home addFromHome(product=49) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home', false);
+        $output = $this->runCommand($command, 'home addFromHome(product=49) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home');
         $this->assertContains('Found a bug: You added an out-of-stock product into cart! Can not checkout', $output);
-        $output = $this->runCommand($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', true);
+        $output = $this->runCommand($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', 'loop-first');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 Steps to reproduce:
 +------+----------------------------------------------------------------+-------------------+
@@ -42,14 +42,14 @@ Steps to reproduce:
 ', $output);
     }
 
-    public function runCommand(Command $command, $steps, $reduce)
+    public function runCommand(Command $command, $steps, $reducer = null)
     {
         $commandTester = new CommandTester($command);
         $input = [
             'command'        => $command->getName(),
             'model'          => 'shopping_cart',
             'steps'          => $steps,
-            '--reduce'       => $reduce,
+            '--reducer'      => $reducer,
         ];
         $commandTester->execute($input);
 
