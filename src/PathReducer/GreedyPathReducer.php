@@ -6,7 +6,7 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 
-class LoopFirstPathReducer extends AbstractPathReducer
+class GreedyPathReducer extends AbstractPathReducer
 {
     public function reduce(Path $path, Model $model, Throwable $throwable): Path
     {
@@ -59,6 +59,6 @@ class LoopFirstPathReducer extends AbstractPathReducer
 
     public static function getName()
     {
-        return 'loop-first';
+        return 'greedy';
     }
 }

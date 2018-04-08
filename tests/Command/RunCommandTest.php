@@ -29,7 +29,7 @@ class RunCommandTest extends CommandTestCase
         $this->assertEquals('', $output);
         $output = $this->runCommand($command, 'home addFromHome(product=49) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home');
         $this->assertContains('Found a bug: You added an out-of-stock product into cart! Can not checkout', $output);
-        $output = $this->runCommand($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', 'loop-first');
+        $output = $this->runCommand($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', 'greedy');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 Steps to reproduce:
 +------+----------------------------------------------------------------+-------------------+
@@ -39,6 +39,18 @@ Steps to reproduce:
 | 2    | From category page, choose a random product and add it to cart | {"product":"49"}  |
 | 3    | From category page, open checkout page                         | []                |
 +------+----------------------------------------------------------------+-------------------+
+', $output);
+        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout', 'binary');
+        $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
+Steps to reproduce:
++------+---------------------------------------------------------+-------------------+
+| Step | Label                                                   | Data Input        |
++------+---------------------------------------------------------+-------------------+
+| 1    | From home page, choose a random category and open it    | {"category":"57"} |
+| 2    | From category page, choose a random product and open it | {"product":"49"}  |
+| 3    | From product page, add it to cart                       | []                |
+| 4    | From product page, open checkout page                   | []                |
++------+---------------------------------------------------------+-------------------+
 ', $output);
     }
 
