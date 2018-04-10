@@ -16,13 +16,13 @@ class Path implements Iterator
 
     /**
      *
-     * @var array
+     * @var Vertex[]
      */
     protected $vertices;
 
     /**
      *
-     * @var array
+     * @var Directed[]
      */
     protected $edges;
 
@@ -139,6 +139,16 @@ class Path implements Iterator
         }
     }
 
+    public function getName(int $position)
+    {
+        if ($position % 2 === 1) {
+            return $this->edges[($position - 1) / 2]->getAttribute('name');
+        }
+        else {
+            return $this->vertices[$position / 2]->getAttribute('name');
+        }
+    }
+
     public function next()
     {
         ++$this->position;
@@ -175,5 +185,18 @@ class Path implements Iterator
             }
         }
         return implode(' ', $sequence);
+    }
+
+    public function equals(Path $path)
+    {
+        if ($this->countEdges() !== $path->countEdges() || $this->countVertices() !== $path->countVertices()) {
+            return false;
+        }
+        foreach ($this as $position => $step) {
+            if ($this->getName($position) !== $path->getName($position)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

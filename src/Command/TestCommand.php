@@ -40,7 +40,7 @@ class TestCommand extends Command
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The way to generate test sequence from model to test.', 'random')
             ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments pass to generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}')
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The way to reduce the reproduce path.', 'greedy');
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The way to reduce the reproduce path.', 'binary');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -16,11 +16,11 @@ class BinaryPathReducer extends AbstractPathReducer
         $quotient = floor($path->countEdges() / pow(2, $try));
         $remainder = $path->countEdges() % pow(2, $try);
 
-        while (($try <= self::MAX_TRIES && $quotient > 1) && $path->countEdges() >= 2) {
+        while (($try <= self::MAX_TRIES && $quotient > 0) && $path->countEdges() >= 2) {
             for ($i = 0; $i < pow(2, $try); $i++) {
                 $j = $quotient * $i;
-                if ($i === pow(2, $try) - 1) {
-                    if ($remainder > 1) {
+                if ($i === (pow(2, $try) - 1)) {
+                    if ($remainder > 0) {
                         $k = $j + $remainder;
                     }
                     else {
@@ -36,7 +36,7 @@ class BinaryPathReducer extends AbstractPathReducer
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage() && !$path->equals($newPath)) {
                             $path = $newPath;
                             $try = 0;
                             break;

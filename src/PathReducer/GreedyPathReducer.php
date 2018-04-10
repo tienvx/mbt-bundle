@@ -42,7 +42,7 @@ class GreedyPathReducer extends AbstractPathReducer
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage() && !$path->equals($newPath)) {
                             $path = $newPath;
                             $distance = $path->countVertices() - 1;
                             break;
