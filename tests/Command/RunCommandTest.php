@@ -53,7 +53,8 @@ Steps to reproduce:
 +------+---------------------------------------------------------+-------------------+
 ', $output);
         $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout', 'binary');
-        $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
+        if (strpos($output, '{"category":"34"}')) {
+            $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 Steps to reproduce:
 +------+----------------------------------------------------------------+-------------------+
 | Step | Label                                                          | Data Input        |
@@ -64,6 +65,19 @@ Steps to reproduce:
 | 4    | From category page, open checkout page                         | []                |
 +------+----------------------------------------------------------------+-------------------+
 ', $output);
+        }
+        else {
+            $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
+Steps to reproduce:
++------+----------------------------------------------------------------+-------------------+
+| Step | Label                                                          | Data Input        |
++------+----------------------------------------------------------------+-------------------+
+| 1    | From home page, choose a random category and open it           | {"category":"57"} |
+| 2    | From category page, choose a random product and add it to cart | {"product":"49"}  |
+| 3    | From category page, open checkout page                         | []                |
++------+----------------------------------------------------------------+-------------------+
+', $output);
+        }
         $output = $this->runCommand($command, 'home viewCartFromHome() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=25_28) category viewOtherCategory(category=20) category checkoutFromCategory() checkout', 'greedy');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 Steps to reproduce:
