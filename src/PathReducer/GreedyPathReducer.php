@@ -38,11 +38,11 @@ class GreedyPathReducer extends AbstractPathReducer
                 list($i, $j) = $pair;
                 $newPath = $this->getNewPath($path, $i, $j);
                 // Make sure new path walkable.
-                if ($this->runner->canWalk($newPath, $model)) {
+                if ($this->runner->canWalk($newPath, $model) && $newPath->countVertices() < $path->countVertices()) {
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage() && !$path->equals($newPath)) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
                             $path = $newPath;
                             $distance = $path->countVertices() - 1;
                             break;

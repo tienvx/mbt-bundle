@@ -20,23 +20,18 @@ class BinaryPathReducer extends AbstractPathReducer
             for ($i = 0; $i < pow(2, $try); $i++) {
                 $j = $quotient * $i;
                 if ($i === (pow(2, $try) - 1)) {
-                    if ($remainder > 0) {
-                        $k = $j + $remainder;
-                    }
-                    else {
-                        break;
-                    }
+                    $k = $quotient * ($i + 1) + $remainder;
                 }
                 else {
                     $k = $quotient * ($i + 1);
                 }
                 $newPath = $this->getNewPath($path, $j, $k);
                 // Make sure new path walkable.
-                if ($this->runner->canWalk($newPath, $model)) {
+                if ($this->runner->canWalk($newPath, $model) && $newPath->countVertices() < $path->countVertices()) {
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage() && !$path->equals($newPath)) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
                             $path = $newPath;
                             $try = 0;
                             break;

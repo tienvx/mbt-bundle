@@ -58,10 +58,10 @@ Steps to reproduce:
 +------+----------------------------------------------------------------+-------------------+
 | Step | Label                                                          | Data Input        |
 +------+----------------------------------------------------------------+-------------------+
-| 1    | From home page, choose a random category and open it           | {"category":"57"} |
-| 2    | From category page, choose a random product and add it to cart | {"product":"49"}  |
-| 3    | From category page, back to home page                          | []                |
-| 4    | From home page, open checkout page                             | []                |
+| 1    | From home page, choose a random category and open it           | {"category":"34"} |
+| 2    | From category page, choose a random category and open it       | {"category":"57"} |
+| 3    | From category page, choose a random product and add it to cart | {"product":"49"}  |
+| 4    | From category page, open checkout page                         | []                |
 +------+----------------------------------------------------------------+-------------------+
 ', $output);
     }
