@@ -8,15 +8,14 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class BinaryPathReducer extends AbstractPathReducer
 {
-    const MAX_TRIES = 5;
-
     public function reduce(Path $path, Model $model, Throwable $throwable): Path
     {
         $try = 1;
         $quotient = floor($path->countEdges() / pow(2, $try));
         $remainder = $path->countEdges() % pow(2, $try);
+        $maxTries = $path->countVertices();
 
-        while (($try <= self::MAX_TRIES && $quotient > 0) && $path->countEdges() >= 2) {
+        while (($try <= $maxTries && $quotient > 0) && $path->countEdges() >= 2) {
             for ($i = 0; $i < pow(2, $try); $i++) {
                 $j = $quotient * $i;
                 if ($i === (pow(2, $try) - 1)) {
@@ -33,7 +32,8 @@ class BinaryPathReducer extends AbstractPathReducer
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $throwable->getMessage()) {
                             $path = $newPath;
-                            $try = 0;
+                            $try = 1;
+                            $maxTries = $path->countVertices();
                             break;
                         }
                     }
