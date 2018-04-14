@@ -36,7 +36,7 @@ class Path implements Iterator
     {
         $this->vertices = $vertices;
         $this->edges    = $edges;
-        $this->allData     = $data;
+        $this->allData  = $data;
         $this->position = 0;
     }
 
@@ -70,7 +70,7 @@ class Path implements Iterator
         return $this->vertices;
     }
 
-    public function getVertexAt($index): Vertex
+    public function getVertexAt(int $index): Vertex
     {
         return $this->vertices[$index] ?? null;
     }
