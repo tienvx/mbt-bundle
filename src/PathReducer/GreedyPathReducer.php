@@ -31,8 +31,8 @@ class GreedyPathReducer extends AbstractPathReducer
                 foreach ($pairs as $pair) {
                     list($i, $j) = $pair;
                     $newPath = $this->getNewPath($path, $i, $j);
-                    // Make sure new path walkable.
-                    if ($this->runner->canWalk($newPath, $model) && $newPath->countVertices() < $path->countVertices()) {
+                    // Make sure new path shorter than old path.
+                    if ($newPath->countVertices() < $path->countVertices()) {
                         try {
                             $this->runner->run($newPath, $model);
                         } catch (Throwable $newThrowable) {

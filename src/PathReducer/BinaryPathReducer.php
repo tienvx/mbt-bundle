@@ -26,8 +26,8 @@ class BinaryPathReducer extends AbstractPathReducer
                     $k = $quotient * ($i + 1);
                 }
                 $newPath = $this->getNewPath($path, $j, $k);
-                // Make sure new path walkable.
-                if ($this->runner->canWalk($newPath, $model) && $newPath->countVertices() < $path->countVertices()) {
+                // Make sure new path shorter than old path.
+                if ($newPath->countVertices() < $path->countVertices()) {
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {

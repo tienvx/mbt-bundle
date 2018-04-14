@@ -32,35 +32,7 @@ class PathRunner
                 $place = $step->getAttribute('name');
                 $marking = $model->getMarking($subject);
                 if (!$marking->has($place)) {
-                    throw new \Exception(sprintf('Expected current place to be "%s", but got "%s"', $place, $marking->getPlaces()[0]));
-                }
-            }
-            else if ($step instanceof Directed) {
-                $transition = $step->getAttribute('name');
-                $data = $path->getDataAtPosition($position);
-                $subject->setData($data);
-                if ($model->can($subject, $transition)) {
-                    $model->apply($subject, $transition);
-                }
-                else {
-                    throw new \Exception(sprintf('Can not apply transition "%s" with data "%s"', $transition, json_encode($data)));
-                }
-            }
-        }
-    }
-
-    public function canWalk(Path $path, Model $model)
-    {
-        $subjectClass = $model->getSubject();
-        /* @var Subject $subject */
-        $subject = new $subjectClass();
-
-        foreach ($path as $position => $step) {
-            if ($step instanceof Vertex) {
-                $place = $step->getAttribute('name');
-                $marking = $model->getMarking($subject);
-                if (!$marking->has($place)) {
-                    return false;
+                    break;
                 }
             }
             else if ($step instanceof Directed) {
@@ -77,10 +49,9 @@ class PathRunner
                     $model->apply($subject, $transition);
                 }
                 else {
-                    return false;
+                    break;
                 }
             }
         }
-        return true;
     }
 }
