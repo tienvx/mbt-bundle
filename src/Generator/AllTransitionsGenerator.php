@@ -2,22 +2,15 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Fhaculty\Graph\Exception\UnderflowException;
 use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Exception\UnderflowException;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
-use Fhaculty\Graph\Vertex;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
-use Tienvx\Bundle\MbtBundle\Annotation\Generator;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
-/**
- * @Generator(
- *     name = "all-transitions",
- *     label = "All Transitions"
- * )
- */
 class AllTransitionsGenerator extends AbstractGenerator
 {
     /**
@@ -30,9 +23,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init()
+    public function init(Model $model, array $arguments)
     {
-        parent::init();
+        parent::init($model, $arguments);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();
@@ -95,5 +88,10 @@ class AllTransitionsGenerator extends AbstractGenerator
     public function meetStopCondition(): bool
     {
         return !$this->singleComponent;
+    }
+
+    public static function getName()
+    {
+        return 'all-transitions';
     }
 }

@@ -26,8 +26,8 @@ services:
     Tienvx\Bundle\MbtBundle\Service\PathRunner.test:
         alias: 'Tienvx\Bundle\MbtBundle\Service\PathRunner'
         public: true
-    Tienvx\Bundle\MbtBundle\Service\PathReducer.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\PathReducer'
+    Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test:
+        alias: 'Tienvx\Bundle\MbtBundle\Service\PathReducerManager'
         public: true
     Tienvx\Bundle\MbtBundle\Tests\DataFixtures\TaskFixtures:
         tags: [doctrine.fixture.orm]

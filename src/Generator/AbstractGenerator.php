@@ -9,6 +9,7 @@ use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 abstract class AbstractGenerator implements GeneratorInterface
@@ -22,6 +23,11 @@ abstract class AbstractGenerator implements GeneratorInterface
      * @var GraphBuilder
      */
     protected $graphBuilder;
+
+    /**
+     * @var StopConditionManager
+     */
+    protected $stopConditionManager;
 
     /**
      * @var Model
@@ -39,11 +45,6 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $currentVertex;
 
     /**
-     * @var Directed
-     */
-    protected $currentEdge;
-
-    /**
      * @var Path
      */
     protected $path;
@@ -53,20 +54,11 @@ abstract class AbstractGenerator implements GeneratorInterface
      */
     protected $subject;
 
-    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder)
+    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager)
     {
         $this->dataProvider = $dataProvider;
         $this->graphBuilder = $graphBuilder;
-        $this->path = new Path();
-    }
-
-    public function setArgs(array $args)
-    {
-    }
-
-    public function setModel(Model $model)
-    {
-        $this->model = $model;
+        $this->stopConditionManager = $stopConditionManager;
     }
 
     public function getPath(): Path
@@ -108,34 +100,22 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->model->apply($this->subject, $transitionName);
     }
 
-    public function getMaxProgress(): int
+    public function init(Model $model, array $arguments)
     {
-        return 100;
-    }
+        $this->model = $model;
 
-    public function getCurrentProgress(): int
-    {
-        return 0;
-    }
+        $this->graph = $this->graphBuilder->build($this->model);
+        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
 
-    public function getCurrentProgressMessage(): string
-    {
-        return '';
+        $this->path = new Path();
+        $this->path->addVertex($this->currentVertex);
+
+        $subjectClass = $this->model->getSubject();
+        $this->subject = new $subjectClass();
     }
 
     public function meetStopCondition(): bool
     {
         return false;
-    }
-
-    public function init()
-    {
-        $this->graph = $this->graphBuilder->build($this->model);
-        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
-
-        $this->path->addVertex($this->currentVertex);
-
-        $subjectClass = $this->model->getSubject();
-        $this->subject = new $subjectClass();
     }
 }

@@ -19,7 +19,7 @@ class WorkflowListener implements EventSubscriberInterface
         }
     }
 
-    public function onEnterd(Event $event)
+    public function onEntered(Event $event)
     {
         /* @var Subject $subject */
         $subject = $event->getSubject();
@@ -37,7 +37,7 @@ class WorkflowListener implements EventSubscriberInterface
     {
         return array(
             'workflow.announce' => array('onAnnounce', 0),
-            'workflow.entered' => array('onEnterd'),
+            'workflow.entered' => array('onEntered'),
         );
     }
 }

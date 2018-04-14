@@ -16,13 +16,13 @@ class Path implements Iterator
 
     /**
      *
-     * @var array
+     * @var Vertex[]
      */
     protected $vertices;
 
     /**
      *
-     * @var array
+     * @var Directed[]
      */
     protected $edges;
 
@@ -58,6 +58,11 @@ class Path implements Iterator
     public function countVertices()
     {
         return count($this->vertices);
+    }
+
+    public function countEdges()
+    {
+        return count($this->edges);
     }
 
     public function getVertices()

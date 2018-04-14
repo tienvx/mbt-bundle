@@ -9,11 +9,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\PathReducer;
+use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
 class RunCommand extends Command
@@ -21,14 +21,14 @@ class RunCommand extends Command
     private $modelRegistry;
     private $graphBuilder;
     private $pathRunner;
-    private $pathReducer;
+    private $pathReducerManager;
 
-    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducer $pathReducer)
+    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducerManager $pathReducerManager)
     {
-        $this->modelRegistry = $modelRegistry;
-        $this->graphBuilder = $graphBuilder;
-        $this->pathRunner = $pathRunner;
-        $this->pathReducer = $pathReducer;
+        $this->modelRegistry      = $modelRegistry;
+        $this->graphBuilder       = $graphBuilder;
+        $this->pathRunner         = $pathRunner;
+        $this->pathReducerManager = $pathReducerManager;
 
         parent::__construct();
     }
@@ -41,17 +41,12 @@ class RunCommand extends Command
             ->setHelp('This command allows you to run test sequence that is generated from mbt:generate command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to run.')
             ->addArgument('steps', InputArgument::REQUIRED, 'The test steps to run.')
-            ->addOption('reduce', 'r', InputOption::VALUE_NONE, 'Whether to reduce the path or not.');
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The way to reduce the reproduce path.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $modelArgument = $input->getArgument('model');
-        $model = $this->modelRegistry->get($modelArgument);
-        if (!$model instanceof Model) {
-            throw new \Exception(sprintf('Can not load model by id "%s".', $modelArgument));
-        }
-
+        $model = $this->modelRegistry->get($input->getArgument('model'));
         $graph = $this->graphBuilder->build($model);
 
         $edges = [];
@@ -86,24 +81,25 @@ class RunCommand extends Command
         try {
             $this->pathRunner->run($path, $model);
         }
-        catch (\Throwable $throwable) {
+        catch (Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
-            $reduce = $input->getOption('reduce');
-            if ($reduce) {
-                $path = $this->pathReducer->reduce($path, $model, $throwable);
-
-                $output->writeln('Steps to reproduce:');
-                $table = new Table($output);
-                $table->setHeaders(array('Step', 'Label', 'Data Input'));
-                /** @var Directed[] $edges */
-                $edges = $path->getEdges();
-                $allData = $path->getAllData();
-                foreach ($edges as $index => $edge) {
-                    $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
-                }
-                $table->render();
+            $reducer = $input->getOption('reducer');
+            if ($reducer) {
+                $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
+                $path = $pathReducer->reduce($path, $model, $throwable);
             }
+
+            $output->writeln('Steps to reproduce:');
+            $table = new Table($output);
+            $table->setHeaders(array('Step', 'Label', 'Data Input'));
+            /** @var Directed[] $edges */
+            $edges = $path->getEdges();
+            $allData = $path->getAllData();
+            foreach ($edges as $index => $edge) {
+                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
+            }
+            $table->render();
         }
     }
 }

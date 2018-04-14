@@ -7,54 +7,40 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 class GeneratorManager
 {
     /**
-     * @var GeneratorDiscovery
+     * @var GeneratorInterface[]
      */
-    private $discovery;
+    private $generators;
 
-    /**
-     * @var DataProvider
-     */
-    private $dataProvider;
-
-    /**
-     * @var GraphBuilder
-     */
-    private $graphBuilder;
-
-
-    public function __construct(GeneratorDiscovery $discovery, DataProvider $dataProvider, GraphBuilder $graphBuilder)
+    public function __construct(array $generators = [])
     {
-        $this->discovery = $discovery;
-        $this->dataProvider = $dataProvider;
-        $this->graphBuilder = $graphBuilder;
+        $this->generators = $generators;
     }
 
     /**
-     * Returns a list of available workers.
+     * Returns a list of available generators.
      *
      * @return array
      */
     public function getGenerators(): array
     {
-        return $this->discovery->getGenerators();
+        return $this->generators;
     }
 
     /**
      * Returns one generator by name
      *
      * @param $name
-     * @return array
+     * @return GeneratorInterface
      *
      * @throws \Exception
      */
-    public function getGenerator($name): array
+    public function getGenerator($name): GeneratorInterface
     {
-        $generators = $this->discovery->getGenerators();
-        if (isset($generators[$name])) {
-            return $generators[$name];
+        if (isset($this->generators[$name])) {
+            return $this->generators[$name];
         }
 
-        throw new \Exception('Generator not found.');
+        throw new \Exception(sprintf('Generator %s does not exist.', $name));
     }
 
     /**
@@ -65,29 +51,6 @@ class GeneratorManager
      */
     public function hasGenerator($name): bool
     {
-        $generators = $this->discovery->getGenerators();
-        return isset($generators[$name]);
-    }
-
-    /**
-     * Creates a worker
-     *
-     * @param $name
-     * @return GeneratorInterface
-     *
-     * @throws \Exception
-     */
-    public function create($name)
-    {
-        $generators = $this->discovery->getGenerators();
-        if (array_key_exists($name, $generators)) {
-            $class = $generators[$name]['class'];
-            if (!class_exists($class)) {
-                throw new \Exception('Generator class does not exist.');
-            }
-            return new $class($this->dataProvider, $this->graphBuilder);
-        }
-
-        throw new \Exception('Generator does not exist.');
+        return isset($this->generators[$name]);
     }
 }
