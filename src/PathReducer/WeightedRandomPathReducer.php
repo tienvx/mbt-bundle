@@ -12,7 +12,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
     {
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
-        $maxTries = $path->countVertices();
+        $maxTries = $path->countVertices() * 2;
 
         while ($try <= $maxTries) {
             $vertexWeight = $this->buildVertexWeight($path, $pathWeight);
@@ -31,15 +31,15 @@ class WeightedRandomPathReducer extends AbstractPathReducer
                 } finally {
                     if ($newPath->countVertices() === $path->countVertices()) {
                         $try = 1;
-                        $maxTries = $path->countVertices();
+                        $maxTries = $path->countVertices() * 2;
                         $pathWeight = $this->rebuildPathWeight($path, $pathWeight);
                     }
                     else {
                         $this->updatePathWeight($pathWeight, $path, $i, $j);
                     }
-                    $try++;
                 }
             }
+            $try++;
         }
 
         // Can not reduce the reproduce path (any more).
