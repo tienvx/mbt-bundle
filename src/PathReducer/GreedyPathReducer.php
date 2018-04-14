@@ -12,7 +12,7 @@ class GreedyPathReducer extends AbstractPathReducer
     {
         $distance = $path->countVertices() - 1;
 
-        while ($distance > 1) {
+        while ($distance > 0) {
             $pairs = [];
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
                 $j = $i + $distance;
