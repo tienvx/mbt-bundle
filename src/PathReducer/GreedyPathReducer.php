@@ -12,35 +12,26 @@ class GreedyPathReducer extends AbstractPathReducer
     {
         $distance = $path->countVertices() - 1;
 
-        while ($distance > 0) {
-            $pairsByDistance = [];
+        while ($distance > 1) {
+            $pairs = [];
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
                 $j = $i + $distance;
                 if ($j < $path->countVertices()) {
-                    $pairsByDistance[$j - $i] = $pairsByDistance[$j - $i] ?? [];
-                    if ($path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                        array_unshift($pairsByDistance[$j - $i], [$i, $j]);
-                    }
-                    elseif ($path->getVertexAt($i)->getId() !== $path->getVertexAt($j)->getId() && $distance > 1) {
-                        array_push($pairsByDistance[$j - $i], [$i, $j]);
-                    }
+                    $pairs[] = [$i, $j];
                 }
             }
-            krsort($pairsByDistance);
-            foreach ($pairsByDistance as $pairs) {
-                foreach ($pairs as $pair) {
-                    list($i, $j) = $pair;
-                    $newPath = $this->getNewPath($path, $i, $j);
-                    // Make sure new path shorter than old path.
-                    if ($newPath->countVertices() < $path->countVertices()) {
-                        try {
-                            $this->runner->run($newPath, $model);
-                        } catch (Throwable $newThrowable) {
-                            if ($newThrowable->getMessage() === $throwable->getMessage()) {
-                                $path = $newPath;
-                                $distance = $path->countVertices() - 1;
-                                break;
-                            }
+            foreach ($pairs as $pair) {
+                list($i, $j) = $pair;
+                $newPath = $this->getNewPath($path, $i, $j);
+                // Make sure new path shorter than old path.
+                if ($newPath->countVertices() < $path->countVertices()) {
+                    try {
+                        $this->runner->run($newPath, $model);
+                    } catch (Throwable $newThrowable) {
+                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                            $path = $newPath;
+                            $distance = $path->countVertices() - 1;
+                            break;
                         }
                     }
                 }
