@@ -1,2 +1,4 @@
-app:
-    resource: '@TienvxMbtBundle/Resources/config/routing.yml'
+mbt:
+    resource: '.'
+    type: 'api_platform'
+    prefix: '/mbt'

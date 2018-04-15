@@ -1,4 +1,0 @@
-mbt:
-    resource: '.'
-    type: 'api_platform'
-    prefix: '/mbt'
