@@ -1,10 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Command;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
-trait ModelArgumentsTrait
+trait GeneratorArgumentsTrait
 {
-    private function parseModelArguments(string $arguments = null): array
+    private function parseGeneratorArguments(string $arguments = null): array
     {
         if (is_string($arguments)) {
             $arguments = json_decode($arguments, true);

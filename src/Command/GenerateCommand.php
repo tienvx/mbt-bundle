@@ -7,12 +7,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 class GenerateCommand extends Command
 {
-    use ModelArgumentsTrait;
+    use GeneratorArgumentsTrait;
 
     private $modelRegistry;
     private $generatorManager;
@@ -38,11 +39,13 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $model = $input->getArgument('model');
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
-        $model = $this->modelRegistry->get($input->getArgument('model'));
-        $arguments = $this->parseModelArguments($input->getOption('arguments'));
+        $workflowMetadata = $this->modelRegistry->getModel($model);
+        $subject = $workflowMetadata['subject'];
+        $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
 
-        $generator->init($model, $arguments);
+        $generator->init($model, $subject, $arguments);
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
             if ($generator->canGoNextStep($edge)) {

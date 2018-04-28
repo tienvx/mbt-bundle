@@ -10,13 +10,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
 class TestCommand extends Command
 {
-    use ModelArgumentsTrait;
+    use GeneratorArgumentsTrait;
 
     private $modelRegistry;
     private $generatorManager;
@@ -45,16 +46,18 @@ class TestCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $model = $input->getArgument('model');
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
-        $model = $this->modelRegistry->get($input->getArgument('model'));
-        $arguments = $this->parseModelArguments($input->getOption('arguments'));
+        $workflowMetadata = $this->modelRegistry->getModel($model);
+        $subject = $workflowMetadata['subject'];
+        $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
 
-        $generator->init($model, $arguments);
+        $generator->init($model, $subject, $arguments, true);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
                 if ($generator->canGoNextStep($edge)) {
-                    $generator->goToNextStep($edge, true);
+                    $generator->goToNextStep($edge);
                 }
             }
         }
@@ -65,7 +68,7 @@ class TestCommand extends Command
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $throwable);
+                $path = $pathReducer->reduce($path, $model, $subject, $throwable);
             }
 
             $output->writeln('Steps to reproduce:');

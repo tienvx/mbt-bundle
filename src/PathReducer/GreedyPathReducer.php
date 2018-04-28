@@ -4,11 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class GreedyPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path
+    public function reduce(Path $path, string $model, string $subject, Throwable $throwable): Path
     {
         $distance = $path->countVertices() - 1;
 
@@ -26,7 +25,7 @@ class GreedyPathReducer extends AbstractPathReducer
                 // Make sure new path shorter than old path.
                 if ($newPath->countVertices() < $path->countVertices()) {
                     try {
-                        $this->runner->run($newPath, $model);
+                        $this->runner->run($newPath, $model, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $throwable->getMessage()) {
                             $path = $newPath;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Subject;
+namespace Tienvx\Bundle\MbtBundle\Model;
 
-class Subject
+abstract class Subject
 {
     /**
      * @var string Required by workflow component

@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
+use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 class GenerateCommandTest extends CommandTestCase
 {
@@ -14,8 +16,8 @@ class GenerateCommandTest extends CommandTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
-        $generatorManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test');
+        $modelRegistry = self::$container->get(ModelRegistry::class);
+        $generatorManager = self::$container->get(GeneratorManager::class);
 
         $application = new Application($kernel);
         $application->add(new GenerateCommand($modelRegistry, $generatorManager));

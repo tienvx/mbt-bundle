@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -22,13 +23,15 @@ class RunCommand extends Command
     private $graphBuilder;
     private $pathRunner;
     private $pathReducerManager;
+    private $workflows;
 
-    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducerManager $pathReducerManager)
+    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducerManager $pathReducerManager, Registry $workflows)
     {
         $this->modelRegistry      = $modelRegistry;
         $this->graphBuilder       = $graphBuilder;
         $this->pathRunner         = $pathRunner;
         $this->pathReducerManager = $pathReducerManager;
+        $this->workflows          = $workflows;
 
         parent::__construct();
     }
@@ -46,8 +49,12 @@ class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $this->modelRegistry->get($input->getArgument('model'));
-        $graph = $this->graphBuilder->build($model);
+        $model = $input->getArgument('model');
+        $workflowMetadata = $this->modelRegistry->getModel($model);
+        $subject = $workflowMetadata['subject'];
+        $workflow = $this->workflows->get(new $subject(), $model);
+
+        $graph = $this->graphBuilder->build($workflow->getDefinition());
 
         $edges = [];
         $vertices = [];
@@ -79,7 +86,7 @@ class RunCommand extends Command
         $path = new Path($vertices, $edges, $allData);
 
         try {
-            $this->pathRunner->run($path, $model);
+            $this->pathRunner->run($path, $model, $subject);
         }
         catch (Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
@@ -87,7 +94,7 @@ class RunCommand extends Command
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $throwable);
+                $path = $pathReducer->reduce($path, $model, $subject, $throwable);
             }
 
             $output->writeln('Steps to reproduce:');

@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class RandomGenerator extends AbstractGenerator
@@ -45,7 +44,7 @@ class RandomGenerator extends AbstractGenerator
      */
     protected $unvisitedVertices = [];
 
-    public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
+    public function goToNextStep(Directed $currentEdge)
     {
         $transitionName = $currentEdge->getAttribute('name');
 
@@ -76,29 +75,12 @@ class RandomGenerator extends AbstractGenerator
         $this->vertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
         $this->currentVertex  = $currentEdge->getVertexEnd();
 
-        // Apply model. Call SUT if needed.
-        $this->subject->setCallSUT($callSUT);
-        $this->model->apply($this->subject, $transitionName);
+        parent::goToNextStep($currentEdge);
     }
 
     public function canGoNextStep(Directed $currentEdge): bool
     {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        // Set data to subject.
-        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
-        $this->subject->setData($data);
-
-        $canGo = $this->model->can($this->subject, $currentEdge->getAttribute('name'));
-
-        if ($canGo) {
-            // Update test sequence.
-            $this->path->addEdge($currentEdge);
-            $this->path->addVertex($currentEdge->getVertexEnd());
-            $this->path->addData($data);
-        }
-
-        return $canGo;
+        return $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
     }
 
     public function getNextStep(): ?Directed
@@ -128,9 +110,9 @@ class RandomGenerator extends AbstractGenerator
         return 'random';
     }
 
-    public function init(Model $model, array $arguments)
+    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
     {
-        parent::init($model, $arguments);
+        parent::init($model, $subject, $arguments, $callSUT);
 
         $this->stopCondition = $this->stopConditionManager->getStopCondition($arguments['stop']['on']);
         $this->stopCondition->setArguments($arguments['stop']['at'] ?? []);

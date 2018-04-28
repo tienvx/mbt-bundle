@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Subject;
 
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class ShoppingCart extends Subject
 {
@@ -20,6 +20,16 @@ class ShoppingCart extends Subject
      * @var string Current viewing category
      */
     protected $category;
+
+    /**
+     * @var string Temporary selected product from category
+     */
+    protected $selectedProductFromCategory;
+
+    /**
+     * @var string Temporary selected product from cart
+     */
+    protected $selectedProductFromCart;
 
     /**
      * @var array
@@ -117,82 +127,66 @@ class ShoppingCart extends Subject
         parent::__construct();
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewAnyCategoryFromHome($data)
+    public function viewAnyCategoryFromHome()
     {
-        $category = $data['category'];
+        $category = $this->data['category'] ?? $this->getRandomCategory();
         $this->category = $category;
         $this->product = null;
+        $this->data = ['category' => $category];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewOtherCategory($data)
+    public function viewOtherCategory()
     {
-        $category = $data['category'];
+        $category = $this->data['category'] ?? $this->getRandomCategory();
         $this->category = $category;
         $this->product = null;
+        $this->data = ['category' => $category];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewAnyCategoryFromProduct($data)
+    public function viewAnyCategoryFromProduct()
     {
-        $category = $data['category'];
+        $category = $this->data['category'] ?? $this->getRandomCategory();
         $this->category = $category;
         $this->product = null;
+        $this->data = ['category' => $category];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewAnyCategoryFromCart($data)
+    public function viewAnyCategoryFromCart()
     {
-        $category = $data['category'];
+        $category = $this->data['category'] ?? $this->getRandomCategory();
         $this->category = $category;
         $this->product = null;
+        $this->data = ['category' => $category];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewProductFromHome($data)
+    public function viewProductFromHome()
     {
-        $product = $data['product'];
+        $product = $this->data['product'] ?? $this->getRandomProductFromHome();
         $this->product = $product;
         $this->category = null;
+        $this->data = ['product' => $product];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewProductFromCart($data)
+    public function viewProductFromCart()
     {
-        $product = $data['product'];
+        $product = $this->selectedProductFromCart;
         $this->product = $product;
         $this->category = null;
+        $this->data = ['product' => $product];
     }
 
-    /**
-     * @param $data array
-     */
-    public function viewProductFromCategory($data)
+    public function viewProductFromCategory()
     {
-        $product = $data['product'];
+        $product = $this->selectedProductFromCategory;
         $this->product = $product;
         $this->category = null;
+        $this->data = ['product' => $product];
     }
 
-    public function categoryHasProduct($data)
+    public function categoryHasProduct()
     {
-        if (!isset($data['product'])) {
-            return false;
-        }
-        $product = $data['product'];
+        $product = $this->data['product'] ?? $this->getRandomProductFromCategory();
+        $this->selectedProductFromCategory = $product;
         return !empty($this->productsInCategory[$this->category]) &&
             in_array($product, $this->productsInCategory[$this->category]);
     }
@@ -201,109 +195,115 @@ class ShoppingCart extends Subject
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function viewCartFromCategory()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function viewCartFromProduct()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function viewCartFromCheckout()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function checkoutFromHome()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function checkoutFromCategory()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function checkoutFromProduct()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function checkoutFromCart()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function backToHomeFromCategory()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function backToHomeFromProduct()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function backToHomeFromCart()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
     public function backToHomeFromCheckout()
     {
         $this->category = null;
         $this->product = null;
+        $this->data = null;
     }
 
-    public function cartHasProduct($data)
+    public function cartHasProduct()
     {
-        if (!isset($data['product'])) {
-            return false;
-        }
-        $product = $data['product'];
+        $product = $this->data['product'] ?? $this->getRandomProductFromCart();
+        $this->selectedProductFromCart = $product;
         return !empty($this->cart[$product]);
     }
 
-    /**
-     * @param $data array
-     */
-    public function addFromHome($data)
+    public function addFromHome()
     {
-        $product = $data['product'];
+        $product = $this->data['product'] ?? $this->getRandomProductFromHome();
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
         else {
             $this->cart[$product]++;
         }
+        $this->data = ['product' => $product];
     }
 
-    /**
-     * @param $data array
-     */
-    public function addFromCategory($data)
+    public function addFromCategory()
     {
-        $product = $data['product'];
+        $product = $this->selectedProductFromCategory;
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
         else {
             $this->cart[$product]++;
         }
+        $this->data = ['product' => $product];
     }
 
     public function addFromProduct()
@@ -314,25 +314,21 @@ class ShoppingCart extends Subject
         else {
             $this->cart[$this->product]++;
         }
+        $this->data = ['product' => $this->product];
     }
 
-    /**
-     * @param $data array
-     */
-    public function remove($data)
+    public function remove()
     {
-        $product = $data['product'];
+        $product = $this->selectedProductFromCart;
         unset($this->cart[$product]);
+        $this->data = ['product' => $product];
     }
 
-    /**
-     * @param $data array
-     * @throws \Exception
-     */
-    public function update($data)
+    public function update()
     {
-        $product = $data['product'];
+        $product = $this->selectedProductFromCart;
         $this->cart[$product] = rand(1, 99);
+        $this->data = ['product' => $product];
     }
 
     public function home()

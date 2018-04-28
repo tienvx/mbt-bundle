@@ -4,11 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path
+    public function reduce(Path $path, string $model, string $subject, Throwable $throwable): Path
     {
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
@@ -23,7 +22,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
             // Make sure new path shorter than old path.
             if ($newPath->countVertices() < $path->countVertices()) {
                 try {
-                    $this->runner->run($newPath, $model);
+                    $this->runner->run($newPath, $model, $subject);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $throwable->getMessage()) {
                         $path = $newPath;

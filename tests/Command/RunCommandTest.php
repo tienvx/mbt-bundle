@@ -5,7 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Command\RunCommand;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
 class RunCommandTest extends CommandTestCase
 {
@@ -14,13 +19,14 @@ class RunCommandTest extends CommandTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
-        $graphBuilder = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test');
-        $pathRunner = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathRunner.test');
-        $pathReducerManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test');
+        $modelRegistry = self::$container->get(ModelRegistry::class);
+        $graphBuilder = self::$container->get(GraphBuilder::class);
+        $pathRunner = self::$container->get(PathRunner::class);
+        $pathReducerManager = self::$container->get(PathReducerManager::class);
+        $workflows = self::$container->get(Registry::class);
 
         $application = new Application($kernel);
-        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager));
+        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $workflows));
 
         $command = $application->find('mbt:run');
         $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');

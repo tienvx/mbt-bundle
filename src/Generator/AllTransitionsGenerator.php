@@ -9,7 +9,6 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -23,9 +22,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(Model $model, array $arguments)
+    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
     {
-        parent::init($model, $arguments);
+        parent::init($model, $subject, $arguments, $callSUT);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();
@@ -38,22 +37,17 @@ class AllTransitionsGenerator extends AbstractGenerator
 
     public function canGoNextStep(Directed $currentEdge): bool
     {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        // Set data to subject.
-        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
-        $this->subject->setData($data);
-
-        $canGo = $this->model->can($this->subject, $currentEdge->getAttribute('name'));
+        $canGo = $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
 
         if ($canGo) {
             // Update test sequence.
+            /** @var Directed $currentEdgeInPath */
             $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($currentEdge) {
                 return $edge->getAttribute('name') === $currentEdge->getAttribute('name');
             });
             $this->path->addEdge($currentEdgeInPath);
             $this->path->addVertex($currentEdgeInPath->getVertexEnd());
-            $this->path->addData($data);
+            $this->path->addData($this->subject->getData());
         }
 
         return $canGo;
@@ -74,7 +68,7 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
     }
 
-    public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
+    public function goToNextStep(Directed $currentEdge)
     {
         $currentEdge->setAttribute('visited', true);
         foreach ($this->currentVertex->getEdgesOut() as $edge) {
@@ -82,7 +76,7 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
         $this->currentVertex = $currentEdge->getVertexEnd();
 
-        parent::goToNextStep($currentEdge, $callSUT);
+        parent::goToNextStep($currentEdge);
     }
 
     public function meetStopCondition(): bool

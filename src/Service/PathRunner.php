@@ -4,49 +4,49 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Vertex;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class PathRunner
 {
     /**
-     * @var DataProvider
+     * @var Registry
      */
-    protected $dataProvider;
+    protected $workflows;
 
-    public function __construct(DataProvider $dataProvider)
+    public function __construct(Registry $workflows)
     {
-        $this->dataProvider = $dataProvider;
+        $this->workflows = $workflows;
     }
 
-    public function run(Path $path, Model $model)
+    public function run(Path $path, string $model, string $subject)
     {
-        $subjectClass = $model->getSubject();
         /* @var Subject $subject */
-        $subject = new $subjectClass();
+        $subject = new $subject();
         $subject->setCallSUT(true);
+        $workflow = $this->workflows->get($subject, $model);
 
         foreach ($path as $position => $step) {
             if ($step instanceof Vertex) {
                 $place = $step->getAttribute('name');
-                $marking = $model->getMarking($subject);
+                $marking = $workflow->getMarking($subject);
                 if (!$marking->has($place)) {
                     break;
                 }
             }
             else if ($step instanceof Directed) {
                 $transition = $step->getAttribute('name');
-                if (!$path->hasDataAtPosition($position)) {
-                    $data = $this->dataProvider->getData($subject, $model->getName(), $transition);
-                    $path->setDataAtPosition($position, $data);
-                }
-                else {
+                if ($path->hasDataAtPosition($position)) {
                     $data = $path->getDataAtPosition($position);
                 }
+                else {
+                    $data = null;
+                }
                 $subject->setData($data);
-                if ($model->can($subject, $transition)) {
-                    $model->apply($subject, $transition);
+                if ($workflow->can($subject, $transition)) {
+                    $workflow->apply($subject, $transition);
+                    $path->setDataAtPosition($position, $subject->getData());
                 }
                 else {
                     break;

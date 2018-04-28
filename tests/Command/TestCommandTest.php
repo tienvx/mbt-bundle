@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\TestCommand;
+use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
 class TestCommandTest extends CommandTestCase
 {
@@ -14,9 +17,9 @@ class TestCommandTest extends CommandTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $modelRegistry = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test');
-        $generatorManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test');
-        $pathReducerManager = $kernel->getContainer()->get('Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test');
+        $modelRegistry = self::$container->get(ModelRegistry::class);
+        $generatorManager = self::$container->get(GeneratorManager::class);
+        $pathReducerManager = self::$container->get(PathReducerManager::class);
 
         $application = new Application($kernel);
         $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducerManager));
