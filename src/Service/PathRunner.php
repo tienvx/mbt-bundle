@@ -41,7 +41,7 @@ class PathRunner
                     $data = $path->getDataAtPosition($position);
                 }
                 else {
-                    $data = null;
+                    $data = [];
                 }
                 $subject->setData($data);
                 if ($workflow->can($subject, $transition)) {

@@ -2,10 +2,17 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
+use Symfony\Bundle\FrameworkBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Workflow\StateMachine;
+use Tienvx\Bundle\MbtBundle\EventListener\ModelGuardListener;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
@@ -25,6 +32,11 @@ class TienvxMbtExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
+        $configuration = new Configuration($container->getParameter('kernel.debug'));
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $this->registerWorkflowConfiguration($config['workflows'], $container, $loader);
+
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
             ->addTag('mbt.generator');
@@ -34,5 +46,46 @@ class TienvxMbtExtension extends Extension
         $container->registerForAutoconfiguration(PathReducerInterface::class)
             ->setLazy(true)
             ->addTag('mbt.path_reducer');
+    }
+
+    private function registerWorkflowConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        if (!class_exists(StateMachine::class)) {
+            throw new LogicException('Model support cannot be enabled as the Workflow component is not installed.');
+        }
+
+        foreach ($config['workflows'] as $name => $workflow) {
+            $type = $workflow['type'];
+            if ($type !== 'state_machine') {
+                continue;
+            }
+
+            // Add Guard Listener
+            $guard = new Definition(ModelGuardListener::class);
+            $guard->setPrivate(true);
+            $configuration = array();
+            foreach ($workflow['transitions'] as $transitionName => $config) {
+                if (!isset($config['metadata']['model_guard'])) {
+                    continue;
+                }
+
+                if (!class_exists(ExpressionLanguage::class)) {
+                    throw new LogicException('Cannot guard models as the ExpressionLanguage component is not installed.');
+                }
+
+                $eventName = sprintf('workflow.%s.guard.%s', $name, $transitionName);
+                $guard->addTag('kernel.event_listener', array('event' => $eventName, 'method' => 'onTransition'));
+                $configuration[$eventName] = $config['metadata']['model_guard'];
+            }
+            if ($configuration) {
+                $guard->setArguments(array(
+                    new Reference(ExpressionLanguage::class),
+                    $configuration,
+                ));
+
+                $workflowId = sprintf('%s.%s', $type, $name);
+                $container->setDefinition(sprintf('%s.listener.model_guard', $workflowId), $guard);
+            }
+        }
     }
 }

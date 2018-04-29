@@ -195,84 +195,84 @@ class ShoppingCart extends Subject
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function viewCartFromCategory()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function viewCartFromProduct()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function viewCartFromCheckout()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function checkoutFromHome()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function checkoutFromCategory()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function checkoutFromProduct()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function checkoutFromCart()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function backToHomeFromCategory()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function backToHomeFromProduct()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function backToHomeFromCart()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function backToHomeFromCheckout()
     {
         $this->category = null;
         $this->product = null;
-        $this->data = null;
+        $this->data = [];
     }
 
     public function cartHasProduct()

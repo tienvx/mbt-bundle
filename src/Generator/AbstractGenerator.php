@@ -81,7 +81,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         $transitionName = $currentEdge->getAttribute('name');
 
         // Reset data then apply model.
-        $this->subject->setData(null);
+        $this->subject->setData([]);
         $this->workflow->apply($this->subject, $transitionName);
 
         // Update test sequence.

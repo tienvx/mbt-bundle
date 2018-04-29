@@ -90,12 +90,12 @@ class Path implements Iterator
         $this->allData = $allData;
     }
 
-    public function getDataAtPosition(int $position)
+    public function getDataAtPosition(int $position): array
     {
         if ($position % 2 === 1 && isset($this->allData[($position - 1) / 2])) {
             return $this->allData[($position - 1) / 2];
         }
-        return null;
+        return [];
     }
 
     public function hasDataAtPosition(int $position)

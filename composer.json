@@ -36,9 +36,7 @@
         "phpunit/phpunit": "^6.5",
         "symfony/browser-kit": "4.1.x-dev",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "symfony/yaml": "4.1.x-dev",
-        "symfony/security": "4.1.x-dev",
-        "symfony/security-bundle": "4.1.x-dev"
+        "symfony/yaml": "4.1.x-dev"
     },
     "autoload": {
         "psr-4": {

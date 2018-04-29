@@ -27,7 +27,7 @@ abstract class Subject
     /**
      * @param $callSUT boolean
      */
-    public function setCallSUT($callSUT)
+    public function setCallSUT(bool $callSUT)
     {
         $this->callSUT = $callSUT;
     }
@@ -35,7 +35,7 @@ abstract class Subject
     /**
      * @param $data array
      */
-    public function setData($data)
+    public function setData(array $data)
     {
         $this->data = $data;
     }
@@ -43,8 +43,8 @@ abstract class Subject
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
-        return $this->data;
+        return $this->data ?? [];
     }
 }

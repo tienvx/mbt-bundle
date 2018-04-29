@@ -49,14 +49,14 @@ framework:
                 viewProductFromCart:
                     from: cart
                     to: product
-                    guard: "subject.cartHasProduct()"
                     metadata:
+                        model_guard: "subject.cartHasProduct()"
                         label: "From cart page, choose a random product and open it"
                 viewProductFromCategory:
                     from: category
                     to: product
-                    guard: "subject.categoryHasProduct()"
                     metadata:
+                        model_guard: "subject.categoryHasProduct()"
                         label: "From category page, choose a random product and open it"
                 viewCartFromHome:
                     from: home
@@ -121,14 +121,14 @@ framework:
                 update:
                     from: cart
                     to: cart
-                    guard: "subject.cartHasProduct()"
                     metadata:
+                        model_guard: "subject.cartHasProduct()"
                         label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                 remove:
                     from: cart
                     to: cart
-                    guard: "subject.cartHasProduct()"
                     metadata:
+                        model_guard: "subject.cartHasProduct()"
                         weight: 9
                         label: "From cart page, choose a random product and remove it"
                 addFromHome:
@@ -139,8 +139,8 @@ framework:
                 addFromCategory:
                     from: category
                     to: category
-                    guard: "subject.categoryHasProduct()"
                     metadata:
+                        model_guard: "subject.categoryHasProduct()"
                         label: "From category page, choose a random product and add it to cart"
                 addFromProduct:
                     from: product

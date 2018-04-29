@@ -18,15 +18,3 @@ services:
         tags: [doctrine.fixture.orm]
     Tienvx\Bundle\MbtBundle\Tests\DataFixtures\BugFixtures:
         tags: [doctrine.fixture.orm]
-
-security:
-    role_hierarchy:
-        ROLE_ADMIN: [ROLE_USER]
-    access_control:
-        - { path: ^/dashboard, role: ROLE_USER }
-        - { path: ^/passport-review, role: ROLE_ADMIN }
-        - { path: ^/, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
