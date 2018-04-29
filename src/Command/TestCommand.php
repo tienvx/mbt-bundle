@@ -64,7 +64,7 @@ class TestCommand extends Command
         catch (Throwable $throwable) {
             $output->writeln('Found a bug: ' . $throwable->getMessage());
 
-            $path = $generator->getPath();
+            $path = $generator->getSubject()->getRecordedPath();
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);

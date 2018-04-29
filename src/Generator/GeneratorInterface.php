@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
@@ -23,5 +23,5 @@ interface GeneratorInterface extends PluginInterface
 
     public function meetStopCondition(): bool;
 
-    public function getPath(): Path;
+    public function getSubject(): Subject;
 }

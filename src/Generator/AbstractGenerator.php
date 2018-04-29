@@ -45,11 +45,6 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $currentVertex;
 
     /**
-     * @var Path
-     */
-    protected $path;
-
-    /**
      * @var Subject
      */
     protected $subject;
@@ -61,9 +56,9 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->stopConditionManager = $stopConditionManager;
     }
 
-    public function getPath(): Path
+    public function getSubject(): Subject
     {
-        return $this->path;
+        return $this->subject;
     }
 
     public function canGoNextStep(Directed $currentEdge): bool
@@ -82,25 +77,19 @@ abstract class AbstractGenerator implements GeneratorInterface
 
         // Reset data then apply model.
         $this->subject->setData([]);
+        $this->subject->setCurrentEdge($currentEdge);
         $this->workflow->apply($this->subject, $transitionName);
-
-        // Update test sequence.
-        $this->path->addEdge($currentEdge);
-        $this->path->addVertex($currentEdge->getVertexEnd());
-        $this->path->addData($this->subject->getData());
     }
 
     public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
     {
         $this->subject = new $subject();
         $this->subject->setCallSUT($callSUT);
+        $this->subject->setRecordPath(true);
         $this->workflow = $this->workflows->get($this->subject, $model);
 
         $this->graph = $this->graphBuilder->build($this->workflow->getDefinition());
         $this->currentVertex = $this->graph->getVertex($this->workflow->getDefinition()->getInitialPlace());
-
-        $this->path = new Path();
-        $this->path->addVertex($this->currentVertex);
     }
 
     public function meetStopCondition(): bool

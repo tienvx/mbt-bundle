@@ -53,7 +53,7 @@ class GenerateCommand extends Command
             }
         }
 
-        $path = $generator->getPath();
+        $path = $generator->getSubject()->getRecordedPath();
         $output->writeln((string) $path);
     }
 }

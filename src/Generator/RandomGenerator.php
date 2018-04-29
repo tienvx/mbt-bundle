@@ -78,11 +78,6 @@ class RandomGenerator extends AbstractGenerator
         parent::goToNextStep($currentEdge);
     }
 
-    public function canGoNextStep(Directed $currentEdge): bool
-    {
-        return $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
-    }
-
     public function getNextStep(): ?Directed
     {
         /** @var Edges $edges */
@@ -101,7 +96,7 @@ class RandomGenerator extends AbstractGenerator
         return $this->stopCondition->meet([
             'edgeCoverage' => $this->edgeCoverage,
             'vertexCoverage' => $this->vertexCoverage,
-            'pathLength' => $this->path->countEdges(),
+            'pathLength' => $this->getSubject()->getRecordedPath()->countEdges(),
         ]);
     }
 

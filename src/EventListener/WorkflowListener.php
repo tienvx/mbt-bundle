@@ -8,12 +8,22 @@ use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class WorkflowListener implements EventSubscriberInterface
 {
-    public function onAnnounce(Event $event)
+    public function onLeave(Event $event)
+    {
+        $subject = $event->getSubject();
+        if ($subject instanceof Subject && $subject->isRecordingPath()) {
+            $subject->recordStep();
+        }
+    }
+
+    public function onTransition(Event $event)
     {
         $subject = $event->getSubject();
         $transition = $event->getTransition();
         if ($subject instanceof Subject && (method_exists($subject, $transition->getName()))) {
             call_user_func([$subject, $transition->getName()]);
+            // reset data for the next transition
+            $subject->setData([]);
         }
     }
 
@@ -21,18 +31,23 @@ class WorkflowListener implements EventSubscriberInterface
     {
         $subject = $event->getSubject();
         $transition = $event->getTransition();
-        foreach ($transition->getTos() as $place) {
-            if ($subject instanceof Subject && method_exists($subject, $place)) {
-                call_user_func([$subject, $place]);
+        if ($subject instanceof Subject) {
+            foreach ($transition->getTos() as $place) {
+                if (method_exists($subject, $place)) {
+                    call_user_func([$subject, $place]);
+                }
             }
         }
     }
 
     public static function getSubscribedEvents()
     {
+        // the order of events are: guard -> leave -> transition -> enter -> entered -> completed -> announce (next
+        // available transitions)
         return array(
-            'workflow.announce' => array('onAnnounce', 0),
-            'workflow.entered' => array('onEntered'),
+            'workflow.leave' => 'onLeave',
+            'workflow.transition' => 'onTransition',
+            'workflow.entered' => 'onEntered',
         );
     }
 }

@@ -130,57 +130,57 @@ class ShoppingCart extends Subject
     public function viewAnyCategoryFromHome()
     {
         $category = $this->data['category'] ?? $this->getRandomCategory();
+        $this->recordData(['category' => $category]);
         $this->category = $category;
         $this->product = null;
-        $this->data = ['category' => $category];
     }
 
     public function viewOtherCategory()
     {
         $category = $this->data['category'] ?? $this->getRandomCategory();
+        $this->recordData(['category' => $category]);
         $this->category = $category;
         $this->product = null;
-        $this->data = ['category' => $category];
     }
 
     public function viewAnyCategoryFromProduct()
     {
         $category = $this->data['category'] ?? $this->getRandomCategory();
+        $this->recordData(['category' => $category]);
         $this->category = $category;
         $this->product = null;
-        $this->data = ['category' => $category];
     }
 
     public function viewAnyCategoryFromCart()
     {
         $category = $this->data['category'] ?? $this->getRandomCategory();
+        $this->recordData(['category' => $category]);
         $this->category = $category;
         $this->product = null;
-        $this->data = ['category' => $category];
     }
 
     public function viewProductFromHome()
     {
         $product = $this->data['product'] ?? $this->getRandomProductFromHome();
+        $this->recordData(['product' => $product]);
         $this->product = $product;
         $this->category = null;
-        $this->data = ['product' => $product];
     }
 
     public function viewProductFromCart()
     {
         $product = $this->selectedProductFromCart;
+        $this->recordData(['product' => $product]);
         $this->product = $product;
         $this->category = null;
-        $this->data = ['product' => $product];
     }
 
     public function viewProductFromCategory()
     {
         $product = $this->selectedProductFromCategory;
+        $this->recordData(['product' => $product]);
         $this->product = $product;
         $this->category = null;
-        $this->data = ['product' => $product];
     }
 
     public function categoryHasProduct()
@@ -193,86 +193,86 @@ class ShoppingCart extends Subject
 
     public function viewCartFromHome()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function viewCartFromCategory()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function viewCartFromProduct()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function viewCartFromCheckout()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function checkoutFromHome()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function checkoutFromCategory()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function checkoutFromProduct()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function checkoutFromCart()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function backToHomeFromCategory()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function backToHomeFromProduct()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function backToHomeFromCart()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function backToHomeFromCheckout()
     {
+        $this->recordData([]);
         $this->category = null;
         $this->product = null;
-        $this->data = [];
     }
 
     public function cartHasProduct()
@@ -285,50 +285,50 @@ class ShoppingCart extends Subject
     public function addFromHome()
     {
         $product = $this->data['product'] ?? $this->getRandomProductFromHome();
+        $this->recordData(['product' => $product]);
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
         else {
             $this->cart[$product]++;
         }
-        $this->data = ['product' => $product];
     }
 
     public function addFromCategory()
     {
         $product = $this->selectedProductFromCategory;
+        $this->recordData(['product' => $product]);
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
         else {
             $this->cart[$product]++;
         }
-        $this->data = ['product' => $product];
     }
 
     public function addFromProduct()
     {
+        $this->recordData([]);
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
         }
         else {
             $this->cart[$this->product]++;
         }
-        $this->data = [];
     }
 
     public function remove()
     {
         $product = $this->selectedProductFromCart;
+        $this->recordData(['product' => $product]);
         unset($this->cart[$product]);
-        $this->data = ['product' => $product];
     }
 
     public function update()
     {
         $product = $this->selectedProductFromCart;
+        $this->recordData(['product' => $product]);
         $this->cart[$product] = rand(1, 99);
-        $this->data = ['product' => $product];
     }
 
     public function home()

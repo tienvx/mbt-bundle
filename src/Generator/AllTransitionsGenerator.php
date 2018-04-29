@@ -35,24 +35,6 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
     }
 
-    public function canGoNextStep(Directed $currentEdge): bool
-    {
-        $canGo = $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
-
-        if ($canGo) {
-            // Update test sequence.
-            /** @var Directed $currentEdgeInPath */
-            $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($currentEdge) {
-                return $edge->getAttribute('name') === $currentEdge->getAttribute('name');
-            });
-            $this->path->addEdge($currentEdgeInPath);
-            $this->path->addVertex($currentEdgeInPath->getVertexEnd());
-            $this->path->addData($this->subject->getData());
-        }
-
-        return $canGo;
-    }
-
     public function getNextStep(): ?Directed
     {
         try {
@@ -70,13 +52,23 @@ class AllTransitionsGenerator extends AbstractGenerator
 
     public function goToNextStep(Directed $currentEdge)
     {
+        $transitionName = $currentEdge->getAttribute('name');
+
         $currentEdge->setAttribute('visited', true);
         foreach ($this->currentVertex->getEdgesOut() as $edge) {
             $edge->setAttribute('tried', false);
         }
         $this->currentVertex = $currentEdge->getVertexEnd();
 
-        parent::goToNextStep($currentEdge);
+        /** @var Directed $currentEdgeInPath */
+        $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($transitionName) {
+            return $edge->getAttribute('name') === $transitionName;
+        });
+
+        // Reset data then apply model.
+        $this->subject->setData([]);
+        $this->subject->setCurrentEdge($currentEdgeInPath);
+        $this->workflow->apply($this->subject, $transitionName);
     }
 
     public function meetStopCondition(): bool
