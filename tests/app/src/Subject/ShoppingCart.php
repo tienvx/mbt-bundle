@@ -314,7 +314,7 @@ class ShoppingCart extends Subject
         else {
             $this->cart[$this->product]++;
         }
-        $this->data = ['product' => $this->product];
+        $this->data = [];
     }
 
     public function remove()

@@ -2,11 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -22,8 +22,24 @@ use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class TienvxMbtExtension extends Extension
+class TienvxMbtExtension extends Extension implements PrependExtensionInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        if (!$frameworkConfiguration = $container->getExtensionConfig('framework')) {
+            return;
+        }
+
+        foreach ($frameworkConfiguration as $frameworkParameters) {
+            if (isset($frameworkParameters['workflows'])) {
+                $this->registerWorkflowConfiguration($frameworkParameters, $container);
+            }
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -31,11 +47,6 @@ class TienvxMbtExtension extends Extension
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
-
-        $configuration = new Configuration($container->getParameter('kernel.debug'));
-        $config = $this->processConfiguration($configuration, $configs);
-
-        $this->registerWorkflowConfiguration($config['workflows'], $container, $loader);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
@@ -48,7 +59,7 @@ class TienvxMbtExtension extends Extension
             ->addTag('mbt.path_reducer');
     }
 
-    private function registerWorkflowConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    private function registerWorkflowConfiguration(array $config, ContainerBuilder $container)
     {
         if (!class_exists(StateMachine::class)) {
             throw new LogicException('Model support cannot be enabled as the Workflow component is not installed.');
@@ -79,8 +90,8 @@ class TienvxMbtExtension extends Extension
             }
             if ($configuration) {
                 $guard->setArguments(array(
-                    new Reference(ExpressionLanguage::class),
                     $configuration,
+                    new Reference(ExpressionLanguage::class),
                 ));
 
                 $workflowId = sprintf('%s.%s', $type, $name);

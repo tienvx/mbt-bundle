@@ -4,29 +4,32 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Workflow\Event\GuardEvent;
+use Symfony\Component\Workflow\TransitionBlocker;
 
 class ModelGuardListener
 {
     private $configuration;
     private $expressionLanguage;
 
-    public function __construct(ExpressionLanguage $expressionLanguage, array $configuration = [])
+    public function __construct(array $configuration = [], ExpressionLanguage $expressionLanguage)
     {
         $this->configuration = $configuration;
         $this->expressionLanguage = $expressionLanguage;
     }
 
-    public function onGuard(GuardEvent $event, $eventName)
+    public function onTransition(GuardEvent $event, $eventName)
     {
         if (!isset($this->configuration[$eventName])) {
             return;
         }
 
-        $subject = $event->getSubject();
-        if (!$this->expressionLanguage->evaluate($this->configuration[$eventName], [
-            'subject' => $subject,
+        $expression = $this->configuration[$eventName];
+
+        if (!$this->expressionLanguage->evaluate($expression, [
+            'subject' => $event->getSubject(),
         ])) {
-            $event->setBlocked(true);
+            $blocker = TransitionBlocker::createBlockedByExpressionGuardListener($expression);
+            $event->addTransitionBlocker($blocker);
         }
     }
 }
