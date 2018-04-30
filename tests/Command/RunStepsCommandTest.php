@@ -6,13 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Workflow\Registry;
-use Tienvx\Bundle\MbtBundle\Command\RunCommand;
+use Tienvx\Bundle\MbtBundle\Command\RunStepsCommand;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
-class RunCommandTest extends CommandTestCase
+class RunStepsCommandTest extends CommandTestCase
 {
     public function testRun()
     {
@@ -25,9 +25,9 @@ class RunCommandTest extends CommandTestCase
         $workflows = self::$container->get(Registry::class);
 
         $application = new Application($kernel);
-        $application->add(new RunCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $workflows));
+        $application->add(new RunStepsCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $workflows));
 
-        $command = $application->find('mbt:run');
+        $command = $application->find('mbt:run-steps');
         $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');
         $this->assertEquals('', $output);
         $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout');

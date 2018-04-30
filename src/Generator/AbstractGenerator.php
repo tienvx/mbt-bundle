@@ -45,9 +45,19 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $currentVertex;
 
     /**
+     * @var Path
+     */
+    protected $path;
+
+    /**
      * @var Subject
      */
     protected $subject;
+
+    /**
+     * @var array|null
+     */
+    protected $currentData;
 
     public function __construct(Registry $workflows, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager)
     {
@@ -63,6 +73,7 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     public function canGoNextStep(Directed $currentEdge): bool
     {
+        $this->currentData = $this->subject->provideData($currentEdge->getAttribute('name'));
         return $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
     }
 
@@ -73,27 +84,30 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     public function goToNextStep(Directed $currentEdge)
     {
-        $transitionName = $currentEdge->getAttribute('name');
-
         // Reset data then apply model.
-        $this->subject->setData([]);
-        $this->subject->setCurrentEdge($currentEdge);
-        $this->workflow->apply($this->subject, $transitionName);
+        $this->path->addEdge($currentEdge);
+        $this->path->addData($this->currentData);
+        $this->workflow->apply($this->subject, $currentEdge->getAttribute('name'));
     }
 
     public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
     {
         $this->subject = new $subject();
         $this->subject->setCallSUT($callSUT);
-        $this->subject->setRecordPath(true);
         $this->workflow = $this->workflows->get($this->subject, $model);
 
         $this->graph = $this->graphBuilder->build($this->workflow->getDefinition());
         $this->currentVertex = $this->graph->getVertex($this->workflow->getDefinition()->getInitialPlace());
+        $this->path = new Path();
     }
 
     public function meetStopCondition(): bool
     {
         return false;
+    }
+
+    public function getPath(): Path
+    {
+        return $this->path;
     }
 }

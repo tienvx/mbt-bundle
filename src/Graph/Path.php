@@ -2,24 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\Graph;
 
+use Exception;
 use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Exception\OutOfBoundsException;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
-use Iterator;
 
-class Path implements Iterator
+class Path
 {
     /**
      *
      * @var array
      */
     protected $allData;
-
-    /**
-     *
-     * @var Vertex[]
-     */
-    protected $vertices;
 
     /**
      *
@@ -33,11 +28,10 @@ class Path implements Iterator
      */
     protected $position;
 
-    public function __construct(array $vertices = [], array $edges = [], array $data = [])
+    public function __construct(array $edges = [], array $allData = [])
     {
-        $this->vertices = $vertices;
         $this->edges    = $edges;
-        $this->allData  = $data;
+        $this->allData  = $allData;
         $this->position = 0;
     }
 
@@ -46,19 +40,14 @@ class Path implements Iterator
         $this->edges[] = $edge;
     }
 
-    public function addVertex(Vertex $vertex)
-    {
-        $this->vertices[] = $vertex;
-    }
-
-    public function addData(array $data)
+    public function addData(array $data = null)
     {
         $this->allData[] = $data;
     }
 
     public function countVertices()
     {
-        return count($this->vertices);
+        return count($this->edges) + 1;
     }
 
     public function countEdges()
@@ -68,12 +57,22 @@ class Path implements Iterator
 
     public function getVertices()
     {
-        return $this->vertices;
+        for ($i = 0; $i < count($this->edges); $i++) {
+            if ($i === 0) {
+                yield $this->edges[$i]->getVertexStart();
+            }
+            else {
+                yield $this->edges[$i]->getVertexEnd();
+            }
+        }
     }
 
     public function getVertexAt(int $index): Vertex
     {
-        return $this->vertices[$index] ?? null;
+        if ($index === 0) {
+            return $this->edges[$index]->getVertexStart();
+        }
+        return $this->edges[$index]->getVertexEnd();
     }
 
     public function getEdges()
@@ -81,107 +80,33 @@ class Path implements Iterator
         return $this->edges;
     }
 
-    public function getAllData()
+    public function getDataAt(int $index): ?array
     {
-        return $this->allData;
-    }
-
-    public function setAllData(array $allData)
-    {
-        $this->allData = $allData;
-    }
-
-    public function getDataAtPosition(int $position): array
-    {
-        if ($position % 2 === 1 && isset($this->allData[($position - 1) / 2])) {
-            return $this->allData[($position - 1) / 2];
-        }
-        return [];
-    }
-
-    public function hasDataAtPosition(int $position)
-    {
-        return ($position % 2 === 1 && isset($this->allData[($position - 1) / 2]));
-    }
-
-    public function setDataAtPosition(int $position, array $data)
-    {
-        if ($position % 2 === 1) {
-            $this->allData[($position - 1) / 2] = $data;
-        }
-    }
-
-    /**
-     * Code cloned from Fhaculty\Graph\Walk
-     *
-     * @param  Directed[]         $edges
-     * @param  Vertex             $startVertex
-     * @return Path
-     */
-    public static function factoryFromEdges($edges, Vertex $startVertex)
-    {
-        $vertices = [$startVertex];
-        $vertexCurrent = $startVertex;
-        foreach ($edges as $edge) {
-            $vertexCurrent = $edge->getVertexToFrom($vertexCurrent);
-            $vertices[] = $vertexCurrent;
-        }
-
-        return new self($vertices, $edges);
-    }
-
-    public function current()
-    {
-        if ($this->position % 2 === 1) {
-            return $this->edges[($this->position - 1) / 2];
-        }
-        else {
-            return $this->vertices[$this->position / 2];
-        }
-    }
-
-    public function next()
-    {
-        ++$this->position;
-    }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function valid()
-    {
-        return ($this->position >= 0) && ($this->position < (count($this->vertices) + count($this->edges)));
-    }
-
-    public function rewind()
-    {
-        $this->position = 0;
+        return $this->allData[$index] ?? null;
     }
 
     public function __toString()
     {
-        $sequence = [];
-        foreach ($this as $position => $step) {
-            if ($step instanceof Vertex) {
-                $sequence[] = $step->getAttribute('name');
+        $steps = [];
+        for ($i = 0; $i < count($this->edges); $i++) {
+            if ($i === 0) {
+                $steps[] = $this->edges[$i]->getVertexStart()->getAttribute('name');
             }
-            else if ($step instanceof Directed) {
-                $data = $this->getDataAtPosition($position);
+            else {
+                $data = $this->allData[$i] ?? [];
                 array_walk($data, function (&$value, $key) {
                     $value = "$key=$value";
                 });
-                $sequence[] = $step->getAttribute('name') . '(' . implode(',', $data) . ')';
+                $steps[] = $this->edges[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
+                $steps[] = $this->edges[$i]->getVertexEnd()->getAttribute('name');
             }
         }
-        return implode(' ', $sequence);
+        return implode(' ', $steps);
     }
 
     public static function fromSteps(string $steps, Graph $graph): Path
     {
         $edges = [];
-        $vertices = [];
         $allData = [];
         $steps = explode(' ', $steps);
         foreach ($steps as $index => $step) {
@@ -202,10 +127,14 @@ class Path implements Iterator
                 $edges[] = $edge;
             }
             else {
-                $vertex = $graph->getVertex($step);
-                $vertices[] = $vertex;
+                try {
+                    $vertex = $graph->getVertex($step);
+                }
+                catch (OutOfBoundsException $exception) {
+                    return new Exception(sprintf('%s is an invalid place', $step));
+                }
             }
         }
-        return new static($vertices, $edges, $allData);
+        return new static($edges, $allData);
     }
 }

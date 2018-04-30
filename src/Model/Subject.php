@@ -2,8 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model;
 
-use Fhaculty\Graph\Edge\Directed;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Exception;
 
 abstract class Subject
 {
@@ -23,30 +22,13 @@ abstract class Subject
     protected $data;
 
     /**
-     * @var boolean
+     * @var array
      */
-    protected $recordPath;
-
-    /**
-     * @var Path
-     */
-    protected $recordedPath;
-
-    /**
-     * @var Directed
-     */
-    protected $currentEdge;
-
-    /**
-     * @var bool
-     */
-    protected $firstVertexAdded;
+    protected $dataProviders;
 
     public function __construct()
     {
         $this->callSUT = false;
-        $this->recordPath = false;
-        $this->firstVertexAdded = false;
     }
 
     /**
@@ -58,72 +40,37 @@ abstract class Subject
     }
 
     /**
-     * @param $recordPath boolean
+     * @param $data array|null
      */
-    public function setRecordPath(bool $recordPath)
-    {
-        $this->recordPath = $recordPath;
-        if ($recordPath) {
-            $this->recordedPath = new Path();
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRecordingPath(): bool
-    {
-        return $this->recordPath;
-    }
-
-    /**
-     * @return Path
-     */
-    public function getRecordedPath(): Path
-    {
-        return $this->recordedPath;
-    }
-
-    /**
-     * @param $currentEdge Directed
-     */
-    public function setCurrentEdge(Directed $currentEdge)
-    {
-        $this->currentEdge = $currentEdge;
-    }
-
-    public function recordStep()
-    {
-        if ($this->recordedPath) {
-            if (!$this->firstVertexAdded) {
-                $this->recordedPath->addVertex($this->currentEdge->getVertexStart());
-                $this->firstVertexAdded = true;
-            }
-            $this->recordedPath->addEdge($this->currentEdge);
-            $this->recordedPath->addVertex($this->currentEdge->getVertexEnd());
-        }
-    }
-
-    public function recordData(array $data)
-    {
-        if ($this->recordedPath) {
-            $this->recordedPath->addData($data);
-        }
-    }
-
-    /**
-     * @param $data array
-     */
-    public function setData(array $data)
+    public function setData(array $data = null)
     {
         $this->data = $data;
     }
 
     /**
+     * @param $transitionName string
      * @return array
+     * @throws Exception
      */
-    public function getData(): array
+    public function provideData(string $transitionName): array
     {
-        return $this->data ?? [];
+        if (isset($this->dataProviders[$transitionName]) && is_callable($this->dataProviders[$transitionName])) {
+            $data = $this->dataProviders[$transitionName]();
+            if (!is_array($data)) {
+                throw new Exception(sprintf('Data provider for transition %s must return array', $transitionName));
+            }
+        }
+        else {
+            $data = [];
+        }
+        $this->data = $data;
+        return $data;
+    }
+
+    public function __invoke(string $type, string $placeOrTransitionName)
+    {
+        if (method_exists($this, $placeOrTransitionName)) {
+            call_user_func([$this, $placeOrTransitionName]);
+        }
     }
 }

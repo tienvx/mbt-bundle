@@ -28,7 +28,7 @@
         "symfony/twig-bundle": "4.1.x-dev",
         "symfony/validator": "4.1.x-dev",
         "symfony/asset": "4.1.x-dev",
-        "doctrine/doctrine-bundle": "^1.8",
+        "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6",
         "symfony/messenger": "4.1.x-dev"
     },

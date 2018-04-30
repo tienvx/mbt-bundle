@@ -5,11 +5,11 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Command\GenerateCommand;
+use Tienvx\Bundle\MbtBundle\Command\GenerateStepsCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
-class GenerateCommandTest extends CommandTestCase
+class GenerateStepsCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
@@ -19,9 +19,9 @@ class GenerateCommandTest extends CommandTestCase
         $generatorManager = self::$container->get(GeneratorManager::class);
 
         $application = new Application($kernel);
-        $application->add(new GenerateCommand($modelRegistry, $generatorManager));
+        $application->add(new GenerateStepsCommand($modelRegistry, $generatorManager));
 
-        $command = $application->find('mbt:generate');
+        $command = $application->find('mbt:generate-steps');
         $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(100, 100), 24, 5);
         $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(60, 80), 15, 4);
         $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(75, 60), 18, 3);

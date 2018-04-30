@@ -5,12 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Command\TestCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
-class TestCommandTest extends CommandTestCase
+class TestModelCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
@@ -21,9 +21,9 @@ class TestCommandTest extends CommandTestCase
         $pathReducerManager = self::$container->get(PathReducerManager::class);
 
         $application = new Application($kernel);
-        $application->add(new TestCommand($modelRegistry, $generatorManager, $pathReducerManager));
+        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager));
 
-        $command = $application->find('mbt:test');
+        $command = $application->find('mbt:test-model');
         $this->assertReproducePath($command, 'random', $this->getCoverageStopCondition(100, 100));
         $this->assertReproducePath($command, 'random', $this->getFoundBugStopCondition());
         $this->assertReproducePath($command, 'all-places', null);

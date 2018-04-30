@@ -65,9 +65,8 @@ class AllTransitionsGenerator extends AbstractGenerator
             return $edge->getAttribute('name') === $transitionName;
         });
 
-        // Reset data then apply model.
-        $this->subject->setData([]);
-        $this->subject->setCurrentEdge($currentEdgeInPath);
+        $this->path->addEdge($currentEdgeInPath);
+        $this->path->addData($this->currentData);
         $this->workflow->apply($this->subject, $transitionName);
     }
 

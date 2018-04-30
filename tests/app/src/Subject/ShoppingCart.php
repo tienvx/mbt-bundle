@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Subject;
 
+use Exception;
 use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class ShoppingCart extends Subject
@@ -20,16 +21,6 @@ class ShoppingCart extends Subject
      * @var string Current viewing category
      */
     protected $category;
-
-    /**
-     * @var string Temporary selected product from category
-     */
-    protected $selectedProductFromCategory;
-
-    /**
-     * @var string Temporary selected product from cart
-     */
-    protected $selectedProductFromCart;
 
     /**
      * @var array
@@ -124,168 +115,211 @@ class ShoppingCart extends Subject
         $this->cart = [];
         $this->category = null;
         $this->product = null;
+        $this->dataProviders = [
+            'viewAnyCategoryFromHome' => function () {
+                return ['category' => $this->getRandomCategory()];
+            },
+            'viewOtherCategory' => function () {
+                return ['category' => $this->getRandomCategory()];
+            },
+            'viewAnyCategoryFromProduct' => function () {
+                return ['category' => $this->getRandomCategory()];
+            },
+            'viewAnyCategoryFromCart' => function () {
+                return ['category' => $this->getRandomCategory()];
+            },
+            'viewProductFromHome' => function () {
+                return ['product' => $this->getRandomProductFromHome()];
+            },
+            'viewProductFromCart' => function () {
+                return ['product' => $this->getRandomProductFromCart()];
+            },
+            'viewProductFromCategory' => function () {
+                return ['product' => $this->getRandomProductFromCategory()];
+            },
+            'update' => function () {
+                return ['product' => $this->getRandomProductFromCart()];
+            },
+            'remove' => function () {
+                return ['product' => $this->getRandomProductFromCart()];
+            },
+            'addFromHome' => function () {
+                return ['product' => $this->getRandomProductFromHome()];
+            },
+            'addFromCategory' => function () {
+                return ['product' => $this->getRandomProductFromCategory()];
+            },
+        ];
         parent::__construct();
     }
 
     public function viewAnyCategoryFromHome()
     {
-        $category = $this->data['category'] ?? $this->getRandomCategory();
-        $this->recordData(['category' => $category]);
+        if (empty($this->data['category'])) {
+            throw new Exception('Can not view category from home: missing category');
+        }
+        $category = $this->data['category'];
         $this->category = $category;
         $this->product = null;
     }
 
     public function viewOtherCategory()
     {
-        $category = $this->data['category'] ?? $this->getRandomCategory();
-        $this->recordData(['category' => $category]);
+        if (empty($this->data['category'])) {
+            throw new Exception('Can not view category from other category: missing category');
+        }
+        $category = $this->data['category'];
         $this->category = $category;
         $this->product = null;
     }
 
     public function viewAnyCategoryFromProduct()
     {
-        $category = $this->data['category'] ?? $this->getRandomCategory();
-        $this->recordData(['category' => $category]);
+        if (empty($this->data['category'])) {
+            throw new Exception('Can not view category from product: missing category');
+        }
+        $category = $this->data['category'];
         $this->category = $category;
         $this->product = null;
     }
 
     public function viewAnyCategoryFromCart()
     {
-        $category = $this->data['category'] ?? $this->getRandomCategory();
-        $this->recordData(['category' => $category]);
+        if (empty($this->data['category'])) {
+            throw new Exception('Can not view category from cart: missing category');
+        }
+        $category = $this->data['category'];
         $this->category = $category;
         $this->product = null;
     }
 
     public function viewProductFromHome()
     {
-        $product = $this->data['product'] ?? $this->getRandomProductFromHome();
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not view product from home: missing product');
+        }
+        $product = $this->data['product'];
         $this->product = $product;
         $this->category = null;
     }
 
     public function viewProductFromCart()
     {
-        $product = $this->selectedProductFromCart;
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not view product from cart: missing product');
+        }
+        $product = $this->data['product'];
         $this->product = $product;
         $this->category = null;
     }
 
     public function viewProductFromCategory()
     {
-        $product = $this->selectedProductFromCategory;
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not view product from category: missing product');
+        }
+        $product = $this->data['product'];
         $this->product = $product;
         $this->category = null;
     }
 
     public function categoryHasProduct()
     {
-        $product = $this->data['product'] ?? $this->getRandomProductFromCategory();
-        $this->selectedProductFromCategory = $product;
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not check if category has product or not: missing product');
+        }
+        $product = $this->data['product'];
         return !empty($this->productsInCategory[$this->category]) &&
             in_array($product, $this->productsInCategory[$this->category]);
     }
 
     public function viewCartFromHome()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function viewCartFromCategory()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function viewCartFromProduct()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function viewCartFromCheckout()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function checkoutFromHome()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function checkoutFromCategory()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function checkoutFromProduct()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function checkoutFromCart()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function backToHomeFromCategory()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function backToHomeFromProduct()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function backToHomeFromCart()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function backToHomeFromCheckout()
     {
-        $this->recordData([]);
         $this->category = null;
         $this->product = null;
     }
 
     public function cartHasProduct()
     {
-        $product = $this->data['product'] ?? $this->getRandomProductFromCart();
-        $this->selectedProductFromCart = $product;
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not check if cart has product or not: missing product');
+        }
+        $product = $this->data['product'];
         return !empty($this->cart[$product]);
     }
 
     public function addFromHome()
     {
-        $product = $this->data['product'] ?? $this->getRandomProductFromHome();
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not add product from home: missing product');
+        }
+        $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
@@ -296,8 +330,10 @@ class ShoppingCart extends Subject
 
     public function addFromCategory()
     {
-        $product = $this->selectedProductFromCategory;
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not add product from category: missing product');
+        }
+        $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         }
@@ -308,7 +344,6 @@ class ShoppingCart extends Subject
 
     public function addFromProduct()
     {
-        $this->recordData([]);
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
         }
@@ -319,15 +354,19 @@ class ShoppingCart extends Subject
 
     public function remove()
     {
-        $product = $this->selectedProductFromCart;
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not remove product from cart: missing product');
+        }
+        $product = $this->data['product'];
         unset($this->cart[$product]);
     }
 
     public function update()
     {
-        $product = $this->selectedProductFromCart;
-        $this->recordData(['product' => $product]);
+        if (empty($this->data['product'])) {
+            throw new Exception('Can not update product in cart: missing product');
+        }
+        $product = $this->data['product'];
         $this->cart[$product] = rand(1, 99);
     }
 
@@ -352,7 +391,7 @@ class ShoppingCart extends Subject
         if ($this->callSUT) {
             foreach ($this->cart as $product => $quantity) {
                 if (in_array($product, $this->outOfStock)) {
-                    throw new \Exception('You added an out-of-stock product into cart! Can not checkout');
+                    throw new Exception('You added an out-of-stock product into cart! Can not checkout');
                 }
             }
         }

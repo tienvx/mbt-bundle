@@ -5,25 +5,23 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteCommand;
+use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
 class TaskMessageHandler implements MessageHandlerInterface
 {
-    private $executeCommand;
+    private $executeTaskCommand;
 
-    public function __construct(ExecuteCommand $executeCommand)
+    public function __construct(ExecuteTaskCommand $executeTaskCommand)
     {
-        $this->executeCommand = $executeCommand;
+        $this->executeTaskCommand = $executeTaskCommand;
     }
 
     public function __invoke(TaskMessage $taskMessage)
     {
-        $arguments = [
-            'task-id'      => $taskMessage->getId(),
-        ];
-
-        $input = new ArrayInput($arguments);
-        $this->executeCommand->run($input, new NullOutput());
+        $input = new ArrayInput([
+            'task-id' => $taskMessage->getId(),
+        ]);
+        $this->executeTaskCommand->run($input, new NullOutput());
     }
 }

@@ -10,7 +10,7 @@ use Symfony\Component\Workflow\Dumper\GraphvizDumper;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
-class DumpCommand extends Command
+class DumpModelCommand extends Command
 {
     private $modelRegistry;
     private $workflows;
@@ -26,9 +26,9 @@ class DumpCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:dump')
-            ->setDescription('Dump model into content of a dot file.')
-            ->setHelp('This command dump model into content of a dot file, then you can use dot command to generate image file.')
+            ->setName('mbt:dump-model')
+            ->setDescription('Dump model into dot file\'s content.')
+            ->setHelp('Dump model into dot file\'s content. Then ot can be passed to dot command to generate image file.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to dump.');
     }
 

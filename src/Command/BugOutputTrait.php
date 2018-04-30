@@ -19,11 +19,8 @@ trait BugOutputTrait
             [new TableCell('Steps to reproduce', ['colspan' => 3])],
             ['Step', 'Label', 'Data Input'],
         ]);
-        /** @var Directed[] $edges */
-        $edges = $path->getEdges();
-        $allData = $path->getAllData();
-        foreach ($edges as $index => $edge) {
-            $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
+        foreach ($path->getEdges() as $index => $edge) {
+            $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($path->getDataAt($index))]);
         }
         $table->render();
     }

@@ -27,30 +27,14 @@ class PathRunner
         $subject->setCallSUT(true);
         $workflow = $this->workflows->get($subject, $model);
 
-        foreach ($path as $position => $step) {
-            if ($step instanceof Vertex) {
-                $place = $step->getAttribute('name');
-                $marking = $workflow->getMarking($subject);
-                if (!$marking->has($place)) {
-                    break;
-                }
+        foreach ($path->getEdges() as $index => $edge) {
+            $transitionName = $edge->getAttribute('name');
+            $subject->setData($path->getDataAt($index));
+            if ($workflow->can($subject, $transitionName)) {
+                $workflow->apply($subject, $transitionName);
             }
-            else if ($step instanceof Directed) {
-                $transition = $step->getAttribute('name');
-                if ($path->hasDataAtPosition($position)) {
-                    $data = $path->getDataAtPosition($position);
-                }
-                else {
-                    $data = [];
-                }
-                $subject->setData($data);
-                if ($workflow->can($subject, $transition)) {
-                    $workflow->apply($subject, $transition);
-                    $path->setDataAtPosition($position, $data);
-                }
-                else {
-                    break;
-                }
+            else {
+                break;
             }
         }
     }

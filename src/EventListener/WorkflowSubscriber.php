@@ -8,22 +8,12 @@ use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class WorkflowSubscriber implements EventSubscriberInterface
 {
-    public function onLeave(Event $event)
-    {
-        $subject = $event->getSubject();
-        if ($subject instanceof Subject && $subject->isRecordingPath()) {
-            $subject->recordStep();
-        }
-    }
-
     public function onTransition(Event $event)
     {
         $subject = $event->getSubject();
         $transition = $event->getTransition();
-        if ($subject instanceof Subject && (method_exists($subject, $transition->getName()))) {
-            call_user_func([$subject, $transition->getName()]);
-            // reset data for the next transition
-            $subject->setData([]);
+        if ($subject instanceof Subject) {
+            $subject('transition', $transition->getName());
         }
     }
 
@@ -33,9 +23,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $transition = $event->getTransition();
         if ($subject instanceof Subject) {
             foreach ($transition->getTos() as $place) {
-                if (method_exists($subject, $place)) {
-                    call_user_func([$subject, $place]);
-                }
+                $subject('place', $place);
             }
         }
     }
@@ -45,7 +33,6 @@ class WorkflowSubscriber implements EventSubscriberInterface
         // the order of events are: guard -> leave -> transition -> enter -> entered -> completed -> announce (next
         // available transitions)
         return [
-            'workflow.leave' => 'onLeave',
             'workflow.transition' => 'onTransition',
             'workflow.entered' => 'onEntered',
         ];

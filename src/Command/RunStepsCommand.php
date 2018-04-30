@@ -15,7 +15,7 @@ use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
-class RunCommand extends Command
+class RunStepsCommand extends Command
 {
     use BugOutputTrait;
 
@@ -39,12 +39,12 @@ class RunCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:run')
-            ->setDescription('Run test sequence generated from mbt:generate command.')
-            ->setHelp('This command allows you to run test sequence that is generated from mbt:generate command.')
+            ->setName('mbt:run-steps')
+            ->setDescription('Run steps.')
+            ->setHelp('Run steps. The steps can be generated from mbt:generate-steps command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to run.')
-            ->addArgument('steps', InputArgument::REQUIRED, 'The test steps to run.')
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The way to reduce the reproduce path.');
+            ->addArgument('steps', InputArgument::REQUIRED, 'The steps to run.')
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
