@@ -2,13 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\EventListener;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
-class TaskSubscriber implements EventSubscriberInterface
+class TaskSubscriber implements EventSubscriber
 {
     private $messageBus;
 
@@ -26,7 +26,7 @@ class TaskSubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public function getSubscribedEvents()
     {
         return [
             'postPersist',

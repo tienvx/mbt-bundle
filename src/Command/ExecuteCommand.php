@@ -57,7 +57,7 @@ class ExecuteCommand extends Command
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
         $workflowMetadata = $this->modelRegistry->getModel($model);
         $subject = $workflowMetadata['subject'];
-        $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
+        $arguments = $this->parseGeneratorArguments($task->getArguments());
 
         $generator->init($model, $subject, $arguments, true);
 
@@ -81,6 +81,7 @@ class ExecuteCommand extends Command
             $bug->setMessage($throwable->getMessage());
             $bug->setTask($task);
             $bug->setSteps($path);
+            $bug->setStatus('unverified');
             $this->entityManager->persist($bug);
             $this->entityManager->flush();
         }

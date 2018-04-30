@@ -4,6 +4,9 @@ framework:
     router:          { resource: '%kernel.project_dir%/config/routing.yml' }
     templating:      { engines: ['twig'] }
     assets:          ~
+    messenger:
+        routing:
+            Tienvx\Bundle\MbtBundle\Message\TaskMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
 
 doctrine:
     dbal:

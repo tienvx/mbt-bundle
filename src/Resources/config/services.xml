@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject,Message,Algorithm}" />
 
         <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
 
@@ -24,5 +24,9 @@
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\PathReducerManager" alias="mbt.path_reducer_manager" />
+
+        <service id="mbt.task_subscriber" class="Tienvx\Bundle\MbtBundle\EventListener\TaskSubscriber">
+            <tag name="doctrine.event_subscriber"/>
+        </service>
     </services>
 </container>

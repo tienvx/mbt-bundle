@@ -24,6 +24,6 @@ class TaskMessageHandler implements MessageHandlerInterface
         ];
 
         $input = new ArrayInput($arguments);
-        $this->testCommand->run($input, new NullOutput());
+        $this->executeCommand->run($input, new NullOutput());
     }
 }

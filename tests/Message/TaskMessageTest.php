@@ -44,7 +44,7 @@ class TaskMessageTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryReceiver::class//'messenger.default_receiver',
+            'receiver'     => InMemoryReceiver::class,
         ]);
 
         $this->assertEquals(1, $task->getBugs()->count());
