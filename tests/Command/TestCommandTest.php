@@ -14,8 +14,7 @@ class TestCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::createKernel();
-        $kernel->boot();
+        $kernel = static::bootKernel();
 
         $modelRegistry = self::$container->get(ModelRegistry::class);
         $generatorManager = self::$container->get(GeneratorManager::class);
@@ -36,7 +35,7 @@ class TestCommandTest extends CommandTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'model'      => 'shopping_cart',
+            'model'        => 'shopping_cart',
             '--generator'  => $generator,
             '--arguments'  => $arguments
         ]);

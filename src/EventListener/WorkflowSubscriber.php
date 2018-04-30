@@ -6,7 +6,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 use Tienvx\Bundle\MbtBundle\Model\Subject;
 
-class WorkflowListener implements EventSubscriberInterface
+class WorkflowSubscriber implements EventSubscriberInterface
 {
     public function onLeave(Event $event)
     {
@@ -44,10 +44,10 @@ class WorkflowListener implements EventSubscriberInterface
     {
         // the order of events are: guard -> leave -> transition -> enter -> entered -> completed -> announce (next
         // available transitions)
-        return array(
+        return [
             'workflow.leave' => 'onLeave',
             'workflow.transition' => 'onTransition',
             'workflow.entered' => 'onEntered',
-        );
+        ];
     }
 }

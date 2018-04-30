@@ -16,7 +16,7 @@ class GeneratorValidator extends ConstraintValidator
      */
     protected $generatorManager;
 
-    public function __construct($options = null, GeneratorManager $generatorManager)
+    public function __construct(GeneratorManager $generatorManager)
     {
         $this->generatorManager = $generatorManager;
     }

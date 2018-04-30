@@ -14,7 +14,15 @@ doctrine:
         auto_mapping: true
 
 services:
-    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\TaskFixtures:
-        tags: [doctrine.fixture.orm]
-    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\BugFixtures:
-        tags: [doctrine.fixture.orm]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Tienvx\Bundle\MbtBundle\Tests\:
+        resource: '../src/*'
+        exclude: '../src/{AppKernel.php}'
+
+    Symfony\Component\Messenger\Transport\Serialization\Serializer:
+        alias: 'messenger.transport.serializer'
+    #Symfony\Component\Messenger\Transport\Serialization\Serializer: '@messenger.transport.serializer'

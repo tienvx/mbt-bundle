@@ -38,21 +38,16 @@ class Bug
     private $message;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    private $paths;
+    private $steps;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\Choice({"unverified", "valid", "invalid"})
      */
     private $status;
-
-    public function __construct()
-    {
-        $this->paths = [];
-    }
 
     public function getId()
     {
@@ -89,19 +84,14 @@ class Bug
         $this->message = $message;
     }
 
-    public function getPaths(): array
+    public function getSteps(): string
     {
-        return $this->paths;
+        return $this->steps;
     }
 
-    public function setPaths(array $paths)
+    public function setSteps(string $steps)
     {
-        $this->paths = $paths;
-    }
-
-    public function addPath(string $path)
-    {
-        $this->paths[] = $path;
+        $this->steps = $steps;
     }
 
     public function getStatus()

@@ -43,6 +43,20 @@ class Task
     private $generator;
 
     /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Json
+     */
+    private $arguments;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Reducer
+     */
+    private $reducer;
+
+    /**
      * @ORM\Column(type="integer")
      * @Assert\Range(
      *     min = 0,
@@ -112,6 +126,26 @@ class Task
     public function setGenerator($generator)
     {
         $this->generator = $generator;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    public function setArguments($arguments)
+    {
+        $this->arguments = $arguments;
+    }
+
+    public function getReducer()
+    {
+        return $this->reducer;
+    }
+
+    public function setReducer($reducer)
+    {
+        $this->reducer = $reducer;
     }
 
     public function getProgress()

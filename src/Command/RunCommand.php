@@ -2,9 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Fhaculty\Graph\Edge\Directed;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,6 +17,8 @@ use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 
 class RunCommand extends Command
 {
+    use BugOutputTrait;
+
     private $modelRegistry;
     private $graphBuilder;
     private $pathRunner;
@@ -53,60 +53,20 @@ class RunCommand extends Command
         $workflowMetadata = $this->modelRegistry->getModel($model);
         $subject = $workflowMetadata['subject'];
         $workflow = $this->workflows->get(new $subject(), $model);
-
         $graph = $this->graphBuilder->build($workflow->getDefinition());
-
-        $edges = [];
-        $vertices = [];
-        $allData = [];
-        $steps = $input->getArgument('steps');
-        $steps = explode(' ', $steps);
-        foreach ($steps as $index => $step) {
-            if (preg_match('/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\((.*)\)/', $step, $matches)) {
-                $transition = $matches[1];
-                $data = [];
-                if ($matches[2]) {
-                    $params = explode(',', $matches[2]);
-                    foreach ($params as $param) {
-                        list($key, $value) = explode('=', $param);
-                        $data[$key] = $value;
-                    }
-                }
-                $edge = $graph->getEdges()->getEdgeMatch(function (Directed $edge) use ($transition) {
-                    return $edge->getAttribute('name') === $transition;
-                });
-                $allData[] = $data;
-                $edges[] = $edge;
-            }
-            else {
-                $vertex = $graph->getVertex($step);
-                $vertices[] = $vertex;
-            }
-        }
-        $path = new Path($vertices, $edges, $allData);
+        $path = Path::fromSteps($input->getArgument('steps'), $graph);
 
         try {
             $this->pathRunner->run($path, $model, $subject);
         }
         catch (Throwable $throwable) {
-            $output->writeln('Found a bug: ' . $throwable->getMessage());
-
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
                 $path = $pathReducer->reduce($path, $model, $subject, $throwable);
             }
 
-            $output->writeln('Steps to reproduce:');
-            $table = new Table($output);
-            $table->setHeaders(array('Step', 'Label', 'Data Input'));
-            /** @var Directed[] $edges */
-            $edges = $path->getEdges();
-            $allData = $path->getAllData();
-            foreach ($edges as $index => $edge) {
-                $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($allData[$index])]);
-            }
-            $table->render();
+            $this->printBug($throwable->getMessage(), $path, $output);
         }
     }
 }

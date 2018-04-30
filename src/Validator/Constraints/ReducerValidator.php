@@ -4,26 +4,27 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
 /**
  * @Annotation
  */
-class ModelValidator extends ConstraintValidator
+class ReducerValidator extends ConstraintValidator
 {
     /**
-     * @var ModelRegistry
+     * @var PathReducerManager
      */
-    protected $modelRegistry;
+    protected $pathReducerManager;
 
-    public function __construct(ModelRegistry $modelRegistry)
+    public function __construct(PathReducerManager $pathReducerManager)
     {
-        $this->modelRegistry = $modelRegistry;
+        $this->pathReducerManager = $pathReducerManager;
     }
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$this->modelRegistry->hasModel($value)) {
+        if (!$this->pathReducerManager->hasPathReducer($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();

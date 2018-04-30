@@ -16,11 +16,7 @@ class BugTest extends AbstractApiTestCase
             "task": "/mbt/tasks/1",
             "title": "Bug 1",
             "message": "Something happen on shopping_cart model",
-            "paths": [
-              "step 1",
-              "step 2",
-              "step 3"
-            ],
+            "steps": "step1 step2 step3",
             "status": "unverified"
           },
           {
@@ -28,13 +24,7 @@ class BugTest extends AbstractApiTestCase
             "task": "/mbt/tasks/1",
             "title": "Bug 2",
             "message": "Something happen on shopping_cart model",
-            "paths": [
-              "step 1",
-              "step 2",
-              "step 3",
-              "step 4",
-              "step 5"
-            ],
+            "steps": "step1 step2 step3 step4 step5",
             "status": "valid"
           },
           {
@@ -42,10 +32,7 @@ class BugTest extends AbstractApiTestCase
             "task": "/mbt/tasks/3",
             "title": "Bug 3",
             "message": "Something happen on shopping_cart model",
-            "paths": [
-              "step 1",
-              "step 2"
-            ],
+            "steps": "step1 step2",
             "status": "invalid"
           }
         ]', $response->getContent());
@@ -58,12 +45,7 @@ class BugTest extends AbstractApiTestCase
             "task": "/mbt/tasks/2",
             "title": "Bug 4",
             "message": "This bug never happen on task 2",
-            "paths": [
-              "step 1",
-              "step 2",
-              "step 3.1",
-              "step 3.2"
-            ],
+            "steps": "step1 step2 step3.1 step3.2",
             "status": "unverified"
         }');
 
@@ -75,12 +57,7 @@ class BugTest extends AbstractApiTestCase
           "task": "/mbt/tasks/2",
           "title": "Bug 4",
           "message": "This bug never happen on task 2",
-          "paths": [
-            "step 1",
-            "step 2",
-            "step 3.1",
-            "step 3.2"
-          ],
+          "steps": "step1 step2 step3.1 step3.2",
           "status": "unverified"
         }', $response->getContent());
     }
@@ -92,9 +69,7 @@ class BugTest extends AbstractApiTestCase
             "task": "/mbt/tasks/3",
             "title": "Bug 5",
             "message": "This bug is invalid",
-            "paths": [
-              "How to reproduce this bug?"
-            ],
+            "steps": "How to reproduce this bug?",
             "status": "invalid-bug"
         }');
 

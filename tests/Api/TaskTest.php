@@ -16,6 +16,8 @@ class TaskTest extends AbstractApiTestCase
             "title": "Task 1",
             "model": "shopping_cart",
             "generator": "random",
+            "arguments": "{\"a\":\"b\"}",
+            "reducer": "loop",
             "progress": 0,
             "status": "not-started",
             "bugs": [
@@ -28,6 +30,8 @@ class TaskTest extends AbstractApiTestCase
             "title": "Task 2",
             "model": "shopping_cart",
             "generator": "random",
+            "arguments": "{\"a\":\"b\"}",
+            "reducer": "binary",
             "progress": 64,
             "status": "in-progress",
             "bugs": []
@@ -37,6 +41,8 @@ class TaskTest extends AbstractApiTestCase
             "title": "Task 3",
             "model": "shopping_cart",
             "generator": "random",
+            "arguments": "{\"a\":\"b\"}",
+            "reducer": "greedy",
             "progress": 100,
             "status": "completed",
             "bugs": [
@@ -53,6 +59,8 @@ class TaskTest extends AbstractApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
+          "arguments": "{\"a\":\"b\"}",
+          "reducer": "weighted-random",
           "progress": 0,
           "status": "not-started"
         }');
@@ -65,6 +73,8 @@ class TaskTest extends AbstractApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
+          "arguments": "{\"a\":\"b\"}",
+          "reducer": "weighted-random",
           "progress": 0,
           "status": "not-started",
           "bugs": []
@@ -78,6 +88,8 @@ class TaskTest extends AbstractApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "invalid-generator",
+          "arguments": "not a json string",
+          "reducer": "invalid-reducer",
           "progress": 111,
           "status": "not-supported"
         }');
@@ -88,11 +100,19 @@ class TaskTest extends AbstractApiTestCase
         {
           "type": "https://tools.ietf.org/html/rfc2616#section-10",
           "title": "An error occurred",
-          "detail": "generator: \"invalid-generator\" is not a valid generator.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
+          "detail": "generator: \"invalid-generator\" is not a valid generator.\narguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
           "violations": [
             {
               "propertyPath": "generator",
               "message": "\"invalid-generator\" is not a valid generator."
+            },
+            {
+                "propertyPath": "arguments",
+                "message": "\"\"not a json string\"\" is not a valid json string."
+            },
+            {
+                "propertyPath": "reducer",
+                "message": "\"invalid-reducer\" is not a valid path reducer."
             },
             {
               "propertyPath": "progress",

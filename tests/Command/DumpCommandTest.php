@@ -12,8 +12,7 @@ class DumpCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::createKernel();
-        $kernel->boot();
+        $kernel = static::bootKernel();
 
         $modelRegistry = self::$container->get(ModelRegistry::class);
         $workflows = self::$container->get(Registry::class);
@@ -24,7 +23,7 @@ class DumpCommandTest extends CommandTestCase
         $command = $application->find('mbt:dump');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'      => $command->getName(),
+            'command'    => $command->getName(),
             'model'      => 'shopping_cart',
         ]);
 

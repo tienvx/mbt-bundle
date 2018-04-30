@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Graph;
 
 use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Iterator;
 
@@ -175,5 +176,36 @@ class Path implements Iterator
             }
         }
         return implode(' ', $sequence);
+    }
+
+    public static function fromSteps(string $steps, Graph $graph): Path
+    {
+        $edges = [];
+        $vertices = [];
+        $allData = [];
+        $steps = explode(' ', $steps);
+        foreach ($steps as $index => $step) {
+            if (preg_match('/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\((.*)\)/', $step, $matches)) {
+                $transition = $matches[1];
+                $data = [];
+                if ($matches[2]) {
+                    $params = explode(',', $matches[2]);
+                    foreach ($params as $param) {
+                        list($key, $value) = explode('=', $param);
+                        $data[$key] = $value;
+                    }
+                }
+                $edge = $graph->getEdges()->getEdgeMatch(function (Directed $edge) use ($transition) {
+                    return $edge->getAttribute('name') === $transition;
+                });
+                $allData[] = $data;
+                $edges[] = $edge;
+            }
+            else {
+                $vertex = $graph->getVertex($step);
+                $vertices[] = $vertex;
+            }
+        }
+        return new static($vertices, $edges, $allData);
     }
 }

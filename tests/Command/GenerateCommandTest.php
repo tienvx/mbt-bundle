@@ -13,8 +13,7 @@ class GenerateCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::createKernel();
-        $kernel->boot();
+        $kernel = static::bootKernel();
 
         $modelRegistry = self::$container->get(ModelRegistry::class);
         $generatorManager = self::$container->get(GeneratorManager::class);
