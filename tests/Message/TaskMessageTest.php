@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryReceiver;
 
@@ -47,6 +48,12 @@ class TaskMessageTest extends CommandTestCase
             'receiver'     => InMemoryReceiver::class,
         ]);
 
-        $this->assertEquals(1, $task->getBugs()->count());
+        $countBugs = $entityManager->getRepository(Bug::class)->createQueryBuilder('b')
+            ->select('count(b.id)')
+            ->where('b.task = :task_id')
+            ->setParameter('task_id', $task->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+        $this->assertEquals(1, $countBugs);
     }
 }
