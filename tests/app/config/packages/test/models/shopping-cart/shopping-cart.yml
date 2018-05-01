@@ -21,42 +21,47 @@ framework:
                     from: home
                     to: category
                     metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 3
                         label: "From home page, choose a random category and open it"
                 viewOtherCategory:
                     from: category
                     to: category
                     metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 1
                         label: "From category page, choose a random category and open it"
                 viewAnyCategoryFromProduct:
                     from: product
                     to: category
                     metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 2
                         label: "From product page, choose a random category and open it"
                 viewAnyCategoryFromCart:
                     from: cart
                     to: category
                     metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 6
                         label: "From cart page, choose a random category and open it"
                 viewProductFromHome:
                     from: home
                     to: product
                     metadata:
+                        model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and open it"
                 viewProductFromCart:
                     from: cart
                     to: product
                     metadata:
-                        model_guard: "subject.cartHasProduct()"
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         label: "From cart page, choose a random product and open it"
                 viewProductFromCategory:
                     from: category
                     to: product
                     metadata:
-                        model_guard: "subject.categoryHasProduct()"
+                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and open it"
                 viewCartFromHome:
                     from: home
@@ -122,25 +127,26 @@ framework:
                     from: cart
                     to: cart
                     metadata:
-                        model_guard: "subject.cartHasProduct()"
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                 remove:
                     from: cart
                     to: cart
                     metadata:
-                        model_guard: "subject.cartHasProduct()"
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         weight: 9
                         label: "From cart page, choose a random product and remove it"
                 addFromHome:
                     from: home
                     to: home
                     metadata:
+                        model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and add it to cart"
                 addFromCategory:
                     from: category
                     to: category
                     metadata:
-                        model_guard: "subject.categoryHasProduct()"
+                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and add it to cart"
                 addFromProduct:
                     from: product

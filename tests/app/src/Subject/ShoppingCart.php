@@ -156,7 +156,7 @@ class ShoppingCart extends Subject
     public function viewAnyCategoryFromHome()
     {
         if (empty($this->data['category'])) {
-            throw new Exception('Can not view category from home: missing category');
+            throw new Exception('Can not view category from home: category is not selected');
         }
         $category = $this->data['category'];
         $this->category = $category;
@@ -166,7 +166,7 @@ class ShoppingCart extends Subject
     public function viewOtherCategory()
     {
         if (empty($this->data['category'])) {
-            throw new Exception('Can not view category from other category: missing category');
+            throw new Exception('Can not view category from other category: category is not selected');
         }
         $category = $this->data['category'];
         $this->category = $category;
@@ -176,7 +176,7 @@ class ShoppingCart extends Subject
     public function viewAnyCategoryFromProduct()
     {
         if (empty($this->data['category'])) {
-            throw new Exception('Can not view category from product: missing category');
+            throw new Exception('Can not view category from product: category is not selected');
         }
         $category = $this->data['category'];
         $this->category = $category;
@@ -186,7 +186,7 @@ class ShoppingCart extends Subject
     public function viewAnyCategoryFromCart()
     {
         if (empty($this->data['category'])) {
-            throw new Exception('Can not view category from cart: missing category');
+            throw new Exception('Can not view category from cart: category is not selected');
         }
         $category = $this->data['category'];
         $this->category = $category;
@@ -196,7 +196,7 @@ class ShoppingCart extends Subject
     public function viewProductFromHome()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not view product from home: missing product');
+            throw new Exception('Can not view product from home: product is not selected');
         }
         $product = $this->data['product'];
         $this->product = $product;
@@ -206,7 +206,7 @@ class ShoppingCart extends Subject
     public function viewProductFromCart()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not view product from cart: missing product');
+            throw new Exception('Can not view product from cart: product is not selected');
         }
         $product = $this->data['product'];
         $this->product = $product;
@@ -216,25 +216,35 @@ class ShoppingCart extends Subject
     public function viewProductFromCategory()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not view product from category: missing product');
+            throw new Exception('Can not view product from category: product is not selected');
         }
         $product = $this->data['product'];
         $this->product = $product;
         $this->category = null;
     }
 
-    public function categoryHasProduct()
+    public function categoryHasSelectedProduct()
     {
         if (empty($this->productsInCategory[$this->category])) {
             return false;
         }
         else {
             if (empty($this->data['product'])) {
-                throw new Exception('Can not check if category has product or not: missing product');
+                throw new Exception('Can not check if category has selected product or not: product is not selected');
             }
             $product = $this->data['product'];
             return in_array($product, $this->productsInCategory[$this->category]);
         }
+    }
+
+    public function productHasBeenSelected()
+    {
+        return !empty($this->data['product']);
+    }
+
+    public function categoryHasBeenSelected()
+    {
+        return !empty($this->data['category']);
     }
 
     public function viewCartFromHome()
@@ -309,14 +319,14 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
-    public function cartHasProduct()
+    public function cartHasSelectedProduct()
     {
         if (empty($this->cart)) {
             return false;
         }
         else {
             if (empty($this->data['product'])) {
-                throw new Exception('Can not check if cart has product or not: missing product');
+                throw new Exception('Can not check if cart has selected product or not: product is not selected');
             }
             $product = $this->data['product'];
             return !empty($this->cart[$product]);
@@ -326,7 +336,7 @@ class ShoppingCart extends Subject
     public function addFromHome()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not add product from home: missing product');
+            throw new Exception('Can not add product from home: product is not selected');
         }
         $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
@@ -340,7 +350,7 @@ class ShoppingCart extends Subject
     public function addFromCategory()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not add product from category: missing product');
+            throw new Exception('Can not add product from category: product is not selected');
         }
         $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
@@ -364,7 +374,7 @@ class ShoppingCart extends Subject
     public function remove()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not remove product from cart: missing product');
+            throw new Exception('Can not remove product from cart: product is not selected');
         }
         $product = $this->data['product'];
         unset($this->cart[$product]);
@@ -373,7 +383,7 @@ class ShoppingCart extends Subject
     public function update()
     {
         if (empty($this->data['product'])) {
-            throw new Exception('Can not update product in cart: missing product');
+            throw new Exception('Can not update product in cart: product is not selected');
         }
         $product = $this->data['product'];
         $this->cart[$product] = rand(1, 99);

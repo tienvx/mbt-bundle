@@ -8,6 +8,16 @@ use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class WorkflowSubscriber implements EventSubscriberInterface
 {
+    public function onGuard(Event $event)
+    {
+        $subject = $event->getSubject();
+        if ($subject instanceof Subject && $subject->isAnnouncing()) {
+            // on annoucing, workflow component check for next available transitions, and we need
+            // to disable the checking
+            $event->stopPropagation();
+        }
+    }
+
     public function onTransition(Event $event)
     {
         $subject = $event->getSubject();
@@ -36,14 +46,26 @@ class WorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
+    public function onAnnounce(Event $event)
+    {
+        $subject = $event->getSubject();
+        if ($subject instanceof Subject) {
+            // for models, next available transition will be selected by generator, so triggering annouce events
+            // is not necessary
+            $event->stopPropagation();
+        }
+    }
+
     public static function getSubscribedEvents()
     {
         // the order of events are: guard -> leave -> transition -> enter -> entered -> completed -> announce (next
         // available transitions)
         return [
+            'workflow.guard' => 'onGuard',
             'workflow.transition' => 'onTransition',
             'workflow.enter' => 'onEnter',
             'workflow.completed' => 'onCompleted',
+            'workflow.announce' => 'onAnnounce',
         ];
     }
 }
