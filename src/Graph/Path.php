@@ -57,14 +57,14 @@ class Path
 
     public function getVertices()
     {
+        $vertices = [];
         for ($i = 0; $i < count($this->edges); $i++) {
             if ($i === 0) {
-                yield $this->edges[$i]->getVertexStart();
+                $vertices[] = $this->edges[$i]->getVertexStart();
             }
-            else {
-                yield $this->edges[$i]->getVertexEnd();
-            }
+            $vertices[] = $this->edges[$i]->getVertexEnd();
         }
+        return $vertices;
     }
 
     public function getVertexAt(int $index): Vertex
@@ -72,7 +72,7 @@ class Path
         if ($index === 0) {
             return $this->edges[$index]->getVertexStart();
         }
-        return $this->edges[$index]->getVertexEnd();
+        return $this->edges[$index - 1]->getVertexEnd();
     }
 
     public function getEdges()
@@ -80,9 +80,9 @@ class Path
         return $this->edges;
     }
 
-    public function getDataAt(int $index): ?array
+    public function getDataAt(int $index): array
     {
-        return $this->allData[$index] ?? null;
+        return $this->allData[$index] ?? [];
     }
 
     public function __toString()

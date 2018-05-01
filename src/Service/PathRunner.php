@@ -30,6 +30,7 @@ class PathRunner
         foreach ($path->getEdges() as $index => $edge) {
             $transitionName = $edge->getAttribute('name');
             $subject->setData($path->getDataAt($index));
+            $subject->setAnnouncing(false);
             if ($workflow->can($subject, $transitionName)) {
                 $workflow->apply($subject, $transitionName);
             }

@@ -26,9 +26,15 @@ abstract class Subject
      */
     protected $dataProviders;
 
+    /**
+     * @var boolean
+     */
+    protected $announcing;
+
     public function __construct()
     {
         $this->callSUT = false;
+        $this->announcing = false;
     }
 
     /**
@@ -72,5 +78,21 @@ abstract class Subject
         if (method_exists($this, $placeOrTransitionName)) {
             call_user_func([$this, $placeOrTransitionName]);
         }
+    }
+
+    /**
+     * @param $announcing boolean
+     */
+    public function setAnnouncing(bool $announcing)
+    {
+        $this->announcing = $announcing;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAnnouncing()
+    {
+        return $this->announcing;
     }
 }

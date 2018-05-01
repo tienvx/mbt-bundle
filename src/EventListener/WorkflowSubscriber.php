@@ -17,7 +17,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onEntered(Event $event)
+    public function onEnter(Event $event)
     {
         $subject = $event->getSubject();
         $transition = $event->getTransition();
@@ -28,13 +28,22 @@ class WorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
+    public function onCompleted(Event $event)
+    {
+        $subject = $event->getSubject();
+        if ($subject instanceof Subject) {
+            $subject->setAnnouncing(true);
+        }
+    }
+
     public static function getSubscribedEvents()
     {
         // the order of events are: guard -> leave -> transition -> enter -> entered -> completed -> announce (next
         // available transitions)
         return [
             'workflow.transition' => 'onTransition',
-            'workflow.entered' => 'onEntered',
+            'workflow.enter' => 'onEnter',
+            'workflow.completed' => 'onCompleted',
         ];
     }
 }

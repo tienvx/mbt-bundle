@@ -73,6 +73,7 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     public function canGoNextStep(Directed $currentEdge): bool
     {
+        $this->subject->setAnnouncing(false);
         $this->currentData = $this->subject->provideData($currentEdge->getAttribute('name'));
         return $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
     }

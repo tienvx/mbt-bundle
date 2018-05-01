@@ -225,12 +225,16 @@ class ShoppingCart extends Subject
 
     public function categoryHasProduct()
     {
-        if (empty($this->data['product'])) {
-            throw new Exception('Can not check if category has product or not: missing product');
+        if (empty($this->productsInCategory[$this->category])) {
+            return false;
         }
-        $product = $this->data['product'];
-        return !empty($this->productsInCategory[$this->category]) &&
-            in_array($product, $this->productsInCategory[$this->category]);
+        else {
+            if (empty($this->data['product'])) {
+                throw new Exception('Can not check if category has product or not: missing product');
+            }
+            $product = $this->data['product'];
+            return in_array($product, $this->productsInCategory[$this->category]);
+        }
     }
 
     public function viewCartFromHome()
@@ -307,11 +311,16 @@ class ShoppingCart extends Subject
 
     public function cartHasProduct()
     {
-        if (empty($this->data['product'])) {
-            throw new Exception('Can not check if cart has product or not: missing product');
+        if (empty($this->cart)) {
+            return false;
         }
-        $product = $this->data['product'];
-        return !empty($this->cart[$product]);
+        else {
+            if (empty($this->data['product'])) {
+                throw new Exception('Can not check if cart has product or not: missing product');
+            }
+            $product = $this->data['product'];
+            return !empty($this->cart[$product]);
+        }
     }
 
     public function addFromHome()
