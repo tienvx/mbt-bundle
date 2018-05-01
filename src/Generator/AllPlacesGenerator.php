@@ -12,9 +12,9 @@ class AllPlacesGenerator extends AbstractGenerator
      */
     protected $edges = [];
 
-    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
-        parent::init($model, $subject, $arguments, $callSUT);
+        parent::init($model, $subject, $arguments, $generatingSteps);
 
         $algorithm = new Bruteforce($this->graph);
         $edges = $algorithm->getEdges();

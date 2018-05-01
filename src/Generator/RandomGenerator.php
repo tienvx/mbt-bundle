@@ -105,9 +105,9 @@ class RandomGenerator extends AbstractGenerator
         return 'random';
     }
 
-    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
-        parent::init($model, $subject, $arguments, $callSUT);
+        parent::init($model, $subject, $arguments, $generatingSteps);
 
         $this->stopCondition = $this->stopConditionManager->getStopCondition($arguments['stop']['on']);
         $this->stopCondition->setArguments($arguments['stop']['at'] ?? []);

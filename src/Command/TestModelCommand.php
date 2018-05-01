@@ -51,7 +51,7 @@ class TestModelCommand extends Command
         $subject = $workflowMetadata['subject'];
         $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
 
-        $generator->init($model, $subject, $arguments, true);
+        $generator->init($model, $subject, $arguments);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {

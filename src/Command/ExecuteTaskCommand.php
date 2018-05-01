@@ -59,7 +59,7 @@ class ExecuteTaskCommand extends Command
         $subject = $workflowMetadata['subject'];
         $arguments = $this->parseGeneratorArguments($task->getArguments());
 
-        $generator->init($model, $subject, $arguments, true);
+        $generator->init($model, $subject, $arguments);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {

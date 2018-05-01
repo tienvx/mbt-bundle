@@ -24,7 +24,6 @@ class PathRunner
     {
         /* @var Subject $subject */
         $subject = new $subject();
-        $subject->setCallSUT(true);
         $workflow = $this->workflows->get($subject, $model);
 
         foreach ($path->getEdges() as $index => $edge) {

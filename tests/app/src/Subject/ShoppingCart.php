@@ -407,7 +407,7 @@ class ShoppingCart extends Subject
 
     public function checkout()
     {
-        if ($this->callSUT) {
+        if (!$this->generatingSteps) {
             foreach ($this->cart as $product => $quantity) {
                 if (in_array($product, $this->outOfStock)) {
                     throw new Exception('You added an out-of-stock product into cart! Can not checkout');

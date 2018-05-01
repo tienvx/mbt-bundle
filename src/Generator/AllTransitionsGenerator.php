@@ -22,9 +22,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
-        parent::init($model, $subject, $arguments, $callSUT);
+        parent::init($model, $subject, $arguments, $generatingSteps);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();

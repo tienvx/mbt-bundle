@@ -14,7 +14,7 @@ interface GeneratorInterface extends PluginInterface
 {
     public function __construct(Registry $workflows, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager);
 
-    public function init(string $model, string $subject, array $arguments, bool $callSUT = false);
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false);
 
     public function canGoNextStep(Directed $currentEdge): bool;
 

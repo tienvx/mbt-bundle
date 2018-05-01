@@ -14,7 +14,7 @@ abstract class Subject
     /**
      * @var boolean
      */
-    protected $callSUT;
+    protected $generatingSteps;
 
     /**
      * @var array
@@ -33,16 +33,16 @@ abstract class Subject
 
     public function __construct()
     {
-        $this->callSUT = false;
-        $this->announcing = false;
+        $this->generatingSteps = false;
+        $this->announcing      = false;
     }
 
     /**
-     * @param $callSUT boolean
+     * @param $generatingSteps boolean
      */
-    public function setCallSUT(bool $callSUT)
+    public function setGeneratingSteps(bool $generatingSteps)
     {
-        $this->callSUT = $callSUT;
+        $this->generatingSteps = $generatingSteps;
     }
 
     /**

@@ -45,7 +45,7 @@ class GenerateStepsCommand extends Command
         $subject = $workflowMetadata['subject'];
         $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
 
-        $generator->init($model, $subject, $arguments);
+        $generator->init($model, $subject, $arguments, true);
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
             if ($generator->canGoNextStep($edge)) {

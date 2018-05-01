@@ -91,10 +91,10 @@ abstract class AbstractGenerator implements GeneratorInterface
         $this->workflow->apply($this->subject, $currentEdge->getAttribute('name'));
     }
 
-    public function init(string $model, string $subject, array $arguments, bool $callSUT = false)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
         $this->subject = new $subject();
-        $this->subject->setCallSUT($callSUT);
+        $this->subject->setGeneratingSteps($generatingSteps);
         $this->workflow = $this->workflows->get($this->subject, $model);
 
         $this->graph = $this->graphBuilder->build($this->workflow->getDefinition());
