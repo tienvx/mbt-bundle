@@ -3,8 +3,24 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="mbt.default-generator">random</parameter>
+        <parameter key="mbt.default-parameters">{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}</parameter>
+        <parameter key="mbt.default-reducer">weighted-random</parameter>
+        <parameter key="mbt.default-reporter">email</parameter>
+        <parameter key="mbt.reporter.email.from">send@example.com</parameter>
+        <parameter key="mbt.reporter.email.to">recipient@example.com</parameter>
+    </parameters>
+
     <services>
-        <defaults autowire="true" autoconfigure="true" public="false" />
+        <defaults autowire="true" autoconfigure="true" public="false" >
+            <bind key="$defaultGenerator">%mbt.default-generator%</bind>
+            <bind key="$defaultParameters">%mbt.default-parameters%</bind>
+            <bind key="$defaultReducer">%mbt.default-reducer%</bind>
+            <bind key="$defaultReporter">%mbt.default-reporter%</bind>
+            <bind key="$sendFrom">%mbt.reporter.email.from%</bind>
+            <bind key="$sendTo">%mbt.reporter.email.to%</bind>
+        </defaults>
 
         <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject,Message,Algorithm}" />
 
@@ -24,6 +40,11 @@
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\PathReducerManager" alias="mbt.path_reducer_manager" />
+
+        <service id="mbt.reporter_manager" class="Tienvx\Bundle\MbtBundle\Service\ReporterManager" public="true" autowire="true">
+            <argument type="collection" />
+        </service>
+        <service id="Tienvx\Bundle\MbtBundle\Service\ReporterManager" alias="mbt.reporter_manager" />
 
         <service id="mbt.task_subscriber" class="Tienvx\Bundle\MbtBundle\EventListener\TaskSubscriber">
             <tag name="doctrine.event_subscriber"/>

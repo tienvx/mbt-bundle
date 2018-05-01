@@ -24,14 +24,22 @@ class RunStepsCommand extends Command
     private $pathRunner;
     private $pathReducerManager;
     private $workflows;
+    private $defaultReducer;
 
-    public function __construct(ModelRegistry $modelRegistry, GraphBuilder $graphBuilder, PathRunner $pathRunner, PathReducerManager $pathReducerManager, Registry $workflows)
+    public function __construct(
+        ModelRegistry $modelRegistry,
+        GraphBuilder $graphBuilder,
+        PathRunner $pathRunner,
+        PathReducerManager $pathReducerManager,
+        Registry $workflows,
+        string $defaultReducer)
     {
         $this->modelRegistry      = $modelRegistry;
         $this->graphBuilder       = $graphBuilder;
         $this->pathRunner         = $pathRunner;
         $this->pathReducerManager = $pathReducerManager;
         $this->workflows          = $workflows;
+        $this->defaultReducer     = $defaultReducer;
 
         parent::__construct();
     }
@@ -44,7 +52,7 @@ class RunStepsCommand extends Command
             ->setHelp('Run steps. The steps can be generated from mbt:generate-steps command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to run.')
             ->addArgument('steps', InputArgument::REQUIRED, 'The steps to run.')
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.');
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', $this->defaultReducer);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

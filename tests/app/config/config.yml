@@ -29,3 +29,17 @@ services:
     Symfony\Component\Messenger\Transport\Serialization\Serializer:
         alias: 'messenger.transport.serializer'
     #Symfony\Component\Messenger\Transport\Serialization\Serializer: '@messenger.transport.serializer'
+
+swiftmailer:
+    url: 'null://localhost'
+    spool: { type: 'memory' }
+
+mbt:
+    default-generator: 'random'
+    default-parameters: '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}'
+    default-reducer: 'weighted-random'
+    default-reporter: 'email'
+    reporter:
+        email:
+            from: 'send@example.com'
+            to: 'recipient@example.com'

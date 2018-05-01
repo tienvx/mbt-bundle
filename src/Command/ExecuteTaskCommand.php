@@ -49,7 +49,8 @@ class ExecuteTaskCommand extends Command
         $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 
         if (!$task) {
-            return $output->writeln(sprintf('No task found for id %d', $task));
+            $output->writeln(sprintf('No task found for id %d', $taskId));
+            return;
         }
 
         /** @var Task $task */

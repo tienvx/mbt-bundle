@@ -17,7 +17,6 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "api-platform/core": "^2.2",
         "graphp/algorithms": "^0.8.1",
         "php": "^7.1.0",
         "symfony/framework-bundle": "4.1.x-dev",
@@ -30,9 +29,11 @@
         "symfony/asset": "4.1.x-dev",
         "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6",
-        "symfony/messenger": "4.1.x-dev"
+        "symfony/messenger": "4.1.x-dev",
+        "symfony/swiftmailer-bundle": "^3.2"
     },
     "require-dev": {
+        "api-platform/core": "^2.2",
         "phpunit/phpunit": "^6.5",
         "symfony/browser-kit": "4.1.x-dev",
         "doctrine/doctrine-fixtures-bundle": "^3.0",

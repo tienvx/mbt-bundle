@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\GeneratorPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ModelPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PathReducerPass;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ReporterPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\StopConditionPass;
 
 class TienvxMbtBundle extends Bundle
@@ -17,5 +18,6 @@ class TienvxMbtBundle extends Bundle
         $container->addCompilerPass(new GeneratorPass());
         $container->addCompilerPass(new StopConditionPass());
         $container->addCompilerPass(new PathReducerPass());
+        $container->addCompilerPass(new ReporterPass());
     }
 }

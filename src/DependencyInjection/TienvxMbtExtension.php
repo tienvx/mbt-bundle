@@ -15,6 +15,7 @@ use Symfony\Component\Workflow\StateMachine;
 use Tienvx\Bundle\MbtBundle\EventListener\ModelGuardListener;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 /**
@@ -57,6 +58,9 @@ class TienvxMbtExtension extends Extension implements PrependExtensionInterface
         $container->registerForAutoconfiguration(PathReducerInterface::class)
             ->setLazy(true)
             ->addTag('mbt.path_reducer');
+        $container->registerForAutoconfiguration(ReporterInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.reporter');
     }
 
     private function registerWorkflowConfiguration(array $config, ContainerBuilder $container)

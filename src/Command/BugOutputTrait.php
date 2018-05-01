@@ -17,7 +17,7 @@ trait BugOutputTrait
         $table = new Table($output);
         $table->setHeaders([
             [new TableCell('Steps to reproduce', ['colspan' => 3])],
-            ['Step', 'Label', 'Data Input'],
+            ['Step', 'Action', 'Data'],
         ]);
         foreach ($path->getEdges() as $index => $edge) {
             $table->addRow([$index + 1, $edge->getAttribute('label'), json_encode($path->getDataAt($index))]);

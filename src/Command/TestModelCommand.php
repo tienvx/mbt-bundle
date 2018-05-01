@@ -21,12 +21,24 @@ class TestModelCommand extends Command
     private $modelRegistry;
     private $generatorManager;
     private $pathReducerManager;
+    private $defaultGenerator;
+    private $defaultArguments;
+    private $defaultReducer;
 
-    public function __construct(ModelRegistry $modelRegistry, GeneratorManager $generatorManager, PathReducerManager $pathReducerManager)
+    public function __construct(
+        ModelRegistry $modelRegistry,
+        GeneratorManager $generatorManager,
+        PathReducerManager $pathReducerManager,
+        string $defaultGenerator,
+        string $defaultArguments,
+        string $defaultReducer)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
         $this->pathReducerManager = $pathReducerManager;
+        $this->defaultGenerator = $defaultGenerator;
+        $this->defaultArguments = $defaultArguments;
+        $this->defaultReducer = $defaultReducer;
 
         parent::__construct();
     }
@@ -38,9 +50,9 @@ class TestModelCommand extends Command
             ->setDescription('Test a model.')
             ->setHelp('Test a model. This command is combined by mbt:generate-steps and mbt:run-steps commands.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', 'random')
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}')
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', 'weighted-random');
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', $this->defaultGenerator)
+            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', $this->defaultArguments)
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', $this->defaultReducer);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
