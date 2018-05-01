@@ -96,9 +96,8 @@ class TaskTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('application/problem+json; charset=utf-8', $response->headers->get('Content-Type'));
-        $this->assertJsonStringEqualsJsonString('
+        $this->assertArraySubset(json_decode('
         {
-          "type": "https://tools.ietf.org/html/rfc2616#section-10",
           "title": "An error occurred",
           "detail": "generator: \"invalid-generator\" is not a valid generator.\narguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
           "violations": [
@@ -123,6 +122,6 @@ class TaskTest extends AbstractApiTestCase
               "message": "The value you selected is not a valid choice."
             }
           ]
-        }', $response->getContent());
+        }', true), json_decode($response->getContent(), true));
     }
 }

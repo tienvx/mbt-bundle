@@ -75,9 +75,8 @@ class BugTest extends AbstractApiTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('application/problem+json; charset=utf-8', $response->headers->get('Content-Type'));
-        $this->assertJsonStringEqualsJsonString('
+        $this->assertArraySubset(json_decode('
         {
-          "type": "https://tools.ietf.org/html/rfc2616#section-10",
           "title": "An error occurred",
           "detail": "status: The value you selected is not a valid choice.",
           "violations": [
@@ -86,6 +85,6 @@ class BugTest extends AbstractApiTestCase
               "message": "The value you selected is not a valid choice."
             }
           ]
-        }', $response->getContent());
+        }', true), json_decode($response->getContent(), true));
     }
 }
