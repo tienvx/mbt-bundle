@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -23,6 +24,7 @@ class AppKernel extends Kernel
             new DoctrineBundle(),
             new DoctrineFixturesBundle(),
             new TwigBundle(),
+            new SwiftmailerBundle(),
             new TienvxMbtBundle(),
         );
 

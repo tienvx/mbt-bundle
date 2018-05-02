@@ -3,58 +3,74 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Console\Input\StringInput;
+use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryReceiver;
+use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
+use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryBugReceiver;
 
-class BugMessageTest extends WebTestCase
+class BugMessageTest extends AbstractTestCase
 {
     public function testExecute()
     {
-        $kernel = static::bootKernel();
-
         $messageBus = self::$container->get(MessageBusInterface::class);
         $receiverLocator = self::$container->get('messenger.receiver_locator');
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-        $application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
+        $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
+        $this->client->enableProfiler();
 
-        $application->run(new StringInput('doctrine:database:drop --force'));
-        $application->run(new StringInput('doctrine:database:create'));
-        $application->run(new StringInput('doctrine:schema:create'));
+        $this->runCommand('doctrine:database:drop --force');
+        $this->runCommand('doctrine:database:create');
+        $this->runCommand('doctrine:schema:create');
+
+        $task = new Task();
+        $task->setTitle('Test task title');
+        $task->setModel('shopping_cart');
+        $task->setGenerator('random');
+        $task->setArguments('{"stop":{"on":"found-bug"}}');
+        $task->setReducer('greedy');
+        $task->setProgress(0);
+        $task->setStatus('not-started');
+        $entityManager->persist($task);
 
         $bug = new Bug();
-        $bug->setTitle('Test task message');
-        $bug->setMessage('shopping_cart');
-        $bug->setGenerator('random');
-        $bug->setArguments('{"stop":{"on":"found-bug"}}');
-        $bug->setReducer('weighted-random');
-        $bug->setProgress(0);
-        $bug->setStatus('not-started');
+        $bug->setTitle('Test bug title');
+        $bug->setMessage('Test bug message');
+        $bug->setStatus('unverified');
+        $bug->setSteps('home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout');
+        $bug->setTask($task);
         $entityManager->persist($bug);
         $entityManager->flush();
 
-        $command = $application->find('messenger:consume-messages');
+        $command = $this->application->find('messenger:consume-messages');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryReceiver::class,
+            'receiver'     => InMemoryBugReceiver::class,
         ]);
 
-        $countBugs = $entityManager->getRepository(Bug::class)->createQueryBuilder('b')
-            ->select('count(b.id)')
-            ->where('b.task = :task_id')
-            ->setParameter('task_id', $bug->getId())
-            ->getQuery()
-            ->getSingleScalarResult();
-        $this->assertEquals(1, $countBugs);
+        /** @var MessageDataCollector $mailCollector */
+        $mailCollector = $this->client->getProfile()->getCollector('swiftmailer');
+
+        // checks that an email was sent
+        $this->assertSame(1, $mailCollector->getMessageCount());
+
+        $collectedMessages = $mailCollector->getMessages();
+        /** @var \Swift_Message $message */
+        $message = $collectedMessages[0];
+
+        // Asserting email data
+        $this->assertInstanceOf('Swift_Message', $message);
+        $this->assertSame('Hello Email', $message->getSubject());
+        $this->assertSame('send@example.com', key($message->getFrom()));
+        $this->assertSame('recipient@example.com', key($message->getTo()));
+        $this->assertSame(
+            'You should see me from the profiler!',
+            $message->getBody()
+        );
     }
 }

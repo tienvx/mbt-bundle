@@ -2,47 +2,16 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Console\Input\StringInput;
+use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 
-class AbstractApiTestCase extends WebTestCase
+class AbstractApiTestCase extends AbstractTestCase
 {
-    /**
-     * @var Application
-     */
-    protected $application;
-    /**
-     * @var Client
-     */
-    protected $client;
-
     protected function setUp()
     {
-        $this->client = static::createClient();
-        $this->client->disableReboot();
-
+        parent::setUp();
         $this->runCommand('doctrine:database:create');
         $this->runCommand('doctrine:schema:create');
         $this->runCommand('doctrine:fixtures:load --purge-with-truncate');
-    }
-
-    protected function runCommand($command)
-    {
-        $command = sprintf('%s --quiet', $command);
-
-        return $this->getApplication()->run(new StringInput($command));
-    }
-
-    protected function getApplication()
-    {
-        if (null === $this->application) {
-            $this->application = new Application($this->client->getKernel());
-            $this->application->setAutoExit(false);
-        }
-
-        return $this->application;
     }
 
     /**

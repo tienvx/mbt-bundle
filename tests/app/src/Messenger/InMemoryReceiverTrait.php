@@ -2,10 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Messenger;
 
-use Symfony\Component\Messenger\Transport\SenderInterface;
 use Symfony\Component\Messenger\Transport\Serialization\Serializer;
 
-class InMemorySender implements SenderInterface
+trait InMemoryReceiverTrait
 {
     private $messageSerializer;
     private $messageStorage;
@@ -16,13 +15,15 @@ class InMemorySender implements SenderInterface
         $this->messageStorage = $messageStorage;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function send($message)
+    public function receive(callable $handler) : void
     {
-        $encodedMessage = $this->messageSerializer->encode($message);
+        foreach ($this->messageStorage->getMessages($this->type) as $message) {
+            $handler($this->messageSerializer->decode($message));
+        }
+    }
 
-        $this->messageStorage->add($encodedMessage);
+    public function stop(): void
+    {
+        // noop
     }
 }

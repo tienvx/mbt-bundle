@@ -6,13 +6,13 @@ class InMemoryMessageStorage
 {
     private $messages = [];
 
-    public function add(array $message)
+    public function add(string $type, array $message)
     {
-        $this->messages[] = $message;
+        $this->messages[$type][] = $message;
     }
 
-    public function getMessages()
+    public function getMessages(string $type)
     {
-        return $this->messages;
+        return $this->messages[$type];
     }
 }
