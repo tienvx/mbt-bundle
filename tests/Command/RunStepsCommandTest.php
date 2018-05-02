@@ -39,7 +39,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
 +--------+----------------------------------------------------------------+-------------------+
-| Step   | Label                                                          | Data Input        |
+| Step   | Action                                                         | Data              |
 +--------+----------------------------------------------------------------+-------------------+
 | 1      | From home page, choose a random category and open it           | {"category":"57"} |
 | 2      | From category page, choose a random product and add it to cart | {"product":"49"}  |
@@ -51,7 +51,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+---------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                   |
 +--------+---------------------------------------------------------+-------------------+
-| Step   | Label                                                   | Data Input        |
+| Step   | Action                                                  | Data              |
 +--------+---------------------------------------------------------+-------------------+
 | 1      | From home page, choose a random category and open it    | {"category":"57"} |
 | 2      | From category page, choose a random product and open it | {"product":"49"}  |
@@ -64,7 +64,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
 +--------+----------------------------------------------------------------+-------------------+
-| Step   | Label                                                          | Data Input        |
+| Step   | Action                                                         | Data              |
 +--------+----------------------------------------------------------------+-------------------+
 | 1      | From home page, choose a random category and open it           | {"category":"34"} |
 | 2      | From category page, choose a random category and open it       | {"category":"57"} |
@@ -77,7 +77,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
 +--------+----------------------------------------------------------------+-------------------+
-| Step   | Label                                                          | Data Input        |
+| Step   | Action                                                         | Data              |
 +--------+----------------------------------------------------------------+-------------------+
 | 1      | From home page, choose a random category and open it           | {"category":"57"} |
 | 2      | From category page, choose a random product and add it to cart | {"product":"49"}  |
@@ -89,7 +89,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
 +--------+----------------------------------------------------------------+-------------------+
-| Step   | Label                                                          | Data Input        |
+| Step   | Action                                                         | Data              |
 +--------+----------------------------------------------------------------+-------------------+
 | 1      | From home page, choose a random category and open it           | {"category":"34"} |
 | 2      | From category page, choose a random category and open it       | {"category":"57"} |

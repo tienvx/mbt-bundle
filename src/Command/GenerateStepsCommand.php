@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
+use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
@@ -33,8 +34,8 @@ class GenerateStepsCommand extends Command
             ->setDescription('Generate steps from model.')
             ->setHelp('Generate steps from model. So that it can be run with mbt:run-steps command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', 'random')
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}');
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', Constants::DEFAULT_GENERATOR)
+            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', Constants::DEFAULT_ARGUMENTS);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -16,36 +16,42 @@ class EmailReporter implements ReporterInterface
     protected $modelRegistry;
     protected $graphBuilder;
     protected $workflows;
-    protected $sendFrom;
-    protected $sendTo;
+    protected $from;
+    protected $to;
 
     public function __construct(
         \Swift_Mailer $mailer,
         Twig $twig,
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
-        Registry $workflows,
-        string $sendFrom,
-        string $sendTo)
+        Registry $workflows)
     {
         $this->mailer = $mailer;
         $this->twig = $twig;
         $this->modelRegistry = $modelRegistry;
         $this->graphBuilder = $graphBuilder;
         $this->workflows = $workflows;
-        $this->sendFrom = $sendFrom;
-        $this->sendTo = $sendTo;
+    }
+
+    public function setFrom($from)
+    {
+        $this->from = $from;
+    }
+
+    public function setTo($to)
+    {
+        $this->to = $to;
     }
 
     public function report(Bug $bug)
     {
         $this->mailer->send(
             (new \Swift_Message($bug->getTitle()))
-                ->setTo($this->sendTo)
-                ->setFrom($this->sendFrom)
+                ->setTo($this->to)
+                ->setFrom($this->from)
                 ->setBody(
                     $this->twig->render(
-                        'emails/bug.html.twig',
+                        '@TienvxMbt/emails/bug.html.twig',
                         [
                             'id' => $bug->getId(),
                             'task' => $bug->getTask()->getTitle(),

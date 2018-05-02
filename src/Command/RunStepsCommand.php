@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
@@ -24,22 +25,19 @@ class RunStepsCommand extends Command
     private $pathRunner;
     private $pathReducerManager;
     private $workflows;
-    private $defaultReducer;
 
     public function __construct(
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
         PathRunner $pathRunner,
         PathReducerManager $pathReducerManager,
-        Registry $workflows,
-        string $defaultReducer)
+        Registry $workflows)
     {
         $this->modelRegistry      = $modelRegistry;
         $this->graphBuilder       = $graphBuilder;
         $this->pathRunner         = $pathRunner;
         $this->pathReducerManager = $pathReducerManager;
         $this->workflows          = $workflows;
-        $this->defaultReducer     = $defaultReducer;
 
         parent::__construct();
     }
@@ -52,7 +50,7 @@ class RunStepsCommand extends Command
             ->setHelp('Run steps. The steps can be generated from mbt:generate-steps command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to run.')
             ->addArgument('steps', InputArgument::REQUIRED, 'The steps to run.')
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', $this->defaultReducer);
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', Constants::DEFAULT_REDUCER);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

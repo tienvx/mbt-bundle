@@ -9,19 +9,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 
 class ReportBugCommand extends Command
 {
     private $reporterManager;
     private $entityManager;
-    private $defaultReporter;
 
-    public function __construct(ReporterManager $reporterManager, EntityManagerInterface $entityManager, string $defaultReporter)
+    public function __construct(ReporterManager $reporterManager, EntityManagerInterface $entityManager)
     {
         $this->reporterManager = $reporterManager;
         $this->entityManager = $entityManager;
-        $this->defaultReporter = $defaultReporter;
 
         parent::__construct();
     }
@@ -33,7 +32,7 @@ class ReportBugCommand extends Command
             ->setDescription('Report a bug.')
             ->setHelp('Report a bug to email, hipchat or jira.')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
-            ->addOption('reporter', 'r', InputOption::VALUE_OPTIONAL, 'The way to report the bug.', 'email');
+            ->addOption('reporter', 'r', InputOption::VALUE_OPTIONAL, 'The way to report the bug.', Constants::DEFAULT_REPORTER);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

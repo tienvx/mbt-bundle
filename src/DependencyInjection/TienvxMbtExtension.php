@@ -15,6 +15,7 @@ use Symfony\Component\Workflow\StateMachine;
 use Tienvx\Bundle\MbtBundle\EventListener\ModelGuardListener;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
@@ -48,6 +49,13 @@ class TienvxMbtExtension extends Extension implements PrependExtensionInterface
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
+        $emailReporterDefinition->addMethodCall('setFrom', [$config['reporter']['email']['from']]);
+        $emailReporterDefinition->addMethodCall('setTo', [$config['reporter']['email']['to']]);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)

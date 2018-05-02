@@ -34,12 +34,9 @@ services:
 swiftmailer:
     url: 'null://localhost'
     spool: { type: 'memory' }
+    logging: true
 
 tienvx_mbt:
-    default-generator: 'random'
-    default-parameters: '{"stop":{"on":"coverage","at":{"edgeCoverage":100,"vertexCoverage":100}}}'
-    default-reducer: 'weighted-random'
-    default-reporter: 'email'
     reporter:
         email:
             from: 'send@example.com'

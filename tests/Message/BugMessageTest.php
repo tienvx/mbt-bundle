@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -21,7 +20,6 @@ class BugMessageTest extends AbstractTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-        $this->client->enableProfiler();
 
         $this->runCommand('doctrine:database:drop --force');
         $this->runCommand('doctrine:database:create');
@@ -53,23 +51,23 @@ class BugMessageTest extends AbstractTestCase
             'receiver'     => InMemoryBugReceiver::class,
         ]);
 
-        /** @var MessageDataCollector $mailCollector */
-        $mailCollector = $this->client->getProfile()->getCollector('swiftmailer');
+        /** @var \Swift_Plugins_MessageLogger $messageLogger */
+        $messageLogger = self::$container->get('swiftmailer.mailer.default.plugin.messagelogger');
 
         // checks that an email was sent
-        $this->assertSame(1, $mailCollector->getMessageCount());
+        $this->assertSame(1, $messageLogger->countMessages());
 
-        $collectedMessages = $mailCollector->getMessages();
+        $collectedMessages = $messageLogger->getMessages();
         /** @var \Swift_Message $message */
         $message = $collectedMessages[0];
 
         // Asserting email data
         $this->assertInstanceOf('Swift_Message', $message);
-        $this->assertSame('Hello Email', $message->getSubject());
+        $this->assertSame('Test bug title', $message->getSubject());
         $this->assertSame('send@example.com', key($message->getFrom()));
         $this->assertSame('recipient@example.com', key($message->getTo()));
-        $this->assertSame(
-            'You should see me from the profiler!',
+        $this->assertContains(
+            'Bug Found',
             $message->getBody()
         );
     }

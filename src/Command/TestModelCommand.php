@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
+use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
@@ -21,24 +22,15 @@ class TestModelCommand extends Command
     private $modelRegistry;
     private $generatorManager;
     private $pathReducerManager;
-    private $defaultGenerator;
-    private $defaultArguments;
-    private $defaultReducer;
 
     public function __construct(
         ModelRegistry $modelRegistry,
         GeneratorManager $generatorManager,
-        PathReducerManager $pathReducerManager,
-        string $defaultGenerator,
-        string $defaultArguments,
-        string $defaultReducer)
+        PathReducerManager $pathReducerManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
         $this->pathReducerManager = $pathReducerManager;
-        $this->defaultGenerator = $defaultGenerator;
-        $this->defaultArguments = $defaultArguments;
-        $this->defaultReducer = $defaultReducer;
 
         parent::__construct();
     }
@@ -50,9 +42,9 @@ class TestModelCommand extends Command
             ->setDescription('Test a model.')
             ->setHelp('Test a model. This command is combined by mbt:generate-steps and mbt:run-steps commands.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', $this->defaultGenerator)
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', $this->defaultArguments)
-            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', $this->defaultReducer);
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', Constants::DEFAULT_GENERATOR)
+            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', Constants::DEFAULT_ARGUMENTS)
+            ->addOption('reducer', 'r', InputOption::VALUE_OPTIONAL, 'The path reducer to reduce the steps.', Constants::DEFAULT_REDUCER);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
