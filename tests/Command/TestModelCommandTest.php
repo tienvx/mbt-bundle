@@ -16,8 +16,11 @@ class TestModelCommandTest extends CommandTestCase
     {
         $kernel = static::bootKernel();
 
+        /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
+        /** @var GeneratorManager $generatorManager */
         $generatorManager = self::$container->get(GeneratorManager::class);
+        /** @var PathReducerManager $pathReducerManager */
         $pathReducerManager = self::$container->get(PathReducerManager::class);
 
         $application = new Application($kernel);

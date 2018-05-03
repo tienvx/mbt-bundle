@@ -38,6 +38,11 @@ class GenerateStepsCommand extends Command
             ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', Constants::DEFAULT_ARGUMENTS);
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $model = $input->getArgument('model');

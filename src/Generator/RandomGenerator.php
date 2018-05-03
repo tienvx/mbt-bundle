@@ -105,6 +105,13 @@ class RandomGenerator extends AbstractGenerator
         return 'random';
     }
 
+    /**
+     * @param string $model
+     * @param string $subject
+     * @param array $arguments
+     * @param bool $generatingSteps
+     * @throws \Exception
+     */
     public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
         parent::init($model, $subject, $arguments, $generatingSteps);

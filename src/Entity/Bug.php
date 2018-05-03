@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ApiResource
@@ -48,6 +49,13 @@ class Bug
      * @Assert\Choice({"unverified", "valid", "invalid"})
      */
     private $status;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Reporter
+     */
+    private $reporter;
 
     public function getId()
     {
@@ -102,5 +110,15 @@ class Bug
     public function setStatus($status)
     {
         $this->status = $status;
+    }
+
+    public function getReporter()
+    {
+        return $this->reporter;
+    }
+
+    public function setReporter($reporter)
+    {
+        $this->reporter = $reporter;
     }
 }

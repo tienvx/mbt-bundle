@@ -71,6 +71,11 @@ abstract class AbstractGenerator implements GeneratorInterface
         return $this->subject;
     }
 
+    /**
+     * @param Directed $currentEdge
+     * @return bool
+     * @throws \Exception
+     */
     public function canGoNextStep(Directed $currentEdge): bool
     {
         $this->subject->setAnnouncing(false);

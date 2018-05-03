@@ -55,6 +55,9 @@ class Path
         return count($this->edges);
     }
 
+    /**
+     * @return Vertex[]
+     */
     public function getVertices()
     {
         $vertices = [];
@@ -104,6 +107,11 @@ class Path
         return implode(' ', $steps);
     }
 
+    /**
+     * @param string $steps
+     * @param Graph $graph
+     * @return Path
+     */
     public static function fromSteps(string $steps, Graph $graph): Path
     {
         $edges = [];

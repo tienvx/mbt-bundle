@@ -31,10 +31,14 @@ class ReportBugCommand extends Command
             ->setName('mbt:report-bug')
             ->setDescription('Report a bug.')
             ->setHelp('Report a bug to email, hipchat or jira.')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
-            ->addOption('reporter', 'r', InputOption::VALUE_OPTIONAL, 'The way to report the bug.', Constants::DEFAULT_REPORTER);
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
@@ -46,7 +50,7 @@ class ReportBugCommand extends Command
             return;
         }
 
-        $reporter = $this->reporterManager->getReporter($input->getOption('reporter'));
+        $reporter = $this->reporterManager->getReporter($bug->getReporter());
         $reporter->report($bug);
     }
 }

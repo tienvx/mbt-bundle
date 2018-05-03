@@ -24,6 +24,11 @@ class ModelRegistry
         return isset($this->models[$name]);
     }
 
+    /**
+     * @param $name
+     * @return array
+     * @throws \Exception
+     */
     public function getModel($name): array
     {
         if (isset($this->models[$name])) {

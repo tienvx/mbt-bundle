@@ -17,6 +17,10 @@ class TaskMessageHandler implements MessageHandlerInterface
         $this->executeTaskCommand = $executeTaskCommand;
     }
 
+    /**
+     * @param TaskMessage $taskMessage
+     * @throws \Exception
+     */
     public function __invoke(TaskMessage $taskMessage)
     {
         $input = new ArrayInput([

@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Algorithm;
 
+use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Exception\UnderflowException;
 use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Graph;
@@ -28,6 +29,7 @@ class Eulerian extends BaseEulerian
 
             // Then get Euler path.
             $vertex = $resultGraph->getVertex($startVertex->getId());
+            /** @var Directed $edge */
             while ($edge = $this->getUnvisitedEdge($vertex)) {
                 $returnEdges[] = $edge;
                 $edge->setAttribute('visited', true);
@@ -45,6 +47,7 @@ class Eulerian extends BaseEulerian
         $resultGraph = $this->graph->createGraphClone();
         foreach ($resultGraph->getVertices() as $vertex) {
             $balance = 0;
+            /** @var Directed $edge */
             foreach ($vertex->getEdges() as $edge) {
                 if ($edge->hasVertexTarget($vertex)) {
                     $balance++;

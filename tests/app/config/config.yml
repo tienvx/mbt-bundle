@@ -37,6 +37,7 @@ swiftmailer:
     logging: true
 
 tienvx_mbt:
+    default_reporter: email
     reporter:
         email:
             from: 'send@example.com'

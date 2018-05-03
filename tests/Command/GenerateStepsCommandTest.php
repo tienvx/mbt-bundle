@@ -15,7 +15,9 @@ class GenerateStepsCommandTest extends CommandTestCase
     {
         $kernel = static::bootKernel();
 
+        /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
+        /** @var GeneratorManager $generatorManager */
         $generatorManager = self::$container->get(GeneratorManager::class);
 
         $application = new Application($kernel);

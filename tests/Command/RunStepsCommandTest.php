@@ -18,10 +18,15 @@ class RunStepsCommandTest extends CommandTestCase
     {
         $kernel = static::bootKernel();
 
+        /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
+        /** @var GraphBuilder $graphBuilder */
         $graphBuilder = self::$container->get(GraphBuilder::class);
+        /** @var PathRunner $pathRunner */
         $pathRunner = self::$container->get(PathRunner::class);
+        /** @var PathReducerManager $pathReducerManager */
         $pathReducerManager = self::$container->get(PathReducerManager::class);
+        /** @var Registry $workflows */
         $workflows = self::$container->get(Registry::class);
 
         $application = new Application($kernel);

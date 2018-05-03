@@ -153,6 +153,9 @@ class ShoppingCart extends Subject
         parent::__construct();
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewAnyCategoryFromHome()
     {
         if (empty($this->data['category'])) {
@@ -163,6 +166,9 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewOtherCategory()
     {
         if (empty($this->data['category'])) {
@@ -173,6 +179,9 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewAnyCategoryFromProduct()
     {
         if (empty($this->data['category'])) {
@@ -183,6 +192,9 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewAnyCategoryFromCart()
     {
         if (empty($this->data['category'])) {
@@ -193,6 +205,9 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewProductFromHome()
     {
         if (empty($this->data['product'])) {
@@ -203,6 +218,9 @@ class ShoppingCart extends Subject
         $this->category = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewProductFromCart()
     {
         if (empty($this->data['product'])) {
@@ -213,6 +231,9 @@ class ShoppingCart extends Subject
         $this->category = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function viewProductFromCategory()
     {
         if (empty($this->data['product'])) {
@@ -223,6 +244,9 @@ class ShoppingCart extends Subject
         $this->category = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function categoryHasSelectedProduct()
     {
         if (empty($this->productsInCategory[$this->category])) {
@@ -319,6 +343,9 @@ class ShoppingCart extends Subject
         $this->product = null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function cartHasSelectedProduct()
     {
         if (empty($this->cart)) {
@@ -333,6 +360,9 @@ class ShoppingCart extends Subject
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function addFromHome()
     {
         if (empty($this->data['product'])) {
@@ -347,6 +377,9 @@ class ShoppingCart extends Subject
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function addFromCategory()
     {
         if (empty($this->data['product'])) {
@@ -371,6 +404,9 @@ class ShoppingCart extends Subject
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function remove()
     {
         if (empty($this->data['product'])) {
@@ -380,6 +416,9 @@ class ShoppingCart extends Subject
         unset($this->cart[$product]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function update()
     {
         if (empty($this->data['product'])) {
@@ -405,6 +444,9 @@ class ShoppingCart extends Subject
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function checkout()
     {
         if (!$this->generatingSteps) {

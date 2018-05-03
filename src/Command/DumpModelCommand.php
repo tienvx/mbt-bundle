@@ -35,6 +35,11 @@ class DumpModelCommand extends Command
             ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'The dump format [dot|puml]', 'dot');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $model = $input->getArgument('model');

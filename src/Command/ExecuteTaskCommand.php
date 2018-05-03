@@ -11,9 +11,11 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
+use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 
 class ExecuteTaskCommand extends Command
 {
@@ -23,13 +25,21 @@ class ExecuteTaskCommand extends Command
     private $generatorManager;
     private $pathReducerManager;
     private $entityManager;
+    private $reporterManager;
+    private $defaultReporter;
 
-    public function __construct(ModelRegistry $modelRegistry, GeneratorManager $generatorManager, PathReducerManager $pathReducerManager, EntityManagerInterface $entityManager)
+    public function __construct(
+        ModelRegistry $modelRegistry,
+        GeneratorManager $generatorManager,
+        PathReducerManager $pathReducerManager,
+        EntityManagerInterface $entityManager,
+        ReporterManager $reporterManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
         $this->pathReducerManager = $pathReducerManager;
         $this->entityManager = $entityManager;
+        $this->reporterManager = $reporterManager;
 
         parent::__construct();
     }
@@ -43,6 +53,16 @@ class ExecuteTaskCommand extends Command
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
     }
 
+    public function setDefaultReporter(string $defaultReporter)
+    {
+        $this->defaultReporter = $defaultReporter;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $taskId = $input->getArgument('task-id');
@@ -77,14 +97,17 @@ class ExecuteTaskCommand extends Command
                 $path = $pathReducer->reduce($path, $model, $subject, $throwable);
             }
 
-            $bug = new Bug();
-            $bug->setTitle($throwable->getMessage());
-            $bug->setMessage($throwable->getMessage());
-            $bug->setTask($task);
-            $bug->setSteps($path);
-            $bug->setStatus('unverified');
-            $this->entityManager->persist($bug);
-            $this->entityManager->flush();
+            if ($this->reporterManager->hasReporter($this->defaultReporter)) {
+                $bug = new Bug();
+                $bug->setTitle($throwable->getMessage());
+                $bug->setMessage($throwable->getMessage());
+                $bug->setTask($task);
+                $bug->setSteps($path);
+                $bug->setStatus('unverified');
+                $bug->setReporter($this->defaultReporter);
+                $this->entityManager->persist($bug);
+                $this->entityManager->flush();
+            }
         }
     }
 }

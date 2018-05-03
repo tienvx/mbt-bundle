@@ -5,27 +5,27 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 
 /**
  * @Annotation
  */
-class GeneratorValidator extends ConstraintValidator
+class ReporterValidator extends ConstraintValidator
 {
     /**
-     * @var GeneratorManager
+     * @var ReporterManager
      */
-    protected $generatorManager;
+    protected $reporterManager;
 
-    public function __construct(GeneratorManager $generatorManager)
+    public function __construct(ReporterManager $reporterManager)
     {
-        $this->generatorManager = $generatorManager;
+        $this->reporterManager = $reporterManager;
     }
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof Generator) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Generator');
+        if (!$constraint instanceof Reporter) {
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Reporter');
         }
 
         if (null === $value || '' === $value) {
@@ -36,7 +36,7 @@ class GeneratorValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        if (!$this->generatorManager->hasGenerator($value)) {
+        if (!$this->reporterManager->hasReporter($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();

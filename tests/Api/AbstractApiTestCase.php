@@ -6,6 +6,9 @@ use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 
 class AbstractApiTestCase extends AbstractTestCase
 {
+    /**
+     * @throws \Exception
+     */
     protected function setUp()
     {
         parent::setUp();

@@ -12,12 +12,15 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Workflow\StateMachine;
+use Swift_Mailer;
+use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\EventListener\ModelGuardListener;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
+use Twig\Environment as Twig;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -44,6 +47,7 @@ class TienvxMbtExtension extends Extension implements PrependExtensionInterface
 
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -56,6 +60,15 @@ class TienvxMbtExtension extends Extension implements PrependExtensionInterface
         $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
         $emailReporterDefinition->addMethodCall('setFrom', [$config['reporter']['email']['from']]);
         $emailReporterDefinition->addMethodCall('setTo', [$config['reporter']['email']['to']]);
+        if (class_exists(Swift_Mailer::class)) {
+            $emailReporterDefinition->addMethodCall('setMailer', [new Reference(Swift_Mailer::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $emailReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
+
+        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
+        $executeTaskCommandDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)

@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Symfony\Component\Workflow\Registry;
+use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -11,7 +12,9 @@ use Twig\Environment as Twig;
 
 class EmailReporter implements ReporterInterface
 {
+    /** @var Swift_Mailer */
     protected $mailer;
+    /** @var Twig */
     protected $twig;
     protected $modelRegistry;
     protected $graphBuilder;
@@ -20,14 +23,10 @@ class EmailReporter implements ReporterInterface
     protected $to;
 
     public function __construct(
-        \Swift_Mailer $mailer,
-        Twig $twig,
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
         Registry $workflows)
     {
-        $this->mailer = $mailer;
-        $this->twig = $twig;
         $this->modelRegistry = $modelRegistry;
         $this->graphBuilder = $graphBuilder;
         $this->workflows = $workflows;
@@ -43,8 +42,34 @@ class EmailReporter implements ReporterInterface
         $this->to = $to;
     }
 
+    public function setMailer(Swift_Mailer $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
+    public function setTwig(Twig $twig)
+    {
+        $this->twig = $twig;
+    }
+
+    /**
+     * Send email about the bug.
+     *
+     * @param Bug $bug
+     *
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     * @throws \Exception
+     */
     public function report(Bug $bug)
     {
+        if (!$this->mailer) {
+            throw new \Exception('Need to install symfony/swiftmailer-bundle package to send email');
+        }
+        if (!$this->twig) {
+            throw new \Exception('Need to install symfony/twig-bundle package to send email');
+        }
         $this->mailer->send(
             (new \Swift_Message($bug->getTitle()))
                 ->setTo($this->to)
@@ -65,6 +90,11 @@ class EmailReporter implements ReporterInterface
         );
     }
 
+    /**
+     * @param Bug $bug
+     * @return array
+     * @throws \Exception
+     */
     protected function buildSteps(Bug $bug): array
     {
         $model = $bug->getTask()->getModel();

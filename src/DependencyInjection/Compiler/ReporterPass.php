@@ -29,7 +29,7 @@ class ReporterPass implements CompilerPassInterface
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->reporterTag, $this->reporterService));
         }
 
-        $generatorDefinition = $container->getDefinition($this->reporterService);
-        $generatorDefinition->replaceArgument(0, $reporters);
+        $reporterDefinition = $container->getDefinition($this->reporterService);
+        $reporterDefinition->replaceArgument(0, $reporters);
     }
 }

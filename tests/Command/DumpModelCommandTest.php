@@ -14,7 +14,9 @@ class DumpModelCommandTest extends CommandTestCase
     {
         $kernel = static::bootKernel();
 
+        /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
+        /** @var Registry $workflows */
         $workflows = self::$container->get(Registry::class);
 
         $application = new Application($kernel);

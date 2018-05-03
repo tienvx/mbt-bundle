@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -13,10 +15,16 @@ use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryTaskReceiver;
 
 class TaskMessageTest extends AbstractTestCase
 {
+    /**
+     * @throws \Exception
+     */
     public function testExecute()
     {
+        /** @var MessageBusInterface $messageBus */
         $messageBus = self::$container->get(MessageBusInterface::class);
+        /** @var ContainerInterface $receiverLocator */
         $receiverLocator = self::$container->get('messenger.receiver_locator');
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
@@ -43,7 +51,9 @@ class TaskMessageTest extends AbstractTestCase
             'receiver'     => InMemoryTaskReceiver::class,
         ]);
 
-        $countBugs = $entityManager->getRepository(Bug::class)->createQueryBuilder('b')
+        /** @var EntityRepository $entityRepository */
+        $entityRepository = $entityManager->getRepository(Bug::class);
+        $countBugs = $entityRepository->createQueryBuilder('b')
             ->select('count(b.id)')
             ->where('b.task = :task_id')
             ->setParameter('task_id', $task->getId())

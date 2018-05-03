@@ -23,21 +23,21 @@
         "symfony/console": "4.1.x-dev",
         "symfony/workflow": "4.1.x-dev",
         "symfony/expression-language": "4.1.x-dev",
-        "symfony/templating": "4.1.x-dev",
-        "symfony/twig-bundle": "4.1.x-dev",
         "symfony/validator": "4.1.x-dev",
-        "symfony/asset": "4.1.x-dev",
         "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6",
-        "symfony/messenger": "4.1.x-dev",
-        "symfony/swiftmailer-bundle": "^3.2"
+        "symfony/messenger": "4.1.x-dev"
     },
     "require-dev": {
         "api-platform/core": "^2.2",
         "phpunit/phpunit": "^6.5",
         "symfony/browser-kit": "4.1.x-dev",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "symfony/yaml": "4.1.x-dev"
+        "symfony/yaml": "4.1.x-dev",
+        "symfony/templating": "4.1.x-dev",
+        "symfony/twig-bundle": "4.1.x-dev",
+        "symfony/asset": "4.1.x-dev",
+        "symfony/swiftmailer-bundle": "^3.2"
     },
     "autoload": {
         "psr-4": {

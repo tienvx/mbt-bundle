@@ -25,6 +25,11 @@ class AbstractTestCase extends WebTestCase
         $this->application = $this->getApplication();
     }
 
+    /**
+     * @param $command
+     * @return int
+     * @throws \Exception
+     */
     protected function runCommand($command)
     {
         $command = sprintf('%s --quiet', $command);

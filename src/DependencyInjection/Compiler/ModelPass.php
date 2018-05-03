@@ -10,6 +10,10 @@ use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
 class ModelPass implements CompilerPassInterface
 {
+    /**
+     * @param ContainerBuilder $container
+     * @throws \Exception
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->has(ModelRegistry::class)) {

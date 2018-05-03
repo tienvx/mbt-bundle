@@ -14,6 +14,10 @@ class CoverageStopCondition implements StopConditionInterface
      */
     protected $vertexCoverage = 100;
 
+    /**
+     * @param array $arguments
+     * @throws \Exception
+     */
     public function setArguments(array $arguments)
     {
         foreach ($arguments as $argument => $value) {

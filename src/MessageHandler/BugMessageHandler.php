@@ -17,6 +17,10 @@ class BugMessageHandler implements MessageHandlerInterface
         $this->reportBugCommand = $reportBugCommand;
     }
 
+    /**
+     * @param BugMessage $bugMessage
+     * @throws \Exception
+     */
     public function __invoke(BugMessage $bugMessage)
     {
         $input = new ArrayInput([

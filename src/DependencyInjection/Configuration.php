@@ -14,6 +14,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('default_reporter')->defaultValue('null')->end()
                 ->arrayNode('reporter')
                     ->children()
                         ->arrayNode('email')
