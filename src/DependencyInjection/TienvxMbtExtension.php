@@ -19,6 +19,7 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
+use Tienvx\Bundle\MbtBundle\StopCondition\CoverageStopCondition;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 use Twig\Environment as Twig;
 
@@ -69,6 +70,9 @@ class TienvxMbtExtension extends Extension implements PrependExtensionInterface
 
         $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
         $executeTaskCommandDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
+
+        $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
+        $coverageStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)

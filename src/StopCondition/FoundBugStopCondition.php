@@ -2,15 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\StopCondition;
 
-class FoundBugStopCondition implements StopConditionInterface
+class FoundBugStopCondition extends BaseStopCondition
 {
-    public function setArguments(array $arguments)
-    {
-    }
-
     public function meet(array $context): bool
     {
-        return false;
+        return $context['pathLength'] >= $this->maxPathLength;
     }
 
     public static function getName()

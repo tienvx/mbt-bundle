@@ -37,6 +37,7 @@ swiftmailer:
     logging: true
 
 tienvx_mbt:
+    max_path_length: 300
     default_reporter: email
     reporter:
         email:

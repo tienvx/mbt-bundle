@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryTaskReceiver;
+use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
 class TaskMessageTest extends AbstractTestCase
 {
@@ -26,6 +27,8 @@ class TaskMessageTest extends AbstractTestCase
         $receiverLocator = self::$container->get('messenger.receiver_locator');
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        /** @var FoundBugStopCondition $stopCondition */
+        $stopCondition = self::$container->get(FoundBugStopCondition::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
 
@@ -37,7 +40,7 @@ class TaskMessageTest extends AbstractTestCase
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
         $task->setGenerator('random');
-        $task->setArguments('{"stop":{"on":"found-bug"}}');
+        $task->setArguments('{"stop":{"on":"modified-found-bug"}}');
         $task->setReducer('weighted-random');
         $task->setProgress(0);
         $task->setStatus('not-started');
@@ -51,14 +54,19 @@ class TaskMessageTest extends AbstractTestCase
             'receiver'     => InMemoryTaskReceiver::class,
         ]);
 
-        /** @var EntityRepository $entityRepository */
-        $entityRepository = $entityManager->getRepository(Bug::class);
-        $countBugs = $entityRepository->createQueryBuilder('b')
-            ->select('count(b.id)')
-            ->where('b.task = :task_id')
-            ->setParameter('task_id', $task->getId())
-            ->getQuery()
-            ->getSingleScalarResult();
-        $this->assertEquals(1, $countBugs);
+        if ($stopCondition->bugFound) {
+            /** @var EntityRepository $entityRepository */
+            $entityRepository = $entityManager->getRepository(Bug::class);
+            $countBugs = $entityRepository->createQueryBuilder('b')
+                ->select('count(b.id)')
+                ->where('b.task = :task_id')
+                ->setParameter('task_id', $task->getId())
+                ->getQuery()
+                ->getSingleScalarResult();
+            $this->assertEquals(1, $countBugs);
+        }
+        else {
+            $this->addToAssertionCount(1);
+        }
     }
 }

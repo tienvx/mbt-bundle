@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\StopCondition;
 
-class CoverageStopCondition implements StopConditionInterface
+class CoverageStopCondition extends BaseStopCondition
 {
     /**
      * @var int
@@ -37,7 +37,7 @@ class CoverageStopCondition implements StopConditionInterface
 
     public function meet(array $context): bool
     {
-        return ($context['edgeCoverage'] >= $this->edgeCoverage && $context['vertexCoverage'] >= $this->vertexCoverage);
+        return ($context['edgeCoverage'] >= $this->edgeCoverage && $context['vertexCoverage'] >= $this->vertexCoverage) || $context['pathLength'] >= $this->maxPathLength;
     }
 
     public static function getName()
