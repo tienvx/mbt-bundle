@@ -2,12 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Tienvx\Bundle\MbtBundle\Model\Model;
-
 class ModelRegistry
 {
     /**
-     * @var Model[]
+     * @var array
      */
     protected $models;
 
@@ -16,17 +14,22 @@ class ModelRegistry
         $this->models = [];
     }
 
-    public function add($name, Model $model)
+    public function addModel($name, array $metadata)
     {
-        $this->models[$name] = $model;
+        $this->models[$name] = $metadata;
     }
 
-    public function has($name)
+    public function hasModel($name)
     {
         return isset($this->models[$name]);
     }
 
-    public function get($name): Model
+    /**
+     * @param $name
+     * @return array
+     * @throws \Exception
+     */
+    public function getModel($name): array
     {
         if (isset($this->models[$name])) {
             return $this->models[$name];

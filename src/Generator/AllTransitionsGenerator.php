@@ -9,7 +9,6 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -23,9 +22,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(Model $model, array $arguments)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
-        parent::init($model, $arguments);
+        parent::init($model, $subject, $arguments, $generatingSteps);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();
@@ -34,29 +33,6 @@ class AllTransitionsGenerator extends AbstractGenerator
             $this->resultGraph = $algorithm->getResultGraph();
             $this->currentVertex = $this->resultGraph->getVertex($this->currentVertex->getId());
         }
-    }
-
-    public function canGoNextStep(Directed $currentEdge): bool
-    {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        // Set data to subject.
-        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
-        $this->subject->setData($data);
-
-        $canGo = $this->model->can($this->subject, $currentEdge->getAttribute('name'));
-
-        if ($canGo) {
-            // Update test sequence.
-            $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($currentEdge) {
-                return $edge->getAttribute('name') === $currentEdge->getAttribute('name');
-            });
-            $this->path->addEdge($currentEdgeInPath);
-            $this->path->addVertex($currentEdgeInPath->getVertexEnd());
-            $this->path->addData($data);
-        }
-
-        return $canGo;
     }
 
     public function getNextStep(): ?Directed
@@ -74,15 +50,24 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
     }
 
-    public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
+    public function goToNextStep(Directed $currentEdge)
     {
+        $transitionName = $currentEdge->getAttribute('name');
+
         $currentEdge->setAttribute('visited', true);
         foreach ($this->currentVertex->getEdgesOut() as $edge) {
             $edge->setAttribute('tried', false);
         }
         $this->currentVertex = $currentEdge->getVertexEnd();
 
-        parent::goToNextStep($currentEdge, $callSUT);
+        /** @var Directed $currentEdgeInPath */
+        $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($transitionName) {
+            return $edge->getAttribute('name') === $transitionName;
+        });
+
+        $this->path->addEdge($currentEdgeInPath);
+        $this->path->addData($this->currentData);
+        $this->workflow->apply($this->subject, $transitionName);
     }
 
     public function meetStopCondition(): bool

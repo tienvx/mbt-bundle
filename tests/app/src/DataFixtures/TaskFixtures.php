@@ -14,6 +14,8 @@ class TaskFixtures extends Fixture
         $task1->setTitle('Task 1');
         $task1->setModel('shopping_cart');
         $task1->setGenerator('random');
+        $task1->setArguments('{"a":"b"}');
+        $task1->setReducer('loop');
         $task1->setProgress(0);
         $task1->setStatus('not-started');
         $manager->persist($task1);
@@ -23,6 +25,8 @@ class TaskFixtures extends Fixture
         $task2->setTitle('Task 2');
         $task2->setModel('shopping_cart');
         $task2->setGenerator('random');
+        $task2->setArguments('{"a":"b"}');
+        $task2->setReducer('binary');
         $task2->setProgress(64);
         $task2->setStatus('in-progress');
         $manager->persist($task2);
@@ -32,6 +36,8 @@ class TaskFixtures extends Fixture
         $task3->setTitle('Task 3');
         $task3->setModel('shopping_cart');
         $task3->setGenerator('random');
+        $task3->setArguments('{"a":"b"}');
+        $task3->setReducer('greedy');
         $task3->setProgress(100);
         $task3->setStatus('completed');
         $manager->persist($task3);

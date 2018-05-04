@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -13,6 +14,8 @@ use Tienvx\Bundle\MbtBundle\TienvxMbtBundle;
 
 class AppKernel extends Kernel
 {
+    const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+
     public function registerBundles()
     {
         $bundles = array(
@@ -21,15 +24,21 @@ class AppKernel extends Kernel
             new DoctrineBundle(),
             new DoctrineFixturesBundle(),
             new TwigBundle(),
+            new SwiftmailerBundle(),
             new TienvxMbtBundle(),
         );
 
         return $bundles;
     }
 
+    /**
+     * @param LoaderInterface $loader
+     * @throws \Exception
+     */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(dirname(__DIR__) . '/config/config.yml');
+        $loader->load(dirname(__DIR__) . '/config/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
     }
 
     public function getCacheDir()

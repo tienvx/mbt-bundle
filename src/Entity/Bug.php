@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ApiResource
@@ -38,10 +39,10 @@ class Bug
     private $message;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    private $paths;
+    private $steps;
 
     /**
      * @ORM\Column(type="string")
@@ -49,10 +50,12 @@ class Bug
      */
     private $status;
 
-    public function __construct()
-    {
-        $this->paths = [];
-    }
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Reporter
+     */
+    private $reporter;
 
     public function getId()
     {
@@ -89,19 +92,14 @@ class Bug
         $this->message = $message;
     }
 
-    public function getPaths(): array
+    public function getSteps(): string
     {
-        return $this->paths;
+        return $this->steps;
     }
 
-    public function setPaths(array $paths)
+    public function setSteps(string $steps)
     {
-        $this->paths = $paths;
-    }
-
-    public function addPath(string $path)
-    {
-        $this->paths[] = $path;
+        $this->steps = $steps;
     }
 
     public function getStatus()
@@ -112,5 +110,15 @@ class Bug
     public function setStatus($status)
     {
         $this->status = $status;
+    }
+
+    public function getReporter()
+    {
+        return $this->reporter;
+    }
+
+    public function setReporter($reporter)
+    {
+        $this->reporter = $reporter;
     }
 }

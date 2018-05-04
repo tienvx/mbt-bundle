@@ -8,6 +8,12 @@ use InvalidArgumentException;
 
 trait TaggedServiceTrait
 {
+    /**
+     * @param string $tagName
+     * @param ContainerBuilder $container
+     * @return array
+     * @throws \ReflectionException
+     */
     private function findTaggedServices(string $tagName, ContainerBuilder $container)
     {
         $services = [];

@@ -9,7 +9,6 @@ trait NewPathTrait
 {
     protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): Path
     {
-        $allData = $path->getAllData();
         $firstVertex = $path->getVertexAt($firstVertexIndex);
         $secondVertex = $path->getVertexAt($secondVertexIndex);
 
@@ -20,11 +19,11 @@ trait NewPathTrait
         foreach ($path->getEdges() as $index => $edge) {
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
-                $beginData[] = $allData[$index];
+                $beginData[] = $path->getDataAt($index);
             }
             elseif ($index >= $secondVertexIndex) {
                 $endEdges[] = $edge;
-                $endData[] = $allData[$index];
+                $endData[] = $path->getDataAt($index);
             }
         }
 
@@ -41,9 +40,8 @@ trait NewPathTrait
         }
 
         $edges = array_merge($beginEdges, $middleEdges, $endEdges);
-        $newPath = Path::factoryFromEdges($edges, $path->getVertexAt(0));
         $allData = array_merge($beginData, $middleData, $endData);
-        $newPath->setAllData($allData);
+        $newPath = new Path($edges, $allData);
         return $newPath;
     }
 }

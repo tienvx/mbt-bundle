@@ -5,19 +5,19 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
+use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\StateMachine;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Service\DataProvider;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 abstract class AbstractGenerator implements GeneratorInterface
 {
     /**
-     * @var DataProvider
+     * @var Registry
      */
-    protected $dataProvider;
+    protected $workflows;
 
     /**
      * @var GraphBuilder
@@ -30,9 +30,9 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $stopConditionManager;
 
     /**
-     * @var Model
+     * @var StateMachine
      */
-    protected $model;
+    protected $workflow;
 
     /**
      * @var Graph
@@ -54,36 +54,33 @@ abstract class AbstractGenerator implements GeneratorInterface
      */
     protected $subject;
 
-    public function __construct(DataProvider $dataProvider, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager)
+    /**
+     * @var array|null
+     */
+    protected $currentData;
+
+    public function __construct(Registry $workflows, GraphBuilder $graphBuilder, StopConditionManager $stopConditionManager)
     {
-        $this->dataProvider = $dataProvider;
+        $this->workflows = $workflows;
         $this->graphBuilder = $graphBuilder;
         $this->stopConditionManager = $stopConditionManager;
     }
 
-    public function getPath(): Path
+    public function getSubject(): Subject
     {
-        return $this->path;
+        return $this->subject;
     }
 
+    /**
+     * @param Directed $currentEdge
+     * @return bool
+     * @throws \Exception
+     */
     public function canGoNextStep(Directed $currentEdge): bool
     {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        // Set data to subject.
-        $data = $this->dataProvider->getData($this->subject, $this->model->getName(), $transitionName);
-        $this->subject->setData($data);
-
-        $canGo = $this->model->can($this->subject, $currentEdge->getAttribute('name'));
-
-        if ($canGo) {
-            // Update test sequence.
-            $this->path->addEdge($currentEdge);
-            $this->path->addVertex($currentEdge->getVertexEnd());
-            $this->path->addData($data);
-        }
-
-        return $canGo;
+        $this->subject->setAnnouncing(false);
+        $this->currentData = $this->subject->provideData($currentEdge->getAttribute('name'));
+        return $this->workflow->can($this->subject, $currentEdge->getAttribute('name'));
     }
 
     public function getNextStep(): ?Directed
@@ -91,31 +88,32 @@ abstract class AbstractGenerator implements GeneratorInterface
         return null;
     }
 
-    public function goToNextStep(Directed $currentEdge, bool $callSUT = false)
+    public function goToNextStep(Directed $currentEdge)
     {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        // Apply model. Call SUT if needed.
-        $this->subject->setCallSUT($callSUT);
-        $this->model->apply($this->subject, $transitionName);
+        // Reset data then apply model.
+        $this->path->addEdge($currentEdge);
+        $this->path->addData($this->currentData);
+        $this->workflow->apply($this->subject, $currentEdge->getAttribute('name'));
     }
 
-    public function init(Model $model, array $arguments)
+    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
     {
-        $this->model = $model;
+        $this->subject = new $subject();
+        $this->subject->setGeneratingSteps($generatingSteps);
+        $this->workflow = $this->workflows->get($this->subject, $model);
 
-        $this->graph = $this->graphBuilder->build($this->model);
-        $this->currentVertex = $this->graph->getVertex($this->model->getDefinition()->getInitialPlace());
-
+        $this->graph = $this->graphBuilder->build($this->workflow->getDefinition());
+        $this->currentVertex = $this->graph->getVertex($this->workflow->getDefinition()->getInitialPlace());
         $this->path = new Path();
-        $this->path->addVertex($this->currentVertex);
-
-        $subjectClass = $this->model->getSubject();
-        $this->subject = new $subjectClass();
     }
 
     public function meetStopCondition(): bool
     {
         return false;
+    }
+
+    public function getPath(): Path
+    {
+        return $this->path;
     }
 }

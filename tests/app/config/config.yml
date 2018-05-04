@@ -4,6 +4,10 @@ framework:
     router:          { resource: '%kernel.project_dir%/config/routing.yml' }
     templating:      { engines: ['twig'] }
     assets:          ~
+    messenger:
+        routing:
+            Tienvx\Bundle\MbtBundle\Message\TaskMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryTaskSender
+            Tienvx\Bundle\MbtBundle\Message\BugMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryBugSender
 
 doctrine:
     dbal:
@@ -14,22 +18,28 @@ doctrine:
         auto_mapping: true
 
 services:
-    Tienvx\Bundle\MbtBundle\Service\ModelRegistry.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\ModelRegistry'
-        public: true
-    Tienvx\Bundle\MbtBundle\Service\GeneratorManager.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\GeneratorManager'
-        public: true
-    Tienvx\Bundle\MbtBundle\Service\GraphBuilder.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\GraphBuilder'
-        public: true
-    Tienvx\Bundle\MbtBundle\Service\PathRunner.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\PathRunner'
-        public: true
-    Tienvx\Bundle\MbtBundle\Service\PathReducerManager.test:
-        alias: 'Tienvx\Bundle\MbtBundle\Service\PathReducerManager'
-        public: true
-    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\TaskFixtures:
-        tags: [doctrine.fixture.orm]
-    Tienvx\Bundle\MbtBundle\Tests\DataFixtures\BugFixtures:
-        tags: [doctrine.fixture.orm]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Tienvx\Bundle\MbtBundle\Tests\:
+        resource: '../src/*'
+        exclude: '../src/{AppKernel.php}'
+
+    Symfony\Component\Messenger\Transport\Serialization\Serializer:
+        alias: 'messenger.transport.serializer'
+    #Symfony\Component\Messenger\Transport\Serialization\Serializer: '@messenger.transport.serializer'
+
+swiftmailer:
+    url: 'null://localhost'
+    spool: { type: 'memory' }
+    logging: true
+
+tienvx_mbt:
+    max_path_length: 300
+    default_reporter: email
+    reporter:
+        email:
+            from: 'send@example.com'
+            to: 'recipient@example.com'

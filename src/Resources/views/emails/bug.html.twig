@@ -1,0 +1,37 @@
+Bug Found
+====================
+
+Bug ID: {{id}}
+
+Task Title: {{task}}
+
+Status: {{status}}
+
+
+Description
+===========
+
+Message
+------------------
+<p>{{message}}</p>
+
+Steps to reproduce
+------------------
+<table>
+    <thead>
+        <tr>
+            <th>Step</th>
+            <th>Action</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for step in steps %}
+            <tr>
+                <td>{{ step.step }}</td>
+                <td>{{ step.action }}</td>
+                <td>{{ step.data }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

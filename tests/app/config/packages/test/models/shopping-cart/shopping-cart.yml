@@ -1,0 +1,155 @@
+framework:
+    workflows:
+        # https://demo.opencart.com
+        shopping_cart:
+            type: "state_machine"
+            supports:
+                - Tienvx\Bundle\MbtBundle\Model\Subject
+            metadata:
+                subject: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
+                label: "Shopping Cart"
+                tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]
+            places:
+                - home
+                - category
+                - product
+                - cart
+                - checkout
+            initial_place: home
+            transitions:
+                viewAnyCategoryFromHome:
+                    from: home
+                    to: category
+                    metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
+                        weight: 3
+                        label: "From home page, choose a random category and open it"
+                viewOtherCategory:
+                    from: category
+                    to: category
+                    metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
+                        weight: 1
+                        label: "From category page, choose a random category and open it"
+                viewAnyCategoryFromProduct:
+                    from: product
+                    to: category
+                    metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
+                        weight: 2
+                        label: "From product page, choose a random category and open it"
+                viewAnyCategoryFromCart:
+                    from: cart
+                    to: category
+                    metadata:
+                        model_guard: "subject.categoryHasBeenSelected()"
+                        weight: 6
+                        label: "From cart page, choose a random category and open it"
+                viewProductFromHome:
+                    from: home
+                    to: product
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected()"
+                        label: "From home page, choose a random product and open it"
+                viewProductFromCart:
+                    from: cart
+                    to: product
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                        label: "From cart page, choose a random product and open it"
+                viewProductFromCategory:
+                    from: category
+                    to: product
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
+                        label: "From category page, choose a random product and open it"
+                viewCartFromHome:
+                    from: home
+                    to: cart
+                    metadata:
+                        label: "From home page, open cart to view it"
+                viewCartFromCategory:
+                    from: category
+                    to: cart
+                    metadata:
+                        label: "From category page, open cart to view it"
+                viewCartFromProduct:
+                    from: product
+                    to: cart
+                    metadata:
+                        label: "From product page, open cart to view it"
+                viewCartFromCheckout:
+                    from: checkout
+                    to: cart
+                    metadata:
+                        label: "From checkout page, open cart to view it"
+                checkoutFromHome:
+                    from: home
+                    to: checkout
+                    metadata:
+                        label: "From home page, open checkout page"
+                checkoutFromCategory:
+                    from: category
+                    to: checkout
+                    metadata:
+                        label: "From category page, open checkout page"
+                checkoutFromProduct:
+                    from: product
+                    to: checkout
+                    metadata:
+                        label: "From product page, open checkout page"
+                checkoutFromCart:
+                    from: cart
+                    to: checkout
+                    metadata:
+                        label: "From cart page, open checkout page"
+                backToHomeFromCategory:
+                    from: category
+                    to: home
+                    metadata:
+                        label: "From category page, back to home page"
+                backToHomeFromProduct:
+                    from: product
+                    to: home
+                    metadata:
+                        label: "From product page, back to home page"
+                backToHomeFromCart:
+                    from: cart
+                    to: home
+                    metadata:
+                        label: "From cart page, back to home page"
+                backToHomeFromCheckout:
+                    from: checkout
+                    to: home
+                    metadata:
+                        label: "From checkout page, back to home page"
+                update:
+                    from: cart
+                    to: cart
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                        label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
+                remove:
+                    from: cart
+                    to: cart
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                        weight: 9
+                        label: "From cart page, choose a random product and remove it"
+                addFromHome:
+                    from: home
+                    to: home
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected()"
+                        label: "From home page, choose a random product and add it to cart"
+                addFromCategory:
+                    from: category
+                    to: category
+                    metadata:
+                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
+                        label: "From category page, choose a random product and add it to cart"
+                addFromProduct:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "From product page, add it to cart"
