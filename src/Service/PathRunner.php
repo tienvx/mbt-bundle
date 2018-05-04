@@ -20,6 +20,12 @@ class PathRunner
         $this->workflows = $workflows;
     }
 
+    /**
+     * @param Path $path
+     * @param string $model
+     * @param string $subject
+     * @throws \Exception
+     */
     public function run(Path $path, string $model, string $subject)
     {
         /* @var Subject $subject */
@@ -28,7 +34,13 @@ class PathRunner
 
         foreach ($path->getEdges() as $index => $edge) {
             $transitionName = $edge->getAttribute('name');
-            $subject->setData($path->getDataAt($index));
+            if ($path->hasDataAt($index)) {
+                $subject->setData($path->getDataAt($index));
+            }
+            else {
+                $data = $subject->provideData($transitionName);
+                $path->setDataAt($index, $data);
+            }
             $subject->setAnnouncing(false);
             if ($workflow->can($subject, $transitionName)) {
                 $workflow->apply($subject, $transitionName);

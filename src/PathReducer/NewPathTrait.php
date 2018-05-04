@@ -31,7 +31,7 @@ trait NewPathTrait
             // Replace all edges between first vertex and second vertex by algorithm.
             $algorithm = new Dijkstra($firstVertex);
             $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
-            $middleData = array_fill(0, count($middleEdges), []);
+            $middleData = array_fill(0, count($middleEdges), null);
         }
         else {
             // Remove all edges between first vertex and second vertex.

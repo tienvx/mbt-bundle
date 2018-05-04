@@ -11,7 +11,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
     {
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
-        $maxTries = $path->countVertices() * 2;
+        $maxTries = $path->countVertices();
 
         while ($try <= $maxTries) {
             $vertexWeight = $this->buildVertexWeight($path, $pathWeight);

@@ -83,9 +83,19 @@ class Path
         return $this->edges;
     }
 
-    public function getDataAt(int $index): array
+    public function getDataAt(int $index): ?array
     {
-        return $this->allData[$index] ?? [];
+        return $this->allData[$index];
+    }
+
+    public function setDataAt(int $index, array $data = null)
+    {
+        $this->allData[$index] = $data;
+    }
+
+    public function hasDataAt(int $index): bool
+    {
+        return isset($this->allData[$index]);
     }
 
     public function __toString()
