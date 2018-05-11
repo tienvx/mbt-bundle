@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Command\RunStepsCommand;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -26,11 +25,9 @@ class RunStepsCommandTest extends CommandTestCase
         $pathRunner = self::$container->get(PathRunner::class);
         /** @var PathReducerManager $pathReducerManager */
         $pathReducerManager = self::$container->get(PathReducerManager::class);
-        /** @var Registry $workflows */
-        $workflows = self::$container->get(Registry::class);
 
         $application = new Application($kernel);
-        $application->add(new RunStepsCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $workflows));
+        $application->add(new RunStepsCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager));
 
         $command = $application->find('mbt:run-steps');
         $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');

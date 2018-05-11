@@ -9,6 +9,7 @@ use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class TestModelCommandTest extends CommandTestCase
 {
@@ -22,25 +23,28 @@ class TestModelCommandTest extends CommandTestCase
         $generatorManager = self::$container->get(GeneratorManager::class);
         /** @var PathReducerManager $pathReducerManager */
         $pathReducerManager = self::$container->get(PathReducerManager::class);
+        /** @var StopConditionManager $stopConditionManager */
+        $stopConditionManager = self::$container->get(StopConditionManager::class);
 
         $application = new Application($kernel);
-        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager));
+        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager));
 
         $command = $application->find('mbt:test-model');
-        $this->assertReproducePath($command, 'random', $this->getCoverageStopCondition(100, 100));
-        $this->assertReproducePath($command, 'random', $this->getFoundBugStopCondition());
-        $this->assertReproducePath($command, 'all-places', null);
-        $this->assertReproducePath($command, 'all-transitions', null);
+        $this->assertReproducePath($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}');
+        $this->assertReproducePath($command, 'random', 'found-bug', '{}');
+        $this->assertReproducePath($command, 'all-places', 'null', '{}');
+        $this->assertReproducePath($command, 'all-transitions', 'null', '{}');
     }
 
-    public function assertReproducePath(Command $command, string $generator, $arguments)
+    public function assertReproducePath(Command $command, string $generator, $stopCondition, $stopConditionArguments)
     {
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'      => $command->getName(),
-            'model'        => 'shopping_cart',
-            '--generator'  => $generator,
-            '--arguments'  => $arguments
+            'command'                     => $command->getName(),
+            'model'                       => 'shopping_cart',
+            '--generator'                 => $generator,
+            '--stop-condition'            => $stopCondition,
+            '--stop-condition-arguments'  => $stopConditionArguments
         ]);
 
         $output = $commandTester->getDisplay();

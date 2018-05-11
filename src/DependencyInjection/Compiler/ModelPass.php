@@ -4,7 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Workflow\Definition;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Model\Subject;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 
@@ -36,9 +38,15 @@ class ModelPass implements CompilerPassInterface
                 if (!isset($workflowMetadata['subject']) || !is_subclass_of($workflowMetadata['subject'], Subject::class)) {
                     continue;
                 }
-                // to become a model, a workflow must meet these 3 conditions: type = state_machine, metadata has subject,
-                // and subject is a sub-class of Tienvx\Bundle\MbtBundle\Model\Subject
-                $definition->addMethodCall('addModel', array($tag['name'], $workflowMetadata));
+                if (empty($workflowMetadata['model'])) {
+                    continue;
+                }
+                // to become a model, a workflow must meet these 3 conditions: type = state_machine, metadata has
+                // subject that is a sub-class of Tienvx\Bundle\MbtBundle\Model\Subject, and metadata has model = true
+                $workflowId = sprintf('%s.%s', $tag['type'], $tag['name']);
+                $workflow = $container->getDefinition($workflowId);
+                $workflow->setClass(Model::class);
+                $definition->addMethodCall('addModel', array($tag['name'], new Reference($workflowId)));
             }
         }
     }

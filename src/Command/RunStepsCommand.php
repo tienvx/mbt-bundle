@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Constants;
@@ -24,20 +23,17 @@ class RunStepsCommand extends Command
     private $graphBuilder;
     private $pathRunner;
     private $pathReducerManager;
-    private $workflows;
 
     public function __construct(
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
         PathRunner $pathRunner,
-        PathReducerManager $pathReducerManager,
-        Registry $workflows)
+        PathReducerManager $pathReducerManager)
     {
         $this->modelRegistry      = $modelRegistry;
         $this->graphBuilder       = $graphBuilder;
         $this->pathRunner         = $pathRunner;
         $this->pathReducerManager = $pathReducerManager;
-        $this->workflows          = $workflows;
 
         parent::__construct();
     }
@@ -60,21 +56,18 @@ class RunStepsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getArgument('model');
-        $workflowMetadata = $this->modelRegistry->getModel($model);
-        $subject = $workflowMetadata['subject'];
-        $workflow = $this->workflows->get(new $subject(), $model);
-        $graph = $this->graphBuilder->build($workflow->getDefinition());
+        $model = $this->modelRegistry->getModel($input->getArgument('model'));
+        $graph = $this->graphBuilder->build($model->getDefinition());
         $path = Path::fromSteps($input->getArgument('steps'), $graph);
 
         try {
-            $this->pathRunner->run($path, $model, $subject);
+            $this->pathRunner->run($path, $model);
         }
         catch (Throwable $throwable) {
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $subject, $throwable);
+                $path = $pathReducer->reduce($path, $model, $throwable);
             }
 
             $this->printBug($throwable->getMessage(), $path, $output);

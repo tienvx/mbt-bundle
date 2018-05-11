@@ -6,6 +6,7 @@ framework:
             supports:
                 - Tienvx\Bundle\MbtBundle\Model\Subject
             metadata:
+                model: true
                 subject: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]

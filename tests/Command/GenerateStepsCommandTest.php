@@ -8,6 +8,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateStepsCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class GenerateStepsCommandTest extends CommandTestCase
 {
@@ -19,26 +20,29 @@ class GenerateStepsCommandTest extends CommandTestCase
         $modelRegistry = self::$container->get(ModelRegistry::class);
         /** @var GeneratorManager $generatorManager */
         $generatorManager = self::$container->get(GeneratorManager::class);
+        /** @var StopConditionManager $stopConditionManager */
+        $stopConditionManager = self::$container->get(StopConditionManager::class);
 
         $application = new Application($kernel);
-        $application->add(new GenerateStepsCommand($modelRegistry, $generatorManager));
+        $application->add(new GenerateStepsCommand($modelRegistry, $generatorManager, $stopConditionManager));
 
         $command = $application->find('mbt:generate-steps');
-        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(100, 100), 24, 5);
-        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(60, 80), 15, 4);
-        $this->assertCoverage($command, 'random', $this->getCoverageStopCondition(75, 60), 18, 3);
-        $this->assertCoverage($command, 'all-places', null, 0, 5);
-        $this->assertCoverage($command, 'all-transitions', null, 24, 0);
+        $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}', 24, 5);
+        $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
+        $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);
+        $this->assertCoverage($command, 'all-places', 'null', '{}', 0, 5);
+        $this->assertCoverage($command, 'all-transitions', 'null', '{}', 24, 0);
     }
 
-    public function assertCoverage(Command $command, string $generator, $arguments, $edgeCount, $vertexCount)
+    public function assertCoverage(Command $command, string $generator, $stopCondition, $stopConditionArguments, $edgeCount, $vertexCount)
     {
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'      => $command->getName(),
-            'model'        => 'shopping_cart',
-            '--generator'  => $generator,
-            '--arguments'  => $arguments
+            'command'                     => $command->getName(),
+            'model'                       => 'shopping_cart',
+            '--generator'                 => $generator,
+            '--stop-condition'            => $stopCondition,
+            '--stop-condition-arguments'  => $stopConditionArguments
         ]);
 
         $output = $commandTester->getDisplay();

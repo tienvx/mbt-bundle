@@ -11,11 +11,11 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
-use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class ExecuteTaskCommand extends Command
 {
@@ -26,6 +26,7 @@ class ExecuteTaskCommand extends Command
     private $pathReducerManager;
     private $entityManager;
     private $reporterManager;
+    private $stopConditionManager;
     private $defaultReporter;
 
     public function __construct(
@@ -33,13 +34,15 @@ class ExecuteTaskCommand extends Command
         GeneratorManager $generatorManager,
         PathReducerManager $pathReducerManager,
         EntityManagerInterface $entityManager,
-        ReporterManager $reporterManager)
+        ReporterManager $reporterManager,
+        StopConditionManager $stopConditionManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
         $this->pathReducerManager = $pathReducerManager;
         $this->entityManager = $entityManager;
         $this->reporterManager = $reporterManager;
+        $this->stopConditionManager = $stopConditionManager;
 
         parent::__construct();
     }
@@ -68,25 +71,21 @@ class ExecuteTaskCommand extends Command
         $taskId = $input->getArgument('task-id');
         $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 
-        if (!$task) {
+        if (!$task || !$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
             return;
         }
 
-        /** @var Task $task */
-        $model = $task->getModel();
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
-        $workflowMetadata = $this->modelRegistry->getModel($model);
-        $subject = $workflowMetadata['subject'];
-        $arguments = $this->parseGeneratorArguments($task->getArguments());
+        $model = $this->modelRegistry->getModel($task->getModel());
+        $stopCondition = $this->stopConditionManager->getStopCondition($task->getStopCondition());
+        $stopCondition->setArguments(json_decode($task->getStopConditionArguments(), true));
 
-        $generator->init($model, $subject, $arguments);
+        $generator->init($model, $stopCondition);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
-                if ($generator->canGoNextStep($edge)) {
-                    $generator->goToNextStep($edge);
-                }
+                $generator->goToNextStep($edge);
             }
         }
         catch (Throwable $throwable) {
@@ -94,7 +93,7 @@ class ExecuteTaskCommand extends Command
             $reducer = $task->getReducer();
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $subject, $throwable);
+                $path = $pathReducer->reduce($path, $model, $throwable);
             }
 
             if ($this->reporterManager->hasReporter($this->defaultReporter)) {

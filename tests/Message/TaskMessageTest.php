@@ -40,7 +40,8 @@ class TaskMessageTest extends AbstractTestCase
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
         $task->setGenerator('random');
-        $task->setArguments('{"stop":{"on":"modified-found-bug"}}');
+        $task->setStopCondition('modified-found-bug');
+        $task->setStopConditionArguments('{}');
         $task->setReducer('weighted-random');
         $task->setProgress(0);
         $task->setStatus('not-started');

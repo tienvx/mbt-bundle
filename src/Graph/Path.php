@@ -121,6 +121,7 @@ class Path
      * @param string $steps
      * @param Graph $graph
      * @return Path
+     * @throws \Exception
      */
     public static function fromSteps(string $steps, Graph $graph): Path
     {
@@ -146,10 +147,10 @@ class Path
             }
             else {
                 try {
-                    $vertex = $graph->getVertex($step);
+                    $graph->getVertex($step);
                 }
                 catch (OutOfBoundsException $exception) {
-                    return new Exception(sprintf('%s is an invalid place', $step));
+                    throw new Exception(sprintf('%s is an invalid place', $step));
                 }
             }
         }

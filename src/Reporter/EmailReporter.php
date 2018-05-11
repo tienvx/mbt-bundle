@@ -97,11 +97,8 @@ class EmailReporter implements ReporterInterface
      */
     protected function buildSteps(Bug $bug): array
     {
-        $model = $bug->getTask()->getModel();
-        $workflowMetadata = $this->modelRegistry->getModel($model);
-        $subject = $workflowMetadata['subject'];
-        $workflow = $this->workflows->get(new $subject(), $model);
-        $graph = $this->graphBuilder->build($workflow->getDefinition());
+        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
+        $graph = $this->graphBuilder->build($model->getDefinition());
         $path = Path::fromSteps($bug->getSteps(), $graph);
 
         $steps = [];
