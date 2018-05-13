@@ -114,6 +114,20 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 ', $output);
         }
+        $output = $this->runCommand($command, 'home checkoutFromHome() checkout backToHomeFromCheckout() home viewAnyCategoryFromHome(category=20) category addFromCategory(product=46) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewCartFromCategory() cart viewProductFromCart(product=46) product viewAnyCategoryFromProduct(category=57) category checkoutFromCategory() checkout', 'loop');
+        $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
++--------+----------------------------------------------------------------+-------------------+
+| Steps to reproduce                                                                          |
++--------+----------------------------------------------------------------+-------------------+
+| Step   | Action                                                         | Data              |
++--------+----------------------------------------------------------------+-------------------+
+| 1      | From home page, choose a random category and open it           | {"category":"20"} |
+| 2      | From category page, choose a random product and open it        | {"product":"33"}  |
+| 3      | From product page, choose a random category and open it        | {"category":"57"} |
+| 4      | From category page, choose a random product and add it to cart | {"product":"49"}  |
+| 5      | From category page, open checkout page                         | []                |
++--------+----------------------------------------------------------------+-------------------+
+', $output);
     }
 
     public function runCommand(Command $command, $steps, $reducer = null)

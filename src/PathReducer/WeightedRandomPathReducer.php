@@ -31,7 +31,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
                 } finally {
                     if ($newPath->countEdges() === $path->countEdges()) {
                         $try = 1;
-                        $maxTries = $path->countEdges() * 2;
+                        $maxTries = $path->countEdges();
                         $pathWeight = $this->rebuildPathWeight($path, $pathWeight);
                     }
                     else {

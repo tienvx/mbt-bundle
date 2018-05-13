@@ -55,18 +55,15 @@ class TestModelCommandTest extends CommandTestCase
             $steps = [];
             $lines = explode("\n", $output);
             foreach ($lines as $line) {
-                if (strpos($line, '|') === 0) {
+                if (strpos($line, '|') === 0 && strpos($line, 'Step') === false) {
                     // Table rows.
                     $cells = explode('|', $line);
                     $cells = array_map('trim', array_values(array_filter($cells)));
-                    if (['Step', 'Label', 'Data Input'] !== $cells) {
-                        // Not table header row.
-                        $step = [];
-                        foreach ($cells as $cell) {
-                            $step[] = $cell;
-                        }
-                        $steps[] = $step;
+                    $step = [];
+                    foreach ($cells as $cell) {
+                        $step[] = $cell;
                     }
+                    $steps[] = $step;
                 }
             }
             $productsOutOfStock = [28, 40, 41, 33];
