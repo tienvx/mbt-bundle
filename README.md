@@ -1,57 +1,64 @@
-# MbtBundle [![Build Status](https://travis-ci.org/tienvx/mbt-bundle.svg?branch=master)](https://travis-ci.org/tienvx/mbt-bundle)
+# MBT Bundle [![Build Status][travis_badge]][travis_link] [![Coverage Status][coveralls_badge]][coveralls_link]
 
 This Bundle provides ability to test your application using Model Based Testing
-techique. Before testing your project, you need to create new **symfony project**
-to load this bundle. Then by defining workflows (the way your system work) and
-entities (the way to interact with your system) in that project, it will test
-your project for you.
+techique. The major features are: automatically test your application when a task is created,
+automatically reduce reproduce path when a bug is found, automatically report the bug when the
+reproduce path is reduced.
+
+## Requirements
+
+* PHP 7.1 / 7.2
+* Symfony 4.1
+* See also the `require` section of [composer.json](composer.json)
 
 ## Installation
 
-### Step 1: Download the Bundle
+### Step 1: Create symfony project
 
-Open a command console, enter your project directory and execute the
-following command to download the latest stable version of this bundle:
+Before testing your application, you need to create new **symfony project**
+to use this bundle:
+
+```console
+$ composer create-project symfony/skeleton my-project
+```
+
+### Step 2: Download the Bundle
+
+Install lastest version of this bundle:
 
 ```console
 $ composer require tienvx/mbt-bundle "1.0.x-dev"
 ```
 
-This command requires you to have Composer installed globally, as explained
-in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
-of the Composer documentation.
+### Step 3: Create models and subjects
 
-### Step 2: Enable the Bundle
+Model is the way to describe part your application. Subject is
+the way to tell this bundle to interact with your application.
 
-Then, enable the bundle by adding it to the list of registered bundles
-in the `app/AppKernel.php` file of your project:
+## Documentation
 
-```php
-<?php
-// app/AppKernel.php
+For the usage guide and reference, see [wiki][wiki]
 
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-            new Tienvx\Bundle\MbtBundle\TienvxMbtBundle(),
-        );
+## Contributing
 
-        // ...
-    }
+Pull requests are welcome, please [send pull requests][pulls].
 
-    // ...
-}
-```
+If you found any bug, please [report issues][issues].
 
-### Note
-If you are using symfony version 4 or later, this step is not required. Symfony do it
-automatically for you.
+Thanks to
+[everyone who has contributed][contributors] already.
 
-## Resources
+## License
 
-  * [Report issues](https://github.com/tienvx/mbt-bundle/issues)
-  * [Send Pull Requests](https://github.com/tienvx/mbt-bundle/pulls)
+This package is available under the [MIT license](LICENSE).
+
+[travis_badge]: https://travis-ci.org/tienvx/mbt-bundle.svg?branch=master
+[travis_link]: https://travis-ci.org/tienvx/mbt-bundle
+
+[coveralls_badge]: https://coveralls.io/repos/tienvx/mbt-bundle/badge.svg?branch=master&service=github
+[coveralls_link]: https://coveralls.io/github/tienvx/mbt-bundle?branch=master
+
+[wiki]: https://github.com/tienvx/mbt-bundle/wiki
+[contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
+[pulls]: https://github.com/tienvx/mbt-bundle/pulls
+[issues]: https://github.com/tienvx/mbt-bundle/issues
