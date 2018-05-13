@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class BinaryPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, Throwable $throwable, $taskId = null)
     {
         $try = 1;
         $quotient = floor($path->countEdges() / pow(2, $try));
@@ -44,8 +44,8 @@ class BinaryPathReducer extends AbstractPathReducer
             $remainder = $path->countEdges() % pow(2, $try);
         }
 
-        // Tired of trying.
-        return $path;
+        // Can not reduce the reproduce path (any more).
+        $this->finish($throwable->getMessage(), $path, $taskId);
     }
 
     public static function getName()

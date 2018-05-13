@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class LoopPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, Throwable $throwable, $taskId = null)
     {
         $distance = $path->countEdges();
 
@@ -35,7 +35,7 @@ class LoopPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        return $path;
+        $this->finish($throwable->getMessage(), $path, $taskId);
     }
 
     public static function getName()

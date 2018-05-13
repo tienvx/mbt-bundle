@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Swift_Mailer;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
+use Tienvx\Bundle\MbtBundle\EventListener\ReducerSubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
@@ -46,7 +46,7 @@ class TienvxMbtExtension extends Extension
             $emailReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
-        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
+        $executeTaskCommandDefinition = $container->getDefinition(ReducerSubscriber::class);
         $executeTaskCommandDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
 
         $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);

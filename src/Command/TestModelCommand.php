@@ -7,7 +7,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -22,17 +24,20 @@ class TestModelCommand extends Command
     private $generatorManager;
     private $pathReducerManager;
     private $stopConditionManager;
+    private $dispatcher;
 
     public function __construct(
         ModelRegistry $modelRegistry,
         GeneratorManager $generatorManager,
         PathReducerManager $pathReducerManager,
-        StopConditionManager $stopConditionManager)
+        StopConditionManager $stopConditionManager,
+        EventDispatcherInterface $dispatcher)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
         $this->pathReducerManager = $pathReducerManager;
         $this->stopConditionManager = $stopConditionManager;
+        $this->dispatcher = $dispatcher;
 
         parent::__construct();
     }
@@ -74,11 +79,19 @@ class TestModelCommand extends Command
             $path = $generator->getPath();
             $reducer = $input->getOption('reducer');
             if ($reducer) {
-                $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $throwable);
-            }
+                $this->dispatcher->addListener(
+                    'tienvx_mbt.reducer.finish',
+                    function (ReducerFinishEvent $event) use ($output) {
+                        $this->printBug($event->getBugMessage(), $event->getPath(), $output);
+                    }
+                );
 
-            $this->printBug($throwable->getMessage(), $path, $output);
+                $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
+                $pathReducer->reduce($path, $model, $throwable);
+            }
+            else {
+                $this->printBug($throwable->getMessage(), $path, $output);
+            }
         }
     }
 }

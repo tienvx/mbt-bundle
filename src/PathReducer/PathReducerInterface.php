@@ -9,5 +9,5 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 interface PathReducerInterface extends PluginInterface
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path;
+    public function reduce(Path $path, Model $model, Throwable $throwable, $taskId = null);
 }

@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -24,7 +23,6 @@ class ExecuteTaskCommand extends Command
     private $entityManager;
     private $reporterManager;
     private $stopConditionManager;
-    private $defaultReporter;
 
     public function __construct(
         ModelRegistry $modelRegistry,
@@ -51,11 +49,6 @@ class ExecuteTaskCommand extends Command
             ->setDescription('Execute a task.')
             ->setHelp('This command execute a task, then create a bug if found.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
-    }
-
-    public function setDefaultReporter(string $defaultReporter)
-    {
-        $this->defaultReporter = $defaultReporter;
     }
 
     /**
@@ -91,19 +84,7 @@ class ExecuteTaskCommand extends Command
             $reducer = $task->getReducer();
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $path = $pathReducer->reduce($path, $model, $throwable);
-            }
-
-            if ($this->reporterManager->hasReporter($this->defaultReporter)) {
-                $bug = new Bug();
-                $bug->setTitle($throwable->getMessage());
-                $bug->setMessage($throwable->getMessage());
-                $bug->setTask($task);
-                $bug->setSteps($path);
-                $bug->setStatus('unverified');
-                $bug->setReporter($this->defaultReporter);
-                $this->entityManager->persist($bug);
-                $this->entityManager->flush();
+                $pathReducer->reduce($path, $model, $throwable, $taskId);
             }
         }
     }

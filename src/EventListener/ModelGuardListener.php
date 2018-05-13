@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
-use Tienvx\Bundle\MbtBundle\Model\Subject;
 
 class ModelGuardListener
 {

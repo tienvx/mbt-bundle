@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, Throwable $throwable, $taskId = null)
     {
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
@@ -43,7 +43,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        return $path;
+        $this->finish($throwable->getMessage(), $path, $taskId);
     }
 
     public function updatePathWeight(array &$pathWeight, Path $path, int $from, int $to)

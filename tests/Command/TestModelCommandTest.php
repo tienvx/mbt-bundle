@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -25,9 +26,11 @@ class TestModelCommandTest extends CommandTestCase
         $pathReducerManager = self::$container->get(PathReducerManager::class);
         /** @var StopConditionManager $stopConditionManager */
         $stopConditionManager = self::$container->get(StopConditionManager::class);
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = self::$container->get(EventDispatcherInterface::class);
 
         $application = new Application($kernel);
-        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager));
+        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager, $dispatcher));
 
         $command = $application->find('mbt:test-model');
         $this->assertReproducePath($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}');
