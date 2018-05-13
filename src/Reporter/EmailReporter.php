@@ -106,7 +106,7 @@ class EmailReporter implements ReporterInterface
             $steps[] = [
                 'step' => $index + 1,
                 'action' => $edge->getAttribute('label'),
-                'data' => json_encode($path->hasDataAt($index) ? $path->getDataAt($index) : []),
+                'data' => json_encode($path->getDataAt($index) ?? []),
             ];
         }
         return $steps;

@@ -75,15 +75,14 @@ abstract class AbstractGenerator implements GeneratorInterface
 
     /**
      * @param Model $model
+     * @param Subject $subject
      * @param StopConditionInterface $stopCondition
-     * @param bool $generatingSteps
      * @throws \Exception
      */
-    public function init(Model $model, StopConditionInterface $stopCondition, bool $generatingSteps = false)
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
     {
         $this->model         = $model;
-        $this->subject       = $model->createSubject();
-        $this->subject->setGeneratingSteps($generatingSteps);
+        $this->subject       = $subject;
         $this->stopCondition = $stopCondition;
 
         $this->graph = $this->graphBuilder->build($this->model->getDefinition());

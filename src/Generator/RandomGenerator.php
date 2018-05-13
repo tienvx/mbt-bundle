@@ -6,6 +6,7 @@ use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class RandomGenerator extends AbstractGenerator
@@ -105,13 +106,13 @@ class RandomGenerator extends AbstractGenerator
 
     /**
      * @param Model $model
+     * @param Subject $subject
      * @param StopConditionInterface $stopCondition
-     * @param bool $generatingSteps
      * @throws \Exception
      */
-    public function init(Model $model, StopConditionInterface $stopCondition, bool $generatingSteps = false)
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
     {
-        parent::init($model, $stopCondition, $generatingSteps);
+        parent::init($model, $subject, $stopCondition);
 
         $this->edgeCoverage = 0;
         $this->vertexCoverage = 0;

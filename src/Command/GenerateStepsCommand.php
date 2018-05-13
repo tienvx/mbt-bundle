@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -15,8 +14,6 @@ use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class GenerateStepsCommand extends Command
 {
-    use GeneratorArgumentsTrait;
-
     private $modelRegistry;
     private $generatorManager;
     private $stopConditionManager;
@@ -54,10 +51,11 @@ class GenerateStepsCommand extends Command
     {
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
         $model = $this->modelRegistry->getModel($input->getArgument('model'));
+        $subject = $model->createSubject(true);
         $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
         $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
 
-        $generator->init($model, $stopCondition, true);
+        $generator->init($model, $subject, $stopCondition);
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
             $generator->goToNextStep($edge);

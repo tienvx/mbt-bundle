@@ -10,6 +10,7 @@ use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class AllTransitionsGenerator extends AbstractGenerator
@@ -24,9 +25,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(Model $model, StopConditionInterface $stopCondition, bool $generatingSteps = false)
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
     {
-        parent::init($model, $stopCondition, $generatingSteps);
+        parent::init($model, $subject, $stopCondition);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();

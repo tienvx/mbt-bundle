@@ -26,15 +26,10 @@ abstract class Subject
      */
     protected $dataProviders;
 
-    public function __construct()
-    {
-        $this->generatingSteps = false;
-    }
-
     /**
      * @param $generatingSteps boolean
      */
-    public function setGeneratingSteps(bool $generatingSteps)
+    public function __construct(bool $generatingSteps = false)
     {
         $this->generatingSteps = $generatingSteps;
     }

@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Fhaculty\Graph\Edge\Directed;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class AllPlacesGenerator extends AbstractGenerator
@@ -14,9 +15,9 @@ class AllPlacesGenerator extends AbstractGenerator
      */
     protected $edges = [];
 
-    public function init(Model $model, StopConditionInterface $stopCondition, bool $generatingSteps = false)
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
     {
-        parent::init($model, $stopCondition, $generatingSteps);
+        parent::init($model, $subject, $stopCondition);
 
         $algorithm = new Bruteforce($this->graph);
         $edges = $algorithm->getEdges();

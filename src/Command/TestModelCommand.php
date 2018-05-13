@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -17,7 +16,6 @@ use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class TestModelCommand extends Command
 {
-    use GeneratorArgumentsTrait;
     use BugOutputTrait;
 
     private $modelRegistry;
@@ -61,10 +59,11 @@ class TestModelCommand extends Command
     {
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
         $model = $this->modelRegistry->getModel($input->getArgument('model'));
+        $subject = $model->createSubject();
         $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
         $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
 
-        $generator->init($model, $stopCondition);
+        $generator->init($model, $subject, $stopCondition);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {

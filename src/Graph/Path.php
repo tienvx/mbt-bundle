@@ -40,7 +40,7 @@ class Path
         $this->edges[] = $edge;
     }
 
-    public function addData(array $data = null)
+    public function addData(array $data)
     {
         $this->allData[] = $data;
     }
@@ -88,14 +88,9 @@ class Path
         return $this->allData[$index];
     }
 
-    public function setDataAt(int $index, array $data = null)
+    public function setDataAt(int $index, array $data)
     {
         $this->allData[$index] = $data;
-    }
-
-    public function hasDataAt(int $index): bool
-    {
-        return isset($this->allData[$index]);
     }
 
     public function __toString()

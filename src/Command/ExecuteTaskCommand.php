@@ -10,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
@@ -19,8 +18,6 @@ use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class ExecuteTaskCommand extends Command
 {
-    use GeneratorArgumentsTrait;
-
     private $modelRegistry;
     private $generatorManager;
     private $pathReducerManager;
@@ -78,10 +75,11 @@ class ExecuteTaskCommand extends Command
 
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
         $model = $this->modelRegistry->getModel($task->getModel());
+        $subject = $model->createSubject();
         $stopCondition = $this->stopConditionManager->getStopCondition($task->getStopCondition());
         $stopCondition->setArguments(json_decode($task->getStopConditionArguments(), true));
 
-        $generator->init($model, $stopCondition);
+        $generator->init($model, $subject, $stopCondition);
 
         try {
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {

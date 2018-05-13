@@ -14,7 +14,7 @@ interface GeneratorInterface extends PluginInterface
 {
     public function __construct(GraphBuilder $graphBuilder);
 
-    public function init(Model $model, StopConditionInterface $stopCondition, bool $generatingSteps = false);
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition);
 
     public function getNextStep(): ?Directed;
 

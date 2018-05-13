@@ -23,19 +23,20 @@ class Model extends StateMachine
     }
 
     /**
+     * @param bool $generatingSteps
      * @return Subject
      * @throws \Exception
      */
-    public function createSubject()
+    public function createSubject(bool $generatingSteps = false)
     {
         $subjectClass = $this->getDefinition()->getMetadataStore()->getWorkflowMetadata()['subject'];
         if (!is_subclass_of($subjectClass, Subject::class)) {
             throw new \Exception('subject in metadata of a model must be subclass of Tienvx\Bundle\MbtBundle\Model\Model');
         }
-        $subject = new $subjectClass();
+        /** @var Subject $subject */
+        $subject = new $subjectClass($generatingSteps);
         return $subject;
     }
-
 
     /**
      * Similar to Workflow::apply, but does not dispatch events.
@@ -57,30 +58,13 @@ class Model extends StateMachine
                 continue;
             }
 
-            if (!is_null($dataIndex)) {
-                $data = $path->getDataAt($dataIndex);
-                if (is_null($data)) {
-                    $data = $subject->provideData($transitionName);
-                }
-                else {
-                    $subject->setData($data);
-                }
-            }
-            else {
-                $data = $subject->provideData($transitionName);
-            }
+            $data = $this->provideData($subject, $path, $transitionName, $dataIndex);
 
             if (!parent::can($subject, $transitionName)) {
                 return false;
             }
 
-            if (!is_null($dataIndex)) {
-                $path->setDataAt($dataIndex, $data);
-            }
-            else {
-                $path->addEdge($edge);
-                $path->addData($data);
-            }
+            $this->updatePath($edge, $path, $data, $dataIndex);
 
             // Leave places
             $places = $transition->getFroms();
@@ -101,5 +85,44 @@ class Model extends StateMachine
         }
 
         return true;
+    }
+
+    /**
+     * @param Subject $subject
+     * @param Path $path
+     * @param $transitionName
+     * @param int $dataIndex
+     * @return array
+     * @throws \Exception
+     */
+    private function provideData(Subject $subject, Path $path, $transitionName, int $dataIndex = null): array
+    {
+        if (!is_null($dataIndex)) {
+            $data = $path->getDataAt($dataIndex);
+            if (is_null($data)) {
+                $data = $subject->provideData($transitionName);
+            } else {
+                $subject->setData($data);
+            }
+        } else {
+            $data = $subject->provideData($transitionName);
+        }
+        return $data;
+    }
+
+    /**
+     * @param Directed $edge
+     * @param Path $path
+     * @param array $data
+     * @param int $dataIndex
+     */
+    private function updatePath(Directed $edge, Path $path, array $data, int $dataIndex = null): void
+    {
+        if (!is_null($dataIndex)) {
+            $path->setDataAt($dataIndex, $data);
+        } else {
+            $path->addEdge($edge);
+            $path->addData($data);
+        }
     }
 }
