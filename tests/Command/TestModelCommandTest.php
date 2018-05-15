@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -16,8 +15,6 @@ class TestModelCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::bootKernel();
-
         /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
         /** @var GeneratorManager $generatorManager */
@@ -29,10 +26,9 @@ class TestModelCommandTest extends CommandTestCase
         /** @var EventDispatcherInterface $dispatcher */
         $dispatcher = self::$container->get(EventDispatcherInterface::class);
 
-        $application = new Application($kernel);
-        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager, $dispatcher));
+        $this->application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager, $dispatcher));
 
-        $command = $application->find('mbt:test-model');
+        $command = $this->application->find('mbt:test-model');
         $this->assertReproducePath($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}');
         $this->assertReproducePath($command, 'random', 'found-bug', '{}');
         $this->assertReproducePath($command, 'all-places', 'null', '{}');

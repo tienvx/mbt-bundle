@@ -1,11 +1,11 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Messenger\Handler;
+namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
-use Tienvx\Bundle\MbtBundle\Messenger\Message\ReproducePathMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\QueuedPathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 

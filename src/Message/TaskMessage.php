@@ -1,8 +1,8 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Messenger\Message;
+namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ReproducePathMessage
+class TaskMessage
 {
     protected $id;
 
@@ -11,7 +11,7 @@ class ReproducePathMessage
         $this->id = $id;
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }

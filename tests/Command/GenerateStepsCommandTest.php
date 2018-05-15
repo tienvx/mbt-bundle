@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateStepsCommand;
@@ -14,8 +13,6 @@ class GenerateStepsCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::bootKernel();
-
         /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
         /** @var GeneratorManager $generatorManager */
@@ -23,10 +20,9 @@ class GenerateStepsCommandTest extends CommandTestCase
         /** @var StopConditionManager $stopConditionManager */
         $stopConditionManager = self::$container->get(StopConditionManager::class);
 
-        $application = new Application($kernel);
-        $application->add(new GenerateStepsCommand($modelRegistry, $generatorManager, $stopConditionManager));
+        $this->application->add(new GenerateStepsCommand($modelRegistry, $generatorManager, $stopConditionManager));
 
-        $command = $application->find('mbt:generate-steps');
+        $command = $this->application->find('mbt:generate-steps');
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}', 24, 5);
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);

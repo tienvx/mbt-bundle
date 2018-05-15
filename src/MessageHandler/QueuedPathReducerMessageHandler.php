@@ -1,9 +1,9 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Messenger\Handler;
+namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Messenger\Message\QueuedPathReducerMessage;
+use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\QueuedPathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Messenger\Message;
+namespace Tienvx\Bundle\MbtBundle\Message;
 
 class QueuedPathReducerMessage
 {

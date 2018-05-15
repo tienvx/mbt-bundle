@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -16,8 +15,6 @@ class RunStepsCommandTest extends CommandTestCase
 {
     public function testRun()
     {
-        $kernel = static::bootKernel();
-
         /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
         /** @var GraphBuilder $graphBuilder */
@@ -29,17 +26,16 @@ class RunStepsCommandTest extends CommandTestCase
         /** @var EventDispatcherInterface $dispatcher */
         $dispatcher = self::$container->get(EventDispatcherInterface::class);
 
-        $application = new Application($kernel);
-        $application->add(new RunStepsCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $dispatcher));
+        $this->application->add(new RunStepsCommand($modelRegistry, $graphBuilder, $pathRunner, $pathReducerManager, $dispatcher));
 
-        $command = $application->find('mbt:run-steps');
-        $output = $this->runCommand($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');
+        $command = $this->application->find('mbt:run-steps');
+        $output = $this->getOutput($command, 'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart');
         $this->assertEquals('', $output);
-        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout');
+        $output = $this->getOutput($command, 'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout');
         $this->assertEquals('', $output);
-        $output = $this->runCommand($command, 'home addFromHome(product=49) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home');
+        $output = $this->getOutput($command, 'home addFromHome(product=49) home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart update(product=31) cart remove(product=31) cart checkoutFromCart() checkout backToHomeFromCheckout() home');
         $this->assertContains('Found a bug: You added an out-of-stock product into cart! Can not checkout', $output);
-        $output = $this->runCommand($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', 'greedy');
+        $output = $this->getOutput($command, 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', 'greedy');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
@@ -51,7 +47,7 @@ class RunStepsCommandTest extends CommandTestCase
 | 3      | From category page, open checkout page                         | []                |
 +--------+----------------------------------------------------------------+-------------------+
 ', $output);
-        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout', 'binary');
+        $output = $this->getOutput($command, 'home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout', 'binary');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+---------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                   |
@@ -64,7 +60,7 @@ class RunStepsCommandTest extends CommandTestCase
 | 4      | From product page, open checkout page                   | []                |
 +--------+---------------------------------------------------------+-------------------+
 ', $output);
-        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout', 'binary');
+        $output = $this->getOutput($command, 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout', 'binary');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
@@ -77,7 +73,7 @@ class RunStepsCommandTest extends CommandTestCase
 | 4      | From category page, open checkout page                         | []                |
 +--------+----------------------------------------------------------------+-------------------+
 ', $output);
-        $output = $this->runCommand($command, 'home viewCartFromHome() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=25_28) category viewOtherCategory(category=20) category checkoutFromCategory() checkout', 'greedy');
+        $output = $this->getOutput($command, 'home viewCartFromHome() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=25_28) category viewOtherCategory(category=20) category checkoutFromCategory() checkout', 'greedy');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
@@ -89,7 +85,7 @@ class RunStepsCommandTest extends CommandTestCase
 | 3      | From category page, open checkout page                         | []                |
 +--------+----------------------------------------------------------------+-------------------+
 ', $output);
-        $output = $this->runCommand($command, 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout', 'greedy');
+        $output = $this->getOutput($command, 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout', 'greedy');
         if (strpos($output, '{"category":"34"}')) {
             $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+----------------------------------------------------------------+-------------------+
@@ -117,7 +113,7 @@ class RunStepsCommandTest extends CommandTestCase
 +--------+----------------------------------------------------------------+-------------------+
 ', $output);
         }
-        $output = $this->runCommand($command, 'home checkoutFromHome() checkout backToHomeFromCheckout() home viewAnyCategoryFromHome(category=20) category addFromCategory(product=46) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewCartFromCategory() cart viewProductFromCart(product=46) product viewAnyCategoryFromProduct(category=57) category checkoutFromCategory() checkout', 'loop');
+        $output = $this->getOutput($command, 'home checkoutFromHome() checkout backToHomeFromCheckout() home viewAnyCategoryFromHome(category=20) category addFromCategory(product=46) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewCartFromCategory() cart viewProductFromCart(product=46) product viewAnyCategoryFromProduct(category=57) category checkoutFromCategory() checkout', 'loop');
         $this->assertEquals('Found a bug: You added an out-of-stock product into cart! Can not checkout
 +--------+----------------------------------------------------------------+-------------------+
 | Steps to reproduce                                                                          |
@@ -133,7 +129,7 @@ class RunStepsCommandTest extends CommandTestCase
 ', $output);
     }
 
-    public function runCommand(Command $command, $steps, $reducer = null)
+    public function getOutput(Command $command, $steps, $reducer = null)
     {
         $commandTester = new CommandTester($command);
         $input = [

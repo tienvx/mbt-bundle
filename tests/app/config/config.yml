@@ -6,9 +6,9 @@ framework:
     assets:          ~
     messenger:
         routing:
-            Tienvx\Bundle\MbtBundle\Messenger\Message\TaskMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
-            Tienvx\Bundle\MbtBundle\Messenger\Message\BugMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
-            Tienvx\Bundle\MbtBundle\Messenger\Message\ReproducePathMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
+            Tienvx\Bundle\MbtBundle\Message\TaskMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
+            Tienvx\Bundle\MbtBundle\Message\BugMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
+            Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
 
 doctrine:
     dbal:

@@ -50,6 +50,7 @@ class ReproducePath
     private $handledMessages;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Task")
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
      */
     private $task;

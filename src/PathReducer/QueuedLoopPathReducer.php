@@ -9,7 +9,7 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Messenger\Message\QueuedPathReducerMessage;
+use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -46,6 +46,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         $reproducePath->setTotalMessages(0);
         $reproducePath->setHandledMessages(0);
         $reproducePath->setBugMessage($bugMessage);
+        $reproducePath->setReducer(static::getName());
 
         if ($taskId) {
             $task = $this->entityManager->getRepository(Task::class)->find($taskId);

@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
-use Tienvx\Bundle\MbtBundle\Messenger\Message\QueuedPathReducerMessage;
+use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
 
 interface QueuedPathReducerInterface
 {
