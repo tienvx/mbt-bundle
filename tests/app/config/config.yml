@@ -9,6 +9,7 @@ framework:
             Tienvx\Bundle\MbtBundle\Message\TaskMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
             Tienvx\Bundle\MbtBundle\Message\BugMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
             Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
+            Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage: Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemorySender
 
 doctrine:
     dbal:
