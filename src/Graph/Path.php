@@ -22,17 +22,10 @@ class Path
      */
     protected $edges;
 
-    /**
-     *
-     * @var int
-     */
-    protected $position;
-
     public function __construct(array $edges = [], array $allData = [])
     {
         $this->edges    = $edges;
         $this->allData  = $allData;
-        $this->position = 0;
     }
 
     public function addEdge(Directed $edge)

@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class GreedyPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, Throwable $throwable, $taskId = null)
+    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null)
     {
         $distance = $path->countEdges();
 
@@ -28,7 +28,7 @@ class GreedyPathReducer extends AbstractPathReducer
                     try {
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                        if ($newThrowable->getMessage() === $bugMessage) {
                             $path = $newPath;
                             $distance = $path->countEdges();
                             break;
@@ -40,7 +40,7 @@ class GreedyPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->finish($throwable->getMessage(), $path, $taskId);
+        $this->finish($bugMessage, $path, $taskId);
     }
 
     public static function getName()

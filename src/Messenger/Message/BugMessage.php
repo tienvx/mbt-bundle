@@ -1,8 +1,8 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Message;
+namespace Tienvx\Bundle\MbtBundle\Messenger\Message;
 
-class TaskMessage
+class BugMessage
 {
     protected $id;
 

@@ -2,12 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Messenger;
 
+use Symfony\Component\Messenger\Transport\ReceiverInterface;
 use Symfony\Component\Messenger\Transport\Serialization\Serializer;
 
-trait InMemoryReceiverTrait
+abstract class InMemoryReceiver implements ReceiverInterface
 {
-    private $messageSerializer;
-    private $messageStorage;
+    protected $messageSerializer;
+    protected $messageStorage;
+    protected $type;
 
     public function __construct(Serializer $messageSerializer, InMemoryMessageStorage $messageStorage)
     {

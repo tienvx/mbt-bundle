@@ -6,9 +6,11 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Message\BugMessage;
-use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
+use Tienvx\Bundle\MbtBundle\Messenger\Message\BugMessage;
+use Tienvx\Bundle\MbtBundle\Messenger\Message\ReproducePathMessage;
+use Tienvx\Bundle\MbtBundle\Messenger\Message\TaskMessage;
 
 class EntitySubscriber implements EventSubscriber
 {
@@ -28,6 +30,9 @@ class EntitySubscriber implements EventSubscriber
         }
         if ($entity instanceof Bug) {
             $this->messageBus->dispatch(new BugMessage($entity->getId()));
+        }
+        if ($entity instanceof ReproducePath) {
+            $this->messageBus->dispatch(new ReproducePathMessage($entity->getId()));
         }
     }
 

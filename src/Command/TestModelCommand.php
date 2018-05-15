@@ -87,7 +87,7 @@ class TestModelCommand extends Command
                 );
 
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $pathReducer->reduce($path, $model, $throwable);
+                $pathReducer->reduce($path, $model, $throwable->getMessage());
             }
             else {
                 $this->printBug($throwable->getMessage(), $path, $output);

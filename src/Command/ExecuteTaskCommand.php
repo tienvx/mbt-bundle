@@ -84,7 +84,7 @@ class ExecuteTaskCommand extends Command
             $reducer = $task->getReducer();
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $pathReducer->reduce($path, $model, $throwable, $taskId);
+                $pathReducer->reduce($path, $model, $throwable->getMessage(), $taskId);
             }
         }
     }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\MessageHandler;
+namespace Tienvx\Bundle\MbtBundle\Messenger\Handler;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\ReportBugCommand;
-use Tienvx\Bundle\MbtBundle\Message\BugMessage;
+use Tienvx\Bundle\MbtBundle\Messenger\Message\BugMessage;
 
 class BugMessageHandler implements MessageHandlerInterface
 {
