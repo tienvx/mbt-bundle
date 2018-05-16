@@ -7,22 +7,25 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorArgumentsTrait;
 use Tienvx\Bundle\MbtBundle\Model\Constants;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class GenerateStepsCommand extends Command
 {
-    use GeneratorArgumentsTrait;
-
     private $modelRegistry;
     private $generatorManager;
+    private $stopConditionManager;
 
-    public function __construct(ModelRegistry $modelRegistry, GeneratorManager $generatorManager)
+    public function __construct(
+        ModelRegistry $modelRegistry,
+        GeneratorManager $generatorManager,
+        StopConditionManager $stopConditionManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
+        $this->stopConditionManager = $stopConditionManager;
 
         parent::__construct();
     }
@@ -35,7 +38,8 @@ class GenerateStepsCommand extends Command
             ->setHelp('Generate steps from model. So that it can be run with mbt:run-steps command.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', Constants::DEFAULT_GENERATOR)
-            ->addOption('arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the generator.', Constants::DEFAULT_ARGUMENTS);
+            ->addOption('stop-condition', 's', InputOption::VALUE_OPTIONAL, 'When generator stop generate steps.', Constants::DEFAULT_STOP_CONDITION)
+            ->addOption('stop-condition-arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the stop condition.', Constants::DEFAULT_STOP_CONDITION_ARGUMENTS);
     }
 
     /**
@@ -45,18 +49,16 @@ class GenerateStepsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getArgument('model');
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
-        $workflowMetadata = $this->modelRegistry->getModel($model);
-        $subject = $workflowMetadata['subject'];
-        $arguments = $this->parseGeneratorArguments($input->getOption('arguments'));
+        $model = $this->modelRegistry->getModel($input->getArgument('model'));
+        $subject = $model->createSubject(true);
+        $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
+        $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
 
-        $generator->init($model, $subject, $arguments, true);
+        $generator->init($model, $subject, $stopCondition);
 
         while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
-            if ($generator->canGoNextStep($edge)) {
-                $generator->goToNextStep($edge);
-            }
+            $generator->goToNextStep($edge);
         }
 
         $path = $generator->getPath();

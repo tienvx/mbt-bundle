@@ -45,9 +45,16 @@ class Task
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
+     * @MbtAssert\StopCondition
+     */
+    private $stopCondition;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
      * @MbtAssert\Json
      */
-    private $arguments;
+    private $stopConditionArguments;
 
     /**
      * @ORM\Column(type="string")
@@ -128,14 +135,24 @@ class Task
         $this->generator = $generator;
     }
 
-    public function getArguments()
+    public function getStopCondition()
     {
-        return $this->arguments;
+        return $this->stopCondition;
     }
 
-    public function setArguments($arguments)
+    public function setStopCondition($stopCondition)
     {
-        $this->arguments = $arguments;
+        $this->stopCondition = $stopCondition;
+    }
+
+    public function getStopConditionArguments()
+    {
+        return $this->stopConditionArguments;
+    }
+
+    public function setStopConditionArguments($stopConditionArguments)
+    {
+        $this->stopConditionArguments = $stopConditionArguments;
     }
 
     public function getReducer()

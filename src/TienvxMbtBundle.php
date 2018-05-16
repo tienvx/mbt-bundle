@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\GeneratorPass;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ModelGuardPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ModelPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PathReducerPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ReporterPass;
@@ -15,6 +16,7 @@ class TienvxMbtBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new ModelPass());
+        $container->addCompilerPass(new ModelGuardPass());
         $container->addCompilerPass(new GeneratorPass());
         $container->addCompilerPass(new StopConditionPass());
         $container->addCompilerPass(new PathReducerPass());

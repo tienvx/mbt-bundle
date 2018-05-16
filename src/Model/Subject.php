@@ -27,20 +27,9 @@ abstract class Subject
     protected $dataProviders;
 
     /**
-     * @var boolean
-     */
-    protected $announcing;
-
-    public function __construct()
-    {
-        $this->generatingSteps = false;
-        $this->announcing      = false;
-    }
-
-    /**
      * @param $generatingSteps boolean
      */
-    public function setGeneratingSteps(bool $generatingSteps)
+    public function __construct(bool $generatingSteps = false)
     {
         $this->generatingSteps = $generatingSteps;
     }
@@ -73,26 +62,17 @@ abstract class Subject
         return $data;
     }
 
-    public function __invoke(string $type, string $placeOrTransitionName)
+    public function applyTransition(string $transitionName)
     {
-        if (method_exists($this, $placeOrTransitionName)) {
-            call_user_func([$this, $placeOrTransitionName]);
+        if (method_exists($this, $transitionName)) {
+            call_user_func([$this, $transitionName]);
         }
     }
 
-    /**
-     * @param $announcing boolean
-     */
-    public function setAnnouncing(bool $announcing)
+    public function enterPlace(string $placeName)
     {
-        $this->announcing = $announcing;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isAnnouncing()
-    {
-        return $this->announcing;
+        if (method_exists($this, $placeName)) {
+            call_user_func([$this, $placeName]);
+        }
     }
 }

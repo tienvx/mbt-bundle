@@ -4,15 +4,16 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class BinaryPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, string $model, string $subject, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null)
     {
         $try = 1;
         $quotient = floor($path->countEdges() / pow(2, $try));
         $remainder = $path->countEdges() % pow(2, $try);
-        $maxTries = $path->countVertices();
+        $maxTries = $path->countEdges();
 
         while (($try <= $maxTries && $quotient > 0) && $path->countEdges() >= 2) {
             for ($i = 0; $i < pow(2, $try); $i++) {
@@ -25,14 +26,14 @@ class BinaryPathReducer extends AbstractPathReducer
                 }
                 $newPath = $this->getNewPath($path, $j, $k);
                 // Make sure new path shorter than old path.
-                if ($newPath->countVertices() < $path->countVertices()) {
+                if ($newPath->countEdges() < $path->countEdges()) {
                     try {
-                        $this->runner->run($newPath, $model, $subject);
+                        $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                        if ($newThrowable->getMessage() === $bugMessage) {
                             $path = $newPath;
                             $try = 1;
-                            $maxTries = $path->countVertices();
+                            $maxTries = $path->countEdges();
                             break;
                         }
                     }
@@ -43,8 +44,8 @@ class BinaryPathReducer extends AbstractPathReducer
             $remainder = $path->countEdges() % pow(2, $try);
         }
 
-        // Tired of trying.
-        return $path;
+        // Can not reduce the reproduce path (any more).
+        $this->finish($bugMessage, $path, $taskId);
     }
 
     public static function getName()

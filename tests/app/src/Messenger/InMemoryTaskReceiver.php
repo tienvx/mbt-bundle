@@ -2,11 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Messenger;
 
-use Symfony\Component\Messenger\Transport\ReceiverInterface;
-
-class InMemoryTaskReceiver implements ReceiverInterface
+class InMemoryTaskReceiver extends InMemoryReceiver
 {
-    use InMemoryReceiverTrait;
-
-    private $type = 'task';
+    protected $type = 'task';
 }

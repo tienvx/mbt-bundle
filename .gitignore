@@ -6,3 +6,4 @@
 # Ignore files created during tests
 /tests/app/var/cache/
 /tests/app/var/logs/
+/tests/logs/

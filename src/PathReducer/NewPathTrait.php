@@ -7,7 +7,7 @@ use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 trait NewPathTrait
 {
-    protected function getNewPath(Path $path, $firstVertexIndex, $secondVertexIndex): Path
+    protected function getNewPath(Path $path, int $firstVertexIndex, int $secondVertexIndex): Path
     {
         $firstVertex = $path->getVertexAt($firstVertexIndex);
         $secondVertex = $path->getVertexAt($secondVertexIndex);

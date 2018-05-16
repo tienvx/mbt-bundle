@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 
-class CommandTestCase extends KernelTestCase
+class CommandTestCase extends AbstractTestCase
 {
     protected function getCoverageStopCondition($edgeCoverage, $vertexCoverage)
     {

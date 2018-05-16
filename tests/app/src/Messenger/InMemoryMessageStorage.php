@@ -13,6 +13,6 @@ class InMemoryMessageStorage
 
     public function getMessages(string $type)
     {
-        return $this->messages[$type];
+        return $this->messages[$type] ?? [];
     }
 }

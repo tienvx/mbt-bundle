@@ -4,12 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class LoopPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, string $model, string $subject, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null)
     {
-        $distance = $path->countVertices() - 1;
+        $distance = $path->countEdges();
 
         while ($distance > 0) {
             for ($i = 0; $i < $path->countVertices() - 1; $i++) {
@@ -17,13 +18,13 @@ class LoopPathReducer extends AbstractPathReducer
                 if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
                     $newPath = $this->getNewPath($path, $i, $j);
                     // Make sure new path shorter than old path.
-                    if ($newPath->countVertices() < $path->countVertices()) {
+                    if ($newPath->countEdges() < $path->countEdges()) {
                         try {
-                            $this->runner->run($newPath, $model, $subject);
+                            $this->runner->run($newPath, $model);
                         } catch (Throwable $newThrowable) {
-                            if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                            if ($newThrowable->getMessage() === $bugMessage) {
                                 $path = $newPath;
-                                $distance = $path->countVertices() - 1;
+                                $distance = $path->countEdges();
                                 break;
                             }
                         }
@@ -34,7 +35,7 @@ class LoopPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        return $path;
+        $this->finish($bugMessage, $path, $taskId);
     }
 
     public static function getName()

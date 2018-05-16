@@ -4,14 +4,15 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, string $model, string $subject, Throwable $throwable): Path
+    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null)
     {
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
-        $maxTries = $path->countVertices();
+        $maxTries = $path->countEdges();
 
         while ($try <= $maxTries) {
             $vertexWeight = $this->buildVertexWeight($path, $pathWeight);
@@ -20,17 +21,17 @@ class WeightedRandomPathReducer extends AbstractPathReducer
             list($i, $j) = explode('|', $pair);
             $newPath = $this->getNewPath($path, $i, $j);
             // Make sure new path shorter than old path.
-            if ($newPath->countVertices() < $path->countVertices()) {
+            if ($newPath->countEdges() < $path->countEdges()) {
                 try {
-                    $this->runner->run($newPath, $model, $subject);
+                    $this->runner->run($newPath, $model);
                 } catch (Throwable $newThrowable) {
-                    if ($newThrowable->getMessage() === $throwable->getMessage()) {
+                    if ($newThrowable->getMessage() === $bugMessage) {
                         $path = $newPath;
                     }
                 } finally {
-                    if ($newPath->countVertices() === $path->countVertices()) {
+                    if ($newPath->countEdges() === $path->countEdges()) {
                         $try = 1;
-                        $maxTries = $path->countVertices() * 2;
+                        $maxTries = $path->countEdges();
                         $pathWeight = $this->rebuildPathWeight($path, $pathWeight);
                     }
                     else {
@@ -42,7 +43,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        return $path;
+        $this->finish($bugMessage, $path, $taskId);
     }
 
     public function updatePathWeight(array &$pathWeight, Path $path, int $from, int $to)

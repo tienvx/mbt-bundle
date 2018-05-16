@@ -42,17 +42,13 @@ class DumpModelCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $model = $input->getArgument('model');
-        $workflowMetadata = $this->modelRegistry->getModel($model);
-        $subject = $workflowMetadata['subject'];
-        $subject = new $subject();
-        $workflow = $this->workflows->get($subject, $model);
+        $model = $this->modelRegistry->getModel($input->getArgument('model'));
 
         if ('puml' === $input->getOption('format')) {
             $dumper = new PlantUmlDumper(PlantUmlDumper::STATEMACHINE_TRANSITION);
         } else {
             $dumper = new StateMachineGraphvizDumper();
         }
-        $output->write($dumper->dump($workflow->getDefinition()));
+        $output->write($dumper->dump($model->getDefinition()));
     }
 }

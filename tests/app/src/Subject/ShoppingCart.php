@@ -110,7 +110,10 @@ class ShoppingCart extends Subject
         '49', // 'Samsung Galaxy Tab 10.1',
     ];
 
-    public function __construct()
+    /**
+     * @param $generatingSteps boolean
+     */
+    public function __construct(bool $generatingSteps = false)
     {
         $this->cart = [];
         $this->category = null;
@@ -150,7 +153,7 @@ class ShoppingCart extends Subject
                 return ['product' => $this->getRandomProductFromCategory()];
             },
         ];
-        parent::__construct();
+        parent::__construct($generatingSteps);
     }
 
     /**

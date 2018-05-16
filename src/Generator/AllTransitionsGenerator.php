@@ -9,6 +9,9 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ConnectedComponents;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
+use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\Subject;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -22,9 +25,9 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     protected $resultGraph;
 
-    public function init(string $model, string $subject, array $arguments, bool $generatingSteps = false)
+    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
     {
-        parent::init($model, $subject, $arguments, $generatingSteps);
+        parent::init($model, $subject, $stopCondition);
 
         $components = new ConnectedComponents($this->graph);
         $this->singleComponent = $components->isSingle();
@@ -50,24 +53,24 @@ class AllTransitionsGenerator extends AbstractGenerator
         }
     }
 
-    public function goToNextStep(Directed $currentEdge)
+    public function goToNextStep(Directed $currentEdge): bool
     {
         $transitionName = $currentEdge->getAttribute('name');
-
-        $currentEdge->setAttribute('visited', true);
-        foreach ($this->currentVertex->getEdgesOut() as $edge) {
-            $edge->setAttribute('tried', false);
-        }
-        $this->currentVertex = $currentEdge->getVertexEnd();
 
         /** @var Directed $currentEdgeInPath */
         $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($transitionName) {
             return $edge->getAttribute('name') === $transitionName;
         });
 
-        $this->path->addEdge($currentEdgeInPath);
-        $this->path->addData($this->currentData);
-        $this->workflow->apply($this->subject, $transitionName);
+        $entered = parent::goToNextStep($currentEdgeInPath);
+        if ($entered) {
+            $currentEdge->setAttribute('visited', true);
+            foreach ($this->currentVertex->getEdgesOut() as $edge) {
+                $edge->setAttribute('tried', false);
+            }
+            $this->currentVertex = $currentEdge->getVertexEnd();
+        }
+        return $entered;
     }
 
     public function meetStopCondition(): bool

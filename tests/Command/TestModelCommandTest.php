@@ -2,45 +2,48 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class TestModelCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
-        $kernel = static::bootKernel();
-
         /** @var ModelRegistry $modelRegistry */
         $modelRegistry = self::$container->get(ModelRegistry::class);
         /** @var GeneratorManager $generatorManager */
         $generatorManager = self::$container->get(GeneratorManager::class);
         /** @var PathReducerManager $pathReducerManager */
         $pathReducerManager = self::$container->get(PathReducerManager::class);
+        /** @var StopConditionManager $stopConditionManager */
+        $stopConditionManager = self::$container->get(StopConditionManager::class);
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = self::$container->get(EventDispatcherInterface::class);
 
-        $application = new Application($kernel);
-        $application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager));
+        $this->application->add(new TestModelCommand($modelRegistry, $generatorManager, $pathReducerManager, $stopConditionManager, $dispatcher));
 
-        $command = $application->find('mbt:test-model');
-        $this->assertReproducePath($command, 'random', $this->getCoverageStopCondition(100, 100));
-        $this->assertReproducePath($command, 'random', $this->getFoundBugStopCondition());
-        $this->assertReproducePath($command, 'all-places', null);
-        $this->assertReproducePath($command, 'all-transitions', null);
+        $command = $this->application->find('mbt:test-model');
+        $this->assertReproducePath($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}');
+        $this->assertReproducePath($command, 'random', 'found-bug', '{}');
+        $this->assertReproducePath($command, 'all-places', 'null', '{}');
+        $this->assertReproducePath($command, 'all-transitions', 'null', '{}');
     }
 
-    public function assertReproducePath(Command $command, string $generator, $arguments)
+    public function assertReproducePath(Command $command, string $generator, $stopCondition, $stopConditionArguments)
     {
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'      => $command->getName(),
-            'model'        => 'shopping_cart',
-            '--generator'  => $generator,
-            '--arguments'  => $arguments
+            'command'                     => $command->getName(),
+            'model'                       => 'shopping_cart',
+            '--generator'                 => $generator,
+            '--stop-condition'            => $stopCondition,
+            '--stop-condition-arguments'  => $stopConditionArguments
         ]);
 
         $output = $commandTester->getDisplay();
@@ -51,18 +54,15 @@ class TestModelCommandTest extends CommandTestCase
             $steps = [];
             $lines = explode("\n", $output);
             foreach ($lines as $line) {
-                if (strpos($line, '|') === 0) {
+                if (strpos($line, '|') === 0 && strpos($line, 'Step') === false) {
                     // Table rows.
                     $cells = explode('|', $line);
                     $cells = array_map('trim', array_values(array_filter($cells)));
-                    if (['Step', 'Label', 'Data Input'] !== $cells) {
-                        // Not table header row.
-                        $step = [];
-                        foreach ($cells as $cell) {
-                            $step[] = $cell;
-                        }
-                        $steps[] = $step;
+                    $step = [];
+                    foreach ($cells as $cell) {
+                        $step[] = $cell;
                     }
+                    $steps[] = $step;
                 }
             }
             $productsOutOfStock = [28, 40, 41, 33];
