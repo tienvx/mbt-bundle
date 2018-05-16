@@ -55,6 +55,7 @@ class ReproducePathMessageTest extends AbstractTestCase
         $reproducePath->setTask($task);
         $reproducePath->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
         $reproducePath->setReducer('queued-loop');
+        $reproducePath->setRemainingMessages(0);
         $entityManager->persist($reproducePath);
 
         $entityManager->flush();

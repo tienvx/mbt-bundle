@@ -68,6 +68,12 @@ class ReproducePath
      */
     private $reducer;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank
+     */
+    private $remainingMessages;
+
     public function getId()
     {
         return $this->id;
@@ -151,5 +157,15 @@ class ReproducePath
     public function getReducer(): string
     {
         return $this->reducer;
+    }
+
+    public function getRemainingMessages(): int
+    {
+        return $this->remainingMessages;
+    }
+
+    public function setRemainingMessages(int $remainingMessages)
+    {
+        $this->remainingMessages = $remainingMessages;
     }
 }

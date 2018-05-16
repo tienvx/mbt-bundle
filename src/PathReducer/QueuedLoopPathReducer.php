@@ -47,6 +47,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         $reproducePath->setHandledMessages(0);
         $reproducePath->setBugMessage($bugMessage);
         $reproducePath->setReducer(static::getName());
+        $reproducePath->setRemainingMessages(0);
 
         if ($taskId) {
             $task = $this->entityManager->getRepository(Task::class)->find($taskId);
@@ -90,6 +91,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
                     $path = $newPath;
                     $reproducePath->setSteps($path);
                     $reproducePath->setLength($path->countEdges());
+                    $reproducePath->setRemainingMessages(0);
                     $this->dispatch($reproducePath);
                 }
             }
@@ -99,8 +101,13 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         $this->entityManager->flush();
 
         if ($reproducePath->getHandledMessages() === $reproducePath->getTotalMessages()) {
-            // All messages has been handled.
-            $this->finish($reproducePath->getBugMessage(), $path, $reproducePath->getTask()->getId());
+            if ($reproducePath->getRemainingMessages() > 0) {
+                $this->dispatch($reproducePath);
+            }
+            else {
+                // All messages has been handled.
+                $this->finish($reproducePath->getBugMessage(), $path, $reproducePath->getTask()->getId());
+            }
         }
     }
 
@@ -114,19 +121,28 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         $graph = $this->graphBuilder->build($model->getDefinition());
         $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
 
-        $pairs = [];
+        $pairsByDistance = [];
         for ($i = 0; $i < $path->countVertices() - 1; $i++) {
             for ($j = $i + 1; $j < $path->countVertices(); $j++) {
                 if ($path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                    $pairs[] = [$i, $j];
+                    $distance = $j - $i;
+                    $pairsByDistance[$distance][] = [$i, $j];
                 }
             }
         }
-        foreach ($pairs as $pair) {
+        $maxDistance = max(array_keys($pairsByDistance));
+        foreach ($pairsByDistance[$maxDistance] as $pair) {
             $this->messageBus->dispatch(new QueuedPathReducerMessage($reproducePath->getId(), $path->countEdges(), $pair, static::getName()));
         }
+        $reproducePath->setTotalMessages($reproducePath->getTotalMessages() + count($pairsByDistance[$maxDistance]));
+        unset($pairsByDistance[$maxDistance]);
 
-        $reproducePath->setTotalMessages($reproducePath->getTotalMessages() + count($pairs));
+        $remainingMessages = 0;
+        foreach ($pairsByDistance as $pairs) {
+            $remainingMessages += count($pairs);
+        }
+        $reproducePath->setRemainingMessages($remainingMessages);
+
         $this->entityManager->persist($reproducePath);
         $this->entityManager->flush();
     }
