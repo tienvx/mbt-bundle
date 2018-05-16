@@ -55,7 +55,7 @@ class ReproducePathMessageTest extends AbstractTestCase
         $reproducePath->setTask($task);
         $reproducePath->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
         $reproducePath->setReducer('queued-loop');
-        $reproducePath->setRemainingMessages(0);
+        $reproducePath->setDistance(9);
         $entityManager->persist($reproducePath);
 
         $entityManager->flush();
@@ -71,8 +71,9 @@ class ReproducePathMessageTest extends AbstractTestCase
         $entityRepository = $entityManager->getRepository(ReproducePath::class);
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->find($reproducePath->getId());
-        $this->assertEquals(7, $reproducePath->getTotalMessages());
-        $this->assertEquals(7, count(array_filter($messageBus->getDispatchedMessages(), function (array $message) {
+        // There are total 7 messages will be sent, but there is only 1 message at the first time.
+        $this->assertEquals(1, $reproducePath->getTotalMessages());
+        $this->assertEquals(1, count(array_filter($messageBus->getDispatchedMessages(), function (array $message) {
             return $message['message'] instanceof  QueuedPathReducerMessage;
         })));
     }

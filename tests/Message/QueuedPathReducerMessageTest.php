@@ -10,11 +10,11 @@ use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\TraceableMessageBus;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryQueuedPathReducerReceiver;
 use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryReproducePathReceiver;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryTaskReceiver;
 use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
 class QueuedPathReducerMessageTest extends AbstractTestCase
@@ -49,14 +49,20 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
-        $entityManager->flush();
 
-        $command = $this->application->find('messenger:consume-messages');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'      => $command->getName(),
-            'receiver'     => InMemoryTaskReceiver::class,
-        ]);
+        $reproducePath = new ReproducePath();
+        $reproducePath->setModel('shopping_cart');
+        $reproducePath->setSteps('home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=24) category viewOtherCategory(category=17) category viewOtherCategory(category=24) category viewProductFromCategory(product=28) product addFromProduct() product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewOtherCategory(category=20_27) category viewOtherCategory(category=20) category addFromCategory(product=33) category checkoutFromCategory() checkout');
+        $reproducePath->setLength(13);
+        $reproducePath->setTotalMessages(0);
+        $reproducePath->setHandledMessages(0);
+        $reproducePath->setTask($task);
+        $reproducePath->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
+        $reproducePath->setReducer('queued-loop');
+        $reproducePath->setDistance(13);
+        $entityManager->persist($reproducePath);
+
+        $entityManager->flush();
 
         $command = $this->application->find('messenger:consume-messages');
         $commandTester = new CommandTester($command);
@@ -65,12 +71,19 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
             'receiver'     => InMemoryReproducePathReceiver::class,
         ]);
 
+        /** @var EntityRepository $entityRepository */
+        $entityRepository = $entityManager->getRepository(ReproducePath::class);
+        /** @var ReproducePath $reproducePath */
+        $reproducePath = $entityRepository->findOneBy(['task' => $task->getId()]);
+
         $command = $this->application->find('messenger:consume-messages');
         $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'      => $command->getName(),
-            'receiver'     => InMemoryQueuedPathReducerReceiver::class,
-        ]);
+        while ($reproducePath->getDistance() > 0) {
+            $commandTester->execute([
+                'command'      => $command->getName(),
+                'receiver'     => InMemoryQueuedPathReducerReceiver::class,
+            ]);
+        }
 
         if ($stopCondition->bugFound) {
             /** @var EntityRepository $entityRepository */

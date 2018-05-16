@@ -72,7 +72,7 @@ class ReproducePath
      * @ORM\Column(type="integer")
      * @Assert\NotBlank
      */
-    private $remainingMessages;
+    private $distance;
 
     public function getId()
     {
@@ -159,13 +159,13 @@ class ReproducePath
         return $this->reducer;
     }
 
-    public function getRemainingMessages(): int
+    public function getDistance(): int
     {
-        return $this->remainingMessages;
+        return $this->distance;
     }
 
-    public function setRemainingMessages(int $remainingMessages)
+    public function setDistance(int $distance)
     {
-        $this->remainingMessages = $remainingMessages;
+        $this->distance = $distance;
     }
 }
