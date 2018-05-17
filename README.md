@@ -4,10 +4,11 @@ This Bundle provides ability to test your application using Model Based Testing
 techique.
 
 The major features are:
-1. Automatically generate test cases when a task is created.
-2. Automatically execute those test cases to test your application.
-3. Automatically reduce reproduce path when a bug is found.
-4. Automatically report the bug when the reproduce path is reduced.
+1. Allow to test your application even though the application is not implemented yet.
+2. Automatically generate test cases when a task is created.
+3. Automatically execute those test cases to test your application.
+4. Automatically reduce reproduce path when a bug is found.
+5. Automatically report the bug when the reproduce path is reduced.
 
 All you have to do:
 1. Define models to describe your application.
@@ -17,6 +18,8 @@ All you have to do:
     2. Test only models that have a tag to make sure the part of your application is still working while developing a feature.
     3. Test a model to make sure a bug that has been fixed is not regressed.
 4. Manage bugs that has been found. e.g. mark a bug has been fixed.
+5. You don't have to maintains test cases that has been generated automatically, instead, you may need
+   to maintains models and subjects.
 
 ## Requirements
 
