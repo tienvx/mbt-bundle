@@ -19,6 +19,10 @@ class ReporterPass implements CompilerPassInterface
         $this->reporterTag     = $reporterTag;
     }
 
+    /**
+     * @param ContainerBuilder $container
+     * @throws \Exception
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->reporterService)) {

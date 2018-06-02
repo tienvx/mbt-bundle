@@ -10,7 +10,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryBugReceiver;
 
 class BugMessageTest extends AbstractTestCase
 {
@@ -57,7 +56,7 @@ class BugMessageTest extends AbstractTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryBugReceiver::class,
+            'receiver'     => 'bug',
         ]);
 
         /** @var \Swift_Plugins_MessageLogger $messageLogger */

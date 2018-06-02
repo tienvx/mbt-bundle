@@ -2,38 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Messenger;
 
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\SenderInterface;
 use Symfony\Component\Messenger\Transport\Serialization\Serializer;
-use Tienvx\Bundle\MbtBundle\Message\BugMessage;
-use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage;
-use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
 class InMemorySender implements SenderInterface
 {
-    private $messageSerializer;
+    private $serializer;
     private $messageStorage;
+    private $type;
 
-    public function __construct(Serializer $messageSerializer, InMemoryMessageStorage $messageStorage)
+    public function __construct(Serializer $serializer, InMemoryMessageStorage $messageStorage, string $type)
     {
-        $this->messageSerializer = $messageSerializer;
+        $this->serializer = $serializer;
         $this->messageStorage = $messageStorage;
+        $this->type = $type;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send($message)
+    public function send(Envelope $envelope)
     {
-        $map = [
-            BugMessage::class => 'bug',
-            TaskMessage::class => 'task',
-            ReproducePathMessage::class => 'reproduce-path',
-            QueuedPathReducerMessage::class => 'queued-path-reducer',
-        ];
-        if (isset($map[get_class($message)])) {
-            $encodedMessage = $this->messageSerializer->encode($message);
-            $this->messageStorage->add($map[get_class($message)], $encodedMessage);
-        }
+        $encodedMessage = $this->serializer->encode($envelope);
+        $this->messageStorage->add($this->type, $encodedMessage);
     }
 }

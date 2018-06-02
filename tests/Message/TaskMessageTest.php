@@ -11,7 +11,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryTaskReceiver;
 use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
 class TaskMessageTest extends AbstractTestCase
@@ -52,7 +51,7 @@ class TaskMessageTest extends AbstractTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryTaskReceiver::class,
+            'receiver'     => 'task',
         ]);
 
         if ($stopCondition->bugFound) {

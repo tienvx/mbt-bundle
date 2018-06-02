@@ -13,7 +13,6 @@ use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryReproducePathReceiver;
 
 class ReproducePathMessageTest extends AbstractTestCase
 {
@@ -64,7 +63,7 @@ class ReproducePathMessageTest extends AbstractTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryReproducePathReceiver::class,
+            'receiver'     => 'reproduce_path',
         ]);
 
         /** @var EntityRepository $entityRepository */
