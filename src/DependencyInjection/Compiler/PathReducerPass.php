@@ -19,6 +19,10 @@ class PathReducerPass implements CompilerPassInterface
         $this->pathReducerTag     = $pathReducerTag;
     }
 
+    /**
+     * @param ContainerBuilder $container
+     * @throws \Exception
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->pathReducerService)) {

@@ -19,6 +19,10 @@ class GeneratorPass implements CompilerPassInterface
         $this->generatorTag = $generatorTag;
     }
 
+    /**
+     * @param ContainerBuilder $container
+     * @throws \Exception
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition($this->generatorService)) {

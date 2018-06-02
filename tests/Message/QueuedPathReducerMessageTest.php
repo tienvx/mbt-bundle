@@ -13,8 +13,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryQueuedPathReducerReceiver;
-use Tienvx\Bundle\MbtBundle\Tests\Messenger\InMemoryReproducePathReceiver;
 use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
 class QueuedPathReducerMessageTest extends AbstractTestCase
@@ -68,7 +66,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'      => $command->getName(),
-            'receiver'     => InMemoryReproducePathReceiver::class,
+            'receiver'     => 'reproduce_path',
         ]);
 
         /** @var EntityRepository $entityRepository */
@@ -81,7 +79,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         while ($reproducePath->getDistance() > 0) {
             $commandTester->execute([
                 'command'      => $command->getName(),
-                'receiver'     => InMemoryQueuedPathReducerReceiver::class,
+                'receiver'     => 'queued_path_reducer',
             ]);
         }
 

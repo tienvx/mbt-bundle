@@ -12,7 +12,7 @@ trait TaggedServiceTrait
      * @param string $tagName
      * @param ContainerBuilder $container
      * @return array
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     private function findTaggedServices(string $tagName, ContainerBuilder $container)
     {
