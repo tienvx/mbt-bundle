@@ -74,9 +74,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->findOneBy(['task' => $task->getId()]);
 
-        $command = $this->application->find('messenger:consume-messages');
-        $commandTester = new CommandTester($command);
-        while ($reproducePath->getDistance() > 0) {
+        while ($reproducePath->getDistance() > 0 || $reproducePath->getTotalMessages() !== $reproducePath->getHandledMessages()) {
             $commandTester->execute([
                 'command'      => $command->getName(),
                 'receiver'     => 'queued_path_reducer',
@@ -84,6 +82,8 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         }
 
         if ($stopCondition->bugFound) {
+            $reproducePath = $entityRepository->find($reproducePath->getId());
+            $this->assertEquals('home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout', $reproducePath->getSteps());
             /** @var EntityRepository $entityRepository */
             $entityRepository = $entityManager->getRepository(Bug::class);
             $countBugs = $entityRepository->createQueryBuilder('b')

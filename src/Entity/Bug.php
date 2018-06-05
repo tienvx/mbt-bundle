@@ -39,7 +39,7 @@ class Bug
     private $message;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @Assert\NotBlank
      */
     private $steps;

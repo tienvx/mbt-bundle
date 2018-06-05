@@ -93,14 +93,12 @@ class Path
             if ($i === 0) {
                 $steps[] = $this->edges[$i]->getVertexStart()->getAttribute('name');
             }
-            else {
-                $data = $this->allData[$i] ?? [];
-                array_walk($data, function (&$value, $key) {
-                    $value = "$key=$value";
-                });
-                $steps[] = $this->edges[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
-                $steps[] = $this->edges[$i]->getVertexEnd()->getAttribute('name');
-            }
+            $data = $this->allData[$i] ?? [];
+            array_walk($data, function (&$value, $key) {
+                $value = "$key=$value";
+            });
+            $steps[] = $this->edges[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
+            $steps[] = $this->edges[$i]->getVertexEnd()->getAttribute('name');
         }
         return implode(' ', $steps);
     }
