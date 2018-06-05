@@ -78,18 +78,20 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         if ($reproducePath->getLength() >= $queuedPathReducerMessage->getLength()) {
             // The reproduce path has not been reduced.
             list($i, $j) = $queuedPathReducerMessage->getPair();
-            $newPath = $this->getNewPath($path, $i, $j);
-            // Make sure new path shorter than old path.
-            if ($newPath->countEdges() < $path->countEdges()) {
-                try {
-                    $this->runner->run($newPath, $model);
-                } catch (Throwable $newThrowable) {
-                    if ($newThrowable->getMessage() === $reproducePath->getBugMessage()) {
-                        $path = $newPath;
-                        $reproducePath->setSteps($path);
-                        $reproducePath->setLength($path->countEdges());
-                        $reproducePath->setDistance($path->countEdges());
-                        $this->dispatch($reproducePath);
+            if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
+                $newPath = $this->getNewPath($path, $i, $j);
+                // Make sure new path shorter than old path.
+                if ($newPath->countEdges() < $path->countEdges()) {
+                    try {
+                        $this->runner->run($newPath, $model);
+                    } catch (Throwable $newThrowable) {
+                        if ($newThrowable->getMessage() === $reproducePath->getBugMessage()) {
+                            $path = $newPath;
+                            $reproducePath->setSteps($path);
+                            $reproducePath->setLength($path->countEdges());
+                            $reproducePath->setDistance($path->countEdges());
+                            $this->dispatch($reproducePath);
+                        }
                     }
                 }
             }
