@@ -74,8 +74,6 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->findOneBy(['task' => $task->getId()]);
 
-        $command = $this->application->find('messenger:consume-messages');
-        $commandTester = new CommandTester($command);
         while ($reproducePath->getDistance() > 0) {
             $commandTester->execute([
                 'command'      => $command->getName(),
