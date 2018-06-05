@@ -74,7 +74,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->findOneBy(['task' => $task->getId()]);
 
-        while ($reproducePath->getDistance() > 0) {
+        while ($reproducePath->getDistance() > 0 || $reproducePath->getTotalMessages() !== $reproducePath->getHandledMessages()) {
             $commandTester->execute([
                 'command'      => $command->getName(),
                 'receiver'     => 'queued_path_reducer',
