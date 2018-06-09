@@ -56,7 +56,7 @@ class ReproducePath
     private $task;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @Assert\NotBlank
      */
     private $bugMessage;

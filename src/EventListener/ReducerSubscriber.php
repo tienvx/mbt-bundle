@@ -14,6 +14,7 @@ class ReducerSubscriber implements EventSubscriberInterface
     private $entityManager;
     private $reporterManager;
     private $defaultReporter;
+    private $defaultBugTitle;
 
     public function __construct(EntityManagerInterface $entityManager, ReporterManager $reporterManager)
     {
@@ -24,6 +25,11 @@ class ReducerSubscriber implements EventSubscriberInterface
     public function setDefaultReporter(string $defaultReporter)
     {
         $this->defaultReporter = $defaultReporter;
+    }
+
+    public function setDefaultBugTitle(string $defaultBugTitle)
+    {
+        $this->defaultBugTitle = $defaultBugTitle;
     }
 
     public function onFinish(ReducerFinishEvent $event)
@@ -43,7 +49,7 @@ class ReducerSubscriber implements EventSubscriberInterface
         }
 
         $bug = new Bug();
-        $bug->setTitle($event->getBugMessage());
+        $bug->setTitle($this->defaultBugTitle);
         $bug->setMessage($event->getBugMessage());
         $bug->setTask($task);
         $bug->setSteps($event->getPath());

@@ -46,8 +46,9 @@ class TienvxMbtExtension extends Extension
             $emailReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
-        $executeTaskCommandDefinition = $container->getDefinition(ReducerSubscriber::class);
-        $executeTaskCommandDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
+        $reducerSubscriberDefinition = $container->getDefinition(ReducerSubscriber::class);
+        $reducerSubscriberDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
+        $reducerSubscriberDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
 
         $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
         $coverageStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
