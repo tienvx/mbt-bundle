@@ -43,8 +43,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
         $reproducePath->setModel($model->getName());
         $reproducePath->setSteps($path);
         $reproducePath->setLength($path->countEdges());
-        $reproducePath->setTotalMessages(0);
-        $reproducePath->setHandledMessages(0);
+        $reproducePath->setMessageHashes([]);
         $reproducePath->setBugMessage($bugMessage);
         $reproducePath->setReducer(static::getName());
         $reproducePath->setDistance($path->countEdges());
@@ -97,17 +96,26 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
             }
         }
 
-        $reproducePath->setHandledMessages($reproducePath->getHandledMessages() + 1);
-        $this->entityManager->persist($reproducePath);
+        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
+        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
+            return;
+        }
+        $messageHashes = $latestReproducePath->getMessageHashes();
+        $hash = sha1($queuedPathReducerMessage);
+        if (($key = array_search($hash, $messageHashes)) !== false) {
+            unset($messageHashes[$key]);
+        }
+        $latestReproducePath->setMessageHashes($messageHashes);
+        $this->entityManager->persist($latestReproducePath);
         $this->entityManager->flush();
 
-        if ($reproducePath->getHandledMessages() === $reproducePath->getTotalMessages()) {
-            if ($reproducePath->getDistance() > 0) {
-                $this->dispatch($reproducePath);
+        if (empty($messageHashes)) {
+            if ($latestReproducePath->getDistance() > 0) {
+                $this->dispatch($latestReproducePath);
             }
             else {
                 // All messages has been handled.
-                $this->finish($reproducePath->getBugMessage(), $path, $reproducePath->getTask()->getId());
+                $this->finish($latestReproducePath->getBugMessage(), $path, $latestReproducePath->getTask()->getId());
             }
         }
     }
@@ -133,15 +141,26 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
             }
             $distance--;
         }
-        $reproducePath->setDistance($distance);
 
+        $messageHashes = [];
         foreach ($pairs as $pair) {
-            $this->messageBus->dispatch(new QueuedPathReducerMessage($reproducePath->getId(), $path->countEdges(), $pair, static::getName()));
+            $message = new QueuedPathReducerMessage($reproducePath->getId(), $path->countEdges(), $pair, static::getName());
+            $this->messageBus->dispatch($message);
+            $messageHashes[] = sha1($message);
         }
-        $reproducePath->setTotalMessages($reproducePath->getTotalMessages() + count($pairs));
 
-        $this->entityManager->persist($reproducePath);
-        $this->entityManager->flush();
+        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
+        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
+            return;
+        }
+        if ($latestReproducePath->getLength() >= $reproducePath->getLength()) {
+            $latestReproducePath->setSteps($reproducePath->getSteps());
+            $latestReproducePath->setLength($reproducePath->getLength());
+            $latestReproducePath->setDistance($distance);
+            $latestReproducePath->setMessageHashes(array_unique($messageHashes));
+            $this->entityManager->persist($latestReproducePath);
+            $this->entityManager->flush();
+        }
     }
 
     public static function getName()

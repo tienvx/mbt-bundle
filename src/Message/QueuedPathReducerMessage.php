@@ -36,4 +36,14 @@ class QueuedPathReducerMessage
     {
         return $this->reducer;
     }
+
+    public function __toString()
+    {
+        return json_encode([
+            'reproducePathId' => $this->reproducePathId,
+            'length'          => $this->length,
+            'pair'            => $this->pair,
+            'reducer'         => $this->reducer,
+        ]);
+    }
 }

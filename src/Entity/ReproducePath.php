@@ -38,16 +38,10 @@ class ReproducePath
     private $length;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank
+     * @ORM\Column(type="array")
+     * @MbtAssert\Unique
      */
-    private $totalMessages;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank
-     */
-    private $handledMessages;
+    private $messageHashes;
 
     /**
      * @ORM\ManyToOne(targetEntity="Task")
@@ -109,24 +103,14 @@ class ReproducePath
         $this->length = $length;
     }
 
-    public function getTotalMessages(): int
+    public function getMessageHashes(): array
     {
-        return $this->totalMessages;
+        return $this->messageHashes;
     }
 
-    public function setTotalMessages(int $totalMessages)
+    public function setMessageHashes(array $messageHashes)
     {
-        $this->totalMessages = $totalMessages;
-    }
-
-    public function getHandledMessages(): int
-    {
-        return $this->handledMessages;
-    }
-
-    public function setHandledMessages(int $handledMessages)
-    {
-        $this->handledMessages = $handledMessages;
+        $this->messageHashes = $messageHashes;
     }
 
     public function getTask(): Task

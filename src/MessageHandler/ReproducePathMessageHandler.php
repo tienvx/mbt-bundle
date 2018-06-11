@@ -32,10 +32,11 @@ class ReproducePathMessageHandler implements MessageHandlerInterface
             return;
         }
 
-        if ($this->reducerManager->hasPathReducer($reproducePath->getReducer())) {
-            $reducer = $this->reducerManager->getPathReducer($reproducePath->getReducer());
-            if ($reducer instanceof QueuedPathReducerInterface) {
-                $reducer->dispatch($reproducePath);
+        $reducer = $reproducePath->getReducer();
+        if ($this->reducerManager->hasPathReducer($reducer)) {
+            $pathReducer = $this->reducerManager->getPathReducer($reducer);
+            if ($pathReducer instanceof QueuedPathReducerInterface) {
+                $pathReducer->dispatch($reproducePath);
             }
         }
     }

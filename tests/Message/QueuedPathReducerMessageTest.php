@@ -52,8 +52,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         $reproducePath->setModel('shopping_cart');
         $reproducePath->setSteps('home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=24) category viewOtherCategory(category=17) category viewOtherCategory(category=24) category viewProductFromCategory(product=28) product addFromProduct() product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewOtherCategory(category=20_27) category viewOtherCategory(category=20) category addFromCategory(product=33) category checkoutFromCategory() checkout');
         $reproducePath->setLength(13);
-        $reproducePath->setTotalMessages(0);
-        $reproducePath->setHandledMessages(0);
+        $reproducePath->setMessageHashes([]);
         $reproducePath->setTask($task);
         $reproducePath->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
         $reproducePath->setReducer('queued-loop');
@@ -74,7 +73,7 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->findOneBy(['task' => $task->getId()]);
 
-        while ($reproducePath->getDistance() > 0 || $reproducePath->getTotalMessages() !== $reproducePath->getHandledMessages()) {
+        while ($reproducePath->getDistance() > 0 || !empty($reproducePath->getMessageHashes())) {
             $commandTester->execute([
                 'command'      => $command->getName(),
                 'receiver'     => 'queued_path_reducer',

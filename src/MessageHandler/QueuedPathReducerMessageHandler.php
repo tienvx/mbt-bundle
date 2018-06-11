@@ -22,10 +22,11 @@ class QueuedPathReducerMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(QueuedPathReducerMessage $queuedPathReducerMessage)
     {
-        if ($this->reducerManager->hasPathReducer($queuedPathReducerMessage->getReducer())) {
-            $reducer = $this->reducerManager->getPathReducer($queuedPathReducerMessage->getReducer());
-            if ($reducer instanceof QueuedPathReducerInterface) {
-                $reducer->handle($queuedPathReducerMessage);
+        $reducer = $queuedPathReducerMessage->getReducer();
+        if ($this->reducerManager->hasPathReducer($reducer)) {
+            $pathReducer = $this->reducerManager->getPathReducer($reducer);
+            if ($pathReducer instanceof QueuedPathReducerInterface) {
+                $pathReducer->handle($queuedPathReducerMessage);
             }
         }
     }

@@ -49,8 +49,7 @@ class ReproducePathMessageTest extends AbstractTestCase
         $reproducePath->setModel('shopping_cart');
         $reproducePath->setSteps('home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product addFromProduct() product checkoutFromProduct() checkout viewCartFromCheckout() cart viewProductFromCart(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout');
         $reproducePath->setLength(9);
-        $reproducePath->setTotalMessages(0);
-        $reproducePath->setHandledMessages(0);
+        $reproducePath->setMessageHashes([]);
         $reproducePath->setTask($task);
         $reproducePath->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
         $reproducePath->setReducer('queued-loop');
@@ -71,7 +70,7 @@ class ReproducePathMessageTest extends AbstractTestCase
         /** @var ReproducePath $reproducePath */
         $reproducePath = $entityRepository->find($reproducePath->getId());
         // There are total 7 messages will be sent, but there is only 1 message at the first time.
-        $this->assertEquals(1, $reproducePath->getTotalMessages());
+        $this->assertEquals(1, count($reproducePath->getMessageHashes()));
         $this->assertEquals(1, count(array_filter($messageBus->getDispatchedMessages(), function (array $message) {
             return $message['message'] instanceof  QueuedPathReducerMessage;
         })));
