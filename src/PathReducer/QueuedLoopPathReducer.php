@@ -96,26 +96,26 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
             }
         }
 
-        $newReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
-        if (!$newReproducePath || !$newReproducePath instanceof ReproducePath) {
+        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
+        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
             return;
         }
-        $messageHashes = $newReproducePath->getMessageHashes();
+        $messageHashes = $latestReproducePath->getMessageHashes();
         $hash = sha1($queuedPathReducerMessage);
         if (($key = array_search($hash, $messageHashes)) !== false) {
             unset($messageHashes[$key]);
         }
-        $newReproducePath->setMessageHashes($messageHashes);
-        $this->entityManager->persist($newReproducePath);
+        $latestReproducePath->setMessageHashes($messageHashes);
+        $this->entityManager->persist($latestReproducePath);
         $this->entityManager->flush();
 
         if (empty($messageHashes)) {
-            if ($newReproducePath->getDistance() > 0) {
-                $this->dispatch($newReproducePath);
+            if ($latestReproducePath->getDistance() > 0) {
+                $this->dispatch($latestReproducePath);
             }
             else {
                 // All messages has been handled.
-                $this->finish($newReproducePath->getBugMessage(), $path, $newReproducePath->getTask()->getId());
+                $this->finish($latestReproducePath->getBugMessage(), $path, $latestReproducePath->getTask()->getId());
             }
         }
     }
@@ -149,16 +149,16 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
             $messageHashes[] = sha1($message);
         }
 
-        $newReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
-        if (!$newReproducePath || !$newReproducePath instanceof ReproducePath) {
+        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
+        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
             return;
         }
-        if ($newReproducePath->getLength() >= $reproducePath->getLength()) {
-            $newReproducePath->setSteps($reproducePath->getSteps());
-            $newReproducePath->setLength($reproducePath->getLength());
-            $newReproducePath->setDistance($distance);
-            $newReproducePath->setMessageHashes(array_unique($messageHashes));
-            $this->entityManager->persist($newReproducePath);
+        if ($latestReproducePath->getLength() >= $reproducePath->getLength()) {
+            $latestReproducePath->setSteps($reproducePath->getSteps());
+            $latestReproducePath->setLength($reproducePath->getLength());
+            $latestReproducePath->setDistance($distance);
+            $latestReproducePath->setMessageHashes(array_unique($messageHashes));
+            $this->entityManager->persist($latestReproducePath);
             $this->entityManager->flush();
         }
     }
