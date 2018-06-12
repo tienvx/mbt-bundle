@@ -24,12 +24,10 @@ class CoverageStopCondition extends BaseStopCondition
             if (in_array($argument, ['edgeCoverage', 'vertexCoverage'])) {
                 if ($value >= 0 && $value <= 100) {
                     $this->{$argument} = $value;
-                }
-                else {
+                } else {
                     throw new \Exception(sprintf('Invalid coverage "%s".', $value));
                 }
-            }
-            else {
+            } else {
                 throw new \Exception(sprintf('Invalid argument "%s".', $argument));
             }
         }

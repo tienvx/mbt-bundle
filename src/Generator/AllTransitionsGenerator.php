@@ -47,8 +47,7 @@ class AllTransitionsGenerator extends AbstractGenerator
             })->getEdgeOrder(Edges::ORDER_RANDOM);
             $edge->setAttribute('tried', true);
             return $edge;
-        }
-        catch (UnderflowException $e) {
+        } catch (UnderflowException $e) {
             return null;
         }
     }

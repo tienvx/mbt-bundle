@@ -52,13 +52,18 @@ class GenerateStepsCommand extends Command
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
         $model = $this->modelRegistry->getModel($input->getArgument('model'));
         $subject = $model->createSubject(true);
+        $subject->setUp();
         $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
         $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
 
         $generator->init($model, $subject, $stopCondition);
 
-        while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
-            $generator->goToNextStep($edge);
+        try {
+            while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
+                $generator->goToNextStep($edge);
+            }
+        } finally {
+            $subject->tearDown();
         }
 
         $path = $generator->getPath();

@@ -67,8 +67,7 @@ class RunStepsCommand extends Command
 
         try {
             $this->pathRunner->run($path, $model);
-        }
-        catch (Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $this->dispatcher->addListener(
@@ -80,8 +79,7 @@ class RunStepsCommand extends Command
 
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
                 $pathReducer->reduce($path, $model, $throwable->getMessage());
-            }
-            else {
+            } else {
                 $this->printBug($throwable->getMessage(), $path, $output);
             }
         }
