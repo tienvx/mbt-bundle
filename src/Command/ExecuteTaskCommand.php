@@ -69,6 +69,7 @@ class ExecuteTaskCommand extends Command
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
         $model = $this->modelRegistry->getModel($task->getModel());
         $subject = $model->createSubject();
+        $subject->setUp();
         $stopCondition = $this->stopConditionManager->getStopCondition($task->getStopCondition());
         $stopCondition->setArguments(json_decode($task->getStopConditionArguments(), true));
 
@@ -78,14 +79,15 @@ class ExecuteTaskCommand extends Command
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
                 $generator->goToNextStep($edge);
             }
-        }
-        catch (Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $path = $generator->getPath();
             $reducer = $task->getReducer();
             if ($reducer) {
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
                 $pathReducer->reduce($path, $model, $throwable->getMessage(), $taskId);
             }
+        } finally {
+            $subject->tearDown();
         }
     }
 }

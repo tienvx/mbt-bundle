@@ -20,8 +20,7 @@ trait NewPathTrait
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
                 $beginData[] = $path->getDataAt($index);
-            }
-            elseif ($index >= $secondVertexIndex) {
+            } elseif ($index >= $secondVertexIndex) {
                 $endEdges[] = $edge;
                 $endData[] = $path->getDataAt($index);
             }
@@ -32,8 +31,7 @@ trait NewPathTrait
             $algorithm = new Dijkstra($firstVertex);
             $middleEdges = $algorithm->getEdgesTo($secondVertex)->getVector();
             $middleData = array_fill(0, count($middleEdges), null);
-        }
-        else {
+        } else {
             // Remove all edges between first vertex and second vertex.
             $middleEdges = [];
             $middleData = [];

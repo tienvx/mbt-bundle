@@ -20,8 +20,7 @@ class BinaryPathReducer extends AbstractPathReducer
                 $j = $quotient * $i;
                 if ($i === (pow(2, $try) - 1)) {
                     $k = $quotient * ($i + 1) + $remainder;
-                }
-                else {
+                } else {
                     $k = $quotient * ($i + 1);
                 }
                 $newPath = $this->getNewPath($path, $j, $k);

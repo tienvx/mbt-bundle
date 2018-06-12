@@ -65,6 +65,7 @@ class TestModelCommand extends Command
         $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
         $model = $this->modelRegistry->getModel($input->getArgument('model'));
         $subject = $model->createSubject();
+        $subject->setUp();
         $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
         $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
 
@@ -74,8 +75,7 @@ class TestModelCommand extends Command
             while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
                 $generator->goToNextStep($edge);
             }
-        }
-        catch (Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $path = $generator->getPath();
             $reducer = $input->getOption('reducer');
             if ($reducer) {
@@ -88,10 +88,11 @@ class TestModelCommand extends Command
 
                 $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
                 $pathReducer->reduce($path, $model, $throwable->getMessage());
-            }
-            else {
+            } else {
                 $this->printBug($throwable->getMessage(), $path, $output);
             }
+        } finally {
+            $subject->tearDown();
         }
     }
 }

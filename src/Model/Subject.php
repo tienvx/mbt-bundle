@@ -54,8 +54,7 @@ abstract class Subject
             if (!is_array($data)) {
                 throw new Exception(sprintf('Data provider for transition %s must return array', $transitionName));
             }
-        }
-        else {
+        } else {
             $data = [];
         }
         $this->data = $data;
@@ -74,5 +73,13 @@ abstract class Subject
         if (method_exists($this, $placeName)) {
             call_user_func([$this, $placeName]);
         }
+    }
+
+    public function setUp()
+    {
+    }
+
+    public function tearDown()
+    {
     }
 }

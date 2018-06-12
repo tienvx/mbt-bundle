@@ -130,12 +130,10 @@ class Path
                 });
                 $allData[] = $data;
                 $edges[] = $edge;
-            }
-            else {
+            } else {
                 try {
                     $graph->getVertex($step);
-                }
-                catch (OutOfBoundsException $exception) {
+                } catch (OutOfBoundsException $exception) {
                     throw new Exception(sprintf('%s is an invalid place', $step));
                 }
             }

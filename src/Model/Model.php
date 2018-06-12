@@ -27,7 +27,7 @@ class Model extends StateMachine
      * @return Subject
      * @throws \Exception
      */
-    public function createSubject(bool $generatingSteps = false)
+    public function createSubject(bool $generatingSteps = false): Subject
     {
         $subjectClass = $this->getDefinition()->getMetadataStore()->getWorkflowMetadata()['subject'];
         if (!is_subclass_of($subjectClass, Subject::class)) {

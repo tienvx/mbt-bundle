@@ -33,8 +33,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
                         $try = 1;
                         $maxTries = $path->countEdges();
                         $pathWeight = $this->rebuildPathWeight($path, $pathWeight);
-                    }
-                    else {
+                    } else {
                         $this->updatePathWeight($pathWeight, $path, $i, $j);
                     }
                 }
@@ -74,8 +73,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         if ($maxRand === 0) {
             $rand = rand(0, count($pairWeight) - 1);
             return array_keys($pairWeight)[$rand];
-        }
-        else {
+        } else {
             $rand = mt_rand(1, $maxRand);
 
             foreach ($pairWeight as $key => $value) {

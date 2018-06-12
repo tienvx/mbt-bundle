@@ -15,12 +15,17 @@ class PathRunner
     public function run(Path $path, Model $model)
     {
         $subject = $model->createSubject();
+        $subject->setUp();
 
-        foreach ($path->getEdges() as $index => $edge) {
-            $canApply = $model->applyModel($subject, $edge, $path, $index);
-            if (!$canApply) {
-                break;
+        try {
+            foreach ($path->getEdges() as $index => $edge) {
+                $canApply = $model->applyModel($subject, $edge, $path, $index);
+                if (!$canApply) {
+                    break;
+                }
             }
+        } finally {
+            $subject->tearDown();
         }
     }
 }

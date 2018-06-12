@@ -90,8 +90,7 @@ class Eulerian extends BaseEulerian
             return $vertex->getEdges()->getEdgeMatch(function (Edge $edge) use ($vertex) {
                 return $edge->hasVertexStart($vertex) && !$edge->getAttribute('visited');
             });
-        }
-        catch (UnderflowException $e) {
+        } catch (UnderflowException $e) {
             return null;
         }
     }
