@@ -2,7 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
@@ -67,9 +69,11 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
     public function handle(QueuedPathReducerMessage $queuedPathReducerMessage)
     {
         $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($queuedPathReducerMessage->getReproducePathId());
+
         if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
             return;
         }
+
         $model = $this->modelRegistry->getModel($reproducePath->getModel());
         $graph = $this->graphBuilder->build($model->getDefinition());
         $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
@@ -86,37 +90,53 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $reproducePath->getBugMessage()) {
                             $path = $newPath;
-                            $reproducePath->setSteps($path);
-                            $reproducePath->setLength($path->countEdges());
-                            $reproducePath->setDistance($path->countEdges());
-                            $this->dispatch($reproducePath);
+                            $this->dispatchNewReproducePath($reproducePath->getId(), $path, $path->countEdges());
                         }
                     }
                 }
             }
         }
 
-        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
-        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
+        $this->postHandle($queuedPathReducerMessage, $path);
+    }
+
+    /**
+     * @param QueuedPathReducerMessage $queuedPathReducerMessage
+     * @param Path $path
+     * @throws \Exception
+     */
+    public function postHandle(QueuedPathReducerMessage $queuedPathReducerMessage, Path $path)
+    {
+        $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($queuedPathReducerMessage->getReproducePathId());
+
+        if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
             return;
         }
-        $messageHashes = $latestReproducePath->getMessageHashes();
-        $hash = sha1($queuedPathReducerMessage);
-        if (($key = array_search($hash, $messageHashes)) !== false) {
-            unset($messageHashes[$key]);
-        }
-        $latestReproducePath->setMessageHashes($messageHashes);
-        $this->entityManager->persist($latestReproducePath);
-        $this->entityManager->flush();
 
-        if (empty($messageHashes)) {
-            if ($latestReproducePath->getDistance() > 0) {
-                $this->dispatch($latestReproducePath);
+        try {
+            $this->entityManager->lock($reproducePath, LockMode::OPTIMISTIC, $reproducePath->getVersion());
+
+            $messageHashes = $reproducePath->getMessageHashes();
+            $hash = sha1($queuedPathReducerMessage);
+            if (($key = array_search($hash, $messageHashes)) !== false) {
+                unset($messageHashes[$key]);
             }
-            else {
-                // All messages has been handled.
-                $this->finish($latestReproducePath->getBugMessage(), $path, $latestReproducePath->getTask()->getId());
+            $reproducePath->setMessageHashes($messageHashes);
+            $this->entityManager->persist($reproducePath);
+            $this->entityManager->flush();
+
+            if (empty($reproducePath->getMessageHashes())) {
+                if ($reproducePath->getDistance() > 0) {
+                    $this->dispatch($reproducePath);
+                }
+                else {
+                    // All messages has been handled.
+                    $this->finish($reproducePath->getBugMessage(), $path, $reproducePath->getTask()->getId());
+                }
             }
+        } catch (OptimisticLockException $e) {
+            // Another worker has already reduced the reproduce path, try again.
+            $this->postHandle($queuedPathReducerMessage, $path);
         }
     }
 
@@ -126,41 +146,59 @@ class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathRed
      */
     public function dispatch(ReproducePath $reproducePath)
     {
-        $model = $this->modelRegistry->getModel($reproducePath->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
-        $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
+        try {
+            $this->entityManager->lock($reproducePath, LockMode::OPTIMISTIC, $reproducePath->getVersion());
 
-        $distance = $reproducePath->getDistance();
-        $pairs = [];
-        while ($distance > 0 && empty($pairs)) {
-            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
-                $j = $i + $distance;
-                if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                    $pairs[] = [$i, $j];
+            $model = $this->modelRegistry->getModel($reproducePath->getModel());
+            $graph = $this->graphBuilder->build($model->getDefinition());
+            $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
+
+            $distance = $reproducePath->getDistance();
+            $pairs = [];
+            while ($distance > 0 && empty($pairs)) {
+                for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+                    $j = $i + $distance;
+                    if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
+                        $pairs[] = [$i, $j];
+                    }
                 }
+                $distance--;
             }
-            $distance--;
-        }
 
-        $messageHashes = [];
-        foreach ($pairs as $pair) {
-            $message = new QueuedPathReducerMessage($reproducePath->getId(), $path->countEdges(), $pair, static::getName());
-            $this->messageBus->dispatch($message);
-            $messageHashes[] = sha1($message);
-        }
+            $messageHashes = [];
+            foreach ($pairs as $pair) {
+                $message = new QueuedPathReducerMessage($reproducePath->getId(), $path->countEdges(), $pair, static::getName());
+                $this->messageBus->dispatch($message);
+                $messageHashes[] = sha1($message);
+            }
 
-        $latestReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePath->getId());
-        if (!$latestReproducePath || !$latestReproducePath instanceof ReproducePath) {
+            $reproducePath->setDistance($distance);
+            $reproducePath->setMessageHashes(array_unique($messageHashes));
+            $this->entityManager->persist($reproducePath);
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // Another worker has already reduced the reproduce path, ignoring.
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param string $steps
+     * @param int $length
+     * @throws \Exception
+     */
+    private function dispatchNewReproducePath(int $id, string $steps, int $length)
+    {
+        $reproducePath = $this->entityManager->find(ReproducePath::class, $id);
+
+        if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
             return;
         }
-        if ($latestReproducePath->getLength() >= $reproducePath->getLength()) {
-            $latestReproducePath->setSteps($reproducePath->getSteps());
-            $latestReproducePath->setLength($reproducePath->getLength());
-            $latestReproducePath->setDistance($distance);
-            $latestReproducePath->setMessageHashes(array_unique($messageHashes));
-            $this->entityManager->persist($latestReproducePath);
-            $this->entityManager->flush();
-        }
+
+        $reproducePath->setSteps($steps);
+        $reproducePath->setLength($length);
+        $reproducePath->setDistance($length);
+        $this->dispatch($reproducePath);
     }
 
     public static function getName()
