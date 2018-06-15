@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage;
@@ -26,17 +27,19 @@ class ReproducePathMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(ReproducePathMessage $reproducePathMessage)
     {
-        $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePathMessage->getId());
+        /** @var EntityRepository $entityRepository */
+        $entityRepository = $this->entityManager->getRepository(ReproducePath::class);
+        $reducer = $entityRepository->createQueryBuilder('r')
+            ->select('r.reducer')
+            ->where('r.id = :reproduce_path_id')
+            ->setParameter('reproduce_path_id', $reproducePathMessage->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
 
-        if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
-            return;
-        }
-
-        $reducer = $reproducePath->getReducer();
         if ($this->reducerManager->hasPathReducer($reducer)) {
             $pathReducer = $this->reducerManager->getPathReducer($reducer);
             if ($pathReducer instanceof QueuedPathReducerInterface) {
-                $pathReducer->dispatch($reproducePath);
+                $pathReducer->dispatch($reproducePathMessage->getId());
             }
         }
     }
