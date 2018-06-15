@@ -32,11 +32,6 @@ class ReproducePath
     private $steps;
 
     /**
-     * @ORM\Version @ORM\Column(type="integer")
-     */
-    private $version;
-
-    /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank
      */
@@ -106,16 +101,6 @@ class ReproducePath
     public function setLength(int $length)
     {
         $this->length = $length;
-    }
-
-    public function getVersion(): int
-    {
-        return $this->version;
-    }
-
-    public function setVersion(int $version)
-    {
-        $this->version = $version;
     }
 
     public function getMessageHashes(): array
