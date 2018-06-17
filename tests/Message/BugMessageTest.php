@@ -54,24 +54,13 @@ class BugMessageTest extends MessageTestCase
             'receiver'     => 'bug',
         ]);
 
-        /** @var \Swift_Plugins_MessageLogger $messageLogger */
-        $messageLogger = self::$container->get('swiftmailer.mailer.default.plugin.messagelogger');
+        $command = $this->application->find('swiftmailer:spool:send');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'command'      => $command->getName(),
+        ]);
 
-        // checks that an email was sent
-        $this->assertSame(1, $messageLogger->countMessages());
-
-        $collectedMessages = $messageLogger->getMessages();
-        /** @var \Swift_Message $message */
-        $message = $collectedMessages[0];
-
-        // Asserting email data
-        $this->assertInstanceOf('Swift_Message', $message);
-        $this->assertSame('Test bug title', $message->getSubject());
-        $this->assertSame('send@example.com', key($message->getFrom()));
-        $this->assertSame('recipient@example.com', key($message->getTo()));
-        $this->assertContains(
-            'Bug Found',
-            $message->getBody()
-        );
+        $output = $commandTester->getDisplay();
+        $this->assertContains('1 emails sent', $output);
     }
 }

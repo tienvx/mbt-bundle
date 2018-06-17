@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+use Tienvx\Bundle\MbtBundle\Tests\AppKernel as Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+set_time_limit(0);
+
+require __DIR__ . '/../../../vendor/autoload.php';
+
+$input = new ArgvInput();
+
+$kernel = new Kernel('test', false);
+$application = new Application($kernel);
+$application->run($input);

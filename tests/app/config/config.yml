@@ -39,8 +39,9 @@ services:
 
 swiftmailer:
     url: 'null://localhost'
-    spool: { type: 'memory' }
-    logging: true
+    spool:
+        type: file
+        path: "%kernel.cache_dir%/spool"
 
 tienvx_mbt:
     max_path_length: 300
