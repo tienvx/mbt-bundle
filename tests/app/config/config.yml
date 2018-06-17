@@ -19,8 +19,7 @@ framework:
 doctrine:
     dbal:
         driver:      pdo_sqlite
-        path:        :memory:
-        memory:      true
+        path:        "%kernel.cache_dir%/test.db"
     orm:
         auto_mapping: true
 

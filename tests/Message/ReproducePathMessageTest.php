@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Command;
+namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -12,9 +12,8 @@ use Symfony\Component\Messenger\TraceableMessageBus;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage;
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 
-class ReproducePathMessageTest extends AbstractTestCase
+class ReproducePathMessageTest extends MessageTestCase
 {
     /**
      * @throws \Exception
@@ -29,10 +28,6 @@ class ReproducePathMessageTest extends AbstractTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-
-        $this->runCommand('doctrine:database:drop --force');
-        $this->runCommand('doctrine:database:create');
-        $this->runCommand('doctrine:schema:create');
 
         $task = new Task();
         $task->setTitle('Test task title');

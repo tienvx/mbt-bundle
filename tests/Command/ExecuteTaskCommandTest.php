@@ -13,10 +13,9 @@ use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
-class ExecuteTaskCommandTest extends AbstractTestCase
+class ExecuteTaskCommandTest extends CommandTestCase
 {
     /**
      * @throws \Exception

@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-class TaskTest extends AbstractApiTestCase
+class TaskTest extends ApiTestCase
 {
     public function testGetTasks()
     {

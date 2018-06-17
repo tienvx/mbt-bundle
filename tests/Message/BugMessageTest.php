@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Command;
+namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
@@ -9,9 +9,8 @@ use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 
-class BugMessageTest extends AbstractTestCase
+class BugMessageTest extends MessageTestCase
 {
     /**
      * @throws \Exception
@@ -26,10 +25,6 @@ class BugMessageTest extends AbstractTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-
-        $this->runCommand('doctrine:database:drop --force');
-        $this->runCommand('doctrine:database:create');
-        $this->runCommand('doctrine:schema:create');
 
         $task = new Task();
         $task->setTitle('Test task title');

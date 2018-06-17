@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-class BugTest extends AbstractApiTestCase
+class BugTest extends ApiTestCase
 {
     public function testGetBugs()
     {

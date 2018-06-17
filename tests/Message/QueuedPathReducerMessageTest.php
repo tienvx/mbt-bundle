@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Command;
+namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -12,10 +12,9 @@ use Symfony\Component\Messenger\TraceableMessageBus;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
 use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
-class QueuedPathReducerMessageTest extends AbstractTestCase
+class QueuedPathReducerMessageTest extends MessageTestCase
 {
     /**
      * @throws \Exception
@@ -32,10 +31,6 @@ class QueuedPathReducerMessageTest extends AbstractTestCase
         $stopCondition = self::$container->get(FoundBugStopCondition::class);
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-
-        $this->runCommand('doctrine:database:drop --force');
-        $this->runCommand('doctrine:database:create');
-        $this->runCommand('doctrine:schema:create');
 
         $task = new Task();
         $task->setTitle('Test task title');

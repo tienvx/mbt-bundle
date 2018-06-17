@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
+use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
-class AbstractApiTestCase extends AbstractTestCase
+abstract class ApiTestCase extends TestCase
 {
     /**
      * @throws \Exception
@@ -12,6 +12,7 @@ class AbstractApiTestCase extends AbstractTestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->runCommand('doctrine:database:drop --force');
         $this->runCommand('doctrine:database:create');
         $this->runCommand('doctrine:schema:create');
         $this->runCommand('doctrine:fixtures:load --purge-with-truncate');
