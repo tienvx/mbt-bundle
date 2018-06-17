@@ -71,7 +71,7 @@ class RunStepsCommand extends Command
             $reducer = $input->getOption('reducer');
             if ($reducer) {
                 $this->dispatcher->addListener(
-                    'tienvx_mbt.reducer.finish',
+                    'tienvx_mbt.finish_reduce',
                     function (ReducerFinishEvent $event) use ($output) {
                         $this->printBug($event->getBugMessage(), $event->getPath(), $output);
                     }

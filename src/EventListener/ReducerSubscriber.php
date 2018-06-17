@@ -62,7 +62,7 @@ class ReducerSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'tienvx_mbt.reducer.finish' => 'onFinish',
+            'tienvx_mbt.finish_reduce' => 'onFinish',
         ];
     }
 }

@@ -31,6 +31,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
     {
         $event = new ReducerFinishEvent($bugMessage, $path, $taskId);
 
-        $this->dispatcher->dispatch('tienvx_mbt.reducer.finish', $event);
+        $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
     }
 }
