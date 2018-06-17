@@ -19,9 +19,9 @@ use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 class QueuedLoopPathReducer extends AbstractPathReducer implements QueuedPathReducerInterface
 {
     protected $messageBus;
-    private   $modelRegistry;
-    private   $graphBuilder;
-    private   $entityManager;
+    protected $modelRegistry;
+    protected $graphBuilder;
+    protected $entityManager;
 
     public function __construct(
         PathRunner $runner,
