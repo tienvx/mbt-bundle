@@ -26,8 +26,8 @@ class GenerateStepsCommandTest extends CommandTestCase
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}', 24, 5);
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":60,"vertexCoverage":80}', 15, 4);
         $this->assertCoverage($command, 'random', 'coverage', '{"edgeCoverage":75,"vertexCoverage":60}', 18, 3);
-        $this->assertCoverage($command, 'all-places', 'null', '{}', 0, 5);
-        $this->assertCoverage($command, 'all-transitions', 'null', '{}', 24, 0);
+        $this->assertCoverage($command, 'all-places', 'noop', '{}', 0, 5);
+        $this->assertCoverage($command, 'all-transitions', 'noop', '{}', 24, 0);
     }
 
     public function assertCoverage(Command $command, string $generator, $stopCondition, $stopConditionArguments, $edgeCount, $vertexCount)

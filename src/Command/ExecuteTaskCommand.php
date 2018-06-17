@@ -8,35 +8,28 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
-use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
 
 class ExecuteTaskCommand extends Command
 {
     private $modelRegistry;
     private $generatorManager;
-    private $pathReducerManager;
     private $entityManager;
-    private $reporterManager;
     private $stopConditionManager;
 
     public function __construct(
         ModelRegistry $modelRegistry,
         GeneratorManager $generatorManager,
-        PathReducerManager $pathReducerManager,
         EntityManagerInterface $entityManager,
-        ReporterManager $reporterManager,
         StopConditionManager $stopConditionManager)
     {
         $this->modelRegistry = $modelRegistry;
         $this->generatorManager = $generatorManager;
-        $this->pathReducerManager = $pathReducerManager;
         $this->entityManager = $entityManager;
-        $this->reporterManager = $reporterManager;
         $this->stopConditionManager = $stopConditionManager;
 
         parent::__construct();
@@ -81,11 +74,14 @@ class ExecuteTaskCommand extends Command
             }
         } catch (Throwable $throwable) {
             $path = $generator->getPath();
-            $reducer = $task->getReducer();
-            if ($reducer) {
-                $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-                $pathReducer->reduce($path, $model, $throwable->getMessage(), $taskId);
-            }
+            $reproducePath = new ReproducePath();
+            $reproducePath->setSteps($path);
+            $reproducePath->setLength($path->countEdges());
+            $reproducePath->setBugMessage($throwable->getMessage());
+            $reproducePath->setTask($task);
+
+            $this->entityManager->persist($reproducePath);
+            $this->entityManager->flush();
         } finally {
             $subject->tearDown();
         }

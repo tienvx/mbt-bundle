@@ -10,13 +10,11 @@ class InMemorySender implements SenderInterface
 {
     private $serializer;
     private $messageStorage;
-    private $type;
 
-    public function __construct(Serializer $serializer, InMemoryMessageStorage $messageStorage, string $type)
+    public function __construct(Serializer $serializer, InMemoryMessageStorage $messageStorage)
     {
         $this->serializer = $serializer;
         $this->messageStorage = $messageStorage;
-        $this->type = $type;
     }
 
     /**
@@ -25,6 +23,6 @@ class InMemorySender implements SenderInterface
     public function send(Envelope $envelope)
     {
         $encodedMessage = $this->serializer->encode($envelope);
-        $this->messageStorage->add($this->type, $encodedMessage);
+        $this->messageStorage->add($encodedMessage);
     }
 }

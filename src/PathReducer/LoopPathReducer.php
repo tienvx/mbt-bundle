@@ -3,13 +3,21 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class LoopPathReducer extends AbstractPathReducer
 {
-    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null)
+    /**
+     * @param ReproducePath $reproducePath
+     * @throws \Exception
+     */
+    public function reduce(ReproducePath $reproducePath)
     {
+        $model = $this->modelRegistry->getModel($reproducePath->getModel());
+        $graph = $this->graphBuilder->build($model->getDefinition());
+        $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
+
         $distance = $path->countEdges();
 
         while ($distance > 0) {
@@ -22,7 +30,7 @@ class LoopPathReducer extends AbstractPathReducer
                         try {
                             $this->runner->run($newPath, $model);
                         } catch (Throwable $newThrowable) {
-                            if ($newThrowable->getMessage() === $bugMessage) {
+                            if ($newThrowable->getMessage() === $reproducePath->getBugMessage()) {
                                 $path = $newPath;
                                 $distance = $path->countEdges();
                                 break;
@@ -35,7 +43,7 @@ class LoopPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->finish($bugMessage, $path, $taskId);
+        $this->finish($reproducePath->getId());
     }
 
     public static function getName()

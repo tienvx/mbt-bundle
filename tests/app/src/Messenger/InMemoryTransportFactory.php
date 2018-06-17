@@ -19,9 +19,7 @@ class InMemoryTransportFactory implements TransportFactoryInterface
 
     public function createTransport(string $dsn, array $options): TransportInterface
     {
-        $url = parse_url($dsn);
-        parse_str($url['query'], $params);
-        return new InMemoryTransport($this->serializer, $this->messageStorage, $params['type']);
+        return new InMemoryTransport($this->serializer, $this->messageStorage);
     }
 
     public function supports(string $dsn, array $options): bool

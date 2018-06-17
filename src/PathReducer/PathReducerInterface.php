@@ -3,10 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 
 interface PathReducerInterface extends PluginInterface
 {
-    public function reduce(Path $path, Model $model, string $bugMessage, $taskId = null);
+    public function reduce(ReproducePath $reproducePath);
+
+    public function handle(string $message);
 }

@@ -8,6 +8,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 
 class BugMessageTest extends MessageTestCase
@@ -30,29 +31,30 @@ class BugMessageTest extends MessageTestCase
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
         $task->setGenerator('random');
-        $task->setStopCondition('found-bug');
+        $task->setStopCondition('max-length');
         $task->setStopConditionArguments('{}');
         $task->setReducer('greedy');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
 
+        $reproducePath = new ReproducePath();
+        $reproducePath->setSteps('home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout');
+        $reproducePath->setLength(7);
+        $reproducePath->setTask($task);
+        $reproducePath->setBugMessage('Test bug message');
+        $entityManager->persist($reproducePath);
+
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setMessage('Test bug message');
         $bug->setStatus('unverified');
-        $bug->setSteps('home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout');
         $bug->setReporter('email');
-        $bug->setTask($task);
+        $bug->setReproducePath($reproducePath);
         $entityManager->persist($bug);
+
         $entityManager->flush();
 
-        $command = $this->application->find('messenger:consume-messages');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'      => $command->getName(),
-            'receiver'     => 'bug',
-        ]);
+        $this->consumeMessages();
 
         $command = $this->application->find('swiftmailer:spool:send');
         $commandTester = new CommandTester($command);

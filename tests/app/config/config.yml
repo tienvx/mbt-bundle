@@ -6,15 +6,9 @@ framework:
     assets:          ~
     messenger:
         transports:
-            bug: 'memory://localhost/messages?type=bug'
-            task: 'memory://localhost/messages?type=task'
-            reproduce-path: 'memory://localhost/messages?type=reproduce-path'
-            queued-path-reducer: 'memory://localhost/messages?type=queued-path-reducer'
+            memory: 'memory://localhost/messages'
         routing:
-            Tienvx\Bundle\MbtBundle\Message\TaskMessage: 'task'
-            Tienvx\Bundle\MbtBundle\Message\BugMessage: 'bug'
-            Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage: 'reproduce_path'
-            Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage: 'queued_path_reducer'
+            '*': 'memory'
 
 doctrine:
     dbal:

@@ -20,6 +20,13 @@ class UITest extends ApiTestCase
         $this->assertContains('/mbt/tasks.json', $response);
         $this->assertContains('/mbt/tasks.html', $response);
 
+        $this->client->request('GET', '/mbt/reproduce_paths');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertContains('swagger-ui', $response);
+        $this->assertContains('/mbt/reproduce_paths.jsonld', $response);
+        $this->assertContains('/mbt/reproduce_paths.json', $response);
+        $this->assertContains('/mbt/reproduce_paths.html', $response);
+
         $this->client->request('GET', '/mbt/bugs');
         $response = $this->client->getResponse()->getContent();
         $this->assertContains('swagger-ui', $response);

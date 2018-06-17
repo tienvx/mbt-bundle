@@ -12,13 +12,11 @@ class InMemoryTransport implements TransportInterface
     private $messageStorage;
     private $receiver;
     private $sender;
-    private $type;
 
-    public function __construct(Serializer $serializer, InMemoryMessageStorage $messageStorage, string $type)
+    public function __construct(Serializer $serializer, InMemoryMessageStorage $messageStorage)
     {
         $this->serializer = $serializer;
         $this->messageStorage = $messageStorage;
-        $this->type = $type;
     }
 
     /**
@@ -47,11 +45,11 @@ class InMemoryTransport implements TransportInterface
 
     private function getReceiver()
     {
-        return $this->receiver = new InMemoryReceiver($this->serializer, $this->messageStorage, $this->type);
+        return $this->receiver = new InMemoryReceiver($this->serializer, $this->messageStorage);
     }
 
     private function getSender()
     {
-        return $this->sender = new InMemorySender($this->serializer, $this->messageStorage, $this->type);
+        return $this->sender = new InMemorySender($this->serializer, $this->messageStorage);
     }
 }

@@ -3,55 +3,27 @@
 namespace Tienvx\Bundle\MbtBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class ReducerFinishEvent extends Event
 {
     /**
-     * @var string
+     * @var int
      */
-    private $bugMessage;
+    private $reproducePathId;
 
     /**
-     * @var Path
+     * @param int $reproducePathId
      */
-    private $path;
-
-    /**
-     * @var mixed
-     */
-    private $taskId;
-
-    /**
-     * @param string $bugMessage
-     * @param Path $path
-     * @param mixed $taskId
-     */
-    public function __construct(string $bugMessage, Path $path, $taskId = null)
+    public function __construct(int $reproducePathId)
     {
-        $this->bugMessage = $bugMessage;
-        $this->path       = $path;
-        $this->taskId     = $taskId;
-    }
-
-    public function getBugMessage(): string
-    {
-        return $this->bugMessage;
+        $this->taskId = $reproducePathId;
     }
 
     /**
-     * @return Path
+     * @return int
      */
-    public function getPath(): Path
+    public function getReproducePathId()
     {
-        return $this->path;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTaskId()
-    {
-        return $this->taskId;
+        return $this->reproducePathId;
     }
 }

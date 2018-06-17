@@ -5,9 +5,10 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Process\Process;
-use Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage;
+use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
+use Tienvx\Bundle\MbtBundle\PathReducer\QueuedLoopPathReducer;
 
-class ReproducePathMessageHandler implements MessageHandlerInterface
+class QueuedLoopMessageHandler implements MessageHandlerInterface
 {
     private $params;
 
@@ -17,12 +18,12 @@ class ReproducePathMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ReproducePathMessage $reproducePathMessage
+     * @param QueuedLoopMessage $queuedLoopMessage
      * @throws \Exception
      */
-    public function __invoke(ReproducePathMessage $reproducePathMessage)
+    public function __invoke(QueuedLoopMessage $queuedLoopMessage)
     {
-        $process = new Process('bin/console mbt:reduce-reproduce-path ' . $reproducePathMessage->getId());
+        $process = new Process('bin/console mbt:handle-path-reducer ' . QueuedLoopPathReducer::getName() . "'$queuedLoopMessage'");
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();
