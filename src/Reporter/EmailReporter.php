@@ -79,8 +79,8 @@ class EmailReporter implements ReporterInterface
                         '@TienvxMbt/emails/bug.html.twig',
                         [
                             'id' => $bug->getId(),
-                            'task' => $bug->getTask()->getTitle(),
-                            'message' => $bug->getMessage(),
+                            'task' => $bug->getReproducePath()->getTask()->getTitle(),
+                            'message' => $bug->getReproducePath()->getBugMessage(),
                             'steps' => $this->buildSteps($bug),
                             'status' => $bug->getStatus(),
                         ]
@@ -97,9 +97,9 @@ class EmailReporter implements ReporterInterface
      */
     protected function buildSteps(Bug $bug): array
     {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
+        $model = $this->modelRegistry->getModel($bug->getReproducePath()->getTask()->getModel());
         $graph = $this->graphBuilder->build($model->getDefinition());
-        $path = Path::fromSteps($bug->getSteps(), $graph);
+        $path = Path::fromSteps($bug->getReproducePath()->getSteps(), $graph);
 
         $steps = [];
         foreach ($path->getEdges() as $index => $edge) {
