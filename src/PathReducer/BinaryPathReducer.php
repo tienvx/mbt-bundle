@@ -14,7 +14,7 @@ class BinaryPathReducer extends AbstractPathReducer
      */
     public function reduce(ReproducePath $reproducePath)
     {
-        $model = $this->modelRegistry->getModel($reproducePath->getModel());
+        $model = $this->modelRegistry->getModel($reproducePath->getTask()->getModel());
         $graph = $this->graphBuilder->build($model->getDefinition());
         $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
 
