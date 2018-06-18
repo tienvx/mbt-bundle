@@ -44,6 +44,8 @@ class ReproducePathMessageTest extends MessageTestCase
         $task->setStatus('not-started');
         $entityManager->persist($task);
 
+        $this->clearMessages();
+
         $reproducePath = new ReproducePath();
         $reproducePath->setSteps($steps);
         $reproducePath->setLength($length);

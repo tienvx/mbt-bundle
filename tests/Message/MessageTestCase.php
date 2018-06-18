@@ -12,6 +12,11 @@ use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 abstract class MessageTestCase extends TestCase
 {
     /**
+     * @var InMemoryMessageStorage
+     */
+    protected $messageStorage;
+
+    /**
      * @throws \Exception
      */
     protected function setUp()
@@ -27,13 +32,12 @@ abstract class MessageTestCase extends TestCase
         $receiverLocator = self::$container->get('messenger.receiver_locator');
 
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
+
+        $this->messageStorage = self::$container->get(InMemoryMessageStorage::class);
     }
 
     protected function consumeMessages()
     {
-        /** @var InMemoryMessageStorage $messageStorage */
-        $messageStorage = self::$container->get(InMemoryMessageStorage::class);
-
         $command = $this->application->find('messenger:consume-messages');
         $commandTester = new CommandTester($command);
         while (true) {
@@ -41,9 +45,14 @@ abstract class MessageTestCase extends TestCase
                 'command'  => $command->getName(),
                 'receiver' => 'memory',
             ]);
-            if (!$messageStorage->hasMessages()) {
+            if (!$this->messageStorage->hasMessages()) {
                 break;
             }
         }
+    }
+
+    protected function clearMessages()
+    {
+        $this->messageStorage->clearMessages();
     }
 }

@@ -22,4 +22,9 @@ class InMemoryMessageStorage
     {
         return !empty($this->messages);
     }
+
+    public function clearMessages()
+    {
+        $this->messages = [];
+    }
 }

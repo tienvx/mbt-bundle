@@ -45,6 +45,8 @@ class BugMessageTest extends MessageTestCase
         $reproducePath->setBugMessage('Test bug message');
         $entityManager->persist($reproducePath);
 
+        $this->clearMessages();
+
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
