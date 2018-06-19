@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Api;
 
-class TaskTest extends AbstractApiTestCase
+class TaskTest extends ApiTestCase
 {
     public function testGetTasks()
     {
@@ -16,14 +16,14 @@ class TaskTest extends AbstractApiTestCase
             "title": "Task 1",
             "model": "shopping_cart",
             "generator": "random",
-            "stopCondition": "found-bug",
+            "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "loop",
             "progress": 0,
             "status": "not-started",
-            "bugs": [
-              "/mbt/bugs/1",
-              "/mbt/bugs/2"
+            "reproducePaths": [
+                "/mbt/reproduce_paths/1",
+                "/mbt/reproduce_paths/2"
             ]
           },
           {
@@ -31,25 +31,25 @@ class TaskTest extends AbstractApiTestCase
             "title": "Task 2",
             "model": "shopping_cart",
             "generator": "random",
-            "stopCondition": "found-bug",
+            "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "binary",
             "progress": 64,
             "status": "in-progress",
-            "bugs": []
+            "reproducePaths": []
           },
           {
             "id": 3,
             "title": "Task 3",
             "model": "shopping_cart",
             "generator": "random",
-            "stopCondition": "found-bug",
+            "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "greedy",
             "progress": 100,
             "status": "completed",
-            "bugs": [
-              "/mbt/bugs/3"
+            "reproducePaths": [
+                "/mbt/reproduce_paths/3"
             ]
           }
         ]', $response->getContent());
@@ -62,7 +62,7 @@ class TaskTest extends AbstractApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
-          "stopCondition": "found-bug",
+          "stopCondition": "max-length",
           "stopConditionArguments": "{\"a\":\"b\"}",
           "reducer": "weighted-random",
           "progress": 0,
@@ -77,12 +77,12 @@ class TaskTest extends AbstractApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
-          "stopCondition": "found-bug",
+          "stopCondition": "max-length",
           "stopConditionArguments": "{\"a\":\"b\"}",
           "reducer": "weighted-random",
           "progress": 0,
           "status": "not-started",
-          "bugs": []
+          "reproducePaths": []
         }', $response->getContent());
     }
 
@@ -90,48 +90,48 @@ class TaskTest extends AbstractApiTestCase
     {
         $response = $this->makeApiRequest('POST', '/mbt/tasks', '
         {
-          "title": "Test shopping cart",
-          "model": "shopping_cart",
-          "generator": "invalid-generator",
-          "stopCondition": "invalid-stop-condition",
-          "stopConditionArguments": "not a json string",
-          "reducer": "invalid-reducer",
-          "progress": 111,
-          "status": "not-supported"
+            "title": "Test shopping cart",
+            "model": "shopping_cart",
+            "generator": "invalid-generator",
+            "stopCondition": "invalid-stop-condition",
+            "stopConditionArguments": "not a json string",
+            "reducer": "invalid-reducer",
+            "progress": 111,
+            "status": "not-supported"
         }');
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('application/problem+json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertArraySubset(json_decode('
         {
-          "title": "An error occurred",
-          "detail": "generator: \"invalid-generator\" is not a valid generator.\nstopCondition: \"invalid-stop-condition\" is not a valid stop condition.\nstopConditionArguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
-          "violations": [
-            {
-              "propertyPath": "generator",
-              "message": "\"invalid-generator\" is not a valid generator."
-            },
-            {
-                "propertyPath": "stopCondition",
-                "message": "\"invalid-stop-condition\" is not a valid stop condition."
-            },
-            {
-                "propertyPath": "stopConditionArguments",
-                "message": "\"\"not a json string\"\" is not a valid json string."
-            },
-            {
-                "propertyPath": "reducer",
-                "message": "\"invalid-reducer\" is not a valid path reducer."
-            },
-            {
-              "propertyPath": "progress",
-              "message": "This value should be 100 or less."
-            },
-            {
-              "propertyPath": "status",
-              "message": "The value you selected is not a valid choice."
-            }
-          ]
+            "title": "An error occurred",
+            "detail": "generator: \"invalid-generator\" is not a valid generator.\nstopCondition: \"invalid-stop-condition\" is not a valid stop condition.\nstopConditionArguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
+            "violations": [
+                {
+                    "propertyPath": "generator",
+                    "message": "\"invalid-generator\" is not a valid generator."
+                },
+                {
+                    "propertyPath": "stopCondition",
+                    "message": "\"invalid-stop-condition\" is not a valid stop condition."
+                },
+                {
+                    "propertyPath": "stopConditionArguments",
+                    "message": "\"\"not a json string\"\" is not a valid json string."
+                },
+                {
+                    "propertyPath": "reducer",
+                    "message": "\"invalid-reducer\" is not a valid path reducer."
+                },
+                {
+                    "propertyPath": "progress",
+                    "message": "This value should be 100 or less."
+                },
+                {
+                    "propertyPath": "status",
+                    "message": "The value you selected is not a valid choice."
+                }
+            ]
         }', true), json_decode($response->getContent(), true));
     }
 }

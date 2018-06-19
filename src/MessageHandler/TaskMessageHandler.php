@@ -2,19 +2,18 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
+use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
 class TaskMessageHandler implements MessageHandlerInterface
 {
-    private $executeTaskCommand;
+    private $params;
 
-    public function __construct(ExecuteTaskCommand $executeTaskCommand)
+    public function __construct(ParameterBagInterface $params)
     {
-        $this->executeTaskCommand = $executeTaskCommand;
+        $this->params = $params;
     }
 
     /**
@@ -23,9 +22,10 @@ class TaskMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(TaskMessage $taskMessage)
     {
-        $input = new ArrayInput([
-            'task-id' => $taskMessage->getId(),
-        ]);
-        $this->executeTaskCommand->run($input, new NullOutput());
+        $id = $taskMessage->getId();
+        $process = new Process("bin/console mbt:execute-task $id");
+        $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+
+        $process->run();
     }
 }

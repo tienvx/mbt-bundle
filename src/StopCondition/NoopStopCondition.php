@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\StopCondition;
 
-class NullStopCondition extends BaseStopCondition
+class NoopStopCondition extends BaseStopCondition
 {
     public function meet(array $context): bool
     {
@@ -11,6 +11,6 @@ class NullStopCondition extends BaseStopCondition
 
     public static function getName()
     {
-        return 'null';
+        return 'noop';
     }
 }

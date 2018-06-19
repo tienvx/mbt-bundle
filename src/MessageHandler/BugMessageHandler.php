@@ -2,19 +2,18 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\ReportBugCommand;
+use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Message\BugMessage;
 
 class BugMessageHandler implements MessageHandlerInterface
 {
-    private $reportBugCommand;
+    private $params;
 
-    public function __construct(ReportBugCommand $reportBugCommand)
+    public function __construct(ParameterBagInterface $params)
     {
-        $this->reportBugCommand = $reportBugCommand;
+        $this->params = $params;
     }
 
     /**
@@ -23,9 +22,10 @@ class BugMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(BugMessage $bugMessage)
     {
-        $input = new ArrayInput([
-            'bug-id' => $bugMessage->getId(),
-        ]);
-        $this->reportBugCommand->run($input, new NullOutput());
+        $id = $bugMessage->getId();
+        $process = new Process("bin/console mbt:report-bug $id");
+        $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+
+        $process->run();
     }
 }

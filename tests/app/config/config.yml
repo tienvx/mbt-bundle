@@ -6,21 +6,14 @@ framework:
     assets:          ~
     messenger:
         transports:
-            bug: 'memory://localhost/messages?type=bug'
-            task: 'memory://localhost/messages?type=task'
-            reproduce-path: 'memory://localhost/messages?type=reproduce-path'
-            queued-path-reducer: 'memory://localhost/messages?type=queued-path-reducer'
+            filesystem: "filesystem://%kernel.cache_dir%/queue"
         routing:
-            Tienvx\Bundle\MbtBundle\Message\TaskMessage: 'task'
-            Tienvx\Bundle\MbtBundle\Message\BugMessage: 'bug'
-            Tienvx\Bundle\MbtBundle\Message\ReproducePathMessage: 'reproduce_path'
-            Tienvx\Bundle\MbtBundle\Message\QueuedPathReducerMessage: 'queued_path_reducer'
+            '*': filesystem
 
 doctrine:
     dbal:
         driver:      pdo_sqlite
-        path:        :memory:
-        memory:      true
+        path:        "%kernel.cache_dir%/test.db"
     orm:
         auto_mapping: true
 
@@ -34,14 +27,21 @@ services:
         resource: '../src/*'
         exclude: '../src/{AppKernel.php}'
 
-    Symfony\Component\Messenger\Transport\Serialization\Serializer:
-        alias: 'messenger.transport.serializer'
-    #Symfony\Component\Messenger\Transport\Serialization\Serializer: '@messenger.transport.serializer'
+    Pnz\Messenger\FilesystemTransport\FilesystemTransportFactory:
+        arguments:
+            $encoder: '@messenger.transport.encoder'
+            $decoder: '@messenger.transport.decoder'
+            # Both the "filesystem" and "lock.factory" services can be auto-wired by Symfony
+            $filesystem: '@filesystem'
+            $lockFactory: '@lock.factory'
+        # Configure the tags: this enables the `filesystem://` transport to be auto-discovered
+        tags: ['messenger.transport_factory']
 
 swiftmailer:
     url: 'null://localhost'
-    spool: { type: 'memory' }
-    logging: true
+    spool:
+        type: file
+        path: "%kernel.cache_dir%/spool"
 
 tienvx_mbt:
     max_path_length: 300

@@ -51,6 +51,14 @@ $ composer require tienvx/mbt-bundle "1.0.x-dev"
 Model is the way to describe part your application. Subject is
 the way to tell this bundle to interact with your application.
 
+## Testing
+
+You can run the tests with:
+```console
+$ phpunit
+$ composer run-script test # if you want to clear the cache
+```
+
 ## Documentation
 
 For the usage guide and reference, see [wiki][wiki]

@@ -14,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\CoverageStopCondition;
+use Tienvx\Bundle\MbtBundle\StopCondition\MaxLengthStopCondition;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 use Twig\Environment as Twig;
 
@@ -52,6 +53,9 @@ class TienvxMbtExtension extends Extension
 
         $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
         $coverageStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+
+        $maxLengthStopConditionDefinition = $container->getDefinition(MaxLengthStopCondition::class);
+        $maxLengthStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)

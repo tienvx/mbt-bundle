@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
@@ -79,25 +79,25 @@ class Task
     private $status;
 
     /**
-     * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ReproducePath", mappedBy="task", cascade={"persist"})
      */
-    private $bugs;
+    private $reproducePaths;
 
     public function __construct()
     {
-        $this->bugs = new ArrayCollection();
+        $this->reproducePaths = new ArrayCollection();
     }
 
-    public function addBug(Bug $bug): void
+    public function addReproducePath(ReproducePath $reproducePath): void
     {
-        $bug->setTask($this);
-        $this->bugs->add($bug);
+        $reproducePath->setTask($this);
+        $this->reproducePaths->add($reproducePath);
     }
 
-    public function removeBug(Bug $bug): void
+    public function removeBug(ReproducePath $reproducePath): void
     {
-        $bug->setTask(null);
-        $this->bugs->removeElement($bug);
+        $reproducePath->setTask(null);
+        $this->reproducePaths->removeElement($reproducePath);
     }
 
     public function getId()
@@ -186,10 +186,10 @@ class Task
     }
 
     /**
-     * @return Collection|Bug[]
+     * @return Collection|ReproducePath[]
      */
-    public function getBugs()
+    public function getReproducePaths()
     {
-        return $this->bugs;
+        return $this->reproducePaths;
     }
 }

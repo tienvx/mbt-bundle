@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\StopCondition;
 
-class CoverageStopCondition extends BaseStopCondition
+class CoverageStopCondition extends MaxLengthStopCondition
 {
     /**
      * @var int
@@ -35,7 +35,7 @@ class CoverageStopCondition extends BaseStopCondition
 
     public function meet(array $context): bool
     {
-        return ($context['edgeCoverage'] >= $this->edgeCoverage && $context['vertexCoverage'] >= $this->vertexCoverage) || $context['pathLength'] >= $this->maxPathLength;
+        return ($context['edgeCoverage'] >= $this->edgeCoverage && $context['vertexCoverage'] >= $this->vertexCoverage) || parent::meet($context);
     }
 
     public static function getName()

@@ -1,72 +1,62 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Command;
+namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Tests\AbstractTestCase;
-use Tienvx\Bundle\MbtBundle\Tests\StopCondition\FoundBugStopCondition;
 
-class TaskMessageTest extends AbstractTestCase
+class TaskMessageTest extends MessageTestCase
 {
     /**
+     * @param string $generator
+     * @param string $stopCondition
+     * @param string $stopConditionArguments
      * @throws \Exception
+     * @dataProvider consumeMessageData
      */
-    public function testExecute()
+    public function testConsumeMessage(string $generator, string $stopCondition, string $stopConditionArguments)
     {
-        /** @var MessageBusInterface $messageBus */
-        $messageBus = self::$container->get(MessageBusInterface::class);
-        /** @var ContainerInterface $receiverLocator */
-        $receiverLocator = self::$container->get('messenger.receiver_locator');
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        /** @var FoundBugStopCondition $stopCondition */
-        $stopCondition = self::$container->get(FoundBugStopCondition::class);
-
-        $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-
-        $this->runCommand('doctrine:database:drop --force');
-        $this->runCommand('doctrine:database:create');
-        $this->runCommand('doctrine:schema:create');
 
         $task = new Task();
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
-        $task->setGenerator('random');
-        $task->setStopCondition('modified-found-bug');
-        $task->setStopConditionArguments('{}');
+        $task->setGenerator($generator);
+        $task->setStopCondition($stopCondition);
+        $task->setStopConditionArguments($stopConditionArguments);
         $task->setReducer('weighted-random');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
         $entityManager->flush();
 
-        $command = $this->application->find('messenger:consume-messages');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'      => $command->getName(),
-            'receiver'     => 'task',
-        ]);
+        $this->consumeMessages();
 
-        if ($stopCondition->bugFound) {
-            /** @var EntityRepository $entityRepository */
-            $entityRepository = $entityManager->getRepository(Bug::class);
-            $countBugs = $entityRepository->createQueryBuilder('b')
-                ->select('count(b.id)')
-                ->where('b.task = :task_id')
-                ->setParameter('task_id', $task->getId())
-                ->getQuery()
-                ->getSingleScalarResult();
-            $this->assertEquals(1, $countBugs);
+        /** @var EntityRepository $entityRepository */
+        $entityRepository = $entityManager->getRepository(Bug::class);
+        /** @var Bug[] $bugs */
+        $bugs = $entityRepository->findAll();
+
+        if (count($bugs)) {
+            $this->assertEquals(1, count($bugs));
+            $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getReproducePath()->getBugMessage());
+            $this->assertContains('product=49', $bugs[0]->getReproducePath()->getSteps());
+            $this->assertEquals('checkout', substr($bugs[0]->getReproducePath()->getSteps(), -8));
+        } else {
+            $this->assertEquals(0, count($bugs));
         }
-        else {
-            $this->addToAssertionCount(1);
-        }
+    }
+
+    public function consumeMessageData()
+    {
+        return [
+            ['random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
+            ['random', 'max-length', '{}'],
+            ['all-places', 'noop', '{}'],
+            ['all-transitions', 'noop', '{}'],
+        ];
     }
 }

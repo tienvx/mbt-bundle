@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\StringInput;
 
-class AbstractTestCase extends WebTestCase
+abstract class TestCase extends WebTestCase
 {
     /**
      * @var Application

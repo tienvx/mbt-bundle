@@ -35,7 +35,7 @@ class GenerateStepsCommand extends Command
         $this
             ->setName('mbt:generate-steps')
             ->setDescription('Generate steps from model.')
-            ->setHelp('Generate steps from model. So that it can be run with mbt:run-steps command.')
+            ->setHelp('Generate steps from model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', Constants::DEFAULT_GENERATOR)
             ->addOption('stop-condition', 's', InputOption::VALUE_OPTIONAL, 'When generator stop generate steps.', Constants::DEFAULT_STOP_CONDITION)

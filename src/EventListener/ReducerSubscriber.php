@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
@@ -38,21 +39,15 @@ class ReducerSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $taskId = $event->getTaskId();
-        if (!$taskId) {
-            return;
-        }
-
-        $task = $this->entityManager->getRepository(Task::class)->find($taskId);
-        if (!$task || !$task instanceof Task) {
+        $reproducePathId = $event->getReproducePathId();
+        $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePathId);
+        if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
             return;
         }
 
         $bug = new Bug();
         $bug->setTitle($this->defaultBugTitle);
-        $bug->setMessage($event->getBugMessage());
-        $bug->setTask($task);
-        $bug->setSteps($event->getPath());
+        $bug->setReproducePath($reproducePath);
         $bug->setStatus('unverified');
         $bug->setReporter($this->defaultReporter);
         $this->entityManager->persist($bug);
@@ -62,7 +57,7 @@ class ReducerSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'tienvx_mbt.reducer.finish' => 'onFinish',
+            'tienvx_mbt.finish_reduce' => 'onFinish',
         ];
     }
 }

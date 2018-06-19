@@ -2,11 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
+ * @ApiResource
  * @ORM\Entity
  */
 class ReproducePath
@@ -17,13 +18,6 @@ class ReproducePath
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     * @MbtAssert\Model
-     */
-    private $model;
 
     /**
      * @ORM\Column(type="text")
@@ -38,14 +32,8 @@ class ReproducePath
     private $length;
 
     /**
-     * @ORM\Column(type="array")
-     * @MbtAssert\Unique
-     */
-    private $messageHashes;
-
-    /**
      * @ORM\ManyToOne(targetEntity="Task")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
      */
     private $task;
 
@@ -55,32 +43,9 @@ class ReproducePath
      */
     private $bugMessage;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     * @MbtAssert\Reducer
-     */
-    private $reducer;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank
-     */
-    private $distance;
-
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getModel(): string
-    {
-        return $this->model;
-    }
-
-    public function setModel(string $model)
-    {
-        $this->model = $model;
     }
 
     public function getSteps(): string
@@ -103,16 +68,6 @@ class ReproducePath
         $this->length = $length;
     }
 
-    public function getMessageHashes(): array
-    {
-        return $this->messageHashes;
-    }
-
-    public function setMessageHashes(array $messageHashes)
-    {
-        $this->messageHashes = $messageHashes;
-    }
-
     public function getTask(): Task
     {
         return $this->task;
@@ -131,25 +86,5 @@ class ReproducePath
     public function setBugMessage(string $bugMessage)
     {
         $this->bugMessage = $bugMessage;
-    }
-
-    public function setReducer(string $reducer)
-    {
-        $this->reducer = $reducer;
-    }
-
-    public function getReducer(): string
-    {
-        return $this->reducer;
-    }
-
-    public function getDistance(): int
-    {
-        return $this->distance;
-    }
-
-    public function setDistance(int $distance)
-    {
-        $this->distance = $distance;
     }
 }

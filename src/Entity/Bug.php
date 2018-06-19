@@ -21,28 +21,16 @@ class Bug
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Task", inversedBy="bugs")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
+     * @ORM\OneToOne(targetEntity="ReproducePath")
+     * @ORM\JoinColumn(name="reproduce_path_id", referencedColumnName="id")
      */
-    private $task;
+    private $reproducePath;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
      */
     private $title;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
-     */
-    private $message;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
-     */
-    private $steps;
 
     /**
      * @ORM\Column(type="string")
@@ -62,14 +50,14 @@ class Bug
         return $this->id;
     }
 
-    public function getTask(): Task
+    public function getReproducePath(): ReproducePath
     {
-        return $this->task;
+        return $this->reproducePath;
     }
 
-    public function setTask(Task $task)
+    public function setReproducePath(ReproducePath $reproducePath)
     {
-        $this->task = $task;
+        $this->reproducePath = $reproducePath;
     }
 
     public function getTitle()
@@ -80,26 +68,6 @@ class Bug
     public function setTitle($title)
     {
         $this->title = $title;
-    }
-
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
-
-    public function getSteps(): string
-    {
-        return $this->steps;
-    }
-
-    public function setSteps(string $steps)
-    {
-        $this->steps = $steps;
     }
 
     public function getStatus()
