@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -17,6 +16,7 @@ class ReproducePathMessageTest extends MessageTestCase
     /**
      * @param string $steps
      * @param int $length
+     * @param string $reducer
      * @param string $expectedSteps
      * @param int $expectedLength
      * @throws \Exception
@@ -39,10 +39,12 @@ class ReproducePathMessageTest extends MessageTestCase
         $task->setGenerator('random');
         $task->setStopCondition('max-length');
         $task->setStopConditionArguments('{}');
-        $task->setReducer('queued-loop');
+        $task->setReducer($reducer);
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
+
+        $entityManager->flush();
 
         $this->clearMessages();
 
@@ -57,37 +59,26 @@ class ReproducePathMessageTest extends MessageTestCase
 
         $this->consumeMessages();
 
-        /** @var EntityRepository $entityRepository */
-        $entityRepository = $entityManager->getRepository(Bug::class);
-        /** @var Bug[] $bugs */
-        $bugs = $entityRepository->findBy(['reproducePath' => $reproducePath->getId()]);
+        $entityManager->refresh($reproducePath);
 
-        if (count($bugs)) {
-            $this->assertEquals(1, count($bugs));
-            $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getReproducePath()->getBugMessage());
-            $this->assertEquals($expectedSteps, $bugs[0]->getReproducePath()->getSteps());
-            $this->assertEquals($expectedLength, $bugs[0]->getReproducePath()->getLength());
-        } else {
-            $this->assertEquals(0, count($bugs));
-        }
+        /** @var Bug[] $bugs */
+        $bugs = $entityManager->getRepository(Bug::class)->findBy(['reproducePath' => $reproducePath->getId()]);
+
+        $this->assertEquals(1, count($bugs));
+        $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $reproducePath->getBugMessage());
+        $this->assertEquals($expectedSteps, $reproducePath->getSteps());
+        $this->assertEquals($expectedLength, $reproducePath->getLength());
     }
 
     public function consumeMessageData()
     {
         return [
             [
-                'home viewProductFromHome(product=49) product addFromProduct() product viewCartFromProduct() cart',
+                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
                 3,
                 'queued-loop',
-                '',
-                0
-            ],
-            [
-                'home viewAnyCategoryFromHome(category=24) category addFromCategory(product=29) category viewProductFromCategory(product=40) product checkoutFromProduct() checkout',
-                4,
-                'queued-loop',
-                '',
-                0
+                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
+                3
             ],
             [
                 'home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product addFromProduct() product checkoutFromProduct() checkout viewCartFromCheckout() cart viewProductFromCart(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',

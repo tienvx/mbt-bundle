@@ -22,7 +22,8 @@ class BugMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(BugMessage $bugMessage)
     {
-        $process = new Process('bin/console mbt:report-bug ' . $bugMessage->getId());
+        $id = $bugMessage->getId();
+        $process = new Process("bin/console mbt:report-bug $id");
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();

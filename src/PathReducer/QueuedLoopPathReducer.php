@@ -9,10 +9,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\QueuedReproducePath;
 use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
-use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Tienvx\Bundle\MbtBundle\Service\PathRunner;
@@ -20,7 +18,6 @@ use Tienvx\Bundle\MbtBundle\Service\PathRunner;
 class QueuedLoopPathReducer extends AbstractPathReducer
 {
     protected $messageBus;
-    protected $entityManager;
 
     public function __construct(
         PathRunner $runner,
@@ -30,9 +27,8 @@ class QueuedLoopPathReducer extends AbstractPathReducer
         GraphBuilder $graphBuilder,
         EntityManagerInterface $entityManager)
     {
-        parent::__construct($runner, $dispatcher, $modelRegistry, $graphBuilder);
+        parent::__construct($runner, $dispatcher, $modelRegistry, $graphBuilder, $entityManager);
         $this->messageBus = $messageBus;
-        $this->entityManager = $entityManager;
     }
 
     /**
@@ -59,7 +55,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     public function handle(string $message)
     {
         $queuedLoopMessage = QueuedLoopMessage::fromString($message);
-        $queuedReproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($queuedLoopMessage->getQueuedReproducePathId());
+        $queuedReproducePath = $this->entityManager->getRepository(QueuedReproducePath::class)->find($queuedLoopMessage->getQueuedReproducePathId());
 
         if (!$queuedReproducePath || !$queuedReproducePath instanceof QueuedReproducePath) {
             return;
@@ -80,8 +76,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                         $this->runner->run($newPath, $model);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedReproducePath->getReproducePath()->getBugMessage()) {
-                            $path = $newPath;
-                            $updated = $this->updateSteps($queuedReproducePath->getId(), $path, $path->countEdges());
+                            $updated = $this->updateSteps($queuedReproducePath->getReproducePath(), $newPath, $newPath->countEdges());
                             if ($updated) {
                                 $this->dispatch($queuedReproducePath->getId());
                             }
@@ -91,17 +86,16 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             }
         }
 
-        $this->postHandle($queuedLoopMessage, $path);
+        $this->postHandle($queuedLoopMessage);
     }
 
     /**
      * @param QueuedLoopMessage $queuedLoopMessage
-     * @param Path $path
      * @throws \Exception
      */
-    public function postHandle(QueuedLoopMessage $queuedLoopMessage, Path $path)
+    public function postHandle(QueuedLoopMessage $queuedLoopMessage)
     {
-        $this->entityManager->getConnection()->beginTransaction();
+        $this->entityManager->beginTransaction();
         try {
             $queuedReproducePath = $this->entityManager->find(QueuedReproducePath::class, $queuedLoopMessage->getQueuedReproducePathId(), LockMode::PESSIMISTIC_WRITE);
 
@@ -116,19 +110,21 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             }
             $queuedReproducePath->setMessageHashes($messageHashes);
             $this->entityManager->flush();
-            $this->entityManager->getConnection()->commit();
+            $this->entityManager->commit();
         } catch (Throwable $throwable) {
             // Something happen, ignoring.
-            $this->entityManager->getConnection()->rollBack();
+            $this->entityManager->rollBack();
         }
 
         if (isset($queuedReproducePath) && empty($queuedReproducePath->getMessageHashes())) {
-            if ($queuedReproducePath->getDistance() > 0) {
+            if ($queuedReproducePath->getIndicator() > 0) {
                 $this->dispatch($queuedReproducePath->getId());
             }
             else {
                 // All messages has been handled.
-                $this->finish($queuedReproducePath->getId());
+                $this->entityManager->remove($queuedReproducePath);
+                $this->entityManager->flush();
+                $this->finish($queuedReproducePath->getReproducePath()->getId());
             }
         }
     }
@@ -139,7 +135,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
      */
     public function dispatch(int $queuedReproducePathId)
     {
-        $this->entityManager->getConnection()->beginTransaction();
+        $this->entityManager->beginTransaction();
         try {
             $queuedReproducePath = $this->entityManager->find(QueuedReproducePath::class, $queuedReproducePathId, LockMode::PESSIMISTIC_WRITE);
 
@@ -173,26 +169,23 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             $queuedReproducePath->setIndicator($distance);
             $queuedReproducePath->setMessageHashes(array_unique($messageHashes));
             $this->entityManager->flush();
-            $this->entityManager->getConnection()->commit();
+            $this->entityManager->commit();
         } catch (Throwable $throwable) {
             // Something happen, ignoring.
-            $this->entityManager->getConnection()->rollBack();
+            $this->entityManager->rollBack();
         }
     }
 
     /**
-     * @param int $reproducePathId
-     * @param string $steps
-     * @param int $length
+     * {@inheritdoc}
      * @return bool
-     * @throws \Exception
      */
-    private function updateSteps(int $reproducePathId, string $steps, int $length): bool
+    protected function updateSteps(ReproducePath $reproducePath, string $steps, int $length): bool
     {
         $updated = false;
-        $this->entityManager->getConnection()->beginTransaction();
+        $this->entityManager->beginTransaction();
         try {
-            $reproducePath = $this->entityManager->find(ReproducePath::class, $reproducePathId, LockMode::PESSIMISTIC_WRITE);
+            $reproducePath = $this->entityManager->find(ReproducePath::class, $reproducePath->getId(), LockMode::PESSIMISTIC_WRITE);
 
             if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
                 return $updated;
@@ -201,11 +194,11 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             $reproducePath->setSteps($steps);
             $reproducePath->setLength($length);
             $this->entityManager->flush();
-            $this->entityManager->getConnection()->commit();
+            $this->entityManager->commit();
 
             $updated = true;
         } catch (Throwable $throwable) {
-            $this->entityManager->getConnection()->rollBack();
+            $this->entityManager->rollBack();
         } finally {
             return $updated;
         }

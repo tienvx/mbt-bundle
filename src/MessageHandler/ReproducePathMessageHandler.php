@@ -22,7 +22,8 @@ class ReproducePathMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(ReproducePathMessage $reproducePathMessage)
     {
-        $process = new Process('bin/console mbt:reduce-reproduce-path ' . $reproducePathMessage->getId());
+        $id = $reproducePathMessage->getId();
+        $process = new Process("bin/console mbt:reduce-reproduce-path $id");
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();

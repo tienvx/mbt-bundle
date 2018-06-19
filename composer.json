@@ -38,7 +38,8 @@
         "symfony/twig-bundle": "^4.1",
         "symfony/asset": "^4.1",
         "symfony/swiftmailer-bundle": "^3.2",
-        "php-coveralls/php-coveralls": "^2.1"
+        "php-coveralls/php-coveralls": "^2.1",
+        "pnz/messenger-filesystem-transport": "^0.1.2"
     },
     "autoload": {
         "psr-4": {

@@ -23,7 +23,9 @@ class QueuedLoopMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(QueuedLoopMessage $queuedLoopMessage)
     {
-        $process = new Process('bin/console mbt:handle-path-reducer ' . QueuedLoopPathReducer::getName() . "'$queuedLoopMessage'");
+        $reducer = QueuedLoopPathReducer::getName();
+        $message = $queuedLoopMessage;
+        $process = new Process("bin/console mbt:handle-path-reducer $reducer '$message'");
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();

@@ -50,6 +50,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
+        $this->updateSteps($reproducePath, $path, $path->countEdges());
         $this->finish($reproducePath->getId());
     }
 

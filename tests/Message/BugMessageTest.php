@@ -45,6 +45,8 @@ class BugMessageTest extends MessageTestCase
         $reproducePath->setBugMessage('Test bug message');
         $entityManager->persist($reproducePath);
 
+        $entityManager->flush();
+
         $this->clearMessages();
 
         $bug = new Bug();

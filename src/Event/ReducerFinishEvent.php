@@ -16,7 +16,7 @@ class ReducerFinishEvent extends Event
      */
     public function __construct(int $reproducePathId)
     {
-        $this->taskId = $reproducePathId;
+        $this->reproducePathId = $reproducePathId;
     }
 
     /**

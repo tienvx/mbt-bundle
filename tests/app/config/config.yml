@@ -6,9 +6,9 @@ framework:
     assets:          ~
     messenger:
         transports:
-            memory: 'memory://localhost/messages'
+            filesystem: "filesystem://%kernel.cache_dir%/queue"
         routing:
-            '*': 'memory'
+            '*': filesystem
 
 doctrine:
     dbal:
@@ -27,9 +27,15 @@ services:
         resource: '../src/*'
         exclude: '../src/{AppKernel.php}'
 
-    Symfony\Component\Messenger\Transport\Serialization\Serializer:
-        alias: 'messenger.transport.serializer'
-    #Symfony\Component\Messenger\Transport\Serialization\Serializer: '@messenger.transport.serializer'
+    Pnz\Messenger\FilesystemTransport\FilesystemTransportFactory:
+        arguments:
+            $encoder: '@messenger.transport.encoder'
+            $decoder: '@messenger.transport.decoder'
+            # Both the "filesystem" and "lock.factory" services can be auto-wired by Symfony
+            $filesystem: '@filesystem'
+            $lockFactory: '@lock.factory'
+        # Configure the tags: this enables the `filesystem://` transport to be auto-discovered
+        tags: ['messenger.transport_factory']
 
 swiftmailer:
     url: 'null://localhost'

@@ -22,7 +22,8 @@ class TaskMessageHandler implements MessageHandlerInterface
      */
     public function __invoke(TaskMessage $taskMessage)
     {
-        $process = new Process('bin/console mbt:execute-task ' . $taskMessage->getId());
+        $id = $taskMessage->getId();
+        $process = new Process("bin/console mbt:execute-task $id");
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();
