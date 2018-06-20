@@ -24,6 +24,7 @@ class TaskMessageHandler implements MessageHandlerInterface
     {
         $id = $taskMessage->getId();
         $process = new Process("bin/console mbt:execute-task $id");
+        $process->setTimeout(null);
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
         $process->run();
