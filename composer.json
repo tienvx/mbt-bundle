@@ -67,5 +67,8 @@
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
+    },
+    "suggest": {
+        "ext-amqp": "Needed to support amqp transport"
     }
 }

@@ -94,7 +94,7 @@ class Task
         $this->reproducePaths->add($reproducePath);
     }
 
-    public function removeBug(ReproducePath $reproducePath): void
+    public function removeReproducePath(ReproducePath $reproducePath): void
     {
         $reproducePath->setTask(null);
         $this->reproducePaths->removeElement($reproducePath);
