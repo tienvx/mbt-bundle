@@ -19,6 +19,7 @@ class TaskTest extends ApiTestCase
             "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "loop",
+            "reporter": "email",
             "progress": 0,
             "status": "not-started",
             "reproducePaths": [
@@ -34,6 +35,7 @@ class TaskTest extends ApiTestCase
             "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "binary",
+            "reporter": "email",
             "progress": 64,
             "status": "in-progress",
             "reproducePaths": []
@@ -46,6 +48,7 @@ class TaskTest extends ApiTestCase
             "stopCondition": "max-length",
             "stopConditionArguments": "{\"a\":\"b\"}",
             "reducer": "greedy",
+            "reporter": "email",
             "progress": 100,
             "status": "completed",
             "reproducePaths": [
@@ -62,6 +65,7 @@ class TaskTest extends ApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
+          "reporter": "email",
           "stopCondition": "max-length",
           "stopConditionArguments": "{\"a\":\"b\"}",
           "reducer": "weighted-random",
@@ -77,6 +81,7 @@ class TaskTest extends ApiTestCase
           "title": "Test shopping cart",
           "model": "shopping_cart",
           "generator": "random",
+          "reporter": "email",
           "stopCondition": "max-length",
           "stopConditionArguments": "{\"a\":\"b\"}",
           "reducer": "weighted-random",
@@ -96,6 +101,7 @@ class TaskTest extends ApiTestCase
             "stopCondition": "invalid-stop-condition",
             "stopConditionArguments": "not a json string",
             "reducer": "invalid-reducer",
+            "reporter": "invalid-reporter",
             "progress": 111,
             "status": "not-supported"
         }');
@@ -105,7 +111,7 @@ class TaskTest extends ApiTestCase
         $this->assertArraySubset(json_decode('
         {
             "title": "An error occurred",
-            "detail": "generator: \"invalid-generator\" is not a valid generator.\nstopCondition: \"invalid-stop-condition\" is not a valid stop condition.\nstopConditionArguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
+            "detail": "generator: \"invalid-generator\" is not a valid generator.\nstopCondition: \"invalid-stop-condition\" is not a valid stop condition.\nstopConditionArguments: \"\"not a json string\"\" is not a valid json string.\nreducer: \"invalid-reducer\" is not a valid path reducer.\nreporter: \"invalid-reporter\" is not a valid reporter.\nprogress: This value should be 100 or less.\nstatus: The value you selected is not a valid choice.",
             "violations": [
                 {
                     "propertyPath": "generator",
@@ -122,6 +128,10 @@ class TaskTest extends ApiTestCase
                 {
                     "propertyPath": "reducer",
                     "message": "\"invalid-reducer\" is not a valid path reducer."
+                },
+                {
+                    "propertyPath": "reporter",
+                    "message": "\"invalid-reporter\" is not a valid reporter."
                 },
                 {
                     "propertyPath": "progress",

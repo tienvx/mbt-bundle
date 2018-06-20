@@ -46,7 +46,6 @@ swiftmailer:
 tienvx_mbt:
     max_path_length: 300
     default_bug_title: 'New bug found'
-    default_reporter: email
     reporter:
         email:
             from: 'send@example.com'

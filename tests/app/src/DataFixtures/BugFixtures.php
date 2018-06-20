@@ -20,14 +20,12 @@ class BugFixtures extends Fixture implements DependentFixtureInterface
         $bug1 = new Bug();
         $bug1->setTitle('Bug 1');
         $bug1->setStatus('unverified');
-        $bug1->setReporter('email');
         $bug1->setReproducePath($reproducePath1);
         $manager->persist($bug1);
 
         $bug2 = new Bug();
         $bug2->setTitle('Bug 2');
         $bug2->setStatus('valid');
-        $bug2->setReporter('email');
         $bug2->setReproducePath($reproducePath2);
         $manager->persist($bug2);
 

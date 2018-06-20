@@ -38,13 +38,6 @@ class Bug
      */
     private $status;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     * @MbtAssert\Reporter
-     */
-    private $reporter;
-
     public function getId()
     {
         return $this->id;
@@ -60,33 +53,23 @@ class Bug
         $this->reproducePath = $reproducePath;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle(string $title)
     {
         $this->title = $title;
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus($status)
+    public function setStatus(string $status)
     {
         $this->status = $status;
-    }
-
-    public function getReporter()
-    {
-        return $this->reporter;
-    }
-
-    public function setReporter($reporter)
-    {
-        $this->reporter = $reporter;
     }
 }

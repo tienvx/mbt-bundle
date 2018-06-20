@@ -17,6 +17,7 @@ class TaskFixtures extends Fixture
         $task1->setStopCondition('max-length');
         $task1->setStopConditionArguments('{"a":"b"}');
         $task1->setReducer('loop');
+        $task1->setReporter('email');
         $task1->setProgress(0);
         $task1->setStatus('not-started');
         $manager->persist($task1);
@@ -29,6 +30,7 @@ class TaskFixtures extends Fixture
         $task2->setStopCondition('max-length');
         $task2->setStopConditionArguments('{"a":"b"}');
         $task2->setReducer('binary');
+        $task2->setReporter('email');
         $task2->setProgress(64);
         $task2->setStatus('in-progress');
         $manager->persist($task2);
@@ -41,6 +43,7 @@ class TaskFixtures extends Fixture
         $task3->setStopCondition('max-length');
         $task3->setStopConditionArguments('{"a":"b"}');
         $task3->setReducer('greedy');
+        $task3->setReporter('email');
         $task3->setProgress(100);
         $task3->setStatus('completed');
         $manager->persist($task3);

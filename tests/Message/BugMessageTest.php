@@ -34,6 +34,7 @@ class BugMessageTest extends MessageTestCase
         $task->setStopCondition('max-length');
         $task->setStopConditionArguments('{}');
         $task->setReducer('greedy');
+        $task->setReporter('email');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
@@ -52,7 +53,6 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
-        $bug->setReporter('email');
         $bug->setReproducePath($reproducePath);
         $entityManager->persist($bug);
 

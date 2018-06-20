@@ -40,6 +40,7 @@ class ReproducePathMessageTest extends MessageTestCase
         $task->setStopCondition('max-length');
         $task->setStopConditionArguments('{}');
         $task->setReducer($reducer);
+        $task->setReporter('email');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);

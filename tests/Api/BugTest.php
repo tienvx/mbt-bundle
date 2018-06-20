@@ -15,15 +15,13 @@ class BugTest extends ApiTestCase
             "id": 1,
             "reproducePath": "/mbt/reproduce_paths/1",
             "title": "Bug 1",
-            "status": "unverified",
-            "reporter": "email"
+            "status": "unverified"
           },
           {
             "id": 2,
             "reproducePath": "/mbt/reproduce_paths/2",
             "title": "Bug 2",
-            "status": "valid",
-            "reporter": "email"
+            "status": "valid"
           }
         ]', $response->getContent());
     }
@@ -34,8 +32,7 @@ class BugTest extends ApiTestCase
         {
             "reproducePath": "/mbt/reproduce_paths/3",
             "title": "Bug 3",
-            "status": "unverified",
-            "reporter": "email"
+            "status": "unverified"
         }');
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -45,8 +42,7 @@ class BugTest extends ApiTestCase
             "id": 3,
             "reproducePath": "/mbt/reproduce_paths/3",
             "title": "Bug 3",
-            "status": "unverified",
-            "reporter": "email"
+            "status": "unverified"
         }', $response->getContent());
     }
 
@@ -56,8 +52,7 @@ class BugTest extends ApiTestCase
         {
             "reproducePath": "/mbt/reproduce_paths/3",
             "title": "Bug 4",
-            "status": "invalid-bug",
-            "reporter": "invalid-reporter"
+            "status": "invalid-bug"
         }');
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -65,15 +60,11 @@ class BugTest extends ApiTestCase
         $this->assertArraySubset(json_decode('
         {
           "title": "An error occurred",
-          "detail": "status: The value you selected is not a valid choice.\nreporter: \"invalid-reporter\" is not a valid reporter.",
+          "detail": "status: The value you selected is not a valid choice.",
           "violations": [
               {
                   "propertyPath": "status",
                   "message": "The value you selected is not a valid choice."
-              },
-              {
-                  "propertyPath": "reporter",
-                  "message": "\"invalid-reporter\" is not a valid reporter."
               }
           ]
         }', true), json_decode($response->getContent(), true));

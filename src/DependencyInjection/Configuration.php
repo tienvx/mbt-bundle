@@ -16,7 +16,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->integerNode('max_path_length')->defaultValue(300)->end()
                 ->scalarNode('default_bug_title')->defaultValue('')->end()
-                ->scalarNode('default_reporter')->defaultValue('noop')->end()
                 ->arrayNode('reporter')
                     ->addDefaultsIfNotSet()
                     ->children()

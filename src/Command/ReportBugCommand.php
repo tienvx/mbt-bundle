@@ -48,7 +48,7 @@ class ReportBugCommand extends Command
             return;
         }
 
-        $reporter = $this->reporterManager->getReporter($bug->getReporter());
+        $reporter = $this->reporterManager->getReporter($bug->getReproducePath()->getTask()->getReporter());
         $reporter->report($bug);
     }
 }

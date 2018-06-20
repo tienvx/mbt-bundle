@@ -64,6 +64,13 @@ class Task
     private $reducer;
 
     /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @MbtAssert\Reporter
+     */
+    private $reporter;
+
+    /**
      * @ORM\Column(type="integer")
      * @Assert\Range(
      *     min = 0,
@@ -105,42 +112,42 @@ class Task
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle(string $title)
     {
         $this->title = $title;
     }
 
-    public function getModel()
+    public function getModel(): string
     {
         return $this->model;
     }
 
-    public function setModel($model)
+    public function setModel(string $model)
     {
         $this->model = $model;
     }
 
-    public function getGenerator()
+    public function getGenerator(): string
     {
         return $this->generator;
     }
 
-    public function setGenerator($generator)
+    public function setGenerator(string $generator)
     {
         $this->generator = $generator;
     }
 
-    public function getStopCondition()
+    public function getStopCondition(): string
     {
         return $this->stopCondition;
     }
 
-    public function setStopCondition($stopCondition)
+    public function setStopCondition(string $stopCondition)
     {
         $this->stopCondition = $stopCondition;
     }
@@ -155,7 +162,7 @@ class Task
         $this->stopConditionArguments = $stopConditionArguments;
     }
 
-    public function getReducer()
+    public function getReducer(): string
     {
         return $this->reducer;
     }
@@ -165,22 +172,32 @@ class Task
         $this->reducer = $reducer;
     }
 
-    public function getProgress()
+    public function getReporter(): string
+    {
+        return $this->reporter;
+    }
+
+    public function setReporter($reporter)
+    {
+        $this->reporter = $reporter;
+    }
+
+    public function getProgress(): int
     {
         return $this->progress;
     }
 
-    public function setProgress($progress)
+    public function setProgress(int $progress)
     {
         $this->progress = $progress;
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus($status)
+    public function setStatus(string $status)
     {
         $this->status = $status;
     }

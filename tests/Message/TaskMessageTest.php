@@ -28,6 +28,7 @@ class TaskMessageTest extends MessageTestCase
         $task->setStopCondition($stopCondition);
         $task->setStopConditionArguments($stopConditionArguments);
         $task->setReducer('weighted-random');
+        $task->setReporter('email');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);

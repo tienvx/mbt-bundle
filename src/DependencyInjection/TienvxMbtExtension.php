@@ -48,7 +48,6 @@ class TienvxMbtExtension extends Extension
         }
 
         $reducerSubscriberDefinition = $container->getDefinition(ReducerSubscriber::class);
-        $reducerSubscriberDefinition->addMethodCall('setDefaultReporter', [$config['default_reporter']]);
         $reducerSubscriberDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
 
         $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
