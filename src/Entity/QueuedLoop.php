@@ -9,7 +9,7 @@ use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 /**
  * @ORM\Entity
  */
-class QueuedReproducePath
+class QueuedLoop
 {
     /**
      * @ORM\Column(type="integer")
@@ -25,10 +25,10 @@ class QueuedReproducePath
     private $messageHashes;
 
     /**
-     * @ORM\OneToOne(targetEntity="ReproducePath")
-     * @ORM\JoinColumn(name="reproduce_path_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="Bug")
+     * @ORM\JoinColumn(name="bug_id", referencedColumnName="id")
      */
-    private $reproducePath;
+    private $bug;
 
     /**
      * @ORM\Column(type="integer")
@@ -51,14 +51,14 @@ class QueuedReproducePath
         $this->messageHashes = $messageHashes;
     }
 
-    public function getReproducePath(): ReproducePath
+    public function getBug(): Bug
     {
-        return $this->reproducePath;
+        return $this->bug;
     }
 
-    public function setReproducePath(ReproducePath $reproducePath)
+    public function setBug(Bug $bug)
     {
-        $this->reproducePath = $reproducePath;
+        $this->bug = $bug;
     }
 
     public function getIndicator(): int

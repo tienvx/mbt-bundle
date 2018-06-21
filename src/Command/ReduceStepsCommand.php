@@ -7,10 +7,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
 
-class ReduceReproducePathCommand extends Command
+class ReduceStepsCommand extends Command
 {
     private $pathReducerManager;
     private $entityManager;
@@ -26,10 +26,10 @@ class ReduceReproducePathCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:reduce-reproduce-path')
-            ->setDescription('Reduce a reproduce path.')
-            ->setHelp("Make reproduce path's steps shorter.")
-            ->addArgument('reproduce-path-id', InputArgument::REQUIRED, 'The reproduce path id to reduce.');
+            ->setName('mbt:reduce-steps')
+            ->setDescription('Reduce a reproduce steps.')
+            ->setHelp("Make bug's reproduce steps shorter.")
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.');
     }
 
     /**
@@ -39,16 +39,16 @@ class ReduceReproducePathCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $reproducePathId = $input->getArgument('reproduce-path-id');
-        /** @var ReproducePath $reproducePath */
-        $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePathId);
+        $bugId = $input->getArgument('bug-id');
+        /** @var Bug $bug */
+        $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
-        if (!$reproducePath) {
-            $output->writeln(sprintf('No reproduce path found for id %d', $reproducePathId));
+        if (!$bug) {
+            $output->writeln(sprintf('No bug found for id %d', $bugId));
             return;
         }
 
-        $pathReducer = $this->pathReducerManager->getPathReducer($reproducePath->getTask()->getReducer());
-        $pathReducer->reduce($reproducePath);
+        $pathReducer = $this->pathReducerManager->getPathReducer($bug->getTask()->getReducer());
+        $pathReducer->reduce($bug);
     }
 }

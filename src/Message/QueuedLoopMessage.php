@@ -4,20 +4,20 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class QueuedLoopMessage
 {
-    protected $queuedReproducePathId;
+    protected $bugId;
     protected $length;
     protected $pair;
 
-    public function __construct(int $queuedReproducePathId, int $length, array $pair)
+    public function __construct(int $bugId, int $length, array $pair)
     {
-        $this->queuedReproducePathId = $queuedReproducePathId;
+        $this->bugId = $bugId;
         $this->length = $length;
         $this->pair = $pair;
     }
 
-    public function getQueuedReproducePathId(): int
+    public function getBugId(): int
     {
-        return $this->queuedReproducePathId;
+        return $this->bugId;
     }
 
     public function getLength(): int
@@ -33,7 +33,7 @@ class QueuedLoopMessage
     public function __toString()
     {
         return json_encode([
-            'queuedReproducePathId' => $this->queuedReproducePathId,
+            'bugId' => $this->bugId,
             'length' => $this->length,
             'pair' => $this->pair,
         ]);
@@ -42,6 +42,6 @@ class QueuedLoopMessage
     public static function fromString(string $message)
     {
         $decoded = json_decode($message, true);
-        return new static($decoded['queuedReproducePathId'], $decoded['length'], $decoded['pair']);
+        return new static($decoded['bugId'], $decoded['length'], $decoded['pair']);
     }
 }

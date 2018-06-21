@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -20,6 +20,7 @@ class ExecuteTaskCommand extends Command
     private $generatorManager;
     private $entityManager;
     private $stopConditionManager;
+    private $defaultBugTitle;
 
     public function __construct(
         ModelRegistry $modelRegistry,
@@ -42,6 +43,11 @@ class ExecuteTaskCommand extends Command
             ->setDescription('Execute a task.')
             ->setHelp('This command execute a task, then create a bug if found.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
+    }
+
+    public function setDefaultBugTitle(string $defaultBugTitle)
+    {
+        $this->defaultBugTitle = $defaultBugTitle;
     }
 
     /**
@@ -74,13 +80,14 @@ class ExecuteTaskCommand extends Command
             }
         } catch (Throwable $throwable) {
             $path = $generator->getPath();
-            $reproducePath = new ReproducePath();
-            $reproducePath->setSteps($path);
-            $reproducePath->setLength($path->countEdges());
-            $reproducePath->setBugMessage($throwable->getMessage());
-            $reproducePath->setTask($task);
-
-            $this->entityManager->persist($reproducePath);
+            $bug = new Bug();
+            $bug->setTitle($this->defaultBugTitle);
+            $bug->setSteps($path);
+            $bug->setLength($path->countEdges());
+            $bug->setBugMessage($throwable->getMessage());
+            $bug->setTask($task);
+            $bug->setStatus('unverified');
+            $this->entityManager->persist($bug);
             $this->entityManager->flush();
         } finally {
             $subject->tearDown();

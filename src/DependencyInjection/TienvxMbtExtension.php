@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Swift_Mailer;
-use Tienvx\Bundle\MbtBundle\EventListener\ReducerSubscriber;
+use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
@@ -47,8 +47,8 @@ class TienvxMbtExtension extends Extension
             $emailReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
-        $reducerSubscriberDefinition = $container->getDefinition(ReducerSubscriber::class);
-        $reducerSubscriberDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
+        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
+        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
 
         $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
         $coverageStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
