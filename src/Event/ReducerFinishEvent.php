@@ -9,21 +9,21 @@ class ReducerFinishEvent extends Event
     /**
      * @var int
      */
-    private $reproducePathId;
+    private $bugId;
 
     /**
-     * @param int $reproducePathId
+     * @param int $bugId
      */
-    public function __construct(int $reproducePathId)
+    public function __construct(int $bugId)
     {
-        $this->reproducePathId = $reproducePathId;
+        $this->bugId = $bugId;
     }
 
     /**
      * @return int
      */
-    public function getReproducePathId()
+    public function getBugId()
     {
-        return $this->reproducePathId;
+        return $this->bugId;
     }
 }

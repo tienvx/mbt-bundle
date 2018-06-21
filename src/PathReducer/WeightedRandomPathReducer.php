@@ -3,20 +3,20 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
     /**
-     * @param ReproducePath $reproducePath
+     * @param Bug $bug
      * @throws \Exception
      */
-    public function reduce(ReproducePath $reproducePath)
+    public function reduce(Bug $bug)
     {
-        $model = $this->modelRegistry->getModel($reproducePath->getTask()->getModel());
+        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
         $graph = $this->graphBuilder->build($model->getDefinition());
-        $path  = Path::fromSteps($reproducePath->getSteps(), $graph);
+        $path  = Path::fromSteps($bug->getSteps(), $graph);
 
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
@@ -33,7 +33,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
                 try {
                     $this->runner->run($newPath, $model);
                 } catch (Throwable $newThrowable) {
-                    if ($newThrowable->getMessage() === $reproducePath->getBugMessage()) {
+                    if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                         $path = $newPath;
                     }
                 } finally {
@@ -50,8 +50,8 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->updateSteps($reproducePath, $path, $path->countEdges());
-        $this->finish($reproducePath->getId());
+        $this->updateSteps($bug, $path, $path->countEdges());
+        $this->finish($bug->getId());
     }
 
     public function updatePathWeight(array &$pathWeight, Path $path, int $from, int $to)

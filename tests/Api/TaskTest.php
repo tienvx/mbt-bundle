@@ -11,50 +11,50 @@ class TaskTest extends ApiTestCase
         $this->assertEquals('application/json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertJsonStringEqualsJsonString('
         [
-          {
-            "id": 1,
-            "title": "Task 1",
-            "model": "shopping_cart",
-            "generator": "random",
-            "stopCondition": "max-length",
-            "stopConditionArguments": "{\"a\":\"b\"}",
-            "reducer": "loop",
-            "reporter": "email",
-            "progress": 0,
-            "status": "not-started",
-            "reproducePaths": [
-                "/mbt/reproduce_paths/1",
-                "/mbt/reproduce_paths/2"
-            ]
-          },
-          {
-            "id": 2,
-            "title": "Task 2",
-            "model": "shopping_cart",
-            "generator": "random",
-            "stopCondition": "max-length",
-            "stopConditionArguments": "{\"a\":\"b\"}",
-            "reducer": "binary",
-            "reporter": "email",
-            "progress": 64,
-            "status": "in-progress",
-            "reproducePaths": []
-          },
-          {
-            "id": 3,
-            "title": "Task 3",
-            "model": "shopping_cart",
-            "generator": "random",
-            "stopCondition": "max-length",
-            "stopConditionArguments": "{\"a\":\"b\"}",
-            "reducer": "greedy",
-            "reporter": "email",
-            "progress": 100,
-            "status": "completed",
-            "reproducePaths": [
-                "/mbt/reproduce_paths/3"
-            ]
-          }
+            {
+                "id": 1,
+                "title": "Task 1",
+                "model": "shopping_cart",
+                "generator": "random",
+                "stopCondition": "max-length",
+                "stopConditionArguments": "{\"a\":\"b\"}",
+                "reducer": "loop",
+                "reporter": "email",
+                "progress": 0,
+                "status": "not-started",
+                "bugs": [
+                    "/mbt/bugs/1",
+                    "/mbt/bugs/2"
+                ]
+            },
+            {
+                "id": 2,
+                "title": "Task 2",
+                "model": "shopping_cart",
+                "generator": "random",
+                "stopCondition": "max-length",
+                "stopConditionArguments": "{\"a\":\"b\"}",
+                "reducer": "binary",
+                "reporter": "email",
+                "progress": 64,
+                "status": "in-progress",
+                "bugs": [
+                    "/mbt/bugs/3"
+                ]
+            },
+            {
+                "id": 3,
+                "title": "Task 3",
+                "model": "shopping_cart",
+                "generator": "random",
+                "stopCondition": "max-length",
+                "stopConditionArguments": "{\"a\":\"b\"}",
+                "reducer": "greedy",
+                "reporter": "email",
+                "progress": 100,
+                "status": "completed",
+                "bugs": []
+            }
         ]', $response->getContent());
     }
 
@@ -62,32 +62,32 @@ class TaskTest extends ApiTestCase
     {
         $response = $this->makeApiRequest('POST', '/mbt/tasks', '
         {
-          "title": "Test shopping cart",
-          "model": "shopping_cart",
-          "generator": "random",
-          "reporter": "email",
-          "stopCondition": "max-length",
-          "stopConditionArguments": "{\"a\":\"b\"}",
-          "reducer": "weighted-random",
-          "progress": 0,
-          "status": "not-started"
+            "title": "Test shopping cart",
+            "model": "shopping_cart",
+            "generator": "random",
+            "reporter": "email",
+            "stopCondition": "max-length",
+            "stopConditionArguments": "{\"a\":\"b\"}",
+            "reducer": "weighted-random",
+            "progress": 0,
+            "status": "not-started"
         }');
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals('application/json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertJsonStringEqualsJsonString('
         {
-          "id": 4,
-          "title": "Test shopping cart",
-          "model": "shopping_cart",
-          "generator": "random",
-          "reporter": "email",
-          "stopCondition": "max-length",
-          "stopConditionArguments": "{\"a\":\"b\"}",
-          "reducer": "weighted-random",
-          "progress": 0,
-          "status": "not-started",
-          "reproducePaths": []
+            "id": 4,
+            "title": "Test shopping cart",
+            "model": "shopping_cart",
+            "generator": "random",
+            "reporter": "email",
+            "stopCondition": "max-length",
+            "stopConditionArguments": "{\"a\":\"b\"}",
+            "reducer": "weighted-random",
+            "progress": 0,
+            "status": "not-started",
+            "bugs": []
         }', $response->getContent());
     }
 

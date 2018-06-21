@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
@@ -53,23 +53,23 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $this->entityManager = $entityManager;
     }
 
-    protected function finish(int $reproducePathId)
+    protected function finish(int $bugId)
     {
-        $event = new ReducerFinishEvent($reproducePathId);
+        $event = new ReducerFinishEvent($bugId);
 
         $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
     }
 
     /**
-     * @param ReproducePath $reproducePath
+     * @param Bug $bug
      * @param string $steps
      * @param int $length
      * @throws \Exception
      */
-    protected function updateSteps(ReproducePath $reproducePath, string $steps, int $length)
+    protected function updateSteps(Bug $bug, string $steps, int $length)
     {
-        $reproducePath->setSteps($steps);
-        $reproducePath->setLength($length);
+        $bug->setSteps($steps);
+        $bug->setLength($length);
         $this->entityManager->flush();
     }
 

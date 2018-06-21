@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\ReproducePath;
+use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
 
@@ -13,33 +13,23 @@ class ReducerSubscriber implements EventSubscriberInterface
 {
     private $entityManager;
     private $reporterManager;
-    private $defaultBugTitle;
+    private $params;
 
-    public function __construct(EntityManagerInterface $entityManager, ReporterManager $reporterManager)
+    public function __construct(EntityManagerInterface $entityManager, ReporterManager $reporterManager, ParameterBagInterface $params)
     {
         $this->entityManager = $entityManager;
         $this->reporterManager = $reporterManager;
-    }
-
-    public function setDefaultBugTitle(string $defaultBugTitle)
-    {
-        $this->defaultBugTitle = $defaultBugTitle;
+        $this->params = $params;
     }
 
     public function onFinish(ReducerFinishEvent $event)
     {
-        $reproducePathId = $event->getReproducePathId();
-        $reproducePath = $this->entityManager->getRepository(ReproducePath::class)->find($reproducePathId);
-        if (!$reproducePath || !$reproducePath instanceof ReproducePath) {
-            return;
-        }
+        $id = $event->getBugId();
+        $process = new Process("bin/console mbt:report-bug $id");
+        $process->setTimeout(null);
+        $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
-        $bug = new Bug();
-        $bug->setTitle($this->defaultBugTitle);
-        $bug->setReproducePath($reproducePath);
-        $bug->setStatus('unverified');
-        $this->entityManager->persist($bug);
-        $this->entityManager->flush();
+        $process->run();
     }
 
     public static function getSubscribedEvents()

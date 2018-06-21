@@ -11,18 +11,33 @@ class BugTest extends ApiTestCase
         $this->assertEquals('application/json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertJsonStringEqualsJsonString('
         [
-          {
-            "id": 1,
-            "reproducePath": "/mbt/reproduce_paths/1",
-            "title": "Bug 1",
-            "status": "unverified"
-          },
-          {
-            "id": 2,
-            "reproducePath": "/mbt/reproduce_paths/2",
-            "title": "Bug 2",
-            "status": "valid"
-          }
+            {
+                "id": 1,
+                "title": "Bug 1",
+                "status": "unverified",
+                "steps": "step1 step2 step3",
+                "length": 3,
+                "task": "/mbt/tasks/1",
+                "bugMessage": "Something happen on shopping_cart model"
+            },
+            {
+                "id": 2,
+                "title": "Bug 2",
+                "status": "valid",
+                "steps": "step1 step2 step3 step4 step5",
+                "length": 5,
+                "task": "/mbt/tasks/1",
+                "bugMessage": "We found a bug on shopping_cart model"
+            },
+            {
+                "id": 3,
+                "title": "Bug 3",
+                "status": "valid",
+                "steps": "step1 step2",
+                "length": 2,
+                "task": "/mbt/tasks/2",
+                "bugMessage": "Weird bug when we test shoping_cart model"
+             }
         ]', $response->getContent());
     }
 
@@ -30,7 +45,10 @@ class BugTest extends ApiTestCase
     {
         $response = $this->makeApiRequest('POST', '/mbt/bugs', '
         {
-            "reproducePath": "/mbt/reproduce_paths/3",
+            "task": "/mbt/tasks/2",
+            "bugMessage": "This bug never happen on task 2",
+            "steps": "step1 step2 step3.1 step3.2",
+            "length": 4,
             "title": "Bug 3",
             "status": "unverified"
         }');
@@ -39,8 +57,11 @@ class BugTest extends ApiTestCase
         $this->assertEquals('application/json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertJsonStringEqualsJsonString('
         {
-            "id": 3,
-            "reproducePath": "/mbt/reproduce_paths/3",
+            "id": 4,
+            "task": "/mbt/tasks/2",
+            "bugMessage": "This bug never happen on task 2",
+            "steps": "step1 step2 step3.1 step3.2",
+            "length": 4,
             "title": "Bug 3",
             "status": "unverified"
         }', $response->getContent());
@@ -50,23 +71,20 @@ class BugTest extends ApiTestCase
     {
         $response = $this->makeApiRequest('POST', '/mbt/bugs', '
         {
-            "reproducePath": "/mbt/reproduce_paths/3",
-            "title": "Bug 4",
-            "status": "invalid-bug"
+            "task": "/mbt/tasks/3",
+            "title": "Bug 5",
+            "status": "invalid-bug",
+            "bugMessage": "This bug is invalid",
+            "steps": "How to reproduce this bug?",
+            "length": "invalid-length"
         }');
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('application/problem+json; charset=utf-8', $response->headers->get('Content-Type'));
         $this->assertArraySubset(json_decode('
         {
-          "title": "An error occurred",
-          "detail": "status: The value you selected is not a valid choice.",
-          "violations": [
-              {
-                  "propertyPath": "status",
-                  "message": "The value you selected is not a valid choice."
-              }
-          ]
+            "title": "An error occurred",
+            "detail": "The type of the \"length\" attribute must be \"int\", \"string\" given."
         }', true), json_decode($response->getContent(), true));
     }
 }

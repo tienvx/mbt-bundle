@@ -86,25 +86,25 @@ class Task
     private $status;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReproducePath", mappedBy="task", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})
      */
-    private $reproducePaths;
+    private $bugs;
 
     public function __construct()
     {
-        $this->reproducePaths = new ArrayCollection();
+        $this->bugs = new ArrayCollection();
     }
 
-    public function addReproducePath(ReproducePath $reproducePath): void
+    public function addBug(Bug $bug): void
     {
-        $reproducePath->setTask($this);
-        $this->reproducePaths->add($reproducePath);
+        $bug->setTask($this);
+        $this->bugs->add($bug);
     }
 
-    public function removeReproducePath(ReproducePath $reproducePath): void
+    public function removeBug(Bug $bug): void
     {
-        $reproducePath->setTask(null);
-        $this->reproducePaths->removeElement($reproducePath);
+        $bug->setTask(null);
+        $this->bugs->removeElement($bug);
     }
 
     public function getId()
@@ -203,10 +203,10 @@ class Task
     }
 
     /**
-     * @return Collection|ReproducePath[]
+     * @return Collection|Bug[]
      */
-    public function getReproducePaths()
+    public function getBugs()
     {
-        return $this->reproducePaths;
+        return $this->bugs;
     }
 }
