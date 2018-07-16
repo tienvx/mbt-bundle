@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\CoverageStopCondition;
 use Tienvx\Bundle\MbtBundle\StopCondition\MaxLengthStopCondition;
@@ -55,6 +56,14 @@ class TienvxMbtExtension extends Extension
 
         $maxLengthStopConditionDefinition = $container->getDefinition(MaxLengthStopCondition::class);
         $maxLengthStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+
+        $hipchatReporterDefinition = $container->getDefinition(HipchatReporter::class);
+        if ($container->has('hipchat.notifier')) {
+            $hipchatReporterDefinition->addMethodCall('setHipchat', [new Reference('hipchat.notifier')]);
+        }
+        if (class_exists(Twig::class)) {
+            $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
