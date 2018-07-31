@@ -76,7 +76,7 @@ class BugTest extends ApiTestCase
             "status": "invalid-bug",
             "bugMessage": "This bug is invalid",
             "steps": "How to reproduce this bug?",
-            "length": "invalid-length"
+            "length": 5
         }');
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -84,7 +84,13 @@ class BugTest extends ApiTestCase
         $this->assertArraySubset(json_decode('
         {
             "title": "An error occurred",
-            "detail": "The type of the \"length\" attribute must be \"int\", \"string\" given."
+            "detail": "status: The value you selected is not a valid choice.",
+            "violations": [
+                {
+                    "propertyPath": "status",
+                    "message": "The value you selected is not a valid choice."
+                }
+            ]
         }', true), json_decode($response->getContent(), true));
     }
 }
