@@ -28,6 +28,7 @@ class QueuedLoopMessageHandler implements MessageHandlerInterface
         $process = new Process(sprintf("bin/console mbt:handle-path-reducer %s '%s'", $reducer, $message));
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+        $process->disableOutput();
 
         $process->run();
     }

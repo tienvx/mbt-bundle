@@ -28,6 +28,7 @@ class ReducerSubscriber implements EventSubscriberInterface
         $process = new Process(sprintf('bin/console mbt:report-bug %d', $id));
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+        $process->disableOutput();
 
         $process->run();
     }
