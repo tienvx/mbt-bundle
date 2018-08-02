@@ -23,28 +23,28 @@ framework:
                     to: category
                     metadata:
                         model_guard: "subject.categoryHasBeenSelected()"
-                        weight: 3
+                        weight: 70
                         label: "From home page, choose a random category and open it"
                 viewOtherCategory:
                     from: category
                     to: category
                     metadata:
                         model_guard: "subject.categoryHasBeenSelected()"
-                        weight: 1
+                        weight: 20
                         label: "From category page, choose a random category and open it"
                 viewAnyCategoryFromProduct:
                     from: product
                     to: category
                     metadata:
                         model_guard: "subject.categoryHasBeenSelected()"
-                        weight: 2
+                        weight: 20
                         label: "From product page, choose a random category and open it"
                 viewAnyCategoryFromCart:
                     from: cart
                     to: category
                     metadata:
                         model_guard: "subject.categoryHasBeenSelected()"
-                        weight: 6
+                        weight: 30
                         label: "From cart page, choose a random category and open it"
                 viewProductFromHome:
                     from: home
@@ -52,90 +52,106 @@ framework:
                     metadata:
                         model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and open it"
+                        weight: 10
                 viewProductFromCart:
                     from: cart
                     to: product
                     metadata:
                         model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         label: "From cart page, choose a random product and open it"
+                        weight: 25
                 viewProductFromCategory:
                     from: category
                     to: product
                     metadata:
                         model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and open it"
+                        weight: 20
                 viewCartFromHome:
                     from: home
                     to: cart
                     metadata:
                         label: "From home page, open cart to view it"
+                        weight: 5
                 viewCartFromCategory:
                     from: category
                     to: cart
                     metadata:
                         label: "From category page, open cart to view it"
+                        weight: 5
                 viewCartFromProduct:
                     from: product
                     to: cart
                     metadata:
                         label: "From product page, open cart to view it"
+                        weight: 10
                 viewCartFromCheckout:
                     from: checkout
                     to: cart
                     metadata:
                         label: "From checkout page, open cart to view it"
+                        weight: 30
                 checkoutFromHome:
                     from: home
                     to: checkout
                     metadata:
                         label: "From home page, open checkout page"
+                        weight: 10
                 checkoutFromCategory:
                     from: category
                     to: checkout
                     metadata:
                         label: "From category page, open checkout page"
+                        weight: 30
                 checkoutFromProduct:
                     from: product
                     to: checkout
                     metadata:
                         label: "From product page, open checkout page"
+                        weight: 30
                 checkoutFromCart:
                     from: cart
                     to: checkout
                     metadata:
                         label: "From cart page, open checkout page"
+                        weight: 25
                 backToHomeFromCategory:
                     from: category
                     to: home
                     metadata:
                         label: "From category page, back to home page"
+                        weight: 5
                 backToHomeFromProduct:
                     from: product
                     to: home
                     metadata:
                         label: "From product page, back to home page"
+                        weight: 10
                 backToHomeFromCart:
                     from: cart
                     to: home
                     metadata:
                         label: "From cart page, back to home page"
+                        weight: 10
                 backToHomeFromCheckout:
                     from: checkout
                     to: home
                     metadata:
                         label: "From checkout page, back to home page"
+                        weight: 70
                 update:
                     from: cart
                     to: cart
                     metadata:
                         model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                        weight: 5
                         label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                 remove:
                     from: cart
                     to: cart
                     metadata:
                         model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
-                        weight: 9
+                        weight: 5
                         label: "From cart page, choose a random product and remove it"
                 addFromHome:
                     from: home
@@ -143,14 +159,17 @@ framework:
                     metadata:
                         model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and add it to cart"
+                        weight: 5
                 addFromCategory:
                     from: category
                     to: category
                     metadata:
                         model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and add it to cart"
+                        weight: 25
                 addFromProduct:
                     from: product
                     to: product
                     metadata:
                         label: "From product page, add it to cart"
+                        weight: 30

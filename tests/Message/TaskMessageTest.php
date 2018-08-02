@@ -55,6 +55,7 @@ class TaskMessageTest extends MessageTestCase
     {
         return [
             ['random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
+            ['weighted-random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
             ['random', 'max-length', '{}'],
             ['all-places', 'noop', '{}'],
             ['all-transitions', 'noop', '{}'],

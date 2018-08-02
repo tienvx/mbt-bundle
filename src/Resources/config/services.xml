@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject,Message,Algorithm}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph,Model,Subject,Message,Algorithm,Helper}" />
 
         <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
 

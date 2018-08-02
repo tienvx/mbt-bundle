@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
@@ -25,7 +26,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
         while ($try <= $maxTries) {
             $vertexWeight = $this->buildVertexWeight($path, $pathWeight);
             $pairWeight = $this->buildPairWeight($vertexWeight);
-            $pair = $this->randomPairByWeight($pairWeight);
+            $pair = Randomizer::randomByWeight($pairWeight);
             list($i, $j) = explode('|', $pair);
             $newPath = $this->getNewPath($path, $i, $j);
             // Make sure new path shorter than old path.
@@ -68,33 +69,6 @@ class WeightedRandomPathReducer extends AbstractPathReducer
             $pathWeight[$vertex->getAttribute('name')] = $oldPathWeight[$vertex->getAttribute('name')] ?? 0;
         }
         return $pathWeight;
-    }
-
-    /**
-     * https://stackoverflow.com/a/11872928
-     *
-     * @param array $pairWeight
-     * @return string
-     */
-    public function randomPairByWeight(array $pairWeight): string
-    {
-        $maxRand = (int) array_sum($pairWeight);
-        if ($maxRand === 0) {
-            $rand = rand(0, count($pairWeight) - 1);
-            return array_keys($pairWeight)[$rand];
-        } else {
-            $rand = mt_rand(1, $maxRand);
-
-            foreach ($pairWeight as $key => $value) {
-                $rand -= $value;
-                if ($rand <= 0) {
-                    return $key;
-                }
-            }
-
-            // Make PHP happy by return the first key.
-            return array_keys($pairWeight)[0];
-        }
     }
 
     public function buildPairWeight(array $vertexWeight): array
