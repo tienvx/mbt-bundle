@@ -11,7 +11,7 @@ class ModelGuardListener
     private $configuration;
     private $expressionLanguage;
 
-    public function __construct(array $configuration = [], ExpressionLanguage $expressionLanguage)
+    public function __construct(array $configuration, ExpressionLanguage $expressionLanguage)
     {
         $this->configuration = $configuration;
         $this->expressionLanguage = $expressionLanguage;

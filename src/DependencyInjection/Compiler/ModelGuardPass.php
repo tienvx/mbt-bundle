@@ -42,7 +42,7 @@ class ModelGuardPass implements CompilerPassInterface
                 // Add Guard Listener
                 $guard = new Definition(ModelGuardListener::class);
                 $guard->setPrivate(true);
-                $configuration = array();
+                $configuration = [];
                 foreach ($workflowDefinition->getTransitions() as $transition) {
                     $transitionMetadata = $workflowDefinition->getMetadataStore()->getTransitionMetadata($transition);
                     if (!isset($transitionMetadata['model_guard'])) {
@@ -54,10 +54,10 @@ class ModelGuardPass implements CompilerPassInterface
                     $configuration[$eventName] = $transitionMetadata['model_guard'];
                 }
                 if ($configuration) {
-                    $guard->setArguments(array(
+                    $guard->setArguments([
                         $configuration,
                         new Reference(ExpressionLanguage::class),
-                    ));
+                    ]);
 
                     $workflowId = sprintf('%s.%s', $tag['type'], $tag['name']);
                     $container->setDefinition(sprintf('%s.listener.model_guard', $workflowId), $guard);
