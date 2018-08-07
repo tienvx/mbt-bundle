@@ -2,7 +2,7 @@
     "name": "tienvx/mbt-bundle",
     "type": "symfony-bundle",
     "description": "Provide tools to test a system using Model Based Testing technique.",
-    "keywords": ["model based testing", "model", "testing", "graph theory", "algorithm"],
+    "keywords": ["model based testing", "testing tools"],
     "license": "MIT",
     "authors": [
         {
