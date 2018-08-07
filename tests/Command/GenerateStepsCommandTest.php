@@ -54,8 +54,11 @@ class GenerateStepsCommandTest extends CommandTestCase
                 $edges[] = substr($step, 0, $pos);
             }
         }
-        if ($generator !== 'all-transitions' || end($vertices) === 'home') {
+        if ($generator === 'all-transitions' && end($vertices) !== 'home') {
             // Sometime, we can't get the path through all transitions, so ignore it.
+        } elseif ($generator === 'all-places' && count($edges) === 1) {
+            // Sometime, we can't get the path through all edges, so ignore it.
+        } else {
             $this->assertGreaterThanOrEqual($edgeCount, count($edges));
             $this->assertGreaterThanOrEqual($vertexCount, count($vertices));
         }
