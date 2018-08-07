@@ -75,6 +75,7 @@ class Eulerian extends BaseEulerian
                 $cloneEdge->setWeight($edge->getWeight());
                 $cloneEdge->setAttribute('name', $edge->getAttribute('name'));
                 $cloneEdge->setAttribute('label', $edge->getAttribute('label'));
+                $cloneEdge->setAttribute('weight', $edge->getAttribute('weight'));
             }
             $balanceMap[$first]++;
             $balanceMap[$last]--;
