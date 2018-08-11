@@ -41,7 +41,7 @@
         "symfony/swiftmailer-bundle": "^3.2",
         "php-coveralls/php-coveralls": "^2.1",
         "pnz/messenger-filesystem-transport": "^0.1.2",
-        "tienvx/hipchat-bundle": "dev-master"
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
         "psr-4": {

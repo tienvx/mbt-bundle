@@ -70,6 +70,6 @@ abstract class MessageTestCase extends TestCase
 
     protected function hasMessages()
     {
-        return filesize($this->cacheDir . '/queue/queue.data') !== 0;
+        return filesize( "{$this->cacheDir}/queue/queue.data") !== 0;
     }
 }

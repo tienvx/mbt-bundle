@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
-use Nixilla\HipchatBundle\NixillaHipchatBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
@@ -27,7 +26,6 @@ class AppKernel extends Kernel
             new TwigBundle(),
             new SwiftmailerBundle(),
             new TienvxMbtBundle(),
-            new NixillaHipchatBundle(),
         );
 
         return $bundles;

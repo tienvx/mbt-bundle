@@ -37,6 +37,9 @@ services:
         # Configure the tags: this enables the `filesystem://` transport to be auto-discovered
         tags: ['messenger.transport_factory']
 
+    GuzzleHttp\Client:
+        alias:  Tienvx\Bundle\MbtBundle\Tests\Http\Client
+
 swiftmailer:
     url: 'null://localhost'
     spool:
@@ -50,3 +53,10 @@ tienvx_mbt:
         email:
             from: 'send@example.com'
             to: 'recipient@example.com'
+        hipchat:
+            address: 'https://api.hipchat.com/v2'
+            room: 'test.ModelBasedTesting'
+            token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
+            color: 'purple'
+            notify: false
+            format: 'html'

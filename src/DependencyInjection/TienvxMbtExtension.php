@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
+use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -58,8 +59,14 @@ class TienvxMbtExtension extends Extension
         $maxLengthStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
 
         $hipchatReporterDefinition = $container->getDefinition(HipchatReporter::class);
-        if ($container->has('hipchat.notifier')) {
-            $hipchatReporterDefinition->addMethodCall('setHipchat', [new Reference('hipchat.notifier')]);
+        $hipchatReporterDefinition->addMethodCall('setAddress', [$config['reporter']['hipchat']['address']]);
+        $hipchatReporterDefinition->addMethodCall('setRoom', [$config['reporter']['hipchat']['room']]);
+        $hipchatReporterDefinition->addMethodCall('setToken', [$config['reporter']['hipchat']['token']]);
+        $hipchatReporterDefinition->addMethodCall('setColor', [$config['reporter']['hipchat']['color']]);
+        $hipchatReporterDefinition->addMethodCall('setNotify', [$config['reporter']['hipchat']['notify']]);
+        $hipchatReporterDefinition->addMethodCall('setFormat', [$config['reporter']['hipchat']['format']]);
+        if (class_exists(Client::class)) {
+            $hipchatReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
         }
         if (class_exists(Twig::class)) {
             $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
