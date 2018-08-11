@@ -7,10 +7,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Model\Constants;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
+use Tienvx\Bundle\MbtBundle\Helper\Constants;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager;
 
 class GenerateStepsCommand extends Command
 {

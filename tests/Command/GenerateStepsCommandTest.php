@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Command\GenerateStepsCommand;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager;
 
 class GenerateStepsCommandTest extends CommandTestCase
 {

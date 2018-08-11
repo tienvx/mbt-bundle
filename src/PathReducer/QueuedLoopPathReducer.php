@@ -11,23 +11,22 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\QueuedLoop;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\PathRunner;
+use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
 class QueuedLoopPathReducer extends AbstractPathReducer
 {
     protected $messageBus;
 
     public function __construct(
-        PathRunner $runner,
         EventDispatcherInterface $dispatcher,
         MessageBusInterface $messageBus,
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
         EntityManagerInterface $entityManager)
     {
-        parent::__construct($runner, $dispatcher, $modelRegistry, $graphBuilder, $entityManager);
+        parent::__construct($dispatcher, $modelRegistry, $graphBuilder, $entityManager);
         $this->messageBus = $messageBus;
     }
 
@@ -73,7 +72,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 // Make sure new path shorter than old path.
                 if ($newPath->countEdges() < $path->countEdges()) {
                     try {
-                        $this->runner->run($newPath, $model);
+                        PathRunner::run($newPath, $model);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedLoop->getBug()->getBugMessage()) {
                             $updated = $this->updateSteps($queuedLoop->getBug(), $newPath, $newPath->countEdges());

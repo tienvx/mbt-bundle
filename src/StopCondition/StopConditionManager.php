@@ -1,8 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
-
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
+namespace Tienvx\Bundle\MbtBundle\StopCondition;
 
 class StopConditionManager
 {

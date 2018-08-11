@@ -6,18 +6,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\PathRunner;
+use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
 
 abstract class AbstractPathReducer implements PathReducerInterface
 {
     use NewPathTrait;
-
-    /**
-     * @var PathRunner
-     */
-    protected $runner;
 
     /**
      * @var EventDispatcherInterface
@@ -40,13 +34,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
     protected $entityManager;
 
     public function __construct(
-        PathRunner $runner,
         EventDispatcherInterface $dispatcher,
         ModelRegistry $modelRegistry,
         GraphBuilder $graphBuilder,
         EntityManagerInterface $entityManager)
     {
-        $this->runner = $runner;
         $this->dispatcher = $dispatcher;
         $this->modelRegistry = $modelRegistry;
         $this->graphBuilder  = $graphBuilder;

@@ -6,6 +6,7 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
+use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
 class WeightedRandomPathReducer extends AbstractPathReducer
 {
@@ -32,7 +33,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
             // Make sure new path shorter than old path.
             if ($newPath->countEdges() < $path->countEdges()) {
                 try {
-                    $this->runner->run($newPath, $model);
+                    PathRunner::run($newPath, $model);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                         $path = $newPath;

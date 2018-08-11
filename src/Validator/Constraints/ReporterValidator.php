@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 /**
  * @Annotation
