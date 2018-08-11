@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
+use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -12,6 +13,7 @@ use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\StopCondition\CoverageStopCondition;
 use Tienvx\Bundle\MbtBundle\StopCondition\MaxLengthStopCondition;
@@ -55,6 +57,20 @@ class TienvxMbtExtension extends Extension
 
         $maxLengthStopConditionDefinition = $container->getDefinition(MaxLengthStopCondition::class);
         $maxLengthStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+
+        $hipchatReporterDefinition = $container->getDefinition(HipchatReporter::class);
+        $hipchatReporterDefinition->addMethodCall('setAddress', [$config['reporter']['hipchat']['address']]);
+        $hipchatReporterDefinition->addMethodCall('setRoom', [$config['reporter']['hipchat']['room']]);
+        $hipchatReporterDefinition->addMethodCall('setToken', [$config['reporter']['hipchat']['token']]);
+        $hipchatReporterDefinition->addMethodCall('setColor', [$config['reporter']['hipchat']['color']]);
+        $hipchatReporterDefinition->addMethodCall('setNotify', [$config['reporter']['hipchat']['notify']]);
+        $hipchatReporterDefinition->addMethodCall('setFormat', [$config['reporter']['hipchat']['format']]);
+        if (class_exists(Client::class)) {
+            $hipchatReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)

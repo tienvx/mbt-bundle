@@ -40,7 +40,8 @@
         "symfony/asset": "^4.1",
         "symfony/swiftmailer-bundle": "^3.2",
         "php-coveralls/php-coveralls": "^2.1",
-        "pnz/messenger-filesystem-transport": "^0.1.2"
+        "pnz/messenger-filesystem-transport": "^0.1.2",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
         "psr-4": {

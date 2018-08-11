@@ -2,35 +2,31 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
-use Symfony\Component\Workflow\Registry;
 use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
 use Twig\Environment as Twig;
 
-class EmailReporter implements ReporterInterface
+class EmailReporter extends AbstractReporter
 {
-    /** @var Swift_Mailer */
+    /**
+     * @var Swift_Mailer
+     */
     protected $mailer;
-    /** @var Twig */
-    protected $twig;
-    protected $modelRegistry;
-    protected $graphBuilder;
-    protected $workflows;
-    protected $from;
-    protected $to;
 
-    public function __construct(
-        ModelRegistry $modelRegistry,
-        GraphBuilder $graphBuilder,
-        Registry $workflows)
-    {
-        $this->modelRegistry = $modelRegistry;
-        $this->graphBuilder = $graphBuilder;
-        $this->workflows = $workflows;
-    }
+    /**
+     * @var Twig
+     */
+    protected $twig;
+
+    /**
+     * @var mixed
+     */
+    protected $from;
+
+    /**
+     * @var mixed
+     */
+    protected $to;
 
     public function setFrom($from)
     {
@@ -76,7 +72,7 @@ class EmailReporter implements ReporterInterface
                 ->setFrom($this->from)
                 ->setBody(
                     $this->twig->render(
-                        '@TienvxMbt/emails/bug.html.twig',
+                        '@TienvxMbt/bug-templates/default.html.twig',
                         [
                             'id' => $bug->getId(),
                             'task' => $bug->getTask()->getTitle(),
@@ -88,28 +84,6 @@ class EmailReporter implements ReporterInterface
                     'text/html'
                 )
         );
-    }
-
-    /**
-     * @param Bug $bug
-     * @return array
-     * @throws \Exception
-     */
-    protected function buildSteps(Bug $bug): array
-    {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
-        $path = Path::fromSteps($bug->getSteps(), $graph);
-
-        $steps = [];
-        foreach ($path->getEdges() as $index => $edge) {
-            $steps[] = [
-                'step' => $index + 1,
-                'action' => $edge->getAttribute('label'),
-                'data' => json_encode($path->getDataAt($index) ?? []),
-            ];
-        }
-        return $steps;
     }
 
     public static function getName()

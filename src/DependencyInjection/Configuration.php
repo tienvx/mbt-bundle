@@ -26,6 +26,17 @@ class Configuration implements ConfigurationInterface
                                 ->variableNode('to')->defaultValue([])->end()
                             ->end()
                         ->end() // email
+                        ->arrayNode('hipchat')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('address')->defaultValue('https://api.hipchat.com/v2')->end()
+                                ->scalarNode('room')->defaultValue('')->end()
+                                ->scalarNode('token')->defaultValue('')->end()
+                                ->enumNode('color')->defaultValue('purple')->values(['yellow', 'green', 'red', 'purple', 'gray', 'random'])->end()
+                                ->booleanNode('notify')->defaultValue(false)->end()
+                                ->enumNode('format')->defaultValue('html')->values(['html', 'text'])->end()
+                            ->end()
+                        ->end() // hipchat
                     ->end()
                 ->end() // reporter
             ->end()

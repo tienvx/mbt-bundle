@@ -10,22 +10,22 @@
 
         <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
 
-        <service id="mbt.generator_manager" class="Tienvx\Bundle\MbtBundle\Service\GeneratorManager" public="true" autowire="true">
+        <service id="mbt.generator_manager" class="Tienvx\Bundle\MbtBundle\Service\GeneratorManager" public="false" autowire="true">
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\GeneratorManager" alias="mbt.generator_manager" />
 
-        <service id="mbt.stop_condition_manager" class="Tienvx\Bundle\MbtBundle\Service\StopConditionManager" public="true" autowire="true">
+        <service id="mbt.stop_condition_manager" class="Tienvx\Bundle\MbtBundle\Service\StopConditionManager" public="false" autowire="true">
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\StopConditionManager" alias="mbt.stop_condition_manager" />
 
-        <service id="mbt.path_reducer_manager" class="Tienvx\Bundle\MbtBundle\Service\PathReducerManager" public="true" autowire="true">
+        <service id="mbt.path_reducer_manager" class="Tienvx\Bundle\MbtBundle\Service\PathReducerManager" public="false" autowire="true">
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\PathReducerManager" alias="mbt.path_reducer_manager" />
 
-        <service id="mbt.reporter_manager" class="Tienvx\Bundle\MbtBundle\Service\ReporterManager" public="true" autowire="true">
+        <service id="mbt.reporter_manager" class="Tienvx\Bundle\MbtBundle\Service\ReporterManager" public="false" autowire="true">
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Service\ReporterManager" alias="mbt.reporter_manager" />
@@ -33,5 +33,7 @@
         <service id="mbt.entity_subscriber" class="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
+
+        <service id="GuzzleHttp\Client" class="GuzzleHttp\Client" autowire="true"/>
     </services>
 </container>
