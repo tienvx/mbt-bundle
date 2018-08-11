@@ -60,8 +60,12 @@ class BugMessageTest extends MessageTestCase
 
         $this->assertEquals(1, count($bugs));
         $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
-        $this->assertEquals($expectedSteps, $bugs[0]->getSteps());
-        $this->assertEquals($expectedLength, $bugs[0]->getLength());
+        if ($reducer !== 'random') {
+            $this->assertEquals($expectedSteps, $bugs[0]->getSteps());
+            $this->assertEquals($expectedLength, $bugs[0]->getLength());
+        } else {
+            $this->assertLessThanOrEqual($expectedLength, $bugs[0]->getLength());
+        }
 
         if ($reporter === 'email') {
             $command = $this->application->find('swiftmailer:spool:send');
@@ -151,6 +155,14 @@ class BugMessageTest extends MessageTestCase
                 'email',
                 'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
                 3
+            ],
+            [
+                'home viewAnyCategoryFromHome(category=18) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
+                6,
+                'random',
+                'hipchat',
+                '',
+                6
             ],
         ];
     }

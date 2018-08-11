@@ -14,7 +14,7 @@ class Randomizer
     {
         $maxRand = (int) array_sum($values);
         if ($maxRand === 0) {
-            $rand = rand(0, count($values) - 1);
+            $rand = mt_rand(0, count($values) - 1);
             return array_keys($values)[$rand];
         } else {
             $rand = mt_rand(1, $maxRand);
@@ -29,5 +29,15 @@ class Randomizer
             // Make PHP happy by return the first key.
             return array_keys($values)[0];
         }
+    }
+
+    public static function randomPair(int $min, int $max)
+    {
+        $i = mt_rand($min, $max);
+        $j = mt_rand($min, $max);
+        while ($j < $i) {
+            $j = mt_rand($min, $max);
+        }
+        return [$i, $j];
     }
 }
