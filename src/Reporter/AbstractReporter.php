@@ -4,8 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
 
 abstract class AbstractReporter implements ReporterInterface
 {

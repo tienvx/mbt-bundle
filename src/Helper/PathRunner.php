@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
+namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
@@ -12,7 +12,7 @@ class PathRunner
      * @param Model $model
      * @throws \Exception
      */
-    public function run(Path $path, Model $model)
+    public static function run(Path $path, Model $model)
     {
         $subject = $model->createSubject();
         $subject->setUp();

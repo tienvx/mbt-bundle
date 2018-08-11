@@ -1,8 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
-
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
+namespace Tienvx\Bundle\MbtBundle\Generator;
 
 class GeneratorManager
 {

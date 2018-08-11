@@ -10,9 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\Service\StopConditionManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager;
 
 class ExecuteTaskCommand extends Command
 {

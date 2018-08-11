@@ -1,8 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
-
-use Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model;
 
 class ModelRegistry
 {

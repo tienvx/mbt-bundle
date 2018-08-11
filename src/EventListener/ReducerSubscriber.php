@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
-use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 class ReducerSubscriber implements EventSubscriberInterface
 {

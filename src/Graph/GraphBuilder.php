@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
+namespace Tienvx\Bundle\MbtBundle\Graph;
 
 use Fhaculty\Graph\Graph;
 use Symfony\Component\Workflow\Definition;

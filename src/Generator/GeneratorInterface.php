@@ -7,7 +7,7 @@ use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Model\Subject;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 
 interface GeneratorInterface extends PluginInterface

@@ -1,8 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
-
-use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
+namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 class ReporterManager
 {

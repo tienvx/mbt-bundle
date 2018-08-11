@@ -1,8 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
-
-use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
+namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 class PathReducerManager
 {

@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Workflow\Definition;
 use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Model\Subject;
-use Tienvx\Bundle\MbtBundle\Service\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
 
 class ModelPass implements CompilerPassInterface
 {

@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Service\ReporterManager;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 class ReportBugCommand extends Command
 {

@@ -5,8 +5,8 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Tienvx\Bundle\MbtBundle\Service\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Service\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 /**
  * @Annotation
