@@ -1,0 +1,209 @@
+framework:
+    workflows:
+        # https://demo.opencart.com
+        checkout:
+            type: 'workflow'
+            supports:
+                - Tienvx\Bundle\MbtBundle\Model\Subject
+            metadata:
+                model: true
+                subject: Tienvx\Bundle\MbtBundle\Tests\Subject\Checkout
+                label: "Checkout"
+                tags: ["opencart's checkout process", "demo", "testing", "model-based-testing"]
+            places:
+                - home
+                - awaitingAccount
+                - awaitingPersonalDetails
+                - awaitingBillingAddress
+                - awaitingPassword
+                - awaitingPolicyAgreement
+                - awaitingDeliveryAndBillingAddressesSameOrDifferentConfirmation
+                - personalDetailsFilled
+                - billingAddressFilled
+                - passwordFilled
+                - policyAgreed
+                - deliveryAndBillingAddressesSameOrDifferentConfirmed
+                - awaitingDeliveryAddress
+                - awaitingDeliveryMethod
+                - awaitingPaymentMethod
+                - awaitingTermsAndConditionsAgreement
+                - paymentMethodSelected
+                - termsAndConditionsAgreed
+                - awaitingOrderConfirmation
+                - orderPlaced
+            initial_place: home
+            transitions:
+                addProductAndCheckout:
+                    from: home
+                    to: awaitingAccount
+                    metadata:
+                        label: "Add product and go to checkout"
+                login:
+                    from: awaitingAccount
+                    to: awaitingBillingAddress
+                    metadata:
+                        model_guard: "subject.notLoggedIn()"
+                        weight: 33
+                        label: "Login"
+                guestCheckout:
+                    from: awaitingAccount
+                    to:
+                        - awaitingPersonalDetails
+                        - awaitingBillingAddress
+                        - awaitingDeliveryAndBillingAddressesSameOrDifferentConfirmation
+                    metadata:
+                        model_guard: "subject.notLoggedIn()"
+                        weight: 33
+                        label: "Guest Checkout"
+                registerAccount:
+                    from: awaitingAccount
+                    to:
+                        - awaitingPersonalDetails
+                        - awaitingBillingAddress
+                        - awaitingPassword
+                        - awaitingPolicyAgreement
+                        - awaitingDeliveryAndBillingAddressesSameOrDifferentConfirmation
+                    metadata:
+                        model_guard: "subject.notLoggedIn()"
+                        weight: 33
+                        label: "Register Account"
+                fillPersonalDetails:
+                    from: awaitingPersonalDetails
+                    to: personalDetailsFilled
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                        label: "Fill personal details when do guest checkout or register account"
+                fillBillingAddress:
+                    from: awaitingBillingAddress
+                    to: billingAddressFilled
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                        label: "Fill billing address when do guest checkout or register account"
+                fillPassword:
+                    from: awaitingPassword
+                    to: passwordFilled
+                    metadata:
+                        model_guard: "subject.registeringAccount()"
+                        label: "Fill password when register account"
+                agreePolicy:
+                    from: awaitingPolicyAgreement
+                    to: policyAgreed
+                    metadata:
+                        model_guard: "subject.registeringAccount()"
+                        label: "Agree policy when register account"
+                confirmDeliveryAndBillingAddressesSameOrDifferent:
+                    from: awaitingDeliveryAndBillingAddressesSameOrDifferentConfirmation
+                    to: deliveryAndBillingAddressesSameOrDifferentConfirmed
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                        label: "Confirm delivery and billing addresses are the same or different"
+                useExistingBillingAddress:
+                    from: awaitingBillingAddress
+                    to: awaitingDeliveryAddress
+                    metadata:
+                        model_guard: "subject.loggedIn()"
+                        label: "Use existing billing address"
+                useNewBillingAddress:
+                    from: awaitingBillingAddress
+                    to: awaitingDeliveryAddress
+                    metadata:
+                        model_guard: "subject.loggedIn()"
+                        label: "Use new billing address"
+                continueRegisterAccountWithDifferentAddresses:
+                    from:
+                        - personalDetailsFilled
+                        - billingAddressFilled
+                        - passwordFilled
+                        - policyAgreed
+                        - deliveryAndBillingAddressesSameOrDifferentConfirmed
+                    to: awaitingDeliveryAddress
+                    metadata:
+                        model_guard: "subject.registeringAccount() && subject.differentAddresses()"
+                        label: "Continue register account"
+                continueGuestCheckoutDifferentAddresses:
+                    from:
+                        - personalDetailsFilled
+                        - billingAddressFilled
+                        - deliveryAndBillingAddressesSameOrDifferentConfirmed
+                    to: awaitingDeliveryAddress
+                    metadata:
+                        model_guard: "subject.doingGuestCheckout() && subject.differentAddresses()"
+                        label: "Continue guest checkout"
+                continueRegisterAccountWithSameAddresses:
+                    from:
+                        - personalDetailsFilled
+                        - billingAddressFilled
+                        - passwordFilled
+                        - policyAgreed
+                        - deliveryAndBillingAddressesSameOrDifferentConfirmed
+                    to: awaitingDeliveryMethod
+                    metadata:
+                        model_guard: "subject.registeringAccount() && subject.sameAddresses()"
+                        label: "Continue register account"
+                continueGuestCheckoutSameAddresses:
+                    from:
+                        - personalDetailsFilled
+                        - billingAddressFilled
+                        - deliveryAndBillingAddressesSameOrDifferentConfirmed
+                    to: awaitingDeliveryMethod
+                    metadata:
+                        model_guard: "subject.doingGuestCheckout() && subject.sameAddresses()"
+                        label: "Continue guest checkout"
+                useExistingDeliveryAddress:
+                    from: awaitingDeliveryAddress
+                    to: awaitingDeliveryMethod
+                    metadata:
+                        model_guard: "subject.loggedIn()"
+                        label: "Use existing delivery address"
+                useNewDeliveryAddress:
+                    from: awaitingDeliveryAddress
+                    to: awaitingDeliveryMethod
+                    metadata:
+                        model_guard: "subject.loggedIn()"
+                        label: "Use new delivery address"
+                addDeliveryAddress:
+                    from: awaitingDeliveryAddress
+                    to: awaitingDeliveryMethod
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                        label: "Add delivery address"
+                selectDeliveryMethodAndContinue:
+                    from: awaitingDeliveryMethod
+                    to:
+                        - awaitingPaymentMethod
+                        - awaitingTermsAndConditionsAgreement
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Select delivery method"
+                selectPaymentMethod:
+                    from: awaitingPaymentMethod
+                    to: paymentMethodSelected
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Select payment method"
+                agreeTermsAndConditions:
+                    from: awaitingTermsAndConditionsAgreement
+                    to: termsAndConditionsAgreed
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Agreed terms and conditions"
+                continueWithPaymentMethod:
+                    from:
+                        - paymentMethodSelected
+                        - termsAndConditionsAgreed
+                    to: awaitingOrderConfirmation
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Continue with payment method"
+                confirmOrder:
+                    from: awaitingOrderConfirmation
+                    to: orderPlaced
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Confirm order"
+                continueShopping:
+                    from: orderPlaced
+                    to: home
+                    metadata:
+                        model_guard: "subject.registeringAccount() || subject.doingGuestCheckout() || subject.loggedIn()"
+                        label: "Continue shopping"
