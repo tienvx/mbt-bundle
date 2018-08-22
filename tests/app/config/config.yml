@@ -46,8 +46,17 @@ swiftmailer:
         type: file
         path: "%kernel.cache_dir%/spool"
 
+security:
+    providers:
+        in_memory: { memory: ~ }
+    firewalls:
+        main:
+            anonymous: ~
+
 tienvx_mbt:
     max_path_length: 300
+    transition_coverage: 100
+    place_coverage: 100
     default_bug_title: 'New bug found'
     reporter:
         email:
@@ -60,3 +69,6 @@ tienvx_mbt:
             color: 'purple'
             notify: false
             format: 'html'
+    subjects:
+        shopping_cart: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
+        checkout: Tienvx\Bundle\MbtBundle\Tests\Subject\Checkout

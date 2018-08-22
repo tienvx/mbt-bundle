@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Subject;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Model\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class ShoppingCart extends Subject
 {
@@ -110,10 +110,7 @@ class ShoppingCart extends Subject
         '49', // 'Samsung Galaxy Tab 10.1',
     ];
 
-    /**
-     * @param $generatingSteps boolean
-     */
-    public function __construct(bool $generatingSteps = false)
+    public function __construct()
     {
         $this->cart = [];
         $this->category = null;
@@ -153,7 +150,6 @@ class ShoppingCart extends Subject
                 return ['product' => $this->getRandomProductFromCategory()];
             },
         ];
-        parent::__construct($generatingSteps);
     }
 
     /**

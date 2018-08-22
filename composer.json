@@ -27,7 +27,8 @@
         "symfony/messenger": "^4.1",
         "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6",
-        "symfony/process": "^4.1"
+        "symfony/process": "^4.1",
+        "symfony/security-bundle": "^4.1"
     },
     "require-dev": {
         "api-platform/core": "^2.3",

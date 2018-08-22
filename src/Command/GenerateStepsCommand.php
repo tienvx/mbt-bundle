@@ -2,30 +2,43 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Registry;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\Constants;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class GenerateStepsCommand extends Command
 {
-    private $modelRegistry;
+    /**
+     * @var Registry
+     */
+    private $workflowRegistry;
+
+    /**
+     * @var SubjectManager
+     */
+    private $subjectManager;
+
+    /**
+     * @var GeneratorManager
+     */
     private $generatorManager;
-    private $stopConditionManager;
 
     public function __construct(
-        ModelRegistry $modelRegistry,
-        GeneratorManager $generatorManager,
-        StopConditionManager $stopConditionManager)
+        Registry $workflowRegistry,
+        SubjectManager $subjectManager,
+        GeneratorManager $generatorManager)
     {
-        $this->modelRegistry = $modelRegistry;
-        $this->generatorManager = $generatorManager;
-        $this->stopConditionManager = $stopConditionManager;
+        $this->workflowRegistry     = $workflowRegistry;
+        $this->subjectManager       = $subjectManager;
+        $this->generatorManager     = $generatorManager;
 
         parent::__construct();
     }
@@ -45,28 +58,32 @@ class GenerateStepsCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
-        $model = $this->modelRegistry->getModel($input->getArgument('model'));
-        $subject = $model->createSubject(true);
+        $model = $input->getArgument('model');
+        $generatorName = $input->getOption('generator');
+        $generator = $this->generatorManager->getGenerator($generatorName);
+        $subject = $this->subjectManager->createSubjectForModel($model);
+        $subject->setTesting(true);
         $subject->setUp();
-        $stopCondition = $this->stopConditionManager->getStopCondition($input->getOption('stop-condition'));
-        $stopCondition->setArguments(json_decode($input->getOption('stop-condition-arguments'), true));
+        $workflow = $this->workflowRegistry->get($subject, $model);
 
-        $generator->init($model, $subject, $stopCondition);
+        $path = new Path();
 
         try {
-            while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
-                $generator->goToNextStep($edge);
+            foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
+                $data = $subject->getLastData();
+                $path->add($transitionName, $data);
+                if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
+                    throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $generatorName, $transitionName));
+                }
             }
         } finally {
             $subject->tearDown();
         }
 
-        $path = $generator->getPath();
         $output->writeln((string) $path);
     }
 }

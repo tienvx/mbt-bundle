@@ -11,26 +11,24 @@ use Fhaculty\Graph\Vertex;
 class Path
 {
     /**
-     *
-     * @var array
+     * @var array[]
      */
     protected $allData;
 
     /**
-     *
-     * @var Directed[]
+     * @var string[]
      */
-    protected $edges;
+    protected $transitions;
 
     public function __construct(array $edges = [], array $allData = [])
     {
-        $this->edges    = $edges;
-        $this->allData  = $allData;
+        $this->transitions = $edges;
+        $this->allData     = $allData;
     }
 
     public function addEdge(Directed $edge)
     {
-        $this->edges[] = $edge;
+        $this->transitions[] = $edge;
     }
 
     public function addData(array $data)
@@ -40,12 +38,12 @@ class Path
 
     public function countVertices()
     {
-        return count($this->edges) + 1;
+        return count($this->transitions) + 1;
     }
 
     public function countEdges()
     {
-        return count($this->edges);
+        return count($this->transitions);
     }
 
     /**
@@ -54,11 +52,11 @@ class Path
     public function getVertices()
     {
         $vertices = [];
-        for ($i = 0; $i < count($this->edges); $i++) {
+        for ($i = 0; $i < count($this->transitions); $i++) {
             if ($i === 0) {
-                $vertices[] = $this->edges[$i]->getVertexStart();
+                $vertices[] = $this->transitions[$i]->getVertexStart();
             }
-            $vertices[] = $this->edges[$i]->getVertexEnd();
+            $vertices[] = $this->transitions[$i]->getVertexEnd();
         }
         return $vertices;
     }
@@ -66,14 +64,14 @@ class Path
     public function getVertexAt(int $index): Vertex
     {
         if ($index === 0) {
-            return $this->edges[$index]->getVertexStart();
+            return $this->transitions[$index]->getVertexStart();
         }
-        return $this->edges[$index - 1]->getVertexEnd();
+        return $this->transitions[$index - 1]->getVertexEnd();
     }
 
-    public function getEdges()
+    public function getTransitions()
     {
-        return $this->edges;
+        return $this->transitions;
     }
 
     public function getDataAt(int $index): ?array
@@ -89,16 +87,16 @@ class Path
     public function __toString()
     {
         $steps = [];
-        for ($i = 0; $i < count($this->edges); $i++) {
+        for ($i = 0; $i < count($this->transitions); $i++) {
             if ($i === 0) {
-                $steps[] = $this->edges[$i]->getVertexStart()->getAttribute('name');
+                $steps[] = $this->transitions[$i]->getVertexStart()->getAttribute('name');
             }
             $data = $this->allData[$i] ?? [];
             array_walk($data, function (&$value, $key) {
                 $value = "$key=$value";
             });
-            $steps[] = $this->edges[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
-            $steps[] = $this->edges[$i]->getVertexEnd()->getAttribute('name');
+            $steps[] = $this->transitions[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
+            $steps[] = $this->transitions[$i]->getVertexEnd()->getAttribute('name');
         }
         return implode(' ', $steps);
     }

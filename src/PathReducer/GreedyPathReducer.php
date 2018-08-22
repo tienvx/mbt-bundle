@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
 class GreedyPathReducer extends AbstractPathReducer
@@ -15,8 +16,10 @@ class GreedyPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
+        $model = $bug->getTask()->getModel();
+        $subject = $this->subjectManager->createSubjectForModel($model);
+        $workflow = $this->workflowRegistry->get($subject, $model);
+        $graph = GraphBuilder::build($workflow);
         $path  = Path::fromSteps($bug->getSteps(), $graph);
 
         $distance = $path->countEdges();
@@ -35,7 +38,7 @@ class GreedyPathReducer extends AbstractPathReducer
                 // Make sure new path shorter than old path.
                 if ($newPath->countEdges() < $path->countEdges()) {
                     try {
-                        PathRunner::run($newPath, $model);
+                        PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                             $path = $newPath;

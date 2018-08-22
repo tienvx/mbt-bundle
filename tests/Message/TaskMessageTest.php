@@ -11,12 +11,10 @@ class TaskMessageTest extends MessageTestCase
 {
     /**
      * @param string $generator
-     * @param string $stopCondition
-     * @param string $stopConditionArguments
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $generator, string $stopCondition, string $stopConditionArguments)
+    public function testConsumeMessage(string $generator)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -25,8 +23,6 @@ class TaskMessageTest extends MessageTestCase
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
         $task->setGenerator($generator);
-        $task->setStopCondition($stopCondition);
-        $task->setStopConditionArguments($stopConditionArguments);
         $task->setReducer('weighted-random');
         $task->setReporter('email');
         $task->setProgress(0);
@@ -54,11 +50,10 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
-            ['weighted-random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
-            ['random', 'max-length', '{}'],
-            ['all-places', 'noop', '{}'],
-            ['all-transitions', 'noop', '{}'],
+            ['random'],
+            ['weighted-random'],
+            ['all-places'],
+            ['all-transitions'],
         ];
     }
 }

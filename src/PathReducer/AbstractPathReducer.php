@@ -4,10 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
-use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
 {
@@ -19,14 +19,14 @@ abstract class AbstractPathReducer implements PathReducerInterface
     protected $dispatcher;
 
     /**
-     * @var ModelRegistry
+     * @var Registry
      */
-    protected $modelRegistry;
+    protected $workflowRegistry;
 
     /**
-     * @var GraphBuilder
+     * @var SubjectManager
      */
-    protected $graphBuilder;
+    protected $subjectManager;
 
     /**
      * @var EntityManagerInterface
@@ -35,14 +35,14 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     public function __construct(
         EventDispatcherInterface $dispatcher,
-        ModelRegistry $modelRegistry,
-        GraphBuilder $graphBuilder,
+        Registry $workflowRegistry,
+        SubjectManager $subjectManager,
         EntityManagerInterface $entityManager)
     {
-        $this->dispatcher = $dispatcher;
-        $this->modelRegistry = $modelRegistry;
-        $this->graphBuilder  = $graphBuilder;
-        $this->entityManager = $entityManager;
+        $this->dispatcher       = $dispatcher;
+        $this->workflowRegistry = $workflowRegistry;
+        $this->subjectManager   = $subjectManager;
+        $this->entityManager    = $entityManager;
     }
 
     protected function finish(int $bugId)

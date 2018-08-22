@@ -16,7 +16,7 @@ trait NewPathTrait
         $endEdges = [];
         $beginData = [];
         $endData = [];
-        foreach ($path->getEdges() as $index => $edge) {
+        foreach ($path->getTransitions() as $index => $edge) {
             if ($index < $firstVertexIndex) {
                 $beginEdges[] = $edge;
                 $beginData[] = $path->getDataAt($index);

@@ -27,8 +27,6 @@ class BugMessageTest extends MessageTestCase
         $task->setTitle('Test task title');
         $task->setModel('shopping_cart');
         $task->setGenerator('random');
-        $task->setStopCondition('max-length');
-        $task->setStopConditionArguments('{}');
         $task->setReducer($reducer);
         $task->setReporter($reporter);
         $task->setProgress(0);

@@ -22,7 +22,7 @@ class Eulerian extends BaseEulerian
      */
     public function getEdges(Vertex $startVertex)
     {
-        $returnEdges = [];
+        $edges = [];
         $components = new ConnectedComponents($this->graph);
         if ($components->isSingle()) {
             $resultGraph = $this->getResultGraph();
@@ -31,16 +31,16 @@ class Eulerian extends BaseEulerian
             $vertex = $resultGraph->getVertex($startVertex->getId());
             /** @var Directed $edge */
             while ($edge = $this->getUnvisitedEdge($vertex)) {
-                $returnEdges[] = $edge;
+                $edges[] = $edge;
                 $edge->setAttribute('visited', true);
                 $vertex = $edge->getVertexEnd();
             }
         }
 
-        return new Edges($returnEdges);
+        return new Edges($edges);
     }
 
-    public function getResultGraph(): Graph
+    protected function getResultGraph(): Graph
     {
         // Get balance info.
         $balanceMap = [];

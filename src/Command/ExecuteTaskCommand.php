@@ -2,36 +2,57 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class ExecuteTaskCommand extends Command
 {
-    private $modelRegistry;
+    /**
+     * @var Registry
+     */
+    private $workflowRegistry;
+
+    /**
+     * @var SubjectManager
+     */
+    private $subjectManager;
+
+    /**
+     * @var GeneratorManager
+     */
     private $generatorManager;
+
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
-    private $stopConditionManager;
+
+    /**
+     * @var string
+     */
     private $defaultBugTitle;
 
     public function __construct(
-        ModelRegistry $modelRegistry,
+        Registry $workflowRegistry,
+        SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
-        EntityManagerInterface $entityManager,
-        StopConditionManager $stopConditionManager)
+        EntityManagerInterface $entityManager)
     {
-        $this->modelRegistry = $modelRegistry;
-        $this->generatorManager = $generatorManager;
-        $this->entityManager = $entityManager;
-        $this->stopConditionManager = $stopConditionManager;
+        $this->workflowRegistry     = $workflowRegistry;
+        $this->subjectManager       = $subjectManager;
+        $this->generatorManager     = $generatorManager;
+        $this->entityManager        = $entityManager;
 
         parent::__construct();
     }
@@ -53,7 +74,7 @@ class ExecuteTaskCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -65,21 +86,22 @@ class ExecuteTaskCommand extends Command
             return;
         }
 
-        $generator = $this->generatorManager->getGenerator($task->getGenerator());
-        $model = $this->modelRegistry->getModel($task->getModel());
-        $subject = $model->createSubject();
+        $subject = $this->subjectManager->createSubjectForModel($task->getModel());
         $subject->setUp();
-        $stopCondition = $this->stopConditionManager->getStopCondition($task->getStopCondition());
-        $stopCondition->setArguments(json_decode($task->getStopConditionArguments(), true));
+        $generator = $this->generatorManager->getGenerator($task->getGenerator());
+        $workflow = $this->workflowRegistry->get($subject, $task->getModel());
 
-        $generator->init($model, $subject, $stopCondition);
+        $path = new Path();
 
         try {
-            while (!$generator->meetStopCondition() && $edge = $generator->getNextStep()) {
-                $generator->goToNextStep($edge);
+            foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
+                $data = $subject->getLastData();
+                $path->add($transitionName, $data);
+                if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
+                    throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));
+                }
             }
         } catch (Throwable $throwable) {
-            $path = $generator->getPath();
             $bug = new Bug();
             $bug->setTitle($this->defaultBugTitle);
             $bug->setSteps($path);

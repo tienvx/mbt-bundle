@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model;
+namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use Exception;
 
@@ -14,7 +14,7 @@ abstract class Subject
     /**
      * @var boolean
      */
-    protected $generatingSteps;
+    protected $testing = false;
 
     /**
      * @var array
@@ -27,11 +27,19 @@ abstract class Subject
     protected $dataProviders;
 
     /**
-     * @param $generatingSteps boolean
+     * @param $testing boolean
      */
-    public function __construct(bool $generatingSteps = false)
+    public function setTesting(bool $testing = false)
     {
-        $this->generatingSteps = $generatingSteps;
+        $this->testing = $testing;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTesting()
+    {
+        return $this->testing;
     }
 
     /**
@@ -68,10 +76,12 @@ abstract class Subject
         }
     }
 
-    public function enterPlace(string $placeName)
+    public function enterPlace(array $places)
     {
-        if (method_exists($this, $placeName)) {
-            call_user_func([$this, $placeName]);
+        foreach ($places as $place) {
+            if (method_exists($this, $place)) {
+                call_user_func([$this, $place]);
+            }
         }
     }
 

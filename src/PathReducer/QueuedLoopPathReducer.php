@@ -6,27 +6,31 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\QueuedLoop;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
-use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class QueuedLoopPathReducer extends AbstractPathReducer
 {
+    /**
+     * @var MessageBusInterface
+     */
     protected $messageBus;
 
     public function __construct(
-        EventDispatcherInterface $dispatcher,
         MessageBusInterface $messageBus,
-        ModelRegistry $modelRegistry,
-        GraphBuilder $graphBuilder,
+        EventDispatcherInterface $dispatcher,
+        Registry $workflowRegistry,
+        SubjectManager $subjectManager,
         EntityManagerInterface $entityManager)
     {
-        parent::__construct($dispatcher, $modelRegistry, $graphBuilder, $entityManager);
+        parent::__construct($dispatcher, $workflowRegistry, $subjectManager, $entityManager);
         $this->messageBus = $messageBus;
     }
 
@@ -60,8 +64,10 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             return;
         }
 
-        $model = $this->modelRegistry->getModel($queuedLoop->getBug()->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
+        $model = $queuedLoop->getBug()->getTask()->getModel();
+        $subject = $this->subjectManager->createSubjectForModel($model);
+        $workflow = $this->workflowRegistry->get($subject, $model);
+        $graph = GraphBuilder::build($workflow);
         $path  = Path::fromSteps($queuedLoop->getBug()->getSteps(), $graph);
 
         if ($queuedLoop->getBug()->getLength() >= $queuedLoopMessage->getLength()) {
@@ -72,7 +78,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 // Make sure new path shorter than old path.
                 if ($newPath->countEdges() < $path->countEdges()) {
                     try {
-                        PathRunner::run($newPath, $model);
+                        PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedLoop->getBug()->getBugMessage()) {
                             $updated = $this->updateSteps($queuedLoop->getBug(), $newPath, $newPath->countEdges());
@@ -142,8 +148,10 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 return;
             }
 
-            $model = $this->modelRegistry->getModel($queuedLoop->getBug()->getTask()->getModel());
-            $graph = $this->graphBuilder->build($model->getDefinition());
+            $model = $queuedLoop->getBug()->getTask()->getModel();
+            $subject = $this->subjectManager->createSubjectForModel($model);
+            $workflow = $this->workflowRegistry->get($subject, $model);
+            $graph = GraphBuilder::build($workflow);
             $path  = Path::fromSteps($queuedLoop->getBug()->getSteps(), $graph);
 
             $distance = $queuedLoop->getIndicator();

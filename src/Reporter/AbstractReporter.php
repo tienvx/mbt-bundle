@@ -2,29 +2,30 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Model\ModelRegistry;
+use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractReporter implements ReporterInterface
 {
     /**
-     * @var ModelRegistry
+     * @var Registry
      */
-    protected $modelRegistry;
+    protected $workflowRegistry;
 
     /**
-     * @var GraphBuilder
+     * @var SubjectManager
      */
-    protected $graphBuilder;
+    protected $subjectManager;
 
     public function __construct(
-        ModelRegistry $modelRegistry,
-        GraphBuilder $graphBuilder
+        Registry $workflowRegistry,
+        SubjectManager $subjectManager
     ) {
-        $this->modelRegistry = $modelRegistry;
-        $this->graphBuilder = $graphBuilder;
+        $this->workflowRegistry = $workflowRegistry;
+        $this->subjectManager = $subjectManager;
     }
 
     /**
@@ -34,12 +35,14 @@ abstract class AbstractReporter implements ReporterInterface
      */
     protected function buildSteps(Bug $bug): array
     {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
+        $model = $bug->getTask()->getModel();
+        $subject = $this->subjectManager->createSubjectForModel($model);
+        $workflow = $this->workflowRegistry->get($subject, $model);
+        $graph = GraphBuilder::build($workflow);
         $path = Path::fromSteps($bug->getSteps(), $graph);
 
         $steps = [];
-        foreach ($path->getEdges() as $index => $edge) {
+        foreach ($path->getTransitions() as $index => $edge) {
             $steps[] = [
                 'step' => $index + 1,
                 'action' => $edge->getAttribute('label'),

@@ -2,27 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class PathRunner
 {
     /**
      * @param Path $path
-     * @param Model $model
+     * @param Workflow $workflow
+     * @param Subject $subject
      * @throws \Exception
      */
-    public static function run(Path $path, Model $model)
+    public static function run(Path $path, Workflow $workflow, Subject $subject)
     {
-        $subject = $model->createSubject();
         $subject->setUp();
 
         try {
-            foreach ($path->getEdges() as $index => $edge) {
-                $canApply = $model->applyModel($subject, $edge, $path, $index);
-                if (!$canApply) {
+            foreach ($path->getTransitions() as $transitionName => $data) {
+                $subject->setData($data);
+                if (!$workflow->can($subject, $transitionName)) {
                     break;
                 }
+                $workflow->apply($subject, $transitionName);
             }
         } finally {
             $subject->tearDown();
