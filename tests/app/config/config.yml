@@ -48,7 +48,10 @@ swiftmailer:
 
 security:
     providers:
-        in_memory: { memory: ~ }
+        in_memory:
+            memory:
+                users:
+                    test: { password: test, roles: [ROLE_USER] }
     firewalls:
         main:
             anonymous: ~
