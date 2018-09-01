@@ -11,8 +11,6 @@ use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
 {
-    use NewPathTrait;
-
     /**
      * @var EventDispatcherInterface
      */
@@ -54,13 +52,13 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     /**
      * @param Bug $bug
-     * @param string $steps
+     * @param string $path
      * @param int $length
      * @throws \Exception
      */
-    protected function updateSteps(Bug $bug, string $steps, int $length)
+    protected function updatePath(Bug $bug, string $path, int $length)
     {
-        $bug->setSteps($steps);
+        $bug->setPath($path);
         $bug->setLength($length);
         $this->entityManager->flush();
     }

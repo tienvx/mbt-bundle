@@ -36,7 +36,7 @@ class Bug
      * @ORM\Column(type="text")
      * @Assert\NotBlank
      */
-    private $steps;
+    private $path;
 
     /**
      * @ORM\Column(type="integer")
@@ -81,14 +81,14 @@ class Bug
         $this->status = $status;
     }
 
-    public function getSteps(): string
+    public function getPath(): string
     {
-        return $this->steps;
+        return $this->path;
     }
 
-    public function setSteps(string $steps)
+    public function setPath(string $path)
     {
-        $this->steps = $steps;
+        $this->path = $path;
     }
 
     public function getLength(): int

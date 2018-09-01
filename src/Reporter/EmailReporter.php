@@ -4,9 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Twig\Environment as Twig;
 
-class EmailReporter extends AbstractReporter
+class EmailReporter implements ReporterInterface
 {
     /**
      * @var Swift_Mailer
@@ -77,7 +78,7 @@ class EmailReporter extends AbstractReporter
                             'id' => $bug->getId(),
                             'task' => $bug->getTask()->getTitle(),
                             'message' => $bug->getBugMessage(),
-                            'steps' => $this->buildSteps($bug),
+                            'path' => PathBuilder::build($bug->getPath()),
                             'status' => $bug->getStatus(),
                         ]
                     ),

@@ -40,8 +40,8 @@ class TaskMessageTest extends MessageTestCase
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
             $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
-            $this->assertContains('product=49', $bugs[0]->getSteps());
-            $this->assertEquals('checkout', substr($bugs[0]->getSteps(), -8));
+            $this->assertContains('product=49', $bugs[0]->getPath());
+            $this->assertEquals('checkout', substr($bugs[0]->getPath(), -8));
         } else {
             $this->assertEquals(0, count($bugs));
         }

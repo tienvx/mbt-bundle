@@ -19,12 +19,19 @@ class PathRunner
         $subject->setUp();
 
         try {
-            foreach ($path->getTransitions() as $transitionName => $data) {
-                $subject->setData($data);
+            foreach ($path as $index => $step) {
+                $transitionName = $step[0];
+                $data = $step[1];
+                if (is_array($data)) {
+                    $subject->setData($data);
+                }
                 if (!$workflow->can($subject, $transitionName)) {
                     break;
                 }
                 $workflow->apply($subject, $transitionName);
+                if (is_null($data)) {
+                    $path->setDataAt($index, $subject->getData());
+                }
             }
         } finally {
             $subject->tearDown();

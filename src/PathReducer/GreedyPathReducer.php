@@ -2,10 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Exception;
+use Symfony\Component\Workflow\StateMachine;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
 class GreedyPathReducer extends AbstractPathReducer
@@ -19,30 +21,36 @@ class GreedyPathReducer extends AbstractPathReducer
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubjectForModel($model);
         $workflow = $this->workflowRegistry->get($subject, $model);
-        $graph = GraphBuilder::build($workflow);
-        $path  = Path::fromSteps($bug->getSteps(), $graph);
 
-        $distance = $path->countEdges();
+        if (!$workflow instanceof StateMachine) {
+            throw new Exception(sprintf('Path reducer %s only support model type state machine', static::getName()));
+        }
+
+        $graph = GraphBuilder::build($workflow);
+        $path = PathBuilder::build($bug->getPath());
+
+        $distance = $path->countTransitions();
 
         while ($distance > 0) {
             $pairs = [];
-            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+            for ($i = 0; $i < $path->countTransitions(); $i++) {
                 $j = $i + $distance;
-                if ($j < $path->countVertices()) {
+                if ($j <= $path->countTransitions()) {
                     $pairs[] = [$i, $j];
                 }
             }
             foreach ($pairs as $pair) {
                 list($i, $j) = $pair;
-                $newPath = $this->getNewPath($path, $i, $j);
+                $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
                 // Make sure new path shorter than old path.
-                if ($newPath->countEdges() < $path->countEdges()) {
+                if ($newPath->countTransitions() < $path->countTransitions()) {
                     try {
+                        $subject = $this->subjectManager->createSubjectForModel($model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                             $path = $newPath;
-                            $distance = $path->countEdges();
+                            $distance = $path->countTransitions();
                             break;
                         }
                     }
@@ -52,7 +60,7 @@ class GreedyPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->updateSteps($bug, $path, $path->countEdges());
+        $this->updatePath($bug, $path, $path->countTransitions());
         $this->finish($bug->getId());
     }
 

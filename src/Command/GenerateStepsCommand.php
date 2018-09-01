@@ -74,8 +74,8 @@ class GenerateStepsCommand extends Command
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
-                $data = $subject->getLastData();
-                $path->add($transitionName, $data);
+                $data = $subject->getData();
+                $path->add($transitionName, $data, $workflow->getMarking($subject)->getPlaces());
                 if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                     throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $generatorName, $transitionName));
                 }

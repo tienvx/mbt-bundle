@@ -41,7 +41,7 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
-        $bug->setSteps($steps);
+        $bug->setPath($steps);
         $bug->setLength($length);
         $bug->setTask($task);
         $bug->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
@@ -59,7 +59,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
-            $this->assertEquals($expectedSteps, $bugs[0]->getSteps());
+            $this->assertEquals($expectedSteps, $bugs[0]->getPath());
             $this->assertEquals($expectedLength, $bugs[0]->getLength());
         } else {
             $this->assertLessThanOrEqual($expectedLength, $bugs[0]->getLength());

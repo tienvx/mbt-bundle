@@ -2,140 +2,103 @@
 
 namespace Tienvx\Bundle\MbtBundle\Graph;
 
-use Exception;
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Exception\OutOfBoundsException;
-use Fhaculty\Graph\Graph;
-use Fhaculty\Graph\Vertex;
+use Iterator;
+use Serializable;
 
-class Path
+class Path implements Serializable, Iterator
 {
     /**
      * @var array[]
      */
-    protected $allData;
+    protected $data;
 
     /**
      * @var string[]
      */
     protected $transitions;
 
-    public function __construct(array $edges = [], array $allData = [])
+    /**
+     * @var array[]
+     */
+    protected $places;
+
+    /**
+     * @var int
+     */
+    protected $position;
+
+    public function __construct(array $transitions = [], array $data = [], array $places = [])
     {
-        $this->transitions = $edges;
-        $this->allData     = $allData;
+        $this->transitions = $transitions;
+        $this->data        = $data;
+        $this->places      = $places;
+        $this->position    = 0;
     }
 
-    public function addEdge(Directed $edge)
+    public function add(string $transition, array $data, array $places)
     {
-        $this->transitions[] = $edge;
+        $this->transitions[] = $transition;
+        $this->data[] = $data;
+        $this->places[] = $places;
     }
 
-    public function addData(array $data)
-    {
-        $this->allData[] = $data;
-    }
-
-    public function countVertices()
-    {
-        return count($this->transitions) + 1;
-    }
-
-    public function countEdges()
+    public function countTransitions()
     {
         return count($this->transitions);
     }
 
-    /**
-     * @return Vertex[]
-     */
-    public function getVertices()
+    public function getTransition(int $index): string
     {
-        $vertices = [];
-        for ($i = 0; $i < count($this->transitions); $i++) {
-            if ($i === 0) {
-                $vertices[] = $this->transitions[$i]->getVertexStart();
-            }
-            $vertices[] = $this->transitions[$i]->getVertexEnd();
-        }
-        return $vertices;
+        return $this->transitions[$index];
     }
 
-    public function getVertexAt(int $index): Vertex
+    public function getData(int $index): array
     {
-        if ($index === 0) {
-            return $this->transitions[$index]->getVertexStart();
-        }
-        return $this->transitions[$index - 1]->getVertexEnd();
+        return $this->data[$index];
     }
 
-    public function getTransitions()
+    public function getPlaces(int $index): array
     {
-        return $this->transitions;
-    }
-
-    public function getDataAt(int $index): ?array
-    {
-        return $this->allData[$index];
+        return $this->places[$index];
     }
 
     public function setDataAt(int $index, array $data)
     {
-        $this->allData[$index] = $data;
+        $this->data[$index] = $data;
     }
 
-    public function __toString()
+    public function serialize()
     {
-        $steps = [];
-        for ($i = 0; $i < count($this->transitions); $i++) {
-            if ($i === 0) {
-                $steps[] = $this->transitions[$i]->getVertexStart()->getAttribute('name');
-            }
-            $data = $this->allData[$i] ?? [];
-            array_walk($data, function (&$value, $key) {
-                $value = "$key=$value";
-            });
-            $steps[] = $this->transitions[$i]->getAttribute('name') . '(' . implode(',', $data) . ')';
-            $steps[] = $this->transitions[$i]->getVertexEnd()->getAttribute('name');
-        }
-        return implode(' ', $steps);
+        return serialize([$this->transitions, $this->data, $this->places]);
     }
 
-    /**
-     * @param string $steps
-     * @param Graph $graph
-     * @return Path
-     * @throws \Exception
-     */
-    public static function fromSteps(string $steps, Graph $graph): Path
+    public function unserialize($serialized)
     {
-        $edges = [];
-        $allData = [];
-        $steps = explode(' ', $steps);
-        foreach ($steps as $index => $step) {
-            if (preg_match('/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\((.*)\)/', $step, $matches)) {
-                $transition = $matches[1];
-                $data = [];
-                if ($matches[2]) {
-                    $params = explode(',', $matches[2]);
-                    foreach ($params as $param) {
-                        list($key, $value) = explode('=', $param);
-                        $data[$key] = $value;
-                    }
-                }
-                $edge = $graph->getEdges()->getEdgeMatch(function (Directed $edge) use ($transition) {
-                    return $edge->getAttribute('name') === $transition;
-                });
-                $allData[] = $data;
-                $edges[] = $edge;
-            } else {
-                try {
-                    $graph->getVertex($step);
-                } catch (OutOfBoundsException $exception) {
-                    throw new Exception(sprintf('%s is an invalid place', $step));
-                }
-            }
-        }
-        return new static($edges, $allData);
+        list($this->transitions, $this->data, $this->places) = unserialize($serialized);
+    }
+
+    public function current()
+    {
+        return [$this->transitions[$this->position], $this->data[$this->position], $this->places[$this->position]];
+    }
+
+    public function next()
+    {
+        ++$this->position;
+    }
+
+    public function key()
+    {
+        return $this->position;
+    }
+
+    public function valid()
+    {
+        return isset($this->transitions[$this->position]) && isset($this->data[$this->position]) && isset($this->places[$this->position]);
+    }
+
+    public function rewind()
+    {
+        $this->position = 0;
     }
 }

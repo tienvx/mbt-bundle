@@ -45,28 +45,25 @@ abstract class Subject
     /**
      * @param $data array|null
      */
-    public function setData(array $data = null)
+    public function setData(array $data)
     {
         $this->data = $data;
     }
 
     /**
-     * @param $transitionName string
      * @return array
-     * @throws Exception
      */
-    public function provideData(string $transitionName): array
+    public function getData(): array
     {
-        if (isset($this->dataProviders[$transitionName]) && is_callable($this->dataProviders[$transitionName])) {
-            $data = $this->dataProviders[$transitionName]();
-            if (!is_array($data)) {
-                throw new Exception(sprintf('Data provider for transition %s must return array', $transitionName));
-            }
-        } else {
-            $data = [];
-        }
-        $this->data = $data;
-        return $data;
+        return $this->data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasData(): bool
+    {
+        return isset($this->data);
     }
 
     public function applyTransition(string $transitionName)

@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
@@ -11,8 +12,8 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\QueuedLoop;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
-use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -59,29 +60,27 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     {
         $queuedLoopMessage = QueuedLoopMessage::fromString($message);
         $queuedLoop = $this->entityManager->getRepository(QueuedLoop::class)->find($queuedLoopMessage->getBugId());
+        $path = PathBuilder::build($queuedLoop->getBug()->getPath());
+        $model = $queuedLoop->getBug()->getTask()->getModel();
 
         if (!$queuedLoop || !$queuedLoop instanceof QueuedLoop) {
             return;
         }
 
-        $model = $queuedLoop->getBug()->getTask()->getModel();
-        $subject = $this->subjectManager->createSubjectForModel($model);
-        $workflow = $this->workflowRegistry->get($subject, $model);
-        $graph = GraphBuilder::build($workflow);
-        $path  = Path::fromSteps($queuedLoop->getBug()->getSteps(), $graph);
-
         if ($queuedLoop->getBug()->getLength() >= $queuedLoopMessage->getLength()) {
             // The reproduce path has not been reduced.
             list($i, $j) = $queuedLoopMessage->getPair();
-            if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                $newPath = $this->getNewPath($path, $i, $j);
+            if ($j <= $path->countTransitions() && !array_diff($path->getPlaces($i), $path->getPlaces($j))) {
+                $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
                 // Make sure new path shorter than old path.
-                if ($newPath->countEdges() < $path->countEdges()) {
+                if ($newPath->countTransitions() < $path->countTransitions()) {
                     try {
+                        $subject = $this->subjectManager->createSubjectForModel($model);
+                        $workflow = $this->workflowRegistry->get($subject, $model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedLoop->getBug()->getBugMessage()) {
-                            $updated = $this->updateSteps($queuedLoop->getBug(), $newPath, $newPath->countEdges());
+                            $updated = $this->updatePath($queuedLoop->getBug(), $newPath, $newPath->countTransitions());
                             if ($updated) {
                                 $this->dispatch($queuedLoop->getId());
                             }
@@ -148,18 +147,18 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 return;
             }
 
-            $model = $queuedLoop->getBug()->getTask()->getModel();
-            $subject = $this->subjectManager->createSubjectForModel($model);
-            $workflow = $this->workflowRegistry->get($subject, $model);
-            $graph = GraphBuilder::build($workflow);
-            $path  = Path::fromSteps($queuedLoop->getBug()->getSteps(), $graph);
+            $path = unserialize($queuedLoop->getBug()->getPath());
+
+            if (!$path instanceof Path) {
+                throw new Exception(sprintf('Path must be instance of %s', Path::class));
+            }
 
             $distance = $queuedLoop->getIndicator();
             $pairs = [];
             while ($distance > 0 && empty($pairs)) {
-                for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+                for ($i = 0; $i < $path->countTransitions(); $i++) {
                     $j = $i + $distance;
-                    if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
+                    if ($j <= $path->countTransitions() && !array_diff($path->getPlaces($i), $path->getPlaces($j))) {
                         $pairs[] = [$i, $j];
                     }
                 }
@@ -187,7 +186,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
      * {@inheritdoc}
      * @return bool
      */
-    protected function updateSteps(Bug $bug, string $steps, int $length): bool
+    protected function updatePath(Bug $bug, string $path, int $length): bool
     {
         $updated = false;
         $this->entityManager->beginTransaction();
@@ -198,7 +197,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 return $updated;
             }
 
-            $bug->setSteps($steps);
+            $bug->setPath($path);
             $bug->setLength($length);
             $this->entityManager->flush();
             $this->entityManager->commit();

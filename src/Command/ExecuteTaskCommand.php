@@ -104,7 +104,7 @@ class ExecuteTaskCommand extends Command
         } catch (Throwable $throwable) {
             $bug = new Bug();
             $bug->setTitle($this->defaultBugTitle);
-            $bug->setSteps($path);
+            $bug->setPath($path);
             $bug->setLength($path->countEdges());
             $bug->setBugMessage($throwable->getMessage());
             $bug->setTask($task);
