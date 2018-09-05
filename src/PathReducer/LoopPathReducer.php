@@ -22,7 +22,7 @@ class LoopPathReducer extends AbstractPathReducer
         while ($distance > 0) {
             for ($i = 0; $i < $path->countTransitions(); $i++) {
                 $j = $i + $distance;
-                if ($j <= $path->countTransitions() && !array_diff($path->getPlaces($i), $path->getPlaces($j))) {
+                if ($j <= $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                     $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
                     // Make sure new path shorter than old path.
                     if ($newPath->countTransitions() < $path->countTransitions()) {

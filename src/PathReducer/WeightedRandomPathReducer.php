@@ -78,7 +78,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
     public function updatePathWeight(array &$pathWeight, Path $path, int $from, int $to)
     {
         for ($i = $from; $i <= $to; $i++) {
-            $places = $path->getPlaces($i);
+            $places = $path->getPlacesAt($i);
             if (count($places) !== 1) {
                 throw new Exception('Only support path with once places at a time');
             }

@@ -2,8 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
-use Exception;
-
 abstract class Subject
 {
     /**
@@ -19,12 +17,12 @@ abstract class Subject
     /**
      * @var array
      */
-    protected $data;
+    protected $data = [];
 
     /**
-     * @var array
+     * @var boolean
      */
-    protected $dataProviders;
+    protected $needData = true;
 
     /**
      * @param $testing boolean
@@ -43,7 +41,23 @@ abstract class Subject
     }
 
     /**
-     * @param $data array|null
+     * @param $needData boolean
+     */
+    public function setNeedData(bool $needData = true)
+    {
+        $this->needData = $needData;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function needData()
+    {
+        return $this->needData;
+    }
+
+    /**
+     * @param array $data
      */
     public function setData(array $data)
     {
@@ -56,14 +70,6 @@ abstract class Subject
     public function getData(): array
     {
         return $this->data;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasData(): bool
-    {
-        return isset($this->data);
     }
 
     public function applyTransition(string $transitionName)

@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class GenerateStepsCommandTest extends CommandTestCase
 {
@@ -18,7 +19,7 @@ class GenerateStepsCommandTest extends CommandTestCase
         $this->assertCoverage($command, 'all-transitions', null, null, 24, 0);
     }
 
-    public function assertCoverage(Command $command, string $generator, $transitionCoverage, $placeCoverage, $edgeCount, $vertexCount)
+    public function assertCoverage(Command $command, string $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
         if ($generator === 'random') {
             /** @var RandomGenerator $randomGenerator */
@@ -35,25 +36,21 @@ class GenerateStepsCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
+        $path = unserialize($output);
+        $this->assertInstanceOf(Path::class, $path);
 
-        $edges = [];
-        $vertices = [];
-        foreach (explode(' ', $output) as $step) {
-            $pos = strpos($step, '(');
-            if ($pos === false) {
-                $vertices[] = $step;
+        if ($path instanceof Path) {
+            $placeInPathCount = count(array_unique(call_user_func_array('array_merge', $path->getAllPlaces())));
+            $transitionInPathCount = count(array_unique($path->getAllTransitions()));
+            $allPlaces = $path->getAllPlaces();
+            if ($generator === 'all-transitions' && array_diff(end($allPlaces), ['home'])) {
+                // Sometime, we can't get the path through all transitions, so ignore it.
+            } elseif ($generator === 'all-places' && $transitionInPathCount === 1) {
+                // Sometime, we can't get the path through all places, so ignore it.
+            } else {
+                $this->assertGreaterThanOrEqual($transitionCount, $transitionInPathCount);
+                $this->assertGreaterThanOrEqual($placeCount, $placeInPathCount);
             }
-            else {
-                $edges[] = substr($step, 0, $pos);
-            }
-        }
-        if ($generator === 'all-transitions' && end($vertices) !== 'home') {
-            // Sometime, we can't get the path through all transitions, so ignore it.
-        } elseif ($generator === 'all-places' && count($edges) === 1) {
-            // Sometime, we can't get the path through all edges, so ignore it.
-        } else {
-            $this->assertGreaterThanOrEqual($edgeCount, count($edges));
-            $this->assertGreaterThanOrEqual($vertexCount, count($vertices));
         }
     }
 }

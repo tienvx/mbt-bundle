@@ -36,8 +36,8 @@ class PathBuilder
      */
     public static function createWithShortestPath(Graph $graph, Path $path, int $from, int $to): Path
     {
-        $fromPlaces = $path->getPlaces($from);
-        $toPlaces = $path->getPlaces($to);
+        $fromPlaces = $path->getPlacesAt($from);
+        $toPlaces = $path->getPlacesAt($to);
         if (array_diff($fromPlaces, $toPlaces)) {
             if (count($fromPlaces) === 1 && count($toPlaces) === 1) {
                 // Get shortest path between 2 vertices by algorithm.
@@ -77,8 +77,8 @@ class PathBuilder
      */
     public static function createWithoutLoop(Path $path, int $from, int $to): Path
     {
-        $fromPlaces = $path->getPlaces($from);
-        $toPlaces = $path->getPlaces($to);
+        $fromPlaces = $path->getPlacesAt($from);
+        $toPlaces = $path->getPlacesAt($to);
         if (!array_diff($fromPlaces, $toPlaces)) {
             return static::create($path, $from, $to, [], [], []);
         } else {

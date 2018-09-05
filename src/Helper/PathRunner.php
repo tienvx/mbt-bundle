@@ -24,12 +24,15 @@ class PathRunner
                 $data = $step[1];
                 if (is_array($data)) {
                     $subject->setData($data);
+                    $subject->setNeedData(false);
+                } else {
+                    $subject->setNeedData(true);
                 }
                 if (!$workflow->can($subject, $transitionName)) {
                     break;
                 }
                 $workflow->apply($subject, $transitionName);
-                if (is_null($data)) {
+                if (!is_array($data)) {
                     $path->setDataAt($index, $subject->getData());
                 }
             }

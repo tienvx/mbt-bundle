@@ -47,17 +47,17 @@ class Path implements Serializable, Iterator
         return count($this->transitions);
     }
 
-    public function getTransition(int $index): string
+    public function getTransitionAt(int $index): string
     {
         return $this->transitions[$index];
     }
 
-    public function getData(int $index): array
+    public function getDataAt(int $index): array
     {
         return $this->data[$index];
     }
 
-    public function getPlaces(int $index): array
+    public function getPlacesAt(int $index): array
     {
         return $this->places[$index];
     }
@@ -65,6 +65,21 @@ class Path implements Serializable, Iterator
     public function setDataAt(int $index, array $data)
     {
         $this->data[$index] = $data;
+    }
+
+    public function getAllTransitions(): array
+    {
+        return $this->transitions;
+    }
+
+    public function getAllData(): array
+    {
+        return $this->data;
+    }
+
+    public function getAllPlaces(): array
+    {
+        return $this->places;
     }
 
     public function serialize()

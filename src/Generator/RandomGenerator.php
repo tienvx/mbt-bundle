@@ -43,7 +43,7 @@ class RandomGenerator extends AbstractGenerator
     {
         $pathLength         = 0;
         $visitedTransitions = [];
-        $visitedPlaces      = [];
+        $visitedPlaces      = [$workflow->getDefinition()->getInitialPlace()];
         $transitionCoverage = $workflow->getMetadataStore()->getMetadata('transition_coverage') ?? $this->transitionCoverage;
         $placeCoverage      = $workflow->getMetadataStore()->getMetadata('place_coverage') ?? $this->placeCoverage;
         $maxPathLength      = $workflow->getMetadataStore()->getMetadata('max_path_length') ?? $this->maxPathLength;
@@ -58,8 +58,8 @@ class RandomGenerator extends AbstractGenerator
                 yield $transitionName;
 
                 // Update visited places and transitions.
-                foreach ($workflow->getMarking($subject)->getPlaces() as $place) {
-                    if (!in_array($place, $visitedPlaces)) {
+                foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {
+                    if ($status && !in_array($place, $visitedPlaces)) {
                         $visitedPlaces[] = $place;
                     }
                 }

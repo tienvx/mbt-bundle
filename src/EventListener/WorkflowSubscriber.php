@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Exception;
 use Doctrine\Common\Annotations\Reader;
-use ReflectionObject;
+use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -48,14 +48,17 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $subject = $event->getSubject();
 
         if ($subject instanceof Subject) {
-            if (!$subject->hasData()) {
+            if ($subject->needData()) {
                 $transitionName = $event->getTransition()->getName();
-                $reflection = new ReflectionObject($subject);
-                $method = $reflection->getMethod($transitionName);
-                $dataProviderMethod = $this->reader->getMethodAnnotation($method, DataProvider::class);
-                $data = call_user_func([$subject, $dataProviderMethod]);
-                if (!is_array($data)) {
-                    throw new Exception(sprintf('Data provider for transition %s must return array', $transitionName));
+                $reflectionMethod = new ReflectionMethod(get_class($subject), $transitionName);
+                $dataProvider = $this->reader->getMethodAnnotation($reflectionMethod, DataProvider::class);
+                if ($dataProvider && $dataProvider instanceof DataProvider) {
+                    $data = call_user_func([$subject, $dataProvider->method]);
+                    if (!is_array($data)) {
+                        return;
+                    }
+                } else {
+                    $data = [];
                 }
                 $subject->setData($data);
             }
