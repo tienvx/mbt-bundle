@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Exception;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Helper\Constants;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class GenerateStepsCommand extends Command
+class GenerateStepsCommand extends AbstractCommand
 {
     /**
      * @var Registry
@@ -62,6 +61,8 @@ class GenerateStepsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setAnonymousToken();
+
         $model = $input->getArgument('model');
         $generatorName = $input->getOption('generator');
         $generator = $this->generatorManager->getGenerator($generatorName);

@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Exception;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +15,7 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class ExecuteTaskCommand extends Command
+class ExecuteTaskCommand extends AbstractCommand
 {
     /**
      * @var Registry
@@ -86,6 +85,8 @@ class ExecuteTaskCommand extends Command
             return;
         }
 
+        $this->setAnonymousToken();
+
         $subject = $this->subjectManager->createSubjectForModel($task->getModel());
         $subject->setUp();
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
@@ -95,8 +96,9 @@ class ExecuteTaskCommand extends Command
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
-                $data = $subject->getLastData();
-                $path->add($transitionName, $data);
+                $data = $subject->getData();
+                $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
+                $path->add($transitionName, $data, $places);
                 if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                     throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));
                 }
@@ -105,7 +107,7 @@ class ExecuteTaskCommand extends Command
             $bug = new Bug();
             $bug->setTitle($this->defaultBugTitle);
             $bug->setPath($path);
-            $bug->setLength($path->countEdges());
+            $bug->setLength($path->countTransitions());
             $bug->setBugMessage($throwable->getMessage());
             $bug->setTask($task);
             $bug->setStatus('unverified');

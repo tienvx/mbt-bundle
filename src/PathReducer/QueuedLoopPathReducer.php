@@ -167,7 +167,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
             $messageHashes = [];
             foreach ($pairs as $pair) {
-                $message = new QueuedLoopMessage($queuedLoop->getId(), $path->countEdges(), $pair);
+                $message = new QueuedLoopMessage($queuedLoop->getId(), $path->countTransitions(), $pair);
                 $this->messageBus->dispatch($message);
                 $messageHashes[] = sha1($message);
             }

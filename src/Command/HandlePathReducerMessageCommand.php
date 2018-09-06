@@ -2,13 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
-class HandlePathReducerMessageCommand extends Command
+class HandlePathReducerMessageCommand extends AbstractCommand
 {
     private $pathReducerManager;
 
@@ -36,6 +35,8 @@ class HandlePathReducerMessageCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setAnonymousToken();
+
         $reducer = $input->getArgument('reducer');
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
         $pathReducer->handle($input->getArgument('message'));

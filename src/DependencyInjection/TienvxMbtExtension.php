@@ -17,7 +17,6 @@ use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Twig\Environment as Twig;
 
@@ -81,9 +80,6 @@ class TienvxMbtExtension extends Extension
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
             ->addTag('mbt.generator');
-        $container->registerForAutoconfiguration(StopConditionInterface::class)
-            ->setLazy(true)
-            ->addTag('mbt.stop_condition');
         $container->registerForAutoconfiguration(PathReducerInterface::class)
             ->setLazy(true)
             ->addTag('mbt.path_reducer');

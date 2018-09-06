@@ -10,15 +10,15 @@ use Tienvx\Bundle\MbtBundle\Entity\Task;
 class BugMessageTest extends MessageTestCase
 {
     /**
-     * @param string $steps
+     * @param string $path
      * @param int $length
      * @param string $reducer
      * @param string $reporter
-     * @param string $expectedSteps
+     * @param string $expectedPath
      * @param int $expectedLength
      * @dataProvider consumeMessageData
      */
-    public function testExecute(string $steps, int $length, string $reducer, string $reporter, string $expectedSteps, int $expectedLength)
+    public function testExecute(string $path, int $length, string $reducer, string $reporter, string $expectedPath, int $expectedLength)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -41,7 +41,7 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
-        $bug->setPath($steps);
+        $bug->setPath($path);
         $bug->setLength($length);
         $bug->setTask($task);
         $bug->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
@@ -59,7 +59,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
-            $this->assertEquals($expectedSteps, $bugs[0]->getPath());
+            $this->assertEquals($expectedPath, $bugs[0]->getPath());
             $this->assertEquals($expectedLength, $bugs[0]->getLength());
         } else {
             $this->assertLessThanOrEqual($expectedLength, $bugs[0]->getLength());
