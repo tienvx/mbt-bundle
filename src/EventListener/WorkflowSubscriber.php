@@ -46,10 +46,10 @@ class WorkflowSubscriber implements EventSubscriberInterface
     public function onGuard(GuardEvent $event)
     {
         $subject = $event->getSubject();
+        $transitionName = $event->getTransition()->getName();
 
         if ($subject instanceof Subject) {
-            if ($subject->needData()) {
-                $transitionName = $event->getTransition()->getName();
+            if ($subject->needData() && method_exists($subject, $transitionName)) {
                 $reflectionMethod = new ReflectionMethod(get_class($subject), $transitionName);
                 $dataProvider = $this->reader->getMethodAnnotation($reflectionMethod, DataProvider::class);
                 if ($dataProvider && $dataProvider instanceof DataProvider) {

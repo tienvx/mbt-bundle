@@ -8,9 +8,6 @@ framework:
             metadata:
                 label: "Checkout"
                 tags: ["opencart's checkout process", "demo", "testing", "model-based-testing"]
-                max_path_length: 300
-                place_coverage: 100
-                transition_coverage: 100
             places:
                 - home
                 - step1
@@ -327,7 +324,7 @@ framework:
                 goToStep2FromStep1:
                     from: step1
                     to: step2
-                    guard: "subject.billingDetailsAdded()"
+                    guard: "subject.isBillingDetailsAdded()"
                 goToStep2FromStep3:
                     from: step3
                     to: step2
@@ -343,11 +340,11 @@ framework:
                 goToStep3FromStep1:
                     from: step1
                     to: step3
-                    guard: "subject.deliveryDetailsAdded()"
+                    guard: "subject.isDeliveryDetailsAdded()"
                 goToStep3FromStep2:
                     from: step2
                     to: step3
-                    guard: "subject.deliveryDetailsAdded()"
+                    guard: "subject.isDeliveryDetailsAdded()"
                 goToStep3FromStep4:
                     from: step4
                     to: step3
@@ -360,15 +357,15 @@ framework:
                 goToStep4FromStep1:
                     from: step1
                     to: step4
-                    guard: "subject.deliveryMethodAdded()"
+                    guard: "subject.isDeliveryMethodAdded()"
                 goToStep4FromStep2:
                     from: step2
                     to: step4
-                    guard: "subject.deliveryMethodAdded()"
+                    guard: "subject.isDeliveryMethodAdded()"
                 goToStep4FromStep3:
                     from: step3
                     to: step4
-                    guard: "subject.deliveryMethodAdded()"
+                    guard: "subject.isDeliveryMethodAdded()"
                 goToStep4FromStep5:
                     from: step5
                     to: step4
@@ -378,39 +375,39 @@ framework:
                 goToStep5FromStep1:
                     from: step1
                     to: step5
-                    guard: "subject.paymentMethodAdded()"
+                    guard: "subject.isPaymentMethodAdded()"
                 goToStep5FromStep2:
                     from: step2
                     to: step5
-                    guard: "subject.paymentMethodAdded()"
+                    guard: "subject.isPaymentMethodAdded()"
                 goToStep5FromStep3:
                     from: step3
                     to: step5
-                    guard: "subject.paymentMethodAdded()"
+                    guard: "subject.isPaymentMethodAdded()"
                 goToStep5FromStep4:
                     from: step4
                     to: step5
-                    guard: "subject.paymentMethodAdded()"
+                    guard: "subject.isPaymentMethodAdded()"
                 goToStep5FromStep6:
                     from: step6
                     to: step5
                 goToStep6FromStep1:
                     from: step1
                     to: step6
-                    guard: "subject.paymentMethodAdded() && subject.deliveryMethodAdded() && subject.deliveryDetailsAdded() && subject.billingDetailsAdded && subject.accountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
                 goToStep6FromStep2:
                     from: step2
                     to: step6
-                    guard: "subject.paymentMethodAdded() && subject.deliveryMethodAdded() && subject.deliveryDetailsAdded() && subject.billingDetailsAdded && subject.accountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
                 goToStep6FromStep3:
                     from: step3
                     to: step6
-                    guard: "subject.paymentMethodAdded() && subject.deliveryMethodAdded() && subject.deliveryDetailsAdded() && subject.billingDetailsAdded && subject.accountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
                 goToStep6FromStep4:
                     from: step4
                     to: step6
-                    guard: "subject.paymentMethodAdded() && subject.deliveryMethodAdded() && subject.deliveryDetailsAdded() && subject.billingDetailsAdded && subject.accountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
                 goToStep6FromStep5:
                     from: step5
                     to: step6
-                    guard: "subject.paymentMethodAdded() && subject.deliveryMethodAdded() && subject.deliveryDetailsAdded() && subject.billingDetailsAdded && subject.accountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"

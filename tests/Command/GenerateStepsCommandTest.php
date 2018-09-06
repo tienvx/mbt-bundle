@@ -2,25 +2,36 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class GenerateStepsCommandTest extends CommandTestCase
 {
-    public function testExecute()
+    public function coverageData()
     {
-        $command = $this->application->find('mbt:generate-steps');
-        $this->assertCoverage($command, 'random', 100, 100, 24, 5);
-        $this->assertCoverage($command, 'random', 60, 80, 15, 4);
-        $this->assertCoverage($command, 'random', 75, 60, 18, 3);
-        $this->assertCoverage($command, 'all-places', null, null, 0, 5);
-        $this->assertCoverage($command, 'all-transitions', null, null, 24, 0);
+        return [
+            ['shopping_cart', 'random', 100, 100, 24, 5],
+            ['shopping_cart', 'random', 60, 80, 15, 4],
+            ['shopping_cart', 'random', 75, 60, 18, 3],
+            ['shopping_cart', 'all-places', null, null, 0, 5],
+            ['shopping_cart', 'all-transitions', null, null, 24, 0],
+            ['checkout', 'random', 100, 100, 65, 31],
+        ];
     }
 
-    public function assertCoverage(Command $command, string $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
+    /**
+     * @dataProvider coverageData
+     * @param $model
+     * @param $generator
+     * @param $transitionCoverage
+     * @param $placeCoverage
+     * @param $transitionCount
+     * @param $placeCount
+     */
+    public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
+        $command = $this->application->find('mbt:generate-steps');
         if ($generator === 'random') {
             /** @var RandomGenerator $randomGenerator */
             $randomGenerator = self::$container->get(RandomGenerator::class);
@@ -30,9 +41,9 @@ class GenerateStepsCommandTest extends CommandTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'                     => $command->getName(),
-            'model'                       => 'shopping_cart',
-            '--generator'                 => $generator,
+            'command'     => $command->getName(),
+            'model'       => $model,
+            '--generator' => $generator,
         ]);
 
         $output = $commandTester->getDisplay();
@@ -47,6 +58,8 @@ class GenerateStepsCommandTest extends CommandTestCase
                 // Sometime, we can't get the path through all transitions, so ignore it.
             } elseif ($generator === 'all-places' && $transitionInPathCount === 1) {
                 // Sometime, we can't get the path through all places, so ignore it.
+            } elseif ($generator === 'random' && $path->countTransitions() === 300) {
+                // Sometime we reach the path length limit, so ignore it.
             } else {
                 $this->assertGreaterThanOrEqual($transitionCount, $transitionInPathCount);
                 $this->assertGreaterThanOrEqual($placeCount, $placeInPathCount);

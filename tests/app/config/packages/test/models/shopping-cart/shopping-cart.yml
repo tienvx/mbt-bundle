@@ -8,9 +8,6 @@ framework:
             metadata:
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]
-                max_path_length: 300
-                place_coverage: 100
-                transition_coverage: 100
             places:
                 - home
                 - category
