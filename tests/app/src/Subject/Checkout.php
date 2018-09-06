@@ -49,7 +49,8 @@ class Checkout extends Subject
     public function login()
     {
         $this->loggedIn = true;
-        $this->accountAdded = true;
+        $this->doingGuestCheckout = false;
+        $this->registeringAccount = false;
     }
 
     public function loggedIn()

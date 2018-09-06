@@ -17,6 +17,8 @@ class GenerateStepsCommandTest extends CommandTestCase
             ['shopping_cart', 'all-places', null, null, 0, 5],
             ['shopping_cart', 'all-transitions', null, null, 24, 0],
             ['checkout', 'random', 100, 100, 65, 31],
+            ['checkout', 'random', 60, 80, 39, 24],
+            ['checkout', 'random', 40, 65, 26, 20],
         ];
     }
 
@@ -60,6 +62,8 @@ class GenerateStepsCommandTest extends CommandTestCase
                 // Sometime, we can't get the path through all places, so ignore it.
             } elseif ($generator === 'random' && $path->countTransitions() === 300) {
                 // Sometime we reach the path length limit, so ignore it.
+                $this->assertGreaterThanOrEqual(1, $transitionInPathCount);
+                $this->assertGreaterThanOrEqual(1, $placeInPathCount);
             } else {
                 $this->assertGreaterThanOrEqual($transitionCount, $transitionInPathCount);
                 $this->assertGreaterThanOrEqual($placeCount, $placeInPathCount);
