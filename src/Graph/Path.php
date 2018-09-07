@@ -35,7 +35,7 @@ class Path implements Serializable, Iterator
         $this->position    = 0;
     }
 
-    public function add(string $transition, array $data, array $places)
+    public function add(?string $transition, ?array $data, array $places)
     {
         $this->transitions[] = $transition;
         $this->data[] = $data;

@@ -394,20 +394,20 @@ framework:
                 goToStep6FromStep1:
                     from: step1
                     to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
                 goToStep6FromStep2:
                     from: step2
                     to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
                 goToStep6FromStep3:
                     from: step3
                     to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
                 goToStep6FromStep4:
                     from: step4
                     to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
                 goToStep6FromStep5:
                     from: step5
                     to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded && subject.isAccountAdded()"
+                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
