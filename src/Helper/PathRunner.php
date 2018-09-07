@@ -32,10 +32,12 @@ class PathRunner
                     if (!$workflow->can($subject, $transitionName)) {
                         break;
                     }
-                    $workflow->apply($subject, $transitionName);
+                    // Store data before apply transition, because there are maybe exception happen
+                    // while applying transition.
                     if (!is_array($data)) {
                         $path->setDataAt($index, $subject->getData());
                     }
+                    $workflow->apply($subject, $transitionName);
                 }
             }
         } finally {
