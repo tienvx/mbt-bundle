@@ -70,17 +70,17 @@ class QueuedLoopPathReducer extends AbstractPathReducer
         if ($queuedLoop->getBug()->getLength() >= $queuedLoopMessage->getLength()) {
             // The reproduce path has not been reduced.
             list($i, $j) = $queuedLoopMessage->getPair();
-            if ($j <= $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+            if ($j <= $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                 $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
                 // Make sure new path shorter than old path.
-                if ($newPath->countTransitions() < $path->countTransitions()) {
+                if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
                         $subject = $this->subjectManager->createSubjectForModel($model);
                         $workflow = $this->workflowRegistry->get($subject, $model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedLoop->getBug()->getBugMessage()) {
-                            $updated = $this->updatePath($queuedLoop->getBug(), $newPath, $newPath->countTransitions());
+                            $updated = $this->updatePath($queuedLoop->getBug(), $newPath, $newPath->countPlaces());
                             if ($updated) {
                                 $this->dispatch($queuedLoop->getId());
                             }
@@ -156,9 +156,9 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             $distance = $queuedLoop->getIndicator();
             $pairs = [];
             while ($distance > 0 && empty($pairs)) {
-                for ($i = 0; $i < $path->countTransitions(); $i++) {
+                for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
-                    if ($j < $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+                    if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                         $pairs[] = [$i, $j];
                     }
                 }
@@ -167,7 +167,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
             $messageHashes = [];
             foreach ($pairs as $pair) {
-                $message = new QueuedLoopMessage($queuedLoop->getId(), $path->countTransitions(), $pair);
+                $message = new QueuedLoopMessage($queuedLoop->getId(), $path->countPlaces(), $pair);
                 $this->messageBus->dispatch($message);
                 $messageHashes[] = sha1($message);
             }
@@ -198,7 +198,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             }
 
             $bug->setPath(serialize($path));
-            $bug->setLength($path->countTransitions());
+            $bug->setLength($path->countPlaces());
             $this->entityManager->flush();
             $this->entityManager->commit();
 

@@ -29,38 +29,36 @@ class BinaryPathReducer extends AbstractPathReducer
         $graph = GraphBuilder::build($workflow);
         $path = PathBuilder::build($bug->getPath());
 
-        $try = 1;
-        $quotient = floor($path->countTransitions() / pow(2, $try));
-        $remainder = $path->countTransitions() % pow(2, $try);
-        $maxTries = $path->countTransitions();
+        $divisor = 2;
+        $quotient = floor($path->countTransitions() / $divisor);
+        $remainder = $path->countTransitions() % $divisor;
 
-        while (($try <= $maxTries && $quotient > 0) && $path->countTransitions() >= 2) {
-            for ($i = 0; $i < pow(2, $try); $i++) {
+        while ($quotient > 0 && $path->countTransitions() >= 2) {
+            for ($i = 0; $i < $divisor; $i++) {
                 $j = $quotient * $i;
-                if ($i === (pow(2, $try) - 1)) {
+                if ($i === ($divisor - 1)) {
                     $k = $quotient * ($i + 1) + $remainder;
                 } else {
                     $k = $quotient * ($i + 1);
                 }
                 $newPath = PathBuilder::createWithShortestPath($graph, $path, $j, $k);
                 // Make sure new path shorter than old path.
-                if ($newPath->countTransitions() < $path->countTransitions()) {
+                if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
                         $subject = $this->subjectManager->createSubjectForModel($model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                             $path = $newPath;
-                            $try = 1;
-                            $maxTries = $path->countTransitions();
+                            $divisor = 2;
                             break;
                         }
                     }
                 }
             }
-            $try++;
-            $quotient = floor($path->countTransitions() / pow(2, $try));
-            $remainder = $path->countTransitions() % pow(2, $try);
+            $divisor *= 2;
+            $quotient = floor($path->countTransitions() / $divisor);
+            $remainder = $path->countTransitions() % $divisor;
         }
 
         // Can not reduce the reproduce path (any more).

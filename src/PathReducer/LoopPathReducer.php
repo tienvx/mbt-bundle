@@ -17,15 +17,15 @@ class LoopPathReducer extends AbstractPathReducer
     {
         $model = $bug->getTask()->getModel();
         $path = PathBuilder::build($bug->getPath());
-        $distance = $path->countTransitions();
+        $distance = $path->countPlaces();
 
         while ($distance > 0) {
-            for ($i = 0; $i < $path->countTransitions(); $i++) {
+            for ($i = 0; $i < $path->countPlaces(); $i++) {
                 $j = $i + $distance;
-                if ($j <= $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+                if ($j <= $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                     $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
                     // Make sure new path shorter than old path.
-                    if ($newPath->countTransitions() < $path->countTransitions()) {
+                    if ($newPath->countPlaces() < $path->countPlaces()) {
                         try {
                             $subject = $this->subjectManager->createSubjectForModel($model);
                             $workflow = $this->workflowRegistry->get($subject, $model);
@@ -33,7 +33,7 @@ class LoopPathReducer extends AbstractPathReducer
                         } catch (Throwable $newThrowable) {
                             if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                                 $path = $newPath;
-                                $distance = $path->countTransitions();
+                                $distance = $path->countPlaces();
                                 break;
                             }
                         }

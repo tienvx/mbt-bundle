@@ -60,7 +60,7 @@ class GenerateStepsCommandTest extends CommandTestCase
                 // Sometime, we can't get the path through all transitions, so ignore it.
             } elseif ($generator === 'all-places' && $transitionInPathCount === 1) {
                 // Sometime, we can't get the path through all places, so ignore it.
-            } elseif ($generator === 'random' && $path->countTransitions() === 300) {
+            } elseif ($generator === 'random' && $path->countPlaces() === 300) {
                 // Sometime we reach the path length limit, so ignore it.
                 $this->assertGreaterThanOrEqual(1, $transitionInPathCount);
                 $this->assertGreaterThanOrEqual(1, $placeInPathCount);

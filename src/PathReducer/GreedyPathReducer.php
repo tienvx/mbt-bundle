@@ -29,13 +29,13 @@ class GreedyPathReducer extends AbstractPathReducer
         $graph = GraphBuilder::build($workflow);
         $path = PathBuilder::build($bug->getPath());
 
-        $distance = $path->countTransitions();
+        $distance = $path->countPlaces();
 
         while ($distance > 0) {
             $pairs = [];
-            for ($i = 0; $i < $path->countTransitions(); $i++) {
+            for ($i = 0; $i < $path->countPlaces(); $i++) {
                 $j = $i + $distance;
-                if ($j < $path->countTransitions()) {
+                if ($j < $path->countPlaces()) {
                     $pairs[] = [$i, $j];
                 }
             }
@@ -43,14 +43,14 @@ class GreedyPathReducer extends AbstractPathReducer
                 list($i, $j) = $pair;
                 $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
                 // Make sure new path shorter than old path.
-                if ($newPath->countTransitions() < $path->countTransitions()) {
+                if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
                         $subject = $this->subjectManager->createSubjectForModel($model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                             $path = $newPath;
-                            $distance = $path->countTransitions();
+                            $distance = $path->countPlaces();
                             break;
                         }
                     }

@@ -44,7 +44,12 @@ class Path implements Serializable, Iterator
 
     public function countTransitions()
     {
-        return count($this->transitions);
+        return count(array_filter($this->transitions));
+    }
+
+    public function countPlaces()
+    {
+        return count($this->places);
     }
 
     public function getTransitionAt(int $index): ?string

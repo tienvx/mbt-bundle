@@ -59,7 +59,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
     protected function updatePath(Bug $bug, Path $path)
     {
         $bug->setPath(serialize($path));
-        $bug->setLength($path->countTransitions());
+        $bug->setLength($path->countPlaces());
         $this->entityManager->flush();
     }
 

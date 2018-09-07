@@ -106,15 +106,15 @@ class BugMessageTest extends MessageTestCase
                 'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
                 4
             ],
-            /*[
-                'home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout',
-                8,
+            [
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":720:{a:3:{i:0;a:9:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"viewCartFromCategory";i:4;s:18:"backToHomeFromCart";i:5;s:23:"viewAnyCategoryFromHome";i:6;s:23:"viewProductFromCategory";i:7;s:14:"addFromProduct";i:8;s:19:"checkoutFromProduct";}i:1;a:9:{i:0;N;i:1;a:1:{s:8:"category";s:2:"33";}i:2;a:1:{s:7:"product";s:2:"31";}i:3;a:0:{}i:4;a:0:{}i:5;a:1:{s:8:"category";s:2:"57";}i:6;a:1:{s:7:"product";s:2:"49";}i:7;a:0:{}i:8;a:0:{}}i:2;a:9:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:4:"cart";}i:4;a:1:{i:0;s:4:"home";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:7:"product";}i:8;a:1:{i:0;s:8:"checkout";}}}}',
+                9,
                 'binary',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout',
-                4
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":401:{a:3:{i:0;a:5:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:14:"addFromProduct";i:4;s:19:"checkoutFromProduct";}i:1;a:5:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}i:4;a:0:{}}i:2;a:5:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:7:"product";}i:4;a:1:{i:0;s:8:"checkout";}}}}',
+                5
             ],
-            [
+            /*[
                 'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
                 7,
                 'binary',

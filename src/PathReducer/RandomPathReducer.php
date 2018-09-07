@@ -31,13 +31,13 @@ class RandomPathReducer extends AbstractPathReducer
         $path = PathBuilder::build($bug->getPath());
 
         $try = 1;
-        $maxTries = $path->countTransitions();
+        $maxTries = $path->countPlaces();
 
         while ($try <= $maxTries) {
-            list($i, $j) = Randomizer::randomPair(0, $path->countTransitions());
+            list($i, $j) = Randomizer::randomPair(0, $path->countPlaces());
             $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
             // Make sure new path shorter than old path.
-            if ($newPath->countTransitions() < $path->countTransitions()) {
+            if ($newPath->countPlaces() < $path->countPlaces()) {
                 try {
                     $subject = $this->subjectManager->createSubjectForModel($model);
                     PathRunner::run($newPath, $workflow, $subject);
@@ -46,9 +46,9 @@ class RandomPathReducer extends AbstractPathReducer
                         $path = $newPath;
                     }
                 } finally {
-                    if ($newPath->countTransitions() === $path->countTransitions()) {
+                    if ($newPath->countPlaces() === $path->countPlaces()) {
                         $try = 1;
-                        $maxTries = $path->countTransitions();
+                        $maxTries = $path->countPlaces();
                     }
                 }
             }

@@ -108,7 +108,7 @@ class ExecuteTaskCommand extends AbstractCommand
             $bug = new Bug();
             $bug->setTitle($this->defaultBugTitle);
             $bug->setPath($path);
-            $bug->setLength($path->countTransitions());
+            $bug->setLength($path->countPlaces());
             $bug->setBugMessage($throwable->getMessage());
             $bug->setTask($task);
             $bug->setStatus('unverified');

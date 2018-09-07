@@ -33,7 +33,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
 
         $pathWeight = $this->rebuildPathWeight($path);
         $try = 1;
-        $maxTries = $path->countTransitions();
+        $maxTries = $path->countPlaces();
 
         while ($try <= $maxTries) {
             $vertexWeight = $this->buildVertexWeight($path, $pathWeight);
@@ -42,7 +42,7 @@ class WeightedRandomPathReducer extends AbstractPathReducer
             list($i, $j) = explode('|', $pair);
             $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
             // Make sure new path shorter than old path.
-            if ($newPath->countTransitions() < $path->countTransitions()) {
+            if ($newPath->countPlaces() < $path->countPlaces()) {
                 try {
                     $subject = $this->subjectManager->createSubjectForModel($model);
                     PathRunner::run($newPath, $workflow, $subject);
@@ -51,9 +51,9 @@ class WeightedRandomPathReducer extends AbstractPathReducer
                         $path = $newPath;
                     }
                 } finally {
-                    if ($newPath->countTransitions() === $path->countTransitions()) {
+                    if ($newPath->countPlaces() === $path->countPlaces()) {
                         $try = 1;
-                        $maxTries = $path->countTransitions();
+                        $maxTries = $path->countPlaces();
                         $pathWeight = $this->rebuildPathWeight($path, $pathWeight);
                     } else {
                         $this->updatePathWeight($pathWeight, $path, $i, $j);
