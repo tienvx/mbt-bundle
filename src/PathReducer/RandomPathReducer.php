@@ -34,7 +34,7 @@ class RandomPathReducer extends AbstractPathReducer
         $maxTries = $path->countPlaces();
 
         while ($try <= $maxTries) {
-            list($i, $j) = Randomizer::randomPair(0, $path->countPlaces());
+            list($i, $j) = Randomizer::randomPair(0, $path->countPlaces() - 1);
             $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
             // Make sure new path shorter than old path.
             if ($newPath->countPlaces() < $path->countPlaces()) {

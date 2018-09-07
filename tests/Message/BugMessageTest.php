@@ -138,30 +138,30 @@ class BugMessageTest extends MessageTestCase
                 'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":528:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:2:"20";}i:2;a:1:{s:7:"product";s:2:"33";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
                 6
             ],
-            /*[
-                'home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=24) category viewOtherCategory(category=17) category viewOtherCategory(category=24) category viewProductFromCategory(product=28) product addFromProduct() product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewOtherCategory(category=20_27) category viewOtherCategory(category=20) category addFromCategory(product=33) category checkoutFromCategory() checkout',
-                13,
+            [
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":1267:{a:3:{i:0;a:14:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:17:"viewOtherCategory";i:5;s:17:"viewOtherCategory";i:6;s:23:"viewProductFromCategory";i:7;s:14:"addFromProduct";i:8;s:26:"viewAnyCategoryFromProduct";i:9;s:15:"addFromCategory";i:10;s:17:"viewOtherCategory";i:11;s:17:"viewOtherCategory";i:12;s:15:"addFromCategory";i:13;s:20:"checkoutFromCategory";}i:1;a:14:{i:0;N;i:1;a:1:{s:8:"category";s:5:"20_27";}i:2;a:1:{s:7:"product";s:2:"41";}i:3;a:1:{s:8:"category";s:2:"24";}i:4;a:1:{s:8:"category";s:2:"17";}i:5;a:1:{s:8:"category";s:2:"24";}i:6;a:1:{s:7:"product";s:2:"28";}i:7;a:0:{}i:8;a:1:{s:8:"category";s:2:"57";}i:9;a:1:{s:7:"product";s:2:"49";}i:10;a:1:{s:8:"category";s:5:"20_27";}i:11;a:1:{s:8:"category";s:2:"20";}i:12;a:1:{s:7:"product";s:2:"33";}i:13;a:0:{}}i:2;a:14:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:7:"product";}i:8;a:1:{i:0;s:8:"category";}i:9;a:1:{i:0;s:8:"category";}i:10;a:1:{i:0;s:8:"category";}i:11;a:1:{i:0;s:8:"category";}i:12;a:1:{i:0;s:8:"category";}i:13;a:1:{i:0;s:8:"checkout";}}}}',
+                14,
                 'queued-loop',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":531:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:5:"20_27";}i:2;a:1:{s:7:"product";s:2:"41";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
+                6
             ],
             [
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
-                6,
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":583:{a:3:{i:0;a:7:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:17:"viewOtherCategory";i:4;s:23:"viewProductFromCategory";i:5;s:21:"backToHomeFromProduct";i:6;s:16:"checkoutFromHome";}i:1;a:7:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:1:{s:8:"category";s:2:"34";}i:4;a:1:{s:7:"product";s:2:"48";}i:5;a:0:{}i:6;a:0:{}}i:2;a:7:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:7:"product";}i:5;a:1:{i:0;s:4:"home";}i:6;a:1:{i:0;s:8:"checkout";}}}}',
+                7,
                 'greedy',
                 'email',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
+                4
             ],
             [
-                'home viewAnyCategoryFromHome(category=18) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
-                6,
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":583:{a:3:{i:0;a:7:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:17:"viewOtherCategory";i:3;s:15:"addFromCategory";i:4;s:23:"viewProductFromCategory";i:5;s:21:"backToHomeFromProduct";i:6;s:16:"checkoutFromHome";}i:1;a:7:{i:0;N;i:1;a:1:{s:8:"category";s:2:"18";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:1:{s:7:"product";s:2:"48";}i:5;a:0:{}i:6;a:0:{}}i:2;a:7:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:7:"product";}i:5;a:1:{i:0;s:4:"home";}i:6;a:1:{i:0;s:8:"checkout";}}}}',
+                7,
                 'random',
                 'hipchat',
                 '',
-                6
-            ],*/
+                7
+            ],
         ];
     }
 
