@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 use Exception;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
+use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
@@ -44,17 +45,15 @@ class PathBuilder
                 $fromVertex = $graph->getVertex($fromPlaces[0]);
                 $toVertex = $graph->getVertex($toPlaces[0]);
                 $algorithm = new Dijkstra($fromVertex);
+                /** @var Edges $edges */
                 $edges = $algorithm->getEdgesTo($toVertex);
-                $middleTransitions = [$edges[0]->getAttribute('name')];
+                $middleTransitions = [];
                 $middleData = array_fill(0, count($edges), null);
-                $middlePlaces = [null];
-                foreach ($edges as $index => $edge) {
+                $middlePlaces = [];
+                foreach ($edges as $edge) {
                     if ($edge instanceof Directed) {
-                        if ($index === 0) {
-                            $middlePlaces[] = $edge->getVertexStart()->getId();
-                        }
                         $middleTransitions[] = $edge->getAttribute('name');
-                        $middlePlaces[] = $edge->getVertexEnd()->getId();
+                        $middlePlaces[] = [$edge->getVertexEnd()->getId()];
                     } else {
                         throw new Exception('Only support directed graph');
                     }

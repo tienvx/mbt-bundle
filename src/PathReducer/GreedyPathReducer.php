@@ -35,7 +35,7 @@ class GreedyPathReducer extends AbstractPathReducer
             $pairs = [];
             for ($i = 0; $i < $path->countTransitions(); $i++) {
                 $j = $i + $distance;
-                if ($j <= $path->countTransitions()) {
+                if ($j < $path->countTransitions()) {
                     $pairs[] = [$i, $j];
                 }
             }
