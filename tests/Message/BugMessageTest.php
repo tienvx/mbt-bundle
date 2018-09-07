@@ -122,23 +122,23 @@ class BugMessageTest extends MessageTestCase
                 'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":423:{a:3:{i:0;a:5:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:17:"viewOtherCategory";i:3;s:15:"addFromCategory";i:4;s:20:"checkoutFromCategory";}i:1;a:5:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:0:{}}i:2;a:5:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"checkout";}}}}',
                 5
             ],
-            /*[
-                'home viewCartFromHome() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=25_28) category viewOtherCategory(category=20) category checkoutFromCategory() checkout',
-                7,
+            [
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":646:{a:3:{i:0;a:8:{i:0;N;i:1;s:16:"viewCartFromHome";i:2;s:18:"backToHomeFromCart";i:3;s:23:"viewAnyCategoryFromHome";i:4;s:15:"addFromCategory";i:5;s:17:"viewOtherCategory";i:6;s:17:"viewOtherCategory";i:7;s:20:"checkoutFromCategory";}i:1;a:8:{i:0;N;i:1;a:0:{}i:2;a:0:{}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:1:{s:8:"category";s:5:"25_28";}i:6;a:1:{s:8:"category";s:2:"20";}i:7;a:0:{}}i:2;a:8:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:4:"cart";}i:2;a:1:{i:0;s:4:"home";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:8:"category";}i:7;a:1:{i:0;s:8:"checkout";}}}}',
+                8,
                 'greedy',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
+                4
             ],
             [
-                'home checkoutFromHome() checkout backToHomeFromCheckout() home viewAnyCategoryFromHome(category=20) category addFromCategory(product=46) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewCartFromCategory() cart viewProductFromCart(product=46) product viewAnyCategoryFromProduct(category=57) category checkoutFromCategory() checkout',
-                11,
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":1022:{a:3:{i:0;a:12:{i:0;N;i:1;s:16:"checkoutFromHome";i:2;s:22:"backToHomeFromCheckout";i:3;s:23:"viewAnyCategoryFromHome";i:4;s:15:"addFromCategory";i:5;s:23:"viewProductFromCategory";i:6;s:26:"viewAnyCategoryFromProduct";i:7;s:15:"addFromCategory";i:8;s:20:"viewCartFromCategory";i:9;s:19:"viewProductFromCart";i:10;s:26:"viewAnyCategoryFromProduct";i:11;s:20:"checkoutFromCategory";}i:1;a:12:{i:0;N;i:1;a:0:{}i:2;a:0:{}i:3;a:1:{s:8:"category";s:2:"20";}i:4;a:1:{s:7:"product";s:2:"46";}i:5;a:1:{s:7:"product";s:2:"33";}i:6;a:1:{s:8:"category";s:2:"57";}i:7;a:1:{s:7:"product";s:2:"49";}i:8;a:0:{}i:9;a:1:{s:7:"product";s:2:"46";}i:10;a:1:{s:8:"category";s:2:"57";}i:11;a:0:{}}i:2;a:12:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"checkout";}i:2;a:1:{i:0;s:4:"home";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:7:"product";}i:6;a:1:{i:0;s:8:"category";}i:7;a:1:{i:0;s:8:"category";}i:8;a:1:{i:0;s:4:"cart";}i:9;a:1:{i:0;s:7:"product";}i:10;a:1:{i:0;s:8:"category";}i:11;a:1:{i:0;s:8:"checkout";}}}}',
+                12,
                 'loop',
                 'email',
-                'home viewAnyCategoryFromHome(category=20) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":528:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:2:"20";}i:2;a:1:{s:7:"product";s:2:"33";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
+                6
             ],
-            [
+            /*[
                 'home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=24) category viewOtherCategory(category=17) category viewOtherCategory(category=24) category viewProductFromCategory(product=28) product addFromProduct() product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewOtherCategory(category=20_27) category viewOtherCategory(category=20) category addFromCategory(product=33) category checkoutFromCategory() checkout',
                 13,
                 'queued-loop',
