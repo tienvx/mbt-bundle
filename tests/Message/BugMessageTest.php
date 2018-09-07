@@ -83,22 +83,22 @@ class BugMessageTest extends MessageTestCase
     {
         return [
             [
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3,
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
+                4,
                 'queued-loop',
                 'email',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
+                4
             ],
             [
-                'home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product addFromProduct() product checkoutFromProduct() checkout viewCartFromCheckout() cart viewProductFromCart(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                9,
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":824:{a:3:{i:0;a:10:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:14:"addFromProduct";i:4;s:19:"checkoutFromProduct";i:5;s:20:"viewCartFromCheckout";i:6;s:19:"viewProductFromCart";i:7;s:26:"viewAnyCategoryFromProduct";i:8;s:15:"addFromCategory";i:9;s:20:"checkoutFromCategory";}i:1;a:10:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:7:"product";s:2:"48";}i:3;a:0:{}i:4;a:0:{}i:5;a:0:{}i:6;a:1:{s:7:"product";s:2:"48";}i:7;a:1:{s:8:"category";s:2:"57";}i:8;a:1:{s:7:"product";s:2:"49";}i:9;a:0:{}}i:2;a:10:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:7:"product";}i:4;a:1:{i:0;s:8:"checkout";}i:5;a:1:{i:0;s:4:"cart";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:8:"category";}i:8;a:1:{i:0;s:8:"category";}i:9;a:1:{i:0;s:8:"checkout";}}}}',
+                10,
                 'queued-loop',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":528:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:7:"product";s:2:"48";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
+                6
             ],
-            [
+            /*[
                 'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
                 4,
                 'greedy',
@@ -161,7 +161,7 @@ class BugMessageTest extends MessageTestCase
                 'hipchat',
                 '',
                 6
-            ],
+            ],*/
         ];
     }
 

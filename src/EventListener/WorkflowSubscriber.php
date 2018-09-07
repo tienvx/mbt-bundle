@@ -26,7 +26,8 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $subject = $event->getSubject();
 
         if ($subject instanceof Subject) {
-            $subject->enterPlace($event->getMarking()->getPlaces());
+            $places = array_keys(array_filter($event->getMarking()->getPlaces()));
+            $subject->enterPlace($places);
         }
     }
 

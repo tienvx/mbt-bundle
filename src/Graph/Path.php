@@ -47,12 +47,12 @@ class Path implements Serializable, Iterator
         return count($this->transitions);
     }
 
-    public function getTransitionAt(int $index): string
+    public function getTransitionAt(int $index): ?string
     {
         return $this->transitions[$index];
     }
 
-    public function getDataAt(int $index): array
+    public function getDataAt(int $index): ?array
     {
         return $this->data[$index];
     }
@@ -109,7 +109,7 @@ class Path implements Serializable, Iterator
 
     public function valid()
     {
-        return isset($this->transitions[$this->position]) && isset($this->data[$this->position]) && isset($this->places[$this->position]);
+        return isset($this->places[$this->position]);
     }
 
     public function rewind()

@@ -21,9 +21,11 @@ class GraphBuilder
         }
 
         $graph = new Graph();
-        foreach ($workflow->getDefinition()->getPlaces() as $place) {
-            $vertex = $graph->createVertex($place);
-            $vertex->setAttribute('name', $place);
+        foreach ($workflow->getDefinition()->getPlaces() as $place => $status) {
+            if ($status) {
+                $vertex = $graph->createVertex($place);
+                $vertex->setAttribute('name', $place);
+            }
         }
         foreach ($workflow->getDefinition()->getTransitions() as $transition) {
             foreach ($transition->getFroms() as $from) {

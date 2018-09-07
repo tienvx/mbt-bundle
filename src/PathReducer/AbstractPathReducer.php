@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
@@ -52,14 +53,13 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     /**
      * @param Bug $bug
-     * @param string $path
-     * @param int $length
+     * @param Path $path
      * @throws \Exception
      */
-    protected function updatePath(Bug $bug, string $path, int $length)
+    protected function updatePath(Bug $bug, Path $path)
     {
-        $bug->setPath($path);
-        $bug->setLength($length);
+        $bug->setPath(serialize($path));
+        $bug->setLength($path->countTransitions());
         $this->entityManager->flush();
     }
 

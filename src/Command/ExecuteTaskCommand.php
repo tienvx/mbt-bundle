@@ -93,6 +93,7 @@ class ExecuteTaskCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $task->getModel());
 
         $path = new Path();
+        $path->add(null, null, [$workflow->getDefinition()->getInitialPlace()]);
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {

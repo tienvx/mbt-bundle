@@ -158,7 +158,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
             while ($distance > 0 && empty($pairs)) {
                 for ($i = 0; $i < $path->countTransitions(); $i++) {
                     $j = $i + $distance;
-                    if ($j <= $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+                    if ($j < $path->countTransitions() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                         $pairs[] = [$i, $j];
                     }
                 }
@@ -186,7 +186,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
      * {@inheritdoc}
      * @return bool
      */
-    protected function updatePath(Bug $bug, string $path, int $length): bool
+    protected function updatePath(Bug $bug, Path $path): bool
     {
         $updated = false;
         $this->entityManager->beginTransaction();
@@ -197,8 +197,8 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 return $updated;
             }
 
-            $bug->setPath($path);
-            $bug->setLength($length);
+            $bug->setPath(serialize($path));
+            $bug->setLength($path->countTransitions());
             $this->entityManager->flush();
             $this->entityManager->commit();
 

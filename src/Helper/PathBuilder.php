@@ -45,7 +45,7 @@ class PathBuilder
                 $toVertex = $graph->getVertex($toPlaces[0]);
                 $algorithm = new Dijkstra($fromVertex);
                 $edges = $algorithm->getEdgesTo($toVertex);
-                $middleTransitions = [$edges[0]->get];
+                $middleTransitions = [$edges[0]->getAttribute('name')];
                 $middleData = array_fill(0, count($edges), null);
                 $middlePlaces = [null];
                 foreach ($edges as $index => $edge) {
@@ -95,11 +95,11 @@ class PathBuilder
         $beginPlaces = [];
         $endPlaces = [];
         foreach ($path as $index => $step) {
-            if ($index < $from) {
+            if ($index <= $from) {
                 $beginTransitions[] = $step[0];
                 $beginData[] = $step[1];
                 $beginPlaces[] = $step[2];
-            } elseif ($index >= $to) {
+            } elseif ($index > $to) {
                 $endTransitions[] = $step[0];
                 $endData[] = $step[1];
                 $endPlaces[] = $step[2];

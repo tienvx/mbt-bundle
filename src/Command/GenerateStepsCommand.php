@@ -72,6 +72,7 @@ class GenerateStepsCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         $path = new Path();
+        $path->add(null, null, [$workflow->getDefinition()->getInitialPlace()]);
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {

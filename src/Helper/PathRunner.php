@@ -22,18 +22,20 @@ class PathRunner
             foreach ($path as $index => $step) {
                 $transitionName = $step[0];
                 $data = $step[1];
-                if (is_array($data)) {
-                    $subject->setData($data);
-                    $subject->setNeedData(false);
-                } else {
-                    $subject->setNeedData(true);
-                }
-                if (!$workflow->can($subject, $transitionName)) {
-                    break;
-                }
-                $workflow->apply($subject, $transitionName);
-                if (!is_array($data)) {
-                    $path->setDataAt($index, $subject->getData());
+                if ($transitionName) {
+                    if (is_array($data)) {
+                        $subject->setData($data);
+                        $subject->setNeedData(false);
+                    } else {
+                        $subject->setNeedData(true);
+                    }
+                    if (!$workflow->can($subject, $transitionName)) {
+                        break;
+                    }
+                    $workflow->apply($subject, $transitionName);
+                    if (!is_array($data)) {
+                        $path->setDataAt($index, $subject->getData());
+                    }
                 }
             }
         } finally {
