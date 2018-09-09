@@ -37,6 +37,7 @@ class PathRunner
                     if (!is_array($data)) {
                         $path->setDataAt($index, $subject->getData());
                     }
+                    $subject->setNeedData(false);
                     $workflow->apply($subject, $transitionName);
                 }
             }
