@@ -54,7 +54,7 @@ class GeneratePathCommandTest extends CommandTestCase
 
         if ($path instanceof Path) {
             $placeInPathCount = count(array_unique(call_user_func_array('array_merge', $path->getAllPlaces())));
-            $transitionInPathCount = count(array_unique($path->getAllTransitions()));
+            $transitionInPathCount = count(array_unique(array_filter($path->getAllTransitions())));
             $allPlaces = $path->getAllPlaces();
             if ($generator === 'all-transitions' && array_diff(end($allPlaces), ['home'])) {
                 // Sometime, we can't get the path through all transitions, so ignore it.
