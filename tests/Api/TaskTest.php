@@ -28,7 +28,7 @@ class TaskTest extends ApiTestCase
             {
                 "id": 2,
                 "title": "Task 2",
-                "model": "shopping_cart",
+                "model": "checkout",
                 "generator": "random",
                 "reducer": "binary",
                 "reporter": "email",

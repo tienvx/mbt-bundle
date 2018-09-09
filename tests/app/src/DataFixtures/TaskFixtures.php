@@ -23,7 +23,7 @@ class TaskFixtures extends Fixture
 
         $task2 = new Task();
         $task2->setTitle('Task 2');
-        $task2->setModel('shopping_cart');
+        $task2->setModel('checkout');
         $task2->setGenerator('random');
         $task2->setReducer('binary');
         $task2->setReporter('email');
