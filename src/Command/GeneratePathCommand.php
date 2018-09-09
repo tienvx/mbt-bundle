@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Helper\Constants;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class GenerateStepsCommand extends AbstractCommand
+class GeneratePathCommand extends AbstractCommand
 {
     /**
      * @var Registry
@@ -45,13 +45,11 @@ class GenerateStepsCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:generate-steps')
-            ->setDescription('Generate steps from model.')
-            ->setHelp('Generate steps from model.')
+            ->setName('mbt:generate-path')
+            ->setDescription('Generate path from model.')
+            ->setHelp('Generate path from model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate steps from the model.', Constants::DEFAULT_GENERATOR)
-            ->addOption('stop-condition', 's', InputOption::VALUE_OPTIONAL, 'When generator stop generate steps.', Constants::DEFAULT_STOP_CONDITION)
-            ->addOption('stop-condition-arguments', 'a', InputOption::VALUE_OPTIONAL, 'The arguments of the stop condition.', Constants::DEFAULT_STOP_CONDITION_ARGUMENTS);
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', Constants::DEFAULT_GENERATOR);
     }
 
     /**

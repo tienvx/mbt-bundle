@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
-use Tienvx\Bundle\MbtBundle\Command\GenerateStepsCommand;
+use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
 use Tienvx\Bundle\MbtBundle\Command\HandlePathReducerMessageCommand;
 use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
 
@@ -33,7 +33,7 @@ class SecurityTokenPass implements CompilerPassInterface
         $commands = [
             ExecuteTaskCommand::class,
             HandlePathReducerMessageCommand::class,
-            GenerateStepsCommand::class,
+            GeneratePathCommand::class,
             ReduceStepsCommand::class,
         ];
         foreach ($commands as $command) {

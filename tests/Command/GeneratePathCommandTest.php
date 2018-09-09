@@ -6,7 +6,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
-class GenerateStepsCommandTest extends CommandTestCase
+class GeneratePathCommandTest extends CommandTestCase
 {
     public function coverageData()
     {
@@ -33,7 +33,7 @@ class GenerateStepsCommandTest extends CommandTestCase
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
-        $command = $this->application->find('mbt:generate-steps');
+        $command = $this->application->find('mbt:generate-path');
         if ($generator === 'random') {
             /** @var RandomGenerator $randomGenerator */
             $randomGenerator = self::$container->get(RandomGenerator::class);
