@@ -77,11 +77,11 @@ class GenerateStepsCommand extends AbstractCommand
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
                 $data = $subject->getData();
-                $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                $path->add($transitionName, $data, $places);
                 if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                     throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $generatorName, $transitionName));
                 }
+                $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
+                $path->add($transitionName, $data, $places);
             }
         } finally {
             $subject->tearDown();

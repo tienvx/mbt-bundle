@@ -17,8 +17,8 @@ class GenerateStepsCommandTest extends CommandTestCase
             ['shopping_cart', 'all-places', null, null, 0, 5],
             ['shopping_cart', 'all-transitions', null, null, 24, 0],
             ['checkout', 'random', 100, 100, 65, 31],
-            ['checkout', 'random', 60, 80, 39, 24],
-            ['checkout', 'random', 40, 65, 26, 20],
+            ['checkout', 'random', 60, 80, 39, 25],
+            ['checkout', 'random', 40, 65, 26, 21],
         ];
     }
 
