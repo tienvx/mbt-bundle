@@ -10,18 +10,19 @@ use Tienvx\Bundle\MbtBundle\Entity\Task;
 class TaskMessageTest extends MessageTestCase
 {
     /**
+     * @param string $model
      * @param string $generator
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $generator)
+    public function testConsumeMessage(string $model, string $generator)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel('shopping_cart');
+        $task->setModel($model);
         $task->setGenerator($generator);
         $task->setReducer('weighted-random');
         $task->setReporter('email');
@@ -39,9 +40,13 @@ class TaskMessageTest extends MessageTestCase
 
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
-            $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
-            $this->assertContains('product=49', $bugs[0]->getPath());
-            $this->assertEquals('checkout', substr($bugs[0]->getPath(), -8));
+            if ($model === 'shopping_cart') {
+                $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
+                $this->assertContains('{s:7:"product";s:2:"49";}', $bugs[0]->getPath());
+                $this->assertEquals('{i:0;s:8:"category";}}}}', substr($bugs[0]->getPath(), -24));
+            } else {
+                $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
+            }
         } else {
             $this->assertEquals(0, count($bugs));
         }
@@ -50,10 +55,12 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['random'],
-            ['weighted-random'],
-            ['all-places'],
-            ['all-transitions'],
+            ['shopping_cart', 'random'],
+            ['shopping_cart', 'weighted-random'],
+            ['shopping_cart', 'all-places'],
+            ['shopping_cart', 'all-transitions'],
+            ['checkout', 'random'],
+            ['checkout', 'weighted-random'],
         ];
     }
 }

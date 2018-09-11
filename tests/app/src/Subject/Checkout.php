@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Subject;
 
+use Exception;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class Checkout extends Subject
@@ -45,6 +46,21 @@ class Checkout extends Subject
      * @var bool
      */
     protected $paymentMethodAdded = false;
+
+    /**
+     * @var int
+     */
+    protected $step = 1;
+
+    /**
+     * @var bool
+     */
+    protected $usingNewBillingAddress = false;
+
+    /**
+     * @var bool
+     */
+    protected $usingNewDeliveryAddress = false;
 
     public function login()
     {
@@ -126,5 +142,115 @@ class Checkout extends Subject
     public function paymentMethodAdded()
     {
         $this->paymentMethodAdded = true;
+    }
+
+    public function useExistingBillingAddress()
+    {
+        $this->usingNewBillingAddress = false;
+    }
+
+    public function useNewBillingAddress()
+    {
+        $this->usingNewBillingAddress = true;
+    }
+
+    public function useExistingDeliveryAddress()
+    {
+        $this->usingNewDeliveryAddress = false;
+    }
+
+    public function useNewDeliveryAddress()
+    {
+        $this->usingNewDeliveryAddress = true;
+    }
+
+    public function step1()
+    {
+        $this->step = 1;
+    }
+
+    public function step2()
+    {
+        $this->step = 2;
+    }
+
+    public function step3()
+    {
+        $this->step = 3;
+    }
+
+    public function step4()
+    {
+        $this->step = 4;
+    }
+
+    public function step5()
+    {
+        $this->step = 5;
+    }
+
+    public function step6()
+    {
+        $this->step = 6;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function goFromStep3ToStep4()
+    {
+        if (!$this->testing) {
+            if ($this->step === 3 && $this->usingNewBillingAddress) {
+                throw new Exception('Link to step 4 has been removed after using new billing address');
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function goFromStep3ToStep5()
+    {
+        if (!$this->testing) {
+            if ($this->step === 3 && $this->usingNewBillingAddress) {
+                throw new Exception('Link to step 5 has been removed after using new billing address');
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function goFromStep3ToStep6()
+    {
+        if (!$this->testing) {
+            if ($this->step === 3 && $this->usingNewBillingAddress) {
+                throw new Exception('Link to step 6 has been removed after using new billing address');
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function goFromStep4ToStep5()
+    {
+        if (!$this->testing) {
+            if ($this->step === 4 && $this->usingNewDeliveryAddress) {
+                throw new Exception('Link to step 5 has been removed after using new delivery address');
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function goFromStep4ToStep6()
+    {
+        if (!$this->testing) {
+            if ($this->step === 4 && $this->usingNewDeliveryAddress) {
+                throw new Exception('Link to step 6 has been removed after using new delivery address');
+            }
+        }
     }
 }
