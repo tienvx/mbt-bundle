@@ -33,7 +33,6 @@ framework:
                 - awaitingTermsAndConditionsAgreement
                 - paymentMethodSelected
                 - termsAndConditionsAgreed
-                - awaitingOrderConfirmation
                 - accountAdded
                 - billingDetailsAdded
                 - deliveryDetailsAdded
