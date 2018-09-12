@@ -205,13 +205,13 @@ framework:
                     metadata:
                         label: "Continue guest checkout"
                 updateStep3LoggedIn:
-                    from: step4
+                    from: step3
                     to: awaitingExistingOrNewDeliveryAddress
                     guard: "subject.loggedIn()"
                     metadata:
                         label: "Update delivery details (logged in)"
                 updateStep3NotLoggedIn:
-                    from: step4
+                    from: step3
                     to: awaitingDeliveryAddress
                     guard: "!subject.loggedIn()"
                     metadata:
@@ -219,7 +219,7 @@ framework:
                 useExistingDeliveryAddress:
                     from: awaitingExistingOrNewDeliveryAddress
                     to:
-                        - step3
+                        - step4
                         - deliveryDetailsAdded
                     guard: "subject.loggedIn()"
                     metadata:
