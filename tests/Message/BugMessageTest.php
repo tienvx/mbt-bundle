@@ -6,22 +6,23 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class BugMessageTest extends MessageTestCase
 {
     /**
-     * @param string $path
-     * @param int $length
+     * @param array $pathArgs
      * @param string $reducer
      * @param string $reporter
-     * @param string $expectedPath
-     * @param int $expectedLength
+     * @param array $expectedPathArgs
      * @dataProvider consumeMessageData
      */
-    public function testExecute(string $path, int $length, string $reducer, string $reporter, string $expectedPath, int $expectedLength)
+    public function testExecute(array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        $path = new Path(...$pathArgs);
+        $expectedPath = new Path(...$expectedPathArgs);
 
         $task = new Task();
         $task->setTitle('Test task title');
@@ -41,8 +42,8 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
-        $bug->setPath($path);
-        $bug->setLength($length);
+        $bug->setPath(serialize($path));
+        $bug->setLength($path->countPlaces());
         $bug->setTask($task);
         $bug->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
         $entityManager->persist($bug);
@@ -59,10 +60,10 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
-            $this->assertEquals($expectedPath, $bugs[0]->getPath());
-            $this->assertEquals($expectedLength, $bugs[0]->getLength());
+            $this->assertEquals(serialize($expectedPath), $bugs[0]->getPath());
+            $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
-            $this->assertLessThanOrEqual($expectedLength, $bugs[0]->getLength());
+            $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
         }
 
         if ($reporter === 'email') {
@@ -83,84 +84,144 @@ class BugMessageTest extends MessageTestCase
     {
         return [
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
-                4,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => 57], ['product' => 49], []],
+                    [['home'], ['category'], ['category'], ['checkout']]
+                ],
                 'queued-loop',
                 'email',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => 57], ['product' => 49], []],
+                    [['home'], ['category'], ['category'], ['checkout']]
+                ],
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":824:{a:3:{i:0;a:10:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:14:"addFromProduct";i:4;s:19:"checkoutFromProduct";i:5;s:20:"viewCartFromCheckout";i:6;s:19:"viewProductFromCart";i:7;s:26:"viewAnyCategoryFromProduct";i:8;s:15:"addFromCategory";i:9;s:20:"checkoutFromCategory";}i:1;a:10:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:7:"product";s:2:"48";}i:3;a:0:{}i:4;a:0:{}i:5;a:0:{}i:6;a:1:{s:7:"product";s:2:"48";}i:7;a:1:{s:8:"category";s:2:"57";}i:8;a:1:{s:7:"product";s:2:"49";}i:9;a:0:{}}i:2;a:10:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:7:"product";}i:4;a:1:{i:0;s:8:"checkout";}i:5;a:1:{i:0;s:4:"cart";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:8:"category";}i:8;a:1:{i:0;s:8:"category";}i:9;a:1:{i:0;s:8:"checkout";}}}}',
-                10,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct', 'viewCartFromCheckout', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['product' => '48'], [], [], [], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['product'], ['checkout'], ['cart'], ['product'], ['category'], ['category'], ['checkout']],
+                ],
                 'queued-loop',
                 'hipchat',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":528:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:7:"product";s:2:"48";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
-                6
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":412:{a:3:{i:0;a:5:{i:0;N;i:1;s:11:"addFromHome";i:2;s:23:"viewAnyCategoryFromHome";i:3;s:15:"addFromCategory";i:4;s:20:"checkoutFromCategory";}i:1;a:5:{i:0;N;i:1;a:1:{s:7:"product";s:2:"40";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:0:{}}i:2;a:5:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:4:"home";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"checkout";}}}}',
-                5,
+                [
+                    [null, 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['home'], ['category'], ['category'], ['checkout']],
+                ],
                 'greedy',
                 'email',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":720:{a:3:{i:0;a:9:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"viewCartFromCategory";i:4;s:18:"backToHomeFromCart";i:5;s:23:"viewAnyCategoryFromHome";i:6;s:23:"viewProductFromCategory";i:7;s:14:"addFromProduct";i:8;s:19:"checkoutFromProduct";}i:1;a:9:{i:0;N;i:1;a:1:{s:8:"category";s:2:"33";}i:2;a:1:{s:7:"product";s:2:"31";}i:3;a:0:{}i:4;a:0:{}i:5;a:1:{s:8:"category";s:2:"57";}i:6;a:1:{s:7:"product";s:2:"49";}i:7;a:0:{}i:8;a:0:{}}i:2;a:9:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:4:"cart";}i:4;a:1:{i:0;s:4:"home";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:7:"product";}i:8;a:1:{i:0;s:8:"checkout";}}}}',
-                9,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
+                    [null, ['category' => '33'], ['product' => '31'], [], [], ['category' => '57'], ['product' => '49'], [], []],
+                    [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
+                ],
                 'binary',
                 'hipchat',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":401:{a:3:{i:0;a:5:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:14:"addFromProduct";i:4;s:19:"checkoutFromProduct";}i:1;a:5:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}i:4;a:0:{}}i:2;a:5:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:7:"product";}i:4;a:1:{i:0;s:8:"checkout";}}}}',
-                5
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
+                    [null, ['category' => '57'], ['product' => '49'], [], []],
+                    [['home'], ['category'], ['product'], ['product'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":675:{a:3:{i:0;a:8:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:17:"viewOtherCategory";i:3;s:15:"addFromCategory";i:4;s:17:"viewOtherCategory";i:5;s:23:"viewProductFromCategory";i:6;s:21:"backToHomeFromProduct";i:7;s:16:"checkoutFromHome";}i:1;a:8:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:1:{s:8:"category";s:2:"34";}i:5;a:1:{s:7:"product";s:2:"48";}i:6;a:0:{}i:7;a:0:{}}i:2;a:8:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:7:"product";}i:6;a:1:{i:0;s:4:"home";}i:7;a:1:{i:0;s:8:"checkout";}}}}',
-                8,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'binary',
                 'email',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":423:{a:3:{i:0;a:5:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:17:"viewOtherCategory";i:3;s:15:"addFromCategory";i:4;s:20:"checkoutFromCategory";}i:1;a:5:{i:0;N;i:1;a:1:{s:8:"category";s:2:"34";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:0:{}}i:2;a:5:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"checkout";}}}}',
-                5
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":646:{a:3:{i:0;a:8:{i:0;N;i:1;s:16:"viewCartFromHome";i:2;s:18:"backToHomeFromCart";i:3;s:23:"viewAnyCategoryFromHome";i:4;s:15:"addFromCategory";i:5;s:17:"viewOtherCategory";i:6;s:17:"viewOtherCategory";i:7;s:20:"checkoutFromCategory";}i:1;a:8:{i:0;N;i:1;a:0:{}i:2;a:0:{}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:1:{s:8:"category";s:5:"25_28";}i:6;a:1:{s:8:"category";s:2:"20";}i:7;a:0:{}}i:2;a:8:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:4:"cart";}i:2;a:1:{i:0;s:4:"home";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:8:"category";}i:7;a:1:{i:0;s:8:"checkout";}}}}',
-                8,
+                [
+                    [null, 'viewCartFromHome', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'checkoutFromCategory'],
+                    [null, [], [], ['category' => '57'], ['product' => '49'], ['category' => '25_28'], ['category' => '20'], []],
+                    [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                ],
                 'greedy',
                 'hipchat',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":1022:{a:3:{i:0;a:12:{i:0;N;i:1;s:16:"checkoutFromHome";i:2;s:22:"backToHomeFromCheckout";i:3;s:23:"viewAnyCategoryFromHome";i:4;s:15:"addFromCategory";i:5;s:23:"viewProductFromCategory";i:6;s:26:"viewAnyCategoryFromProduct";i:7;s:15:"addFromCategory";i:8;s:20:"viewCartFromCategory";i:9;s:19:"viewProductFromCart";i:10;s:26:"viewAnyCategoryFromProduct";i:11;s:20:"checkoutFromCategory";}i:1;a:12:{i:0;N;i:1;a:0:{}i:2;a:0:{}i:3;a:1:{s:8:"category";s:2:"20";}i:4;a:1:{s:7:"product";s:2:"46";}i:5;a:1:{s:7:"product";s:2:"33";}i:6;a:1:{s:8:"category";s:2:"57";}i:7;a:1:{s:7:"product";s:2:"49";}i:8;a:0:{}i:9;a:1:{s:7:"product";s:2:"46";}i:10;a:1:{s:8:"category";s:2:"57";}i:11;a:0:{}}i:2;a:12:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"checkout";}i:2;a:1:{i:0;s:4:"home";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:7:"product";}i:6;a:1:{i:0;s:8:"category";}i:7;a:1:{i:0;s:8:"category";}i:8;a:1:{i:0;s:4:"cart";}i:9;a:1:{i:0;s:7:"product";}i:10;a:1:{i:0;s:8:"category";}i:11;a:1:{i:0;s:8:"checkout";}}}}',
-                12,
+                [
+                    [null, 'checkoutFromHome', 'backToHomeFromCheckout', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewCartFromCategory', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'checkoutFromCategory'],
+                    [null, [], [], ['category' => '20'], ['product' => '46'], ['product' => '33'], ['category' => '57'], ['product' => '49'], [], ['product' => '46'], ['category' => '57'], []],
+                    [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
+                ],
                 'loop',
                 'email',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":528:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:2:"20";}i:2;a:1:{s:7:"product";s:2:"33";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
-                6
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":1267:{a:3:{i:0;a:14:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:17:"viewOtherCategory";i:5;s:17:"viewOtherCategory";i:6;s:23:"viewProductFromCategory";i:7;s:14:"addFromProduct";i:8;s:26:"viewAnyCategoryFromProduct";i:9;s:15:"addFromCategory";i:10;s:17:"viewOtherCategory";i:11;s:17:"viewOtherCategory";i:12;s:15:"addFromCategory";i:13;s:20:"checkoutFromCategory";}i:1;a:14:{i:0;N;i:1;a:1:{s:8:"category";s:5:"20_27";}i:2;a:1:{s:7:"product";s:2:"41";}i:3;a:1:{s:8:"category";s:2:"24";}i:4;a:1:{s:8:"category";s:2:"17";}i:5;a:1:{s:8:"category";s:2:"24";}i:6;a:1:{s:7:"product";s:2:"28";}i:7;a:0:{}i:8;a:1:{s:8:"category";s:2:"57";}i:9;a:1:{s:7:"product";s:2:"49";}i:10;a:1:{s:8:"category";s:5:"20_27";}i:11;a:1:{s:8:"category";s:2:"20";}i:12;a:1:{s:7:"product";s:2:"33";}i:13;a:0:{}}i:2;a:14:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"category";}i:6;a:1:{i:0;s:7:"product";}i:7;a:1:{i:0;s:7:"product";}i:8;a:1:{i:0;s:8:"category";}i:9;a:1:{i:0;s:8:"category";}i:10;a:1:{i:0;s:8:"category";}i:11;a:1:{i:0;s:8:"category";}i:12;a:1:{i:0;s:8:"category";}i:13;a:1:{i:0;s:8:"checkout";}}}}',
-                14,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20_27'], ['category' => '20'], ['product' => '33'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                ],
                 'queued-loop',
                 'hipchat',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":531:{a:3:{i:0;a:6:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:23:"viewProductFromCategory";i:3;s:26:"viewAnyCategoryFromProduct";i:4;s:15:"addFromCategory";i:5;s:20:"checkoutFromCategory";}i:1;a:6:{i:0;N;i:1;a:1:{s:8:"category";s:5:"20_27";}i:2;a:1:{s:7:"product";s:2:"41";}i:3;a:1:{s:8:"category";s:2:"57";}i:4;a:1:{s:7:"product";s:2:"49";}i:5;a:0:{}}i:2;a:6:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:7:"product";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:8:"category";}i:5;a:1:{i:0;s:8:"checkout";}}}}',
-                6
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":583:{a:3:{i:0;a:7:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:17:"viewOtherCategory";i:4;s:23:"viewProductFromCategory";i:5;s:21:"backToHomeFromProduct";i:6;s:16:"checkoutFromHome";}i:1;a:7:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:1:{s:8:"category";s:2:"34";}i:4;a:1:{s:7:"product";s:2:"48";}i:5;a:0:{}i:6;a:0:{}}i:2;a:7:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:7:"product";}i:5;a:1:{i:0;s:4:"home";}i:6;a:1:{i:0;s:8:"checkout";}}}}',
-                7,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'greedy',
                 'email',
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":331:{a:3:{i:0;a:4:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:15:"addFromCategory";i:3;s:20:"checkoutFromCategory";}i:1;a:4:{i:0;N;i:1;a:1:{s:8:"category";s:2:"57";}i:2;a:1:{s:7:"product";s:2:"49";}i:3;a:0:{}}i:2;a:4:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"checkout";}}}}',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'C:34:"Tienvx\Bundle\MbtBundle\Graph\Path":583:{a:3:{i:0;a:7:{i:0;N;i:1;s:23:"viewAnyCategoryFromHome";i:2;s:17:"viewOtherCategory";i:3;s:15:"addFromCategory";i:4;s:23:"viewProductFromCategory";i:5;s:21:"backToHomeFromProduct";i:6;s:16:"checkoutFromHome";}i:1;a:7:{i:0;N;i:1;a:1:{s:8:"category";s:2:"18";}i:2;a:1:{s:8:"category";s:2:"57";}i:3;a:1:{s:7:"product";s:2:"49";}i:4;a:1:{s:7:"product";s:2:"48";}i:5;a:0:{}i:6;a:0:{}}i:2;a:7:{i:0;a:1:{i:0;s:4:"home";}i:1;a:1:{i:0;s:8:"category";}i:2;a:1:{i:0;s:8:"category";}i:3;a:1:{i:0;s:8:"category";}i:4;a:1:{i:0;s:7:"product";}i:5;a:1:{i:0;s:4:"home";}i:6;a:1:{i:0;s:8:"checkout";}}}}',
-                7,
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'random',
                 'hipchat',
-                '',
-                7
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ]
             ],
         ];
     }
