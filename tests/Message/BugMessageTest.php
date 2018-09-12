@@ -24,6 +24,8 @@ class BugMessageTest extends MessageTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $path = new Path(...$pathArgs);
         $expectedPath = new Path(...$expectedPathArgs);
+        $bugMessage = ($model === 'shopping_cart') ? 'You added an out-of-stock product into cart! Can not checkout' :
+            'Link to step 4 has been removed after using new billing address';
 
         $task = new Task();
         $task->setTitle('Test task title');
@@ -46,7 +48,7 @@ class BugMessageTest extends MessageTestCase
         $bug->setPath(serialize($path));
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
-        $bug->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
+        $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
 
         $entityManager->flush();
@@ -59,7 +61,7 @@ class BugMessageTest extends MessageTestCase
         $bugs = $entityManager->getRepository(Bug::class)->findBy(['task' => $task->getId()]);
 
         $this->assertEquals(1, count($bugs));
-        $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
+        $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
             $this->assertEquals(serialize($expectedPath), $bugs[0]->getPath());
             $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
@@ -233,6 +235,21 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ]
+            ],
+            [
+                'checkout',
+                [
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'guestCheckout', 'updateStep2GuestCheckout', 'fillPersonalDetails', 'fillBillingAddress', 'continueGuestCheckoutSameAddresses', 'goFromStep4ToStep1', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
+                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+                    [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
+                ],
+                'queued-loop',
+                'email',
+                [
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
+                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+                    [['home'], ['step1'], ['awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
+                ],
             ],
         ];
     }
