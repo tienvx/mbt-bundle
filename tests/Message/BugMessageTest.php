@@ -11,13 +11,14 @@ use Tienvx\Bundle\MbtBundle\Graph\Path;
 class BugMessageTest extends MessageTestCase
 {
     /**
+     * @param string $model
      * @param array $pathArgs
      * @param string $reducer
      * @param string $reporter
      * @param array $expectedPathArgs
      * @dataProvider consumeMessageData
      */
-    public function testExecute(array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
+    public function testExecute(string $model, array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -26,7 +27,7 @@ class BugMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel('shopping_cart');
+        $task->setModel($model);
         $task->setGenerator('random');
         $task->setReducer($reducer);
         $task->setReporter($reporter);
@@ -84,6 +85,7 @@ class BugMessageTest extends MessageTestCase
     {
         return [
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => 57], ['product' => 49], []],
@@ -98,6 +100,7 @@ class BugMessageTest extends MessageTestCase
                 ],
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct', 'viewCartFromCheckout', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '34'], ['product' => '48'], [], [], [], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
@@ -112,6 +115,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
@@ -126,6 +130,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
                     [null, ['category' => '33'], ['product' => '31'], [], [], ['category' => '57'], ['product' => '49'], [], []],
@@ -140,6 +145,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
                     [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
@@ -154,6 +160,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewCartFromHome', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'checkoutFromCategory'],
                     [null, [], [], ['category' => '57'], ['product' => '49'], ['category' => '25_28'], ['category' => '20'], []],
@@ -168,6 +175,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'checkoutFromHome', 'backToHomeFromCheckout', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewCartFromCategory', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'checkoutFromCategory'],
                     [null, [], [], ['category' => '20'], ['product' => '46'], ['product' => '33'], ['category' => '57'], ['product' => '49'], [], ['product' => '46'], ['category' => '57'], []],
@@ -182,6 +190,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20_27'], ['category' => '20'], ['product' => '33'], []],
@@ -196,6 +205,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
                     [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
@@ -210,6 +220,7 @@ class BugMessageTest extends MessageTestCase
                 ]
             ],
             [
+                'shopping_cart',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
                     [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
