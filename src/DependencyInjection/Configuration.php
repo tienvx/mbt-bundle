@@ -47,6 +47,15 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('token')->defaultValue('')->end()
                             ->end()
                         ->end() // slack
+                        ->arrayNode('github')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('address')->defaultValue('https://api.github.com')->end()
+                                ->scalarNode('repoOwner')->defaultValue('')->end()
+                                ->scalarNode('repoName')->defaultValue('')->end()
+                                ->scalarNode('token')->defaultValue('')->end()
+                            ->end()
+                        ->end() // github
                     ->end()
                 ->end() // reporter
                 ->arrayNode('subjects')

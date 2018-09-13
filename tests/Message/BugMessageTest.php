@@ -42,6 +42,7 @@ class BugMessageTest extends MessageTestCase
         $this->clearMessages();
         $this->clearHipchatMessages();
         $this->clearSlackMessages();
+        $this->clearGithubMessages();
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
@@ -83,6 +84,8 @@ class BugMessageTest extends MessageTestCase
             $this->assertTrue($this->hasHipchatMessages());
         } elseif ($reporter === 'slack') {
             $this->assertTrue($this->hasSlackMessages());
+        } elseif ($reporter === 'github') {
+            $this->assertTrue($this->hasGithubMessages());
         }
     }
 
@@ -142,7 +145,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
                 ],
                 'binary',
-                'email',
+                'github',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
                     [null, ['category' => '57'], ['product' => '49'], [], []],
@@ -157,7 +160,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'binary',
-                'hipchat',
+                'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], []],
@@ -172,7 +175,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'greedy',
-                'slack',
+                'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -187,7 +190,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'email',
+                'slack',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
@@ -202,7 +205,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'queued-loop',
-                'hipchat',
+                'github',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
@@ -217,7 +220,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'greedy',
-                'slack',
+                'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -232,7 +235,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'random',
-                'email',
+                'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
                     [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
@@ -247,7 +250,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
                 ],
                 'queued-loop',
-                'hipchat',
+                'slack',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
                     [null, [], [], [], [], [], [], [], [], [], [], [], [], [], []],
@@ -275,5 +278,15 @@ class BugMessageTest extends MessageTestCase
     protected function hasSlackMessages()
     {
         return filesize("{$this->cacheDir}/slack/text.data") !== 0;
+    }
+
+    protected function clearGithubMessages()
+    {
+        exec("rm -rf {$this->cacheDir}/github/");
+    }
+
+    protected function hasGithubMessages()
+    {
+        return filesize("{$this->cacheDir}/github/body.data") !== 0;
     }
 }
