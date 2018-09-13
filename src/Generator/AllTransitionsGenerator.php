@@ -2,79 +2,47 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Fhaculty\Graph\Edge\Base as Edge;
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Exception\UnderflowException;
-use Fhaculty\Graph\Graph;
-use Fhaculty\Graph\Set\Edges;
+use Exception;
+use Generator;
 use Graphp\Algorithms\ConnectedComponents;
+use Symfony\Component\Workflow\StateMachine;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Model\Subject;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
+use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
     /**
-     * @var bool
+     * @param Workflow $workflow
+     * @param Subject $subject
+     * @return Generator
+     * @throws Exception
      */
-    protected $singleComponent = false;
-
-    /**
-     * @var Graph
-     */
-    protected $resultGraph;
-
-    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
+    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
     {
-        parent::init($model, $subject, $stopCondition);
-
-        $components = new ConnectedComponents($this->graph);
-        $this->singleComponent = $components->isSingle();
-        if ($this->singleComponent) {
-            $algorithm = new Eulerian($this->graph);
-            $this->resultGraph = $algorithm->getResultGraph();
-            $this->currentVertex = $this->resultGraph->getVertex($this->currentVertex->getId());
+        if (!$workflow instanceof StateMachine) {
+            throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));
         }
-    }
 
-    public function getNextStep(): ?Directed
-    {
-        try {
-            /** @var Directed $edge */
-            $edge = $this->currentVertex->getEdges()->getEdgesMatch(function (Edge $edge) {
-                return $edge->hasVertexStart($this->currentVertex) && !$edge->getAttribute('visited') && !$edge->getAttribute('tried');
-            })->getEdgeOrder(Edges::ORDER_RANDOM);
-            $edge->setAttribute('tried', true);
-            return $edge;
-        } catch (UnderflowException $e) {
-            return null;
-        }
-    }
-
-    public function goToNextStep(Directed $currentEdge): bool
-    {
-        $transitionName = $currentEdge->getAttribute('name');
-
-        /** @var Directed $currentEdgeInPath */
-        $currentEdgeInPath = $this->graph->getEdges()->getEdgeMatch(function (Edge $edge) use ($transitionName) {
-            return $edge->getAttribute('name') === $transitionName;
-        });
-
-        $entered = parent::goToNextStep($currentEdgeInPath);
-        if ($entered) {
-            $currentEdge->setAttribute('visited', true);
-            foreach ($this->currentVertex->getEdgesOut() as $edge) {
-                $edge->setAttribute('tried', false);
+        $graph = GraphBuilder::build($workflow);
+        $components = new ConnectedComponents($graph);
+        $singleComponent = $components->isSingle();
+        if ($singleComponent) {
+            $algorithm = new Eulerian($graph);
+            $startVertex = $graph->getVertex($workflow->getDefinition()->getInitialPlace());
+            $edges = $algorithm->getEdges($startVertex);
+            $edges = $edges->getVector();
+            while (!empty($edges)) {
+                $edge = array_shift($edges);
+                $transitionName = $edge->getAttribute('name');
+                if ($workflow->can($subject, $transitionName)) {
+                    yield $transitionName;
+                } else {
+                    break;
+                }
             }
-            $this->currentVertex = $currentEdge->getVertexEnd();
         }
-        return $entered;
-    }
-
-    public function meetStopCondition(): bool
-    {
-        return !$this->singleComponent;
     }
 
     public static function getName()

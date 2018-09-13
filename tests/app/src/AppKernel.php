@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -20,6 +21,7 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             new ApiPlatformBundle(),
+            new SecurityBundle(),
             new FrameworkBundle(),
             new DoctrineBundle(),
             new DoctrineFixturesBundle(),

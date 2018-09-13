@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph/Path.php,Model/Model.php,Model/Subject.php,Subject,Message,Algorithm,Helper}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph/Path.php,Subject/Subject.php,Message,Algorithm,Helper}" />
 
         <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
 
@@ -14,11 +14,6 @@
             <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Generator\GeneratorManager" alias="mbt.generator_manager" />
-
-        <service id="mbt.stop_condition_manager" class="Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager" public="false" autowire="true">
-            <argument type="collection" />
-        </service>
-        <service id="Tienvx\Bundle\MbtBundle\StopCondition\StopConditionManager" alias="mbt.stop_condition_manager" />
 
         <service id="mbt.path_reducer_manager" class="Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager" public="false" autowire="true">
             <argument type="collection" />

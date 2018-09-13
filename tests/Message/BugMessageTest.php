@@ -6,29 +6,31 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class BugMessageTest extends MessageTestCase
 {
     /**
-     * @param string $steps
-     * @param int $length
+     * @param string $model
+     * @param array $pathArgs
      * @param string $reducer
      * @param string $reporter
-     * @param string $expectedSteps
-     * @param int $expectedLength
+     * @param array $expectedPathArgs
      * @dataProvider consumeMessageData
      */
-    public function testExecute(string $steps, int $length, string $reducer, string $reporter, string $expectedSteps, int $expectedLength)
+    public function testExecute(string $model, array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        $path = new Path(...$pathArgs);
+        $expectedPath = new Path(...$expectedPathArgs);
+        $bugMessage = ($model === 'shopping_cart') ? 'You added an out-of-stock product into cart! Can not checkout' :
+            'Link to step 4 has been removed after using new billing address';
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel('shopping_cart');
+        $task->setModel($model);
         $task->setGenerator('random');
-        $task->setStopCondition('max-length');
-        $task->setStopConditionArguments('{}');
         $task->setReducer($reducer);
         $task->setReporter($reporter);
         $task->setProgress(0);
@@ -43,10 +45,10 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setStatus('unverified');
-        $bug->setSteps($steps);
-        $bug->setLength($length);
+        $bug->setPath(serialize($path));
+        $bug->setLength($path->countPlaces());
         $bug->setTask($task);
-        $bug->setBugMessage('You added an out-of-stock product into cart! Can not checkout');
+        $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
 
         $entityManager->flush();
@@ -59,12 +61,12 @@ class BugMessageTest extends MessageTestCase
         $bugs = $entityManager->getRepository(Bug::class)->findBy(['task' => $task->getId()]);
 
         $this->assertEquals(1, count($bugs));
-        $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
+        $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
-            $this->assertEquals($expectedSteps, $bugs[0]->getSteps());
-            $this->assertEquals($expectedLength, $bugs[0]->getLength());
+            $this->assertEquals(serialize($expectedPath), $bugs[0]->getPath());
+            $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
-            $this->assertLessThanOrEqual($expectedLength, $bugs[0]->getLength());
+            $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
         }
 
         if ($reporter === 'email') {
@@ -85,84 +87,169 @@ class BugMessageTest extends MessageTestCase
     {
         return [
             [
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => 57], ['product' => 49], []],
+                    [['home'], ['category'], ['category'], ['checkout']]
+                ],
                 'queued-loop',
                 'email',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => 57], ['product' => 49], []],
+                    [['home'], ['category'], ['category'], ['checkout']]
+                ],
             ],
             [
-                'home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product addFromProduct() product checkoutFromProduct() checkout viewCartFromCheckout() cart viewProductFromCart(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                9,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct', 'viewCartFromCheckout', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['product' => '48'], [], [], [], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['product'], ['checkout'], ['cart'], ['product'], ['category'], ['category'], ['checkout']],
+                ],
                 'queued-loop',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=34) category viewProductFromCategory(product=48) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home addFromHome(product=40) home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                4,
+                'shopping_cart',
+                [
+                    [null, 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['home'], ['category'], ['category'], ['checkout']],
+                ],
                 'greedy',
                 'email',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home viewAnyCategoryFromHome(category=33) category addFromCategory(product=31) category viewCartFromCategory() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout',
-                8,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
+                    [null, ['category' => '33'], ['product' => '31'], [], [], ['category' => '57'], ['product' => '49'], [], []],
+                    [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
+                ],
                 'binary',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=57) category viewProductFromCategory(product=49) product addFromProduct() product checkoutFromProduct() checkout',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
+                    [null, ['category' => '57'], ['product' => '49'], [], []],
+                    [['home'], ['category'], ['product'], ['product'], ['checkout']],
+                ]
             ],
             [
-                'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
-                7,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'binary',
                 'email',
-                'home viewAnyCategoryFromHome(category=34) category viewOtherCategory(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                4
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home viewCartFromHome() cart backToHomeFromCart() home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=25_28) category viewOtherCategory(category=20) category checkoutFromCategory() checkout',
-                7,
+                'shopping_cart',
+                [
+                    [null, 'viewCartFromHome', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'checkoutFromCategory'],
+                    [null, [], [], ['category' => '57'], ['product' => '49'], ['category' => '25_28'], ['category' => '20'], []],
+                    [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                ],
                 'greedy',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home checkoutFromHome() checkout backToHomeFromCheckout() home viewAnyCategoryFromHome(category=20) category addFromCategory(product=46) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewCartFromCategory() cart viewProductFromCart(product=46) product viewAnyCategoryFromProduct(category=57) category checkoutFromCategory() checkout',
-                11,
+                'shopping_cart',
+                [
+                    [null, 'checkoutFromHome', 'backToHomeFromCheckout', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewCartFromCategory', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'checkoutFromCategory'],
+                    [null, [], [], ['category' => '20'], ['product' => '46'], ['product' => '33'], ['category' => '57'], ['product' => '49'], [], ['product' => '46'], ['category' => '57'], []],
+                    [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
+                ],
                 'loop',
                 'email',
-                'home viewAnyCategoryFromHome(category=20) category viewProductFromCategory(product=33) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=24) category viewOtherCategory(category=17) category viewOtherCategory(category=24) category viewProductFromCategory(product=28) product addFromProduct() product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category viewOtherCategory(category=20_27) category viewOtherCategory(category=20) category addFromCategory(product=33) category checkoutFromCategory() checkout',
-                13,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20_27'], ['category' => '20'], ['product' => '33'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                ],
                 'queued-loop',
                 'hipchat',
-                'home viewAnyCategoryFromHome(category=20_27) category viewProductFromCategory(product=41) product viewAnyCategoryFromProduct(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                5
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category viewOtherCategory(category=34) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
-                6,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'greedy',
                 'email',
-                'home viewAnyCategoryFromHome(category=57) category addFromCategory(product=49) category checkoutFromCategory() checkout',
-                3
+                [
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
+                ]
             ],
             [
-                'home viewAnyCategoryFromHome(category=18) category viewOtherCategory(category=57) category addFromCategory(product=49) category viewProductFromCategory(product=48) product backToHomeFromProduct() home checkoutFromHome() checkout',
-                6,
+                'shopping_cart',
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ],
                 'random',
                 'hipchat',
-                '',
-                6
+                [
+                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                ]
+            ],
+            [
+                'checkout',
+                [
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'guestCheckout', 'updateStep2GuestCheckout', 'fillPersonalDetails', 'fillBillingAddress', 'continueGuestCheckoutSameAddresses', 'goFromStep4ToStep1', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
+                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+                    [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
+                ],
+                'queued-loop',
+                'email',
+                [
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
+                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+                    [['home'], ['step1'], ['awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
+                ],
             ],
         ];
     }

@@ -2,9 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Exception;
+use Symfony\Component\Workflow\StateMachine;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
@@ -16,28 +19,36 @@ class RandomPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
-        $path  = Path::fromSteps($bug->getSteps(), $graph);
+        $model = $bug->getTask()->getModel();
+        $subject = $this->subjectManager->createSubjectForModel($model);
+        $workflow = $this->workflowRegistry->get($subject, $model);
+
+        if (!$workflow instanceof StateMachine) {
+            throw new Exception(sprintf('Path reducer %s only support model type state machine', static::getName()));
+        }
+
+        $graph = GraphBuilder::build($workflow);
+        $path = PathBuilder::build($bug->getPath());
 
         $try = 1;
-        $maxTries = $path->countEdges();
+        $maxTries = $path->countPlaces();
 
         while ($try <= $maxTries) {
-            list($i, $j) = Randomizer::randomPair(0, $path->countEdges());
-            $newPath = $this->getNewPath($path, $i, $j);
+            list($i, $j) = Randomizer::randomPair(0, $path->countPlaces() - 1);
+            $newPath = PathBuilder::createWithShortestPath($graph, $path, $i, $j);
             // Make sure new path shorter than old path.
-            if ($newPath->countEdges() < $path->countEdges()) {
+            if ($newPath->countPlaces() < $path->countPlaces()) {
                 try {
-                    PathRunner::run($newPath, $model);
+                    $subject = $this->subjectManager->createSubjectForModel($model);
+                    PathRunner::run($newPath, $workflow, $subject);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                         $path = $newPath;
                     }
                 } finally {
-                    if ($newPath->countEdges() === $path->countEdges()) {
+                    if ($newPath->countPlaces() === $path->countPlaces()) {
                         $try = 1;
-                        $maxTries = $path->countEdges();
+                        $maxTries = $path->countPlaces();
                     }
                 }
             }
@@ -45,7 +56,7 @@ class RandomPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->updateSteps($bug, $path, $path->countEdges());
+        $this->updatePath($bug, $path);
         $this->finish($bug->getId());
     }
 

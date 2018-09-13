@@ -15,7 +15,7 @@ class BugTest extends ApiTestCase
                 "id": 1,
                 "title": "Bug 1",
                 "status": "unverified",
-                "steps": "step1 step2 step3",
+                "path": "step1 step2 step3",
                 "length": 3,
                 "task": "/mbt/tasks/1",
                 "bugMessage": "Something happen on shopping_cart model"
@@ -24,7 +24,7 @@ class BugTest extends ApiTestCase
                 "id": 2,
                 "title": "Bug 2",
                 "status": "valid",
-                "steps": "step1 step2 step3 step4 step5",
+                "path": "step1 step2 step3 step4 step5",
                 "length": 5,
                 "task": "/mbt/tasks/1",
                 "bugMessage": "We found a bug on shopping_cart model"
@@ -33,7 +33,7 @@ class BugTest extends ApiTestCase
                 "id": 3,
                 "title": "Bug 3",
                 "status": "valid",
-                "steps": "step1 step2",
+                "path": "step1 step2",
                 "length": 2,
                 "task": "/mbt/tasks/2",
                 "bugMessage": "Weird bug when we test shoping_cart model"
@@ -47,7 +47,7 @@ class BugTest extends ApiTestCase
         {
             "task": "/mbt/tasks/2",
             "bugMessage": "This bug never happen on task 2",
-            "steps": "step1 step2 step3.1 step3.2",
+            "path": "step1 step2 step3.1 step3.2",
             "length": 4,
             "title": "Bug 3",
             "status": "unverified"
@@ -60,7 +60,7 @@ class BugTest extends ApiTestCase
             "id": 4,
             "task": "/mbt/tasks/2",
             "bugMessage": "This bug never happen on task 2",
-            "steps": "step1 step2 step3.1 step3.2",
+            "path": "step1 step2 step3.1 step3.2",
             "length": 4,
             "title": "Bug 3",
             "status": "unverified"
@@ -75,7 +75,7 @@ class BugTest extends ApiTestCase
             "title": "Bug 5",
             "status": "invalid-bug",
             "bugMessage": "This bug is invalid",
-            "steps": "How to reproduce this bug?",
+            "path": "How to reproduce this bug?",
             "length": 5
         }');
 

@@ -3,14 +3,13 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
-class ReduceStepsCommand extends Command
+class ReduceStepsCommand extends AbstractCommand
 {
     private $pathReducerManager;
     private $entityManager;
@@ -47,6 +46,8 @@ class ReduceStepsCommand extends Command
             $output->writeln(sprintf('No bug found for id %d', $bugId));
             return;
         }
+
+        $this->setAnonymousToken();
 
         $pathReducer = $this->pathReducerManager->getPathReducer($bug->getTask()->getReducer());
         $pathReducer->reduce($bug);

@@ -21,16 +21,18 @@ Steps to reproduce
     <thead>
         <tr>
             <th>Step</th>
-            <th>Action</th>
+            <th>Transition</th>
             <th>Data</th>
+            <th>Places</th>
         </tr>
     </thead>
     <tbody>
-        {% for step in steps %}
+        {% for index, step in path %}
             <tr>
-                <td>{{ step.step }}</td>
-                <td>{{ step.action }}</td>
-                <td>{{ step.data }}</td>
+                <td>{{ index + 1 }}</td>
+                <td>{{ step[0] }}</td>
+                <td>{{ step[1]|json_encode() }}</td>
+                <td>{{ step[2]|join('|') }}</td>
             </tr>
         {% endfor %}
     </tbody>

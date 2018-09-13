@@ -49,6 +49,7 @@ abstract class MessageTestCase extends TestCase
     {
         while (true) {
             $process = new Process('bin/console messenger:consume-messages filesystem --limit=1');
+            $process->setTimeout(null);
             $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
 
             $process->run();

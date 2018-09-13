@@ -2,30 +2,53 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Set\Edges;
+use Generator;
+use Symfony\Component\Workflow\Transition;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
-class WeightedRandomGenerator extends RandomGenerator
+class WeightedRandomGenerator extends AbstractGenerator
 {
-    public function getNextStep(): ?Directed
-    {
-        /** @var Edges $edges */
-        $edges = $this->currentVertex->getEdgesOut();
-        if ($edges->isEmpty()) {
-            return null;
-        }
+    /**
+     * @var int
+     */
+    protected $maxPathLength = 300;
 
-        $edgesByWeight = [];
-        /** @var Directed $edge */
-        foreach ($edges as $index => $edge) {
-            $edgesByWeight[$index] = $edge->getWeight();
+    public function setMaxPathLength(int $maxPathLength)
+    {
+        $this->maxPathLength = $maxPathLength;
+    }
+
+    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
+    {
+        $pathLength    = 0;
+        $maxPathLength = $workflow->getMetadataStore()->getMetadata('max_path_length') ?? $this->maxPathLength;
+
+        while (true) {
+            /** @var Transition[] $transitions */
+            $transitions = $workflow->getEnabledTransitions($subject);
+            if (!empty($transitions)) {
+                $transitionsByWeight = [];
+                foreach ($transitions as $index => $transition) {
+                    $transitionMetadata = $workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
+                    $transitionsByWeight[$index] = $transitionMetadata['weight'] ?? 1;
+                }
+                $index = Randomizer::randomByWeight($transitionsByWeight);
+                $transitionName = $transitions[$index]->getName();
+
+                yield $transitionName;
+
+                // Update current state.
+                $pathLength++;
+
+                if ($pathLength >= $maxPathLength) {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
-        /** @var Directed $edge */
-        $index = Randomizer::randomByWeight($edgesByWeight);
-        /** @var Directed $edge */
-        $edge = $edges->getEdgeIndex($index);
-        return $edge;
     }
 
     public static function getName()

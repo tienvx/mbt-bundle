@@ -4,9 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use GuzzleHttp\Client;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Twig\Environment as Twig;
 
-class HipchatReporter extends AbstractReporter
+class HipchatReporter implements ReporterInterface
 {
     /**
      * @var Client
@@ -113,7 +114,7 @@ class HipchatReporter extends AbstractReporter
               'id'      => $bug->getId(),
               'task'    => $bug->getTask()->getTitle(),
               'message' => $bug->getBugMessage(),
-              'steps'   => $this->buildSteps($bug),
+              'steps'   => PathBuilder::build($bug->getPath()),
               'status'  => $bug->getStatus(),
             ]
         );

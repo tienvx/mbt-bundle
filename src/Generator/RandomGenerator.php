@@ -2,123 +2,89 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Set\Edges;
-use Fhaculty\Graph\Vertex;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Model\Subject;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
+use Generator;
+use Symfony\Component\Workflow\Transition;
+use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class RandomGenerator extends AbstractGenerator
 {
     /**
      * @var int
      */
-    protected $edgeCoverage = 0;
+    protected $maxPathLength = 300;
 
     /**
-     * @var int
+     * @var float
      */
-    protected $vertexCoverage = 0;
+    protected $transitionCoverage = 100;
 
     /**
-     * @var array
+     * @var float
      */
-    protected $visitedEdges = [];
+    protected $placeCoverage = 100;
 
-    /**
-     * @var array
-     */
-    protected $visitedVertices = [];
-
-    /**
-     * @var array
-     */
-    protected $unvisitedEdges = [];
-
-    /**
-     * @var array
-     */
-    protected $unvisitedVertices = [];
-
-    public function goToNextStep(Directed $currentEdge): bool
+    public function setMaxPathLength(int $maxPathLength)
     {
-        $entered = parent::goToNextStep($currentEdge);
-        if ($entered) {
-            $transitionName = $currentEdge->getAttribute('name');
-
-            // Update visited edges and vertices.
-            if (!in_array($this->currentVertex->getId(), $this->visitedVertices)) {
-                $this->visitedVertices[] = $this->currentVertex->getId();
-            }
-            if (!in_array($transitionName, $this->visitedEdges)) {
-                $this->visitedEdges[] = $transitionName;
-            }
-
-            // Update unvisited edges and vertices.
-            $allEdges = [];
-            foreach ($this->graph->getEdges()->getIterator() as $edge) {
-                /* @var Directed $edge */
-                $allEdges[] = $edge->getAttribute('name');
-            }
-            $this->unvisitedEdges = array_diff($allEdges, $this->visitedEdges);
-            $allVertices = [];
-            foreach ($this->graph->getVertices()->getIterator() as $vertex) {
-                /* @var Vertex $vertex */
-                $allVertices[] = $vertex->getAttribute('name');
-            }
-            $this->unvisitedVertices = array_diff($allVertices, $this->visitedVertices);
-
-            // Update progress.
-            $this->edgeCoverage   = count($this->visitedEdges) / count($this->graph->getEdges()) * 100;
-            $this->vertexCoverage = count($this->visitedVertices) / count($this->graph->getVertices()) * 100;
-            $this->currentVertex  = $currentEdge->getVertexEnd();
-        }
-        return $entered;
+        $this->maxPathLength = $maxPathLength;
     }
 
-    public function getNextStep(): ?Directed
+    public function setTransitionCoverage(float $transitionCoverage)
     {
-        /** @var Edges $edges */
-        $edges = $this->currentVertex->getEdgesOut();
-        if ($edges->isEmpty()) {
-            return null;
-        }
-
-        /** @var Directed $edge */
-        $edge = $edges->getEdgeOrder(Edges::ORDER_RANDOM);
-        return $edge;
+        $this->transitionCoverage = $transitionCoverage;
     }
 
-    public function meetStopCondition(): bool
+    public function setPlaceCoverage(int $placeCoverage)
     {
-        return $this->stopCondition->meet([
-            'edgeCoverage' => $this->edgeCoverage,
-            'vertexCoverage' => $this->vertexCoverage,
-            'pathLength' => $this->path->countEdges(),
-        ]);
+        $this->placeCoverage = $placeCoverage;
+    }
+
+    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
+    {
+        $pathLength         = 0;
+        $visitedTransitions = [];
+        $visitedPlaces      = [$workflow->getDefinition()->getInitialPlace()];
+        $transitionCoverage = $this->transitionCoverage;
+        $placeCoverage      = $this->placeCoverage;
+        $maxPathLength      = $this->maxPathLength;
+
+        while (true) {
+            /** @var Transition[] $transitions */
+            $transitions = $workflow->getEnabledTransitions($subject);
+            if (!empty($transitions)) {
+                $index = array_rand($transitions);
+                $transitionName = $transitions[$index]->getName();
+
+                yield $transitionName;
+
+                // Update visited places and transitions.
+                foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {
+                    if ($status && !in_array($place, $visitedPlaces)) {
+                        $visitedPlaces[] = $place;
+                    }
+                }
+                if (!in_array($transitionName, $visitedTransitions)) {
+                    $visitedTransitions[] = $transitionName;
+                }
+
+                // Update current state.
+                $currentTransitionCoverage = count($visitedTransitions) / count($workflow->getDefinition()->getTransitions()) * 100;
+                $currentPlaceCoverage      = count($visitedPlaces) / count($workflow->getDefinition()->getPlaces()) * 100;
+                $pathLength++;
+
+                if (($currentTransitionCoverage >= $transitionCoverage && $currentPlaceCoverage >= $placeCoverage)) {
+                    break;
+                } elseif ($pathLength >= $maxPathLength) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
     }
 
     public static function getName()
     {
         return 'random';
-    }
-
-    /**
-     * @param Model $model
-     * @param Subject $subject
-     * @param StopConditionInterface $stopCondition
-     * @throws \Exception
-     */
-    public function init(Model $model, Subject $subject, StopConditionInterface $stopCondition)
-    {
-        parent::init($model, $subject, $stopCondition);
-
-        $this->edgeCoverage = 0;
-        $this->vertexCoverage = 0;
-        $this->visitedEdges = [];
-        $this->visitedVertices = [];
-        $this->unvisitedEdges = [];
-        $this->unvisitedVertices = [];
     }
 }

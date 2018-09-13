@@ -11,13 +11,13 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
+use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\Generator\WeightedRandomGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
-use Tienvx\Bundle\MbtBundle\StopCondition\CoverageStopCondition;
-use Tienvx\Bundle\MbtBundle\StopCondition\MaxLengthStopCondition;
-use Tienvx\Bundle\MbtBundle\StopCondition\StopConditionInterface;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Twig\Environment as Twig;
 
 /**
@@ -52,11 +52,13 @@ class TienvxMbtExtension extends Extension
         $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
         $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
 
-        $coverageStopConditionDefinition = $container->getDefinition(CoverageStopCondition::class);
-        $coverageStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $randomGeneratorDefinition = $container->getDefinition(RandomGenerator::class);
+        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['transition_coverage']]);
+        $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['place_coverage']]);
 
-        $maxLengthStopConditionDefinition = $container->getDefinition(MaxLengthStopCondition::class);
-        $maxLengthStopConditionDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $weightedRandomGeneratorDefinition = $container->getDefinition(WeightedRandomGenerator::class);
+        $weightedRandomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
 
         $hipchatReporterDefinition = $container->getDefinition(HipchatReporter::class);
         $hipchatReporterDefinition->addMethodCall('setAddress', [$config['reporter']['hipchat']['address']]);
@@ -72,12 +74,12 @@ class TienvxMbtExtension extends Extension
             $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
+        $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);
+        $subjectManagerDefinition->addMethodCall('addSubjects', [$config['subjects']]);
+
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
             ->addTag('mbt.generator');
-        $container->registerForAutoconfiguration(StopConditionInterface::class)
-            ->setLazy(true)
-            ->addTag('mbt.stop_condition');
         $container->registerForAutoconfiguration(PathReducerInterface::class)
             ->setLazy(true)
             ->addTag('mbt.path_reducer');

@@ -4,10 +4,8 @@ framework:
         shopping_cart:
             type: "state_machine"
             supports:
-                - Tienvx\Bundle\MbtBundle\Model\Subject
+                - Tienvx\Bundle\MbtBundle\Subject\Subject
             metadata:
-                model: true
-                subject: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]
             places:
@@ -21,50 +19,50 @@ framework:
                 viewAnyCategoryFromHome:
                     from: home
                     to: category
+                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 70
                         label: "From home page, choose a random category and open it"
                 viewOtherCategory:
                     from: category
                     to: category
+                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 20
                         label: "From category page, choose a random category and open it"
                 viewAnyCategoryFromProduct:
                     from: product
                     to: category
+                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 20
                         label: "From product page, choose a random category and open it"
                 viewAnyCategoryFromCart:
                     from: cart
                     to: category
+                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.categoryHasBeenSelected()"
                         weight: 30
                         label: "From cart page, choose a random category and open it"
                 viewProductFromHome:
                     from: home
                     to: product
+                    guard: "subject.productHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and open it"
                         weight: 10
                 viewProductFromCart:
                     from: cart
                     to: product
+                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         label: "From cart page, choose a random product and open it"
                         weight: 25
                 viewProductFromCategory:
                     from: category
                     to: product
+                    guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and open it"
                         weight: 20
                 viewCartFromHome:
@@ -142,29 +140,29 @@ framework:
                 update:
                     from: cart
                     to: cart
+                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         weight: 5
                         label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                 remove:
                     from: cart
                     to: cart
+                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                         weight: 5
                         label: "From cart page, choose a random product and remove it"
                 addFromHome:
                     from: home
                     to: home
+                    guard: "subject.productHasBeenSelected()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected()"
                         label: "From home page, choose a random product and add it to cart"
                         weight: 5
                 addFromCategory:
                     from: category
                     to: category
+                    guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                     metadata:
-                        model_guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
                         label: "From category page, choose a random product and add it to cart"
                         weight: 25
                 addFromProduct:

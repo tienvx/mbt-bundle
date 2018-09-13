@@ -10,23 +10,20 @@ use Tienvx\Bundle\MbtBundle\Entity\Task;
 class TaskMessageTest extends MessageTestCase
 {
     /**
+     * @param string $model
      * @param string $generator
-     * @param string $stopCondition
-     * @param string $stopConditionArguments
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $generator, string $stopCondition, string $stopConditionArguments)
+    public function testConsumeMessage(string $model, string $generator)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel('shopping_cart');
+        $task->setModel($model);
         $task->setGenerator($generator);
-        $task->setStopCondition($stopCondition);
-        $task->setStopConditionArguments($stopConditionArguments);
         $task->setReducer('weighted-random');
         $task->setReporter('email');
         $task->setProgress(0);
@@ -43,9 +40,12 @@ class TaskMessageTest extends MessageTestCase
 
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
-            $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
-            $this->assertContains('product=49', $bugs[0]->getSteps());
-            $this->assertEquals('checkout', substr($bugs[0]->getSteps(), -8));
+            if ($model === 'shopping_cart') {
+                $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
+                $this->assertContains('{s:7:"product";s:2:"49";}', $bugs[0]->getPath());
+            } else {
+                $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
+            }
         } else {
             $this->assertEquals(0, count($bugs));
         }
@@ -54,11 +54,12 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
-            ['weighted-random', 'coverage', '{"edgeCoverage":100,"vertexCoverage":100}'],
-            ['random', 'max-length', '{}'],
-            ['all-places', 'noop', '{}'],
-            ['all-transitions', 'noop', '{}'],
+            ['shopping_cart', 'random'],
+            ['shopping_cart', 'weighted-random'],
+            ['shopping_cart', 'all-places'],
+            ['shopping_cart', 'all-transitions'],
+            ['checkout', 'random'],
+            ['checkout', 'weighted-random'],
         ];
     }
 }

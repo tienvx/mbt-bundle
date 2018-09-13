@@ -21,7 +21,7 @@ class BugFixtures extends Fixture implements DependentFixtureInterface
         $bug1->setTitle('Bug 1');
         $bug1->setStatus('unverified');
         $bug1->setBugMessage('Something happen on shopping_cart model');
-        $bug1->setSteps('step1 step2 step3');
+        $bug1->setPath('step1 step2 step3');
         $bug1->setLength(3);
         $bug1->setTask($task1);
         $manager->persist($bug1);
@@ -30,7 +30,7 @@ class BugFixtures extends Fixture implements DependentFixtureInterface
         $bug2->setTitle('Bug 2');
         $bug2->setStatus('valid');
         $bug2->setBugMessage('We found a bug on shopping_cart model');
-        $bug2->setSteps('step1 step2 step3 step4 step5');
+        $bug2->setPath('step1 step2 step3 step4 step5');
         $bug2->setLength(5);
         $bug2->setTask($task1);
         $manager->persist($bug2);
@@ -39,7 +39,7 @@ class BugFixtures extends Fixture implements DependentFixtureInterface
         $bug3->setTitle('Bug 3');
         $bug3->setStatus('valid');
         $bug3->setBugMessage('Weird bug when we test shoping_cart model');
-        $bug3->setSteps('step1 step2');
+        $bug3->setPath('step1 step2');
         $bug3->setLength(2);
         $bug3->setTask($task2);
         $manager->persist($bug3);

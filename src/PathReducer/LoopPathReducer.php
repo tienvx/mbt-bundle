@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 
 class LoopPathReducer extends AbstractPathReducer
@@ -15,25 +15,25 @@ class LoopPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
-        $model = $this->modelRegistry->getModel($bug->getTask()->getModel());
-        $graph = $this->graphBuilder->build($model->getDefinition());
-        $path  = Path::fromSteps($bug->getSteps(), $graph);
-
-        $distance = $path->countEdges();
+        $model = $bug->getTask()->getModel();
+        $path = PathBuilder::build($bug->getPath());
+        $distance = $path->countPlaces();
 
         while ($distance > 0) {
-            for ($i = 0; $i < $path->countVertices() - 1; $i++) {
+            for ($i = 0; $i < $path->countPlaces(); $i++) {
                 $j = $i + $distance;
-                if ($j < $path->countVertices() && $path->getVertexAt($i)->getId() === $path->getVertexAt($j)->getId()) {
-                    $newPath = $this->getNewPath($path, $i, $j);
+                if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+                    $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
                     // Make sure new path shorter than old path.
-                    if ($newPath->countEdges() < $path->countEdges()) {
+                    if ($newPath->countPlaces() < $path->countPlaces()) {
                         try {
-                            PathRunner::run($newPath, $model);
+                            $subject = $this->subjectManager->createSubjectForModel($model);
+                            $workflow = $this->workflowRegistry->get($subject, $model);
+                            PathRunner::run($newPath, $workflow, $subject);
                         } catch (Throwable $newThrowable) {
                             if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                                 $path = $newPath;
-                                $distance = $path->countEdges();
+                                $distance = $path->countPlaces();
                                 break;
                             }
                         }
@@ -44,7 +44,7 @@ class LoopPathReducer extends AbstractPathReducer
         }
 
         // Can not reduce the reproduce path (any more).
-        $this->updateSteps($bug, $path, $path->countEdges());
+        $this->updatePath($bug, $path);
         $this->finish($bug->getId());
     }
 
