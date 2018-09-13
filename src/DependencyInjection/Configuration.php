@@ -39,6 +39,14 @@ class Configuration implements ConfigurationInterface
                                 ->enumNode('format')->defaultValue('html')->values(['html', 'text'])->end()
                             ->end()
                         ->end() // hipchat
+                        ->arrayNode('slack')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('address')->defaultValue('https://slack.com/api')->end()
+                                ->scalarNode('channel')->defaultValue('')->end()
+                                ->scalarNode('token')->defaultValue('')->end()
+                            ->end()
+                        ->end() // slack
                     ->end()
                 ->end() // reporter
                 ->arrayNode('subjects')
