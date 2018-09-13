@@ -16,9 +16,9 @@ class GeneratePathCommandTest extends CommandTestCase
             ['shopping_cart', 'random', 75, 60, 18, 3],
             ['shopping_cart', 'all-places', null, null, 0, 5],
             ['shopping_cart', 'all-transitions', null, null, 24, 0],
-            ['checkout', 'random', 100, 100, 65, 31],
-            ['checkout', 'random', 60, 80, 39, 25],
-            ['checkout', 'random', 40, 65, 26, 21],
+            ['checkout', 'random', 100, 100, 65, 30],
+            ['checkout', 'random', 60, 80, 39, 24],
+            ['checkout', 'random', 40, 65, 26, 20],
         ];
     }
 
