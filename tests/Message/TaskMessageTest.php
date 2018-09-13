@@ -43,7 +43,6 @@ class TaskMessageTest extends MessageTestCase
             if ($model === 'shopping_cart') {
                 $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
                 $this->assertContains('{s:7:"product";s:2:"49";}', $bugs[0]->getPath());
-                $this->assertEquals('{i:0;s:8:"category";}}}}', substr($bugs[0]->getPath(), -24));
             } else {
                 $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
             }
