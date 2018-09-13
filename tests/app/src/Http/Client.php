@@ -30,5 +30,9 @@ class Client extends GuzzleClient
             exec("mkdir -p {$this->cacheDir}/hipchat");
             file_put_contents("{$this->cacheDir}/hipchat/message.data", $args[1]['json']['message']);
         }
+        if ($method === 'post' && $args[0] === 'https://slack.com/api/chat.postMessage') {
+            exec("mkdir -p {$this->cacheDir}/slack");
+            file_put_contents("{$this->cacheDir}/slack/text.data", $args[1]['json']['text']);
+        }
     }
 }

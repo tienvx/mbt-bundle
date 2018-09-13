@@ -69,6 +69,10 @@ tienvx_mbt:
             color: 'purple'
             notify: false
             format: 'html'
+        slack:
+            address: 'https://slack.com/api'
+            channel: 'test.ModelBasedTesting'
+            token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
     subjects:
         shopping_cart: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
         checkout: Tienvx\Bundle\MbtBundle\Tests\Subject\Checkout

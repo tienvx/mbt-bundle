@@ -17,6 +17,7 @@ use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Twig\Environment as Twig;
 
@@ -72,6 +73,17 @@ class TienvxMbtExtension extends Extension
         }
         if (class_exists(Twig::class)) {
             $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
+
+        $slackReporterDefinition = $container->getDefinition(SlackReporter::class);
+        $slackReporterDefinition->addMethodCall('setAddress', [$config['reporter']['slack']['address']]);
+        $slackReporterDefinition->addMethodCall('setChannel', [$config['reporter']['slack']['channel']]);
+        $slackReporterDefinition->addMethodCall('setToken', [$config['reporter']['slack']['token']]);
+        if (class_exists(Client::class)) {
+            $slackReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $slackReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
         $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);
