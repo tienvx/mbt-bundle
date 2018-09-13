@@ -34,5 +34,9 @@ class Client extends GuzzleClient
             exec("mkdir -p {$this->cacheDir}/slack");
             file_put_contents("{$this->cacheDir}/slack/text.data", $args[1]['json']['text']);
         }
+        if ($method === 'post' && $args[0] === 'https://api.github.com/repos/test/mbt/issues') {
+            exec("mkdir -p {$this->cacheDir}/github");
+            file_put_contents("{$this->cacheDir}/github/body.data", $args[1]['json']['body']);
+        }
     }
 }
