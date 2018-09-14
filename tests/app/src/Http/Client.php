@@ -38,6 +38,9 @@ class Client extends GuzzleClient
         } elseif ($method === 'post' && $args[0] === 'https://gitlab.example.com/api/v4/projects/4/issues') {
             exec("mkdir -p {$this->cacheDir}/gitlab");
             file_put_contents("{$this->cacheDir}/gitlab/report", $args[1]['json']['description']);
+        } elseif ($method === 'post' && $args[0] === 'https://your-domain.atlassian.net/rest/api/3/issue') {
+            exec("mkdir -p {$this->cacheDir}/jira");
+            file_put_contents("{$this->cacheDir}/jira/report", $args[1]['json']['description']['text']);
         }
     }
 }

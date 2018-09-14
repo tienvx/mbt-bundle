@@ -4,20 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
-use Twig\Environment as Twig;
 
-class EmailReporter implements ReporterInterface
+class EmailReporter extends AbstractReporter
 {
     /**
      * @var Swift_Mailer
      */
     protected $mailer;
-
-    /**
-     * @var Twig
-     */
-    protected $twig;
 
     /**
      * @var mixed
@@ -44,11 +37,6 @@ class EmailReporter implements ReporterInterface
         $this->mailer = $mailer;
     }
 
-    public function setTwig(Twig $twig)
-    {
-        $this->twig = $twig;
-    }
-
     /**
      * Send email about the bug.
      *
@@ -67,23 +55,14 @@ class EmailReporter implements ReporterInterface
         if (!$this->twig) {
             throw new \Exception('Need to install symfony/twig-bundle package to send email');
         }
+
+        $body = $this->render($bug);
+
         $this->mailer->send(
             (new \Swift_Message($bug->getTitle()))
                 ->setTo($this->to)
                 ->setFrom($this->from)
-                ->setBody(
-                    $this->twig->render(
-                        '@TienvxMbt/bug-templates/default.html.twig',
-                        [
-                            'id' => $bug->getId(),
-                            'task' => $bug->getTask()->getTitle(),
-                            'message' => $bug->getBugMessage(),
-                            'path' => PathBuilder::build($bug->getPath()),
-                            'status' => $bug->getStatus(),
-                        ]
-                    ),
-                    'text/html'
-                )
+                ->setBody($body, 'text/html')
         );
     }
 

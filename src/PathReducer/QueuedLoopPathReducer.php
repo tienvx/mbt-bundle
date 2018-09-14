@@ -80,7 +80,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $queuedLoop->getBug()->getBugMessage()) {
-                            $updated = $this->updatePath($queuedLoop->getBug(), $newPath, $newPath->countPlaces());
+                            $updated = $this->updatePath($queuedLoop->getBug(), $newPath);
                             if ($updated) {
                                 $this->dispatch($queuedLoop->getId());
                             }
