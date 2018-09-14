@@ -2,23 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
-use GuzzleHttp\Client;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
-use Twig\Environment as Twig;
 
-class GithubReporter implements ReporterInterface
+class GithubReporter extends AbstractReporter
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    /**
-     * @var Twig
-     */
-    protected $twig;
-
     /**
      * @var string
      */
@@ -38,16 +25,6 @@ class GithubReporter implements ReporterInterface
      * @var string
      */
     protected $token;
-
-    public function setHipchat(Client $client)
-    {
-        $this->client = $client;
-    }
-
-    public function setTwig(Twig $twig)
-    {
-        $this->twig = $twig;
-    }
 
     public function setAddress(string $address)
     {
@@ -81,23 +58,9 @@ class GithubReporter implements ReporterInterface
      */
     public function report(Bug $bug)
     {
-        if (!$this->client) {
-            throw new \Exception('Need to install guzzlehttp/guzzle package to send hipchat message');
-        }
-        if (!$this->twig) {
-            throw new \Exception('Need to install symfony/twig-bundle package to send hipchat message');
-        }
+        $this->check();
 
-        $body = $this->twig->render(
-            '@TienvxMbt/bug-templates/default.html.twig',
-            [
-              'id'      => $bug->getId(),
-              'task'    => $bug->getTask()->getTitle(),
-              'message' => $bug->getBugMessage(),
-              'steps'   => PathBuilder::build($bug->getPath()),
-              'status'  => $bug->getStatus(),
-            ]
-        );
+        $body = $this->render($bug);
 
         $this->client->post(
             sprintf('%s/repos/%s/%s/issues', $this->address, $this->repoOwner, $this->repoName),

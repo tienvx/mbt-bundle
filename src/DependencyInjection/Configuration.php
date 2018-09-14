@@ -69,6 +69,16 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('token')->defaultValue('')->end()
                             ->end()
                         ->end() // gitlab
+                        ->arrayNode('jira')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('address')->defaultValue('https://your-domain.atlassian.net/rest/api/3')->end()
+                                ->scalarNode('projectId')->defaultValue(0)->end()
+                                ->scalarNode('issueType')->defaultValue(0)->end()
+                                ->scalarNode('username')->defaultValue('')->end()
+                                ->scalarNode('password')->defaultValue('')->end()
+                            ->end()
+                        ->end() // jira
                     ->end()
                 ->end() // reporter
                 ->arrayNode('subjects')

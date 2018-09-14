@@ -18,6 +18,7 @@ use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\GithubReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\GitlabReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\JiraReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -80,7 +81,7 @@ class TienvxMbtExtension extends Extension
         $hipchatReporterDefinition->addMethodCall('setNotify', [$config['reporter']['hipchat']['notify']]);
         $hipchatReporterDefinition->addMethodCall('setFormat', [$config['reporter']['hipchat']['format']]);
         if (class_exists(Client::class)) {
-            $hipchatReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+            $hipchatReporterDefinition->addMethodCall('setClient', [new Reference(Client::class)]);
         }
         if (class_exists(Twig::class)) {
             $hipchatReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
@@ -91,7 +92,7 @@ class TienvxMbtExtension extends Extension
         $slackReporterDefinition->addMethodCall('setChannel', [$config['reporter']['slack']['channel']]);
         $slackReporterDefinition->addMethodCall('setToken', [$config['reporter']['slack']['token']]);
         if (class_exists(Client::class)) {
-            $slackReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+            $slackReporterDefinition->addMethodCall('setClient', [new Reference(Client::class)]);
         }
         if (class_exists(Twig::class)) {
             $slackReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
@@ -103,7 +104,7 @@ class TienvxMbtExtension extends Extension
         $githubReporterDefinition->addMethodCall('setRepoName', [$config['reporter']['github']['repoName']]);
         $githubReporterDefinition->addMethodCall('setToken', [$config['reporter']['github']['token']]);
         if (class_exists(Client::class)) {
-            $githubReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+            $githubReporterDefinition->addMethodCall('setClient', [new Reference(Client::class)]);
         }
         if (class_exists(Twig::class)) {
             $githubReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
@@ -114,10 +115,23 @@ class TienvxMbtExtension extends Extension
         $gitlabReporterDefinition->addMethodCall('setProjectId', [$config['reporter']['gitlab']['projectId']]);
         $gitlabReporterDefinition->addMethodCall('setToken', [$config['reporter']['gitlab']['token']]);
         if (class_exists(Client::class)) {
-            $gitlabReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+            $gitlabReporterDefinition->addMethodCall('setClient', [new Reference(Client::class)]);
         }
         if (class_exists(Twig::class)) {
             $gitlabReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
+
+        $jiraReporterDefinition = $container->getDefinition(JiraReporter::class);
+        $jiraReporterDefinition->addMethodCall('setAddress', [$config['reporter']['jira']['address']]);
+        $jiraReporterDefinition->addMethodCall('setProjectId', [$config['reporter']['jira']['projectId']]);
+        $jiraReporterDefinition->addMethodCall('setIssueType', [$config['reporter']['jira']['issueType']]);
+        $jiraReporterDefinition->addMethodCall('setUsername', [$config['reporter']['jira']['username']]);
+        $jiraReporterDefinition->addMethodCall('setPassword', [$config['reporter']['jira']['password']]);
+        if (class_exists(Client::class)) {
+            $jiraReporterDefinition->addMethodCall('setClient', [new Reference(Client::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $jiraReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
     }
 
