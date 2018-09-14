@@ -16,6 +16,7 @@ use Tienvx\Bundle\MbtBundle\Generator\WeightedRandomGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\GithubReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\GitlabReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
@@ -97,6 +98,17 @@ class TienvxMbtExtension extends Extension
         }
         if (class_exists(Twig::class)) {
             $githubReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
+
+        $gitlabReporterDefinition = $container->getDefinition(GitlabReporter::class);
+        $gitlabReporterDefinition->addMethodCall('setAddress', [$config['reporter']['gitlab']['address']]);
+        $gitlabReporterDefinition->addMethodCall('setProjectId', [$config['reporter']['gitlab']['projectId']]);
+        $gitlabReporterDefinition->addMethodCall('setToken', [$config['reporter']['gitlab']['token']]);
+        if (class_exists(Client::class)) {
+            $gitlabReporterDefinition->addMethodCall('setHipchat', [new Reference(Client::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $gitlabReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
 
         $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);

@@ -56,6 +56,14 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('token')->defaultValue('')->end()
                             ->end()
                         ->end() // github
+                        ->arrayNode('gitlab')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('address')->defaultValue('https://gitlab.example.com/api/v4')->end()
+                                ->scalarNode('projectId')->defaultValue(0)->end()
+                                ->scalarNode('token')->defaultValue('')->end()
+                            ->end()
+                        ->end() // gitlab
                     ->end()
                 ->end() // reporter
                 ->arrayNode('subjects')
