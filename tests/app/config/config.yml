@@ -54,9 +54,10 @@ security:
             anonymous: ~
 
 tienvx_mbt:
-    max_path_length: 300
-    transition_coverage: 100
-    place_coverage: 100
+    generator:
+        max_path_length: 300
+        transition_coverage: 100
+        place_coverage: 100
     default_bug_title: 'New bug found'
     reporter:
         email:

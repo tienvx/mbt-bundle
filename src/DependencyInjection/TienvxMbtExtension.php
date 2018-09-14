@@ -42,6 +42,26 @@ class TienvxMbtExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $this->registerReporterConfiguration($config, $container);
+        $this->registerGeneratorConfiguration($config, $container);
+        $this->registerSubjectConfiguration($config, $container);
+
+        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
+        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
+
+        $container->registerForAutoconfiguration(GeneratorInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.generator');
+        $container->registerForAutoconfiguration(PathReducerInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.path_reducer');
+        $container->registerForAutoconfiguration(ReporterInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.reporter');
+    }
+
+    private function registerReporterConfiguration(array $config, ContainerBuilder $container)
+    {
         $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
         $emailReporterDefinition->addMethodCall('setFrom', [$config['reporter']['email']['from']]);
         $emailReporterDefinition->addMethodCall('setTo', [$config['reporter']['email']['to']]);
@@ -51,17 +71,6 @@ class TienvxMbtExtension extends Extension
         if (class_exists(Twig::class)) {
             $emailReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
-
-        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
-        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
-
-        $randomGeneratorDefinition = $container->getDefinition(RandomGenerator::class);
-        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
-        $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['transition_coverage']]);
-        $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['place_coverage']]);
-
-        $weightedRandomGeneratorDefinition = $container->getDefinition(WeightedRandomGenerator::class);
-        $weightedRandomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
 
         $hipchatReporterDefinition = $container->getDefinition(HipchatReporter::class);
         $hipchatReporterDefinition->addMethodCall('setAddress', [$config['reporter']['hipchat']['address']]);
@@ -110,18 +119,22 @@ class TienvxMbtExtension extends Extension
         if (class_exists(Twig::class)) {
             $gitlabReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
+    }
 
+    private function registerGeneratorConfiguration(array $config, ContainerBuilder $container)
+    {
+        $randomGeneratorDefinition = $container->getDefinition(RandomGenerator::class);
+        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
+        $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['generator']['transition_coverage']]);
+        $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['generator']['place_coverage']]);
+
+        $weightedRandomGeneratorDefinition = $container->getDefinition(WeightedRandomGenerator::class);
+        $weightedRandomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
+    }
+
+    private function registerSubjectConfiguration(array $config, ContainerBuilder $container)
+    {
         $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);
         $subjectManagerDefinition->addMethodCall('addSubjects', [$config['subjects']]);
-
-        $container->registerForAutoconfiguration(GeneratorInterface::class)
-            ->setLazy(true)
-            ->addTag('mbt.generator');
-        $container->registerForAutoconfiguration(PathReducerInterface::class)
-            ->setLazy(true)
-            ->addTag('mbt.path_reducer');
-        $container->registerForAutoconfiguration(ReporterInterface::class)
-            ->setLazy(true)
-            ->addTag('mbt.reporter');
     }
 }
