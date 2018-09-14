@@ -28,15 +28,16 @@ class Client extends GuzzleClient
     {
         if ($method === 'post' && $args[0] === 'https://api.hipchat.com/v2/room/test.ModelBasedTesting/notification?auth_token=fake7f549278d7eafd9bd0ee637e5641399406b6') {
             exec("mkdir -p {$this->cacheDir}/hipchat");
-            file_put_contents("{$this->cacheDir}/hipchat/message.data", $args[1]['json']['message']);
-        }
-        if ($method === 'post' && $args[0] === 'https://slack.com/api/chat.postMessage') {
+            file_put_contents("{$this->cacheDir}/hipchat/report", $args[1]['json']['message']);
+        } elseif ($method === 'post' && $args[0] === 'https://slack.com/api/chat.postMessage') {
             exec("mkdir -p {$this->cacheDir}/slack");
-            file_put_contents("{$this->cacheDir}/slack/text.data", $args[1]['json']['text']);
-        }
-        if ($method === 'post' && $args[0] === 'https://api.github.com/repos/test/mbt/issues') {
+            file_put_contents("{$this->cacheDir}/slack/report", $args[1]['json']['text']);
+        } elseif ($method === 'post' && $args[0] === 'https://api.github.com/repos/test/mbt/issues') {
             exec("mkdir -p {$this->cacheDir}/github");
-            file_put_contents("{$this->cacheDir}/github/body.data", $args[1]['json']['body']);
+            file_put_contents("{$this->cacheDir}/github/report", $args[1]['json']['body']);
+        } elseif ($method === 'post' && $args[0] === 'https://gitlab.example.com/api/v4/projects/4/issues') {
+            exec("mkdir -p {$this->cacheDir}/gitlab");
+            file_put_contents("{$this->cacheDir}/gitlab/report", $args[1]['json']['description']);
         }
     }
 }

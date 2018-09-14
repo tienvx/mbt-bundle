@@ -78,6 +78,10 @@ tienvx_mbt:
             repoOwner: 'test'
             repoName: 'mbt'
             token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
+        gitlab:
+            address: 'https://gitlab.example.com/api/v4'
+            projectId: 4
+            token: 'fake9koXpg98eAheJpvBs5tK'
     subjects:
         shopping_cart: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
         checkout: Tienvx\Bundle\MbtBundle\Tests\Subject\Checkout
