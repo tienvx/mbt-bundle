@@ -82,7 +82,7 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearLog()
     {
-        exec("rm {$this->logDir}/test.log");
+        exec("rm -f {$this->logDir}/test.log");
     }
 
     protected function hasLog()
