@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Graph;
 
+use Exception;
 use Iterator;
 use Serializable;
 
@@ -27,8 +28,18 @@ class Path implements Serializable, Iterator
      */
     protected $position;
 
+    /**
+     * Path constructor.
+     * @param array $transitions
+     * @param array $data
+     * @param array $places
+     * @throws Exception
+     */
     public function __construct(array $transitions = [], array $data = [], array $places = [])
     {
+        if (count($transitions) !== count($data) || count($transitions) !== count($places)) {
+            throw new Exception('Invalid transitions, data or places for path');
+        }
         $this->transitions = $transitions;
         $this->data        = $data;
         $this->places      = $places;
@@ -42,14 +53,24 @@ class Path implements Serializable, Iterator
         $this->places[] = $places;
     }
 
-    public function countTransitions()
+    public function countTransitions(): int
     {
         return count(array_filter($this->transitions));
     }
 
-    public function countPlaces()
+    public function countPlaces(): int
     {
         return count($this->places);
+    }
+
+    public function countUniqueTransitions(): int
+    {
+        return count(array_unique(array_filter($this->transitions)));
+    }
+
+    public function countUniquePlaces(): int
+    {
+        return count(array_unique(call_user_func_array('array_merge', $this->places)));
     }
 
     public function getTransitionAt(int $index): ?string
@@ -72,29 +93,24 @@ class Path implements Serializable, Iterator
         $this->data[$index] = $data;
     }
 
-    public function getAllTransitions(): array
-    {
-        return $this->transitions;
-    }
-
-    public function getAllData(): array
-    {
-        return $this->data;
-    }
-
-    public function getAllPlaces(): array
-    {
-        return $this->places;
-    }
-
     public function serialize()
     {
         return serialize([$this->transitions, $this->data, $this->places]);
     }
 
+    /**
+     * @param string $serialized
+     * @throws Exception
+     */
     public function unserialize($serialized)
     {
-        list($this->transitions, $this->data, $this->places) = unserialize($serialized);
+        list($transitions, $data, $places) = unserialize($serialized);
+        if (count($transitions) !== count($data) || count($transitions) !== count($places)) {
+            throw new Exception('Invalid transitions, data or places for path');
+        }
+        $this->transitions = $transitions;
+        $this->data = $data;
+        $this->places = $places;
     }
 
     public function current()

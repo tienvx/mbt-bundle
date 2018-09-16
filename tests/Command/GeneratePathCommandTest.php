@@ -53,20 +53,19 @@ class GeneratePathCommandTest extends CommandTestCase
         $this->assertInstanceOf(Path::class, $path);
 
         if ($path instanceof Path) {
-            $placeInPathCount = count(array_unique(call_user_func_array('array_merge', $path->getAllPlaces())));
-            $transitionInPathCount = count(array_unique(array_filter($path->getAllTransitions())));
-            $allPlaces = $path->getAllPlaces();
-            if ($generator === 'all-transitions' && array_diff(end($allPlaces), ['home'])) {
+            $uniquePlaces = $path->countUniquePlaces();
+            $uniqueTransitions = $path->countUniqueTransitions();
+            if ($generator === 'all-transitions' && array_diff($path->getPlacesAt($path->countPlaces() - 1), ['home'])) {
                 // Sometime, we can't get the path through all transitions, so ignore it.
-            } elseif ($generator === 'all-places' && $transitionInPathCount === 1) {
+            } elseif ($generator === 'all-places' && $uniqueTransitions === 1) {
                 // Sometime, we can't get the path through all places, so ignore it.
             } elseif ($generator === 'random' && $path->countTransitions() === 300) {
                 // Sometime we reach the path length limit, so ignore it.
-                $this->assertGreaterThanOrEqual(1, $transitionInPathCount);
-                $this->assertGreaterThanOrEqual(1, $placeInPathCount);
+                $this->assertGreaterThanOrEqual(1, $uniqueTransitions);
+                $this->assertGreaterThanOrEqual(1, $uniquePlaces);
             } else {
-                $this->assertGreaterThanOrEqual($transitionCount, $transitionInPathCount);
-                $this->assertGreaterThanOrEqual($placeCount, $placeInPathCount);
+                $this->assertGreaterThanOrEqual($transitionCount, $uniqueTransitions);
+                $this->assertGreaterThanOrEqual($placeCount, $uniquePlaces);
             }
         }
     }
