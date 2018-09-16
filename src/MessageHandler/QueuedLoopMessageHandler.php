@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Process\Process;
@@ -19,7 +20,7 @@ class QueuedLoopMessageHandler implements MessageHandlerInterface
 
     /**
      * @param QueuedLoopMessage $queuedLoopMessage
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(QueuedLoopMessage $queuedLoopMessage)
     {

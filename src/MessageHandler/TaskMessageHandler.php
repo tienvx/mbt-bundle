@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Process\Process;
@@ -18,7 +19,7 @@ class TaskMessageHandler implements MessageHandlerInterface
 
     /**
      * @param TaskMessage $taskMessage
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(TaskMessage $taskMessage)
     {

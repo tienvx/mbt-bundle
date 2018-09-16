@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
+use Exception;
+
 class ReporterManager
 {
     /**
@@ -30,7 +32,7 @@ class ReporterManager
      * @param $name
      * @return ReporterInterface
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getReporter($name): ReporterInterface
     {
@@ -38,7 +40,7 @@ class ReporterManager
             return $this->reporters[$name];
         }
 
-        throw new \Exception(sprintf('Reporter %s does not exist.', $name));
+        throw new Exception(sprintf('Reporter %s does not exist.', $name));
     }
 
     /**

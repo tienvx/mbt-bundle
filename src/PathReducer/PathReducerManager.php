@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Exception;
+
 class PathReducerManager
 {
     /**
@@ -30,7 +32,7 @@ class PathReducerManager
      * @param $name
      * @return PathReducerInterface
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPathReducer($name): PathReducerInterface
     {
@@ -38,7 +40,7 @@ class PathReducerManager
             return $this->pathReducers[$name];
         }
 
-        throw new \Exception(sprintf('Path reducer %s does not exist.', $name));
+        throw new Exception(sprintf('Path reducer %s does not exist.', $name));
     }
 
     /**

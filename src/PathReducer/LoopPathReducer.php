@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Exception;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
@@ -11,7 +12,7 @@ class LoopPathReducer extends AbstractPathReducer
 {
     /**
      * @param Bug $bug
-     * @throws \Exception
+     * @throws Exception
      */
     public function reduce(Bug $bug)
     {

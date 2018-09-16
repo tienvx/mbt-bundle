@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 
+use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -34,7 +35,7 @@ class ModelValidator extends ConstraintValidator
     /**
      * @param mixed $value
      * @param Constraint $constraint
-     * @throws \Exception
+     * @throws Exception
      */
     public function validate($value, Constraint $constraint)
     {

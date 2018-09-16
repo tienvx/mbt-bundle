@@ -37,7 +37,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
     /**
      * @param Bug $bug
-     * @throws \Exception
+     * @throws Exception
      */
     public function reduce(Bug $bug)
     {
@@ -54,7 +54,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
     /**
      * @param string $message
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(string $message)
     {
@@ -95,7 +95,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
     /**
      * @param QueuedLoopMessage $queuedLoopMessage
-     * @throws \Exception
+     * @throws Exception
      */
     public function postHandle(QueuedLoopMessage $queuedLoopMessage)
     {
@@ -135,7 +135,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
 
     /**
      * @param int $queuedLoopId
-     * @throws \Exception
+     * @throws Exception
      */
     public function dispatch(int $queuedLoopId)
     {
