@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
 use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -19,6 +21,7 @@ use Tienvx\Bundle\MbtBundle\Reporter\GithubReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\GitlabReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\HipchatReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\JiraReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\LoggerReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -132,6 +135,14 @@ class TienvxMbtExtension extends Extension
         }
         if (class_exists(Twig::class)) {
             $jiraReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
+        }
+
+        $loggerReporterDefinition = $container->getDefinition(LoggerReporter::class);
+        if (class_exists(Logger::class)) {
+            $loggerReporterDefinition->addMethodCall('setLogger', [new Reference(LoggerInterface::class)]);
+        }
+        if (class_exists(Twig::class)) {
+            $loggerReporterDefinition->addMethodCall('setTwig', [new Reference(Twig::class)]);
         }
     }
 
