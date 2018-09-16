@@ -40,9 +40,10 @@ class BugMessageTest extends MessageTestCase
         $entityManager->flush();
 
         $this->clearMessages();
-        array_map (function ($reporter) {
+        array_map(function ($reporter) {
             $this->clearReporterMessages($reporter);
         }, ['hipchat', 'slack', 'github', 'gitlab', 'jira']);
+        $this->clearLog();
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
@@ -82,6 +83,8 @@ class BugMessageTest extends MessageTestCase
             $this->assertContains('1 emails sent', $output);
         } elseif (in_array($reporter, ['hipchat', 'slack', 'github', 'gitlab', 'jira'])) {
             $this->assertTrue($this->hasReporterMessages($reporter));
+        } elseif ($reporter === 'logger') {
+            $this->assertTrue($this->hasLog());
         }
     }
 
@@ -186,7 +189,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'email',
+                'logger',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
@@ -201,7 +204,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'queued-loop',
-                'hipchat',
+                'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
@@ -216,7 +219,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'greedy',
-                'slack',
+                'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -231,7 +234,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'random',
-                'github',
+                'slack',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
                     [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
@@ -246,7 +249,7 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
                 ],
                 'queued-loop',
-                'gitlab',
+                'github',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
                     [null, [], [], [], [], [], [], [], [], [], [], [], [], [], []],

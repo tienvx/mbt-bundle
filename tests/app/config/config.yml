@@ -53,6 +53,13 @@ security:
         main:
             anonymous: ~
 
+monolog:
+    handlers:
+        file_log:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: error
+
 tienvx_mbt:
     generator:
         max_path_length: 300

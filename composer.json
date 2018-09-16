@@ -42,7 +42,8 @@
         "php-coveralls/php-coveralls": "^2.1",
         "pnz/messenger-filesystem-transport": "^0.1.2",
         "guzzlehttp/guzzle": "~6.0",
-        "symfony/security-bundle": "^4.1"
+        "symfony/security-bundle": "^4.1",
+        "symfony/monolog-bundle": "^3.3"
     },
     "autoload": {
         "psr-4": {

@@ -17,6 +17,11 @@ abstract class MessageTestCase extends TestCase
     protected $cacheDir;
 
     /**
+     * @var string
+     */
+    protected $logDir;
+
+    /**
      * @var ParameterBagInterface
      */
     protected $params;
@@ -41,6 +46,7 @@ abstract class MessageTestCase extends TestCase
         /** @var ParameterBagInterface $params */
         $this->params = self::$container->get(ParameterBagInterface::class);
         $this->cacheDir = $this->params->get('kernel.cache_dir');
+        $this->logDir = $this->params->get('kernel.logs_dir');
         $this->clearMessages();
         $this->clearEmails();
     }
@@ -72,5 +78,15 @@ abstract class MessageTestCase extends TestCase
     protected function hasMessages()
     {
         return filesize( "{$this->cacheDir}/queue/queue.data") !== 0;
+    }
+
+    protected function clearLog()
+    {
+        exec("rm {$this->logDir}/test.log");
+    }
+
+    protected function hasLog()
+    {
+        return filesize( "{$this->logDir}/test.log") !== 0;
     }
 }
