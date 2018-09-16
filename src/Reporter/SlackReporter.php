@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
+use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 class SlackReporter extends AbstractReporter
@@ -44,7 +45,7 @@ class SlackReporter extends AbstractReporter
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
-     * @throws \Exception
+     * @throws Exception
      */
     public function report(Bug $bug)
     {

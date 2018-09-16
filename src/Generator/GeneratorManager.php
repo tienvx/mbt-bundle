@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
+use Exception;
+
 class GeneratorManager
 {
     /**
@@ -30,7 +32,7 @@ class GeneratorManager
      * @param $name
      * @return GeneratorInterface
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getGenerator($name): GeneratorInterface
     {
@@ -38,7 +40,7 @@ class GeneratorManager
             return $this->generators[$name];
         }
 
-        throw new \Exception(sprintf('Generator %s does not exist.', $name));
+        throw new Exception(sprintf('Generator %s does not exist.', $name));
     }
 
     /**

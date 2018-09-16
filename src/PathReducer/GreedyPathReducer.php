@@ -14,7 +14,7 @@ class GreedyPathReducer extends AbstractPathReducer
 {
     /**
      * @param Bug $bug
-     * @throws \Exception
+     * @throws Exception
      */
     public function reduce(Bug $bug)
     {

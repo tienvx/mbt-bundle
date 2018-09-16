@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
+use Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Workflow\Registry;
@@ -54,7 +55,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
     /**
      * @param Bug $bug
      * @param Path $path
-     * @throws \Exception
+     * @throws Exception
      */
     protected function updatePath(Bug $bug, Path $path)
     {

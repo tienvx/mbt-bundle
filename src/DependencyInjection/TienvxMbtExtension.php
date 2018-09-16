@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
+use Exception;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Monolog\Logger;
@@ -36,7 +37,7 @@ class TienvxMbtExtension extends Extension
 {
     /**
      * {@inheritdoc}
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {

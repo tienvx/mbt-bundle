@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
+use Exception;
 use GuzzleHttp\Client;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
@@ -30,15 +31,15 @@ abstract class AbstractReporter implements ReporterInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function check()
     {
         if (!$this->client) {
-            throw new \Exception('Need to install guzzlehttp/guzzle package to send hipchat message');
+            throw new Exception('Need to install guzzlehttp/guzzle package to send hipchat message');
         }
         if (!$this->twig) {
-            throw new \Exception('Need to install symfony/twig-bundle package to send hipchat message');
+            throw new Exception('Need to install symfony/twig-bundle package to send hipchat message');
         }
     }
 
@@ -48,7 +49,7 @@ abstract class AbstractReporter implements ReporterInterface
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
-     * @throws \Exception
+     * @throws Exception
      */
     protected function render(Bug $bug)
     {

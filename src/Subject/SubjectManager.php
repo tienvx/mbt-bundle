@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
+use Exception;
+
 class SubjectManager
 {
     /**
@@ -36,19 +38,19 @@ class SubjectManager
     /**
      * @param string $model
      * @return Subject
-     * @throws \Exception
+     * @throws Exception
      */
     public function createSubjectForModel(string $model): Subject
     {
         if (!isset($this->subjects[$model])) {
-            throw new \Exception(sprintf('Subject for model %s is not specified.', $model));
+            throw new Exception(sprintf('Subject for model %s is not specified.', $model));
         } elseif (!class_exists($this->subjects[$model])) {
-            throw new \Exception(sprintf('Subject class for model %s does not exist.', $model));
+            throw new Exception(sprintf('Subject class for model %s does not exist.', $model));
         }
 
         $subject = new $this->subjects[$model];
         if (!$subject instanceof Subject) {
-            throw new \Exception(sprintf('Subject for model %s is not instance of %s.', $model, Subject::class));
+            throw new Exception(sprintf('Subject for model %s is not instance of %s.', $model, Subject::class));
         }
         return $subject;
     }

@@ -35,6 +35,7 @@ class Bug
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
+     * @MbtAssert\Path
      */
     private $path;
 

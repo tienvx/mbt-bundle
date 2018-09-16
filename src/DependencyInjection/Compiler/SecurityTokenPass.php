@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
@@ -21,7 +22,7 @@ class SecurityTokenPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
-     * @throws \Exception
+     * @throws Exception
      */
     public function process(ContainerBuilder $container)
     {

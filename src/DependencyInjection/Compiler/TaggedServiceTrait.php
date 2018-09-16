@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use InvalidArgumentException;
@@ -12,7 +13,7 @@ trait TaggedServiceTrait
      * @param string $tagName
      * @param ContainerBuilder $container
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function findTaggedServices(string $tagName, ContainerBuilder $container)
     {
