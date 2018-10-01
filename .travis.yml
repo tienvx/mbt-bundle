@@ -17,4 +17,4 @@ script:
   - composer run-script coverage
 
 after_success:
-  - composer run-script coverall
+  - travis_retry composer run-script coverall
