@@ -2,9 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -21,11 +19,9 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = array(
-            new ApiPlatformBundle(),
             new SecurityBundle(),
             new FrameworkBundle(),
             new DoctrineBundle(),
-            new DoctrineFixturesBundle(),
             new TwigBundle(),
             new SwiftmailerBundle(),
             new MonologBundle(),

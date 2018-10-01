@@ -2,26 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\StringInput;
 
-abstract class TestCase extends WebTestCase
+abstract class TestCase extends KernelTestCase
 {
     /**
      * @var Application
      */
     protected $application;
 
-    /**
-     * @var Client
-     */
-    protected $client;
-
     protected function setUp()
     {
-        $this->client = $this->getClient();
         $this->application = $this->getApplication();
     }
 
@@ -39,15 +32,9 @@ abstract class TestCase extends WebTestCase
 
     protected function getApplication()
     {
-        $application = new Application($this->client->getKernel());
+        $kernel = static::bootKernel();
+        $application = new Application($kernel);
         $application->setAutoExit(false);
         return $application;
-    }
-
-    protected function getClient()
-    {
-        $client = static::createClient();
-        $client->disableReboot();
-        return $client;
     }
 }

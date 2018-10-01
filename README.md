@@ -56,7 +56,7 @@ the way to tell this bundle to interact with your application.
 You can run the tests with:
 ```console
 $ phpunit
-$ composer run-script test # if you want to clear the cache
+$ composer run-script clear-cache-then-test # if you want to clear the cache
 ```
 
 ## Documentation
