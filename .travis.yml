@@ -12,7 +12,9 @@ matrix:
 install:
   - composer install
 
-script: phpunit --coverage-clover ./tests/logs/clover.xml
+script:
+  - composer run-script cs-fix
+  - composer run-script coverage
 
 after_success:
-  - travis_retry php vendor/bin/php-coveralls
+  - travis_retry composer run-script coverall

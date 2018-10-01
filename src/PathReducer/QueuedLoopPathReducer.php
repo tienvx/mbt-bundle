@@ -29,8 +29,8 @@ class QueuedLoopPathReducer extends AbstractPathReducer
         EventDispatcherInterface $dispatcher,
         Registry $workflowRegistry,
         SubjectManager $subjectManager,
-        EntityManagerInterface $entityManager)
-    {
+        EntityManagerInterface $entityManager
+    ) {
         parent::__construct($dispatcher, $workflowRegistry, $subjectManager, $entityManager);
         $this->messageBus = $messageBus;
     }
@@ -123,8 +123,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
         if (isset($queuedLoop) && empty($queuedLoop->getMessageHashes())) {
             if ($queuedLoop->getIndicator() > 0) {
                 $this->dispatch($queuedLoop->getId());
-            }
-            else {
+            } else {
                 // All messages has been handled.
                 $this->entityManager->remove($queuedLoop);
                 $this->entityManager->flush();

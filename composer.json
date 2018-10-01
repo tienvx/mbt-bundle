@@ -40,6 +40,7 @@
         "symfony/asset": "^4.1",
         "symfony/swiftmailer-bundle": "^3.2",
         "php-coveralls/php-coveralls": "^2.1",
+        "friendsofphp/php-cs-fixer": "^2.13",
         "pnz/messenger-filesystem-transport": "^0.1.2",
         "guzzlehttp/guzzle": "~6.0",
         "symfony/security-bundle": "^4.1",
@@ -56,11 +57,15 @@
         }
     },
     "scripts": {
-        "test": [
-            "@clearCache",
-            "phpunit"
-        ],
-        "clearCache": "rm -rf tests/app/var/cache/test/"
+        "coverage": "vendor/bin/phpunit --coverage-clover tests/logs/clover.xml",
+        "clear-cache": "rm -rf tests/app/var/cache/test/",
+        "test": "php vendor/bin/phpunit",
+        "cs-fix": "php vendor/bin/php-cs-fixer fix --dry-run",
+        "coverall": "php vendor/bin/php-coveralls",
+        "clear-cache-then-test": [
+            "@clear-cache",
+            "@test"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*",

@@ -53,7 +53,7 @@ abstract class AbstractReporter implements ReporterInterface
      */
     protected function render(Bug $bug)
     {
-         return $this->twig->render(
+        return $this->twig->render(
             '@TienvxMbt/bug-templates/default.html.twig',
             [
               'id'      => $bug->getId(),
