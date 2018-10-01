@@ -46,8 +46,8 @@ class ExecuteTaskCommand extends AbstractCommand
         Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
-        EntityManagerInterface $entityManager)
-    {
+        EntityManagerInterface $entityManager
+    ) {
         $this->workflowRegistry     = $workflowRegistry;
         $this->subjectManager       = $subjectManager;
         $this->generatorManager     = $generatorManager;

@@ -37,8 +37,8 @@ abstract class AbstractPathReducer implements PathReducerInterface
         EventDispatcherInterface $dispatcher,
         Registry $workflowRegistry,
         SubjectManager $subjectManager,
-        EntityManagerInterface $entityManager)
-    {
+        EntityManagerInterface $entityManager
+    ) {
         $this->dispatcher       = $dispatcher;
         $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager   = $subjectManager;

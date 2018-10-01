@@ -223,8 +223,7 @@ class ShoppingCart extends Subject
     {
         if (empty($this->productsInCategory[$this->category])) {
             return false;
-        }
-        else {
+        } else {
             if (empty($this->data['product'])) {
                 throw new Exception('Can not check if category has selected product or not: product is not selected');
             }
@@ -322,8 +321,7 @@ class ShoppingCart extends Subject
     {
         if (empty($this->cart)) {
             return false;
-        }
-        else {
+        } else {
             if (empty($this->data['product'])) {
                 throw new Exception('Can not check if cart has selected product or not: product is not selected');
             }
@@ -344,8 +342,7 @@ class ShoppingCart extends Subject
         $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
-        }
-        else {
+        } else {
             $this->cart[$product]++;
         }
     }
@@ -362,8 +359,7 @@ class ShoppingCart extends Subject
         $product = $this->data['product'];
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
-        }
-        else {
+        } else {
             $this->cart[$product]++;
         }
     }
@@ -372,8 +368,7 @@ class ShoppingCart extends Subject
     {
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
-        }
-        else {
+        } else {
             $this->cart[$this->product]++;
         }
     }

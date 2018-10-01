@@ -33,8 +33,8 @@ class GeneratePathCommand extends AbstractCommand
     public function __construct(
         Registry $workflowRegistry,
         SubjectManager $subjectManager,
-        GeneratorManager $generatorManager)
-    {
+        GeneratorManager $generatorManager
+    ) {
         $this->workflowRegistry     = $workflowRegistry;
         $this->subjectManager       = $subjectManager;
         $this->generatorManager     = $generatorManager;
