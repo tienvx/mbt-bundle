@@ -60,7 +60,7 @@
         "coverage": "vendor/bin/phpunit --coverage-clover tests/logs/clover.xml",
         "clear-cache": "rm -rf tests/app/var/cache/test/",
         "test": "php vendor/bin/phpunit",
-        "cs-fix": "php vendor/bin/php-cs-fixer fix",
+        "cs-fix": "php vendor/bin/php-cs-fixer fix --dry-run",
         "coverall": "travis_retry php vendor/bin/php-coveralls",
         "clear-cache-then-test": [
             "@clear-cache",
