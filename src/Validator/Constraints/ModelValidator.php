@@ -25,11 +25,14 @@ class ModelValidator extends ConstraintValidator
     protected $subjectManager;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     /**
@@ -39,6 +42,10 @@ class ModelValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not validate model: No workflows were defined');
+        }
+
         if (!$constraint instanceof Model) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Model');
         }

@@ -14,8 +14,10 @@ class PathReducerPass implements CompilerPassInterface
     private $pathReducerService;
     private $pathReducerTag;
 
-    public function __construct(string $pathReducerService = 'mbt.path_reducer_manager', string $pathReducerTag = 'mbt.path_reducer')
-    {
+    public function __construct(
+        string $pathReducerService = 'mbt.path_reducer_manager',
+        string $pathReducerTag = 'mbt.path_reducer'
+    ) {
         $this->pathReducerService = $pathReducerService;
         $this->pathReducerTag     = $pathReducerTag;
     }

@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
-use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
@@ -35,14 +35,17 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     public function __construct(
         EventDispatcherInterface $dispatcher,
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         EntityManagerInterface $entityManager
     ) {
         $this->dispatcher       = $dispatcher;
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager   = $subjectManager;
         $this->entityManager    = $entityManager;
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function finish(int $bugId)
@@ -66,5 +69,16 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     public function handle(string $message)
     {
+    }
+
+    /**
+     * @param Bug $bug
+     * @throws Exception
+     */
+    public function reduce(Bug $bug)
+    {
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not reduce the bug: No workflows were defined');
+        }
     }
 }

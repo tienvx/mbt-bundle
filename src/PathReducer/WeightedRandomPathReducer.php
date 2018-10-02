@@ -20,6 +20,8 @@ class WeightedRandomPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
+        parent::reduce($bug);
+
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubjectForModel($model);
         $workflow = $this->workflowRegistry->get($subject, $model);
