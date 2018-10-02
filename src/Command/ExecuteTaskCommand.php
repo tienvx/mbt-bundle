@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,15 +43,13 @@ class ExecuteTaskCommand extends AbstractCommand
     private $defaultBugTitle;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager
     ) {
-        $this->workflowRegistry     = $workflowRegistry;
-        $this->subjectManager       = $subjectManager;
-        $this->generatorManager     = $generatorManager;
-        $this->entityManager        = $entityManager;
+        $this->subjectManager   = $subjectManager;
+        $this->generatorManager = $generatorManager;
+        $this->entityManager    = $entityManager;
 
         parent::__construct();
     }
@@ -63,6 +61,11 @@ class ExecuteTaskCommand extends AbstractCommand
             ->setDescription('Execute a task.')
             ->setHelp('This command execute a task, then create a bug if found.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     public function setDefaultBugTitle(string $defaultBugTitle)
@@ -77,6 +80,10 @@ class ExecuteTaskCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not execute task: No workflows were defined');
+        }
+
         $taskId = $input->getArgument('task-id');
         $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 

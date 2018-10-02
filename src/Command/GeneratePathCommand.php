@@ -31,13 +31,11 @@ class GeneratePathCommand extends AbstractCommand
     private $generatorManager;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager
     ) {
-        $this->workflowRegistry     = $workflowRegistry;
-        $this->subjectManager       = $subjectManager;
-        $this->generatorManager     = $generatorManager;
+        $this->subjectManager   = $subjectManager;
+        $this->generatorManager = $generatorManager;
 
         parent::__construct();
     }
@@ -52,6 +50,11 @@ class GeneratePathCommand extends AbstractCommand
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', Constants::DEFAULT_GENERATOR);
     }
 
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
+    }
+
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -59,6 +62,10 @@ class GeneratePathCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not generate path: No workflows were defined');
+        }
+
         $this->setAnonymousToken();
 
         $model = $input->getArgument('model');

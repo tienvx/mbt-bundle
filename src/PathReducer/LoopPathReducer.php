@@ -16,6 +16,8 @@ class LoopPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
+        parent::reduce($bug);
+
         $model = $bug->getTask()->getModel();
         $path = PathBuilder::build($bug->getPath());
         $distance = $path->countPlaces();

@@ -7,14 +7,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\QueuedLoop;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
-use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Message\QueuedLoopMessage;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class QueuedLoopPathReducer extends AbstractPathReducer
@@ -27,11 +26,10 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     public function __construct(
         MessageBusInterface $messageBus,
         EventDispatcherInterface $dispatcher,
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         EntityManagerInterface $entityManager
     ) {
-        parent::__construct($dispatcher, $workflowRegistry, $subjectManager, $entityManager);
+        parent::__construct($dispatcher, $subjectManager, $entityManager);
         $this->messageBus = $messageBus;
     }
 
@@ -41,6 +39,8 @@ class QueuedLoopPathReducer extends AbstractPathReducer
      */
     public function reduce(Bug $bug)
     {
+        parent::reduce($bug);
+
         $queuedLoop = new QueuedLoop();
         $queuedLoop->setMessageHashes([]);
         $queuedLoop->setIndicator($bug->getLength());
