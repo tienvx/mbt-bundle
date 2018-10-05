@@ -2,7 +2,6 @@ framework:
     secret:          secret
     test:            ~
     router:          { resource: '%kernel.project_dir%/config/routing.yml' }
-    templating:      { engines: ['twig'] }
     assets:          ~
     messenger:
         transports:
