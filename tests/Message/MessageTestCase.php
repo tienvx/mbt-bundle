@@ -22,11 +22,6 @@ abstract class MessageTestCase extends TestCase
     protected $logDir;
 
     /**
-     * @var ParameterBagInterface
-     */
-    protected $params;
-
-    /**
      * @throws \Exception
      */
     protected function setUp()
@@ -44,21 +39,21 @@ abstract class MessageTestCase extends TestCase
         $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
 
         /** @var ParameterBagInterface $params */
-        $this->params = self::$container->get(ParameterBagInterface::class);
-        $this->cacheDir = $this->params->get('kernel.cache_dir');
-        $this->logDir = $this->params->get('kernel.logs_dir');
+        $params = self::$container->get(ParameterBagInterface::class);
+        $this->cacheDir = $params->get('kernel.cache_dir');
+        $this->logDir = $params->get('kernel.logs_dir');
         $this->clearMessages();
         $this->clearEmails();
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function consumeMessages()
     {
         while (true) {
-            $process = new Process('bin/console messenger:consume-messages filesystem --limit=1');
-            $process->setTimeout(null);
-            $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+            $this->runCommand('messenger:consume-messages filesystem --limit=1');
 
-            $process->run();
             if (!$this->hasMessages()) {
                 break;
             }
