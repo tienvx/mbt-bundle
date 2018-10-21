@@ -59,13 +59,14 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     public function handle(string $message)
     {
         $queuedLoopMessage = QueuedLoopMessage::fromString($message);
-        $queuedLoop = $this->entityManager->getRepository(QueuedLoop::class)->find($queuedLoopMessage->getBugId());
-        $path = PathBuilder::build($queuedLoop->getBug()->getPath());
-        $model = $queuedLoop->getBug()->getTask()->getModel();
+        $queuedLoop = $this->entityManager->find(QueuedLoop::class, $queuedLoopMessage->getId());
 
         if (!$queuedLoop || !$queuedLoop instanceof QueuedLoop) {
             return;
         }
+
+        $path = PathBuilder::build($queuedLoop->getBug()->getPath());
+        $model = $queuedLoop->getBug()->getTask()->getModel();
 
         if ($queuedLoop->getBug()->getLength() >= $queuedLoopMessage->getLength()) {
             // The reproduce path has not been reduced.
@@ -101,7 +102,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     {
         $this->entityManager->beginTransaction();
         try {
-            $queuedLoop = $this->entityManager->find(QueuedLoop::class, $queuedLoopMessage->getBugId(), LockMode::PESSIMISTIC_WRITE);
+            $queuedLoop = $this->entityManager->find(QueuedLoop::class, $queuedLoopMessage->getId(), LockMode::PESSIMISTIC_WRITE);
 
             if (!$queuedLoop || !$queuedLoop instanceof QueuedLoop) {
                 return;

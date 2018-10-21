@@ -2,11 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
-use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
@@ -22,11 +18,6 @@ abstract class MessageTestCase extends TestCase
     protected $logDir;
 
     /**
-     * @var ParameterBagInterface
-     */
-    protected $params;
-
-    /**
      * @throws \Exception
      */
     protected function setUp()
@@ -36,29 +27,33 @@ abstract class MessageTestCase extends TestCase
         $this->runCommand('doctrine:database:create');
         $this->runCommand('doctrine:schema:create');
 
-        /** @var MessageBusInterface $messageBus */
-        $messageBus = self::$container->get(MessageBusInterface::class);
-        /** @var ContainerInterface $receiverLocator */
-        $receiverLocator = self::$container->get('messenger.receiver_locator');
-
-        $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
-
         /** @var ParameterBagInterface $params */
-        $this->params = self::$container->get(ParameterBagInterface::class);
-        $this->cacheDir = $this->params->get('kernel.cache_dir');
-        $this->logDir = $this->params->get('kernel.logs_dir');
+        $params = self::$container->get(ParameterBagInterface::class);
+        $this->cacheDir = $params->get('kernel.cache_dir');
+        $this->logDir = $params->get('kernel.logs_dir');
         $this->clearMessages();
         $this->clearEmails();
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function consumeMessages()
     {
         while (true) {
-            $process = new Process('bin/console messenger:consume-messages filesystem --limit=1');
-            $process->setTimeout(null);
-            $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
+            $this->runCommand('messenger:consume-messages filesystem --limit=1');
 
-            $process->run();
+            // Fix filesystem's receiver not getting messages on the next run
+            $transport = self::$container->get('messenger.transport.filesystem');
+            $rTransport = new \ReflectionObject($transport);
+            $refReceiver = $rTransport->getProperty('receiver');
+            $refReceiver->setAccessible(true);
+            $receiver = $refReceiver->getValue($transport);
+            $rReceiver = new \ReflectionObject($receiver);
+            $refShouldStop = $rReceiver->getProperty('shouldStop');
+            $refShouldStop->setAccessible(true);
+            $refShouldStop->setValue($receiver, false);
+
             if (!$this->hasMessages()) {
                 break;
             }
@@ -72,12 +67,14 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearEmails()
     {
-        exec("rm -rf {$this->cacheDir}/spool/");
+        exec("rm -rf {$this->cacheDir}/spool/default/*");
     }
 
     protected function hasMessages()
     {
-        return filesize("{$this->cacheDir}/queue/queue.data") !== 0;
+        // filesize is not working correctly on empty file
+        $queue = file_get_contents("{$this->cacheDir}/queue/queue.data");
+        return strlen($queue) !== 0;
     }
 
     protected function clearLog()

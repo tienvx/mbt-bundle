@@ -3,18 +3,22 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Exception;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Process\Process;
+use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
 class TaskMessageHandler implements MessageHandlerInterface
 {
-    private $params;
+    /**
+     * @var Kernel
+     */
+    private $kernel;
 
-    public function __construct(ParameterBagInterface $params)
+    public function __construct(KernelInterface $kernel)
     {
-        $this->params = $params;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -24,11 +28,6 @@ class TaskMessageHandler implements MessageHandlerInterface
     public function __invoke(TaskMessage $taskMessage)
     {
         $id = $taskMessage->getId();
-        $process = new Process(sprintf('bin/console mbt:execute-task %d', $id));
-        $process->setTimeout(null);
-        $process->setWorkingDirectory($this->params->get('kernel.project_dir'));
-        $process->disableOutput();
-
-        $process->run();
+        CommandRunner::run($this->kernel, sprintf('mbt:execute-task %d', $id));
     }
 }
