@@ -67,7 +67,7 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearEmails()
     {
-        exec("rm -rf {$this->cacheDir}/spool/");
+        exec("rm -rf {$this->cacheDir}/spool/default/*");
     }
 
     protected function hasMessages()
