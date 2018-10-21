@@ -30,10 +30,6 @@ class QueuedLoopMessageHandler implements MessageHandlerInterface
     {
         $reducer = QueuedLoopPathReducer::getName();
         $message = $queuedLoopMessage;
-        CommandRunner::run($this->kernel, [
-            'command' => 'mbt:handle-path-reducer',
-            'reducer' => $reducer,
-            'message' => $message,
-        ], sprintf(sprintf("bin/console mbt:handle-path-reducer %s '%s'", $reducer, $message)));
+        CommandRunner::run($this->kernel, sprintf(sprintf("mbt:handle-path-reducer %s '%s'", $reducer, $message)));
     }
 }

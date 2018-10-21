@@ -28,9 +28,6 @@ class TaskMessageHandler implements MessageHandlerInterface
     public function __invoke(TaskMessage $taskMessage)
     {
         $id = $taskMessage->getId();
-        CommandRunner::run($this->kernel, [
-            'command' => 'mbt:execute-task',
-            'task-id'  => $id,
-        ], sprintf('bin/console mbt:execute-task %d', $id));
+        CommandRunner::run($this->kernel, sprintf('mbt:execute-task %d', $id));
     }
 }

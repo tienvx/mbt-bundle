@@ -28,9 +28,6 @@ class BugMessageHandler implements MessageHandlerInterface
     public function __invoke(BugMessage $bugMessage)
     {
         $id = $bugMessage->getId();
-        CommandRunner::run($this->kernel, [
-            'command' => 'mbt:reduce-steps',
-            'bug-id'  => $id,
-        ], sprintf('bin/console mbt:reduce-steps %d', $id));
+        CommandRunner::run($this->kernel, sprintf('mbt:reduce-steps %d', $id));
     }
 }

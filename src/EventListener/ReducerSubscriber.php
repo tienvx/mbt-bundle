@@ -34,10 +34,7 @@ class ReducerSubscriber implements EventSubscriberInterface
     public function onFinish(ReducerFinishEvent $event)
     {
         $id = $event->getBugId();
-        CommandRunner::run($this->kernel, [
-            'command' => 'mbt:report-bug',
-            'bug-id'  => $id,
-        ], sprintf('bin/console mbt:report-bug %d', $id));
+        CommandRunner::run($this->kernel, sprintf('mbt:report-bug %d', $id));
     }
 
     public static function getSubscribedEvents()
