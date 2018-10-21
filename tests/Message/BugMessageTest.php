@@ -48,7 +48,7 @@ class BugMessageTest extends MessageTestCase
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setStatus('unverified');
+        $bug->setStatus('new');
         $bug->setPath(serialize($path));
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
@@ -87,6 +87,7 @@ class BugMessageTest extends MessageTestCase
         } elseif ($reporter === 'logger') {
             $this->assertTrue($this->hasLog());
         }
+        $this->assertEquals('reported', $bug->getStatus());
     }
 
     public function consumeMessageData()
