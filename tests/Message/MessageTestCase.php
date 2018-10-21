@@ -72,7 +72,9 @@ abstract class MessageTestCase extends TestCase
 
     protected function hasMessages()
     {
-        return filesize("{$this->cacheDir}/queue/queue.data") !== 0;
+        // filesize is not working correctly on empty file
+        $queue = file_get_contents("{$this->cacheDir}/queue/queue.data");
+        return strlen($queue) !== 0;
     }
 
     protected function clearLog()
