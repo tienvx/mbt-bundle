@@ -48,11 +48,14 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $this->workflowRegistry = $workflowRegistry;
     }
 
-    protected function finish(int $bugId)
+    protected function finish(Bug $bug)
     {
-        $event = new ReducerFinishEvent($bugId);
+        $event = new ReducerFinishEvent($bug->getId());
 
         $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
+
+        $bug->getTask()->setStatus('completed');
+        $this->entityManager->flush();
     }
 
     /**

@@ -26,7 +26,7 @@ class Bug
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\Choice({"unverified", "valid", "invalid"})
+     * @Assert\Choice({"new", "reducing", "reported"})
      */
     private $status;
 

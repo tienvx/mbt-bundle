@@ -14,7 +14,7 @@ install:
 
 script:
   - composer run-script cs-fix
-  - composer run-script coverage
+  - composer run-script coverage --timeout=0
 
 after_success:
   - travis_retry composer run-script coverall

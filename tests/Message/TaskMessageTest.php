@@ -15,7 +15,7 @@ class TaskMessageTest extends MessageTestCase
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $model, string $generator)
+    public function testConsumeMessage(string $model, string $generator, string $reducer)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -24,7 +24,7 @@ class TaskMessageTest extends MessageTestCase
         $task->setTitle('Test task title');
         $task->setModel($model);
         $task->setGenerator($generator);
-        $task->setReducer('weighted-random');
+        $task->setReducer($reducer);
         $task->setReporter('email');
         $task->setProgress(0);
         $task->setStatus('not-started');
@@ -46,20 +46,22 @@ class TaskMessageTest extends MessageTestCase
             } else {
                 $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
             }
+            $this->assertEquals('completed', $task->getStatus());
         } else {
             $this->assertEquals(0, count($bugs));
+            $this->assertEquals('in-progress', $task->getStatus());
         }
     }
 
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'random'],
-            ['shopping_cart', 'weighted-random'],
-            ['shopping_cart', 'all-places'],
-            ['shopping_cart', 'all-transitions'],
-            ['checkout', 'random'],
-            ['checkout', 'weighted-random'],
+            ['shopping_cart', 'random', 'loop'],
+            ['shopping_cart', 'weighted-random', 'loop'],
+            ['shopping_cart', 'all-places', 'loop'],
+            ['shopping_cart', 'all-transitions', 'loop'],
+            ['checkout', 'random', 'queued-loop'],
+            ['checkout', 'weighted-random', 'queued-loop'],
         ];
     }
 }

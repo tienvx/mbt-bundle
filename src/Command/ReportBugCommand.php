@@ -51,5 +51,8 @@ class ReportBugCommand extends Command
 
         $reporter = $this->reporterManager->getReporter($bug->getTask()->getReporter());
         $reporter->report($bug);
+
+        $bug->setStatus('reported');
+        $this->entityManager->flush();
     }
 }

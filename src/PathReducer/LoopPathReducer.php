@@ -48,7 +48,7 @@ class LoopPathReducer extends AbstractPathReducer
 
         // Can not reduce the reproduce path (any more).
         $this->updatePath($bug, $path);
-        $this->finish($bug->getId());
+        $this->finish($bug);
     }
 
     public static function getName()

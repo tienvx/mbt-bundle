@@ -128,7 +128,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 // All messages has been handled.
                 $this->entityManager->remove($queuedLoop);
                 $this->entityManager->flush();
-                $this->finish($queuedLoop->getBug()->getId());
+                $this->finish($queuedLoop->getBug());
             }
         }
     }

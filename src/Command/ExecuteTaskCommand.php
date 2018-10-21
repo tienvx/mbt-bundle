@@ -92,6 +92,9 @@ class ExecuteTaskCommand extends AbstractCommand
             return;
         }
 
+        $task->setStatus('in-progress');
+        $this->entityManager->flush();
+
         $this->setAnonymousToken();
 
         $subject = $this->subjectManager->createSubjectForModel($task->getModel());
@@ -118,7 +121,7 @@ class ExecuteTaskCommand extends AbstractCommand
             $bug->setLength($path->countPlaces());
             $bug->setBugMessage($throwable->getMessage());
             $bug->setTask($task);
-            $bug->setStatus('unverified');
+            $bug->setStatus('new');
             $this->entityManager->persist($bug);
             $this->entityManager->flush();
         } finally {

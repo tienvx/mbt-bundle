@@ -50,6 +50,9 @@ class ReduceStepsCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
+        $bug->setStatus('reducing');
+        $this->entityManager->flush();
+
         $pathReducer = $this->pathReducerManager->getPathReducer($bug->getTask()->getReducer());
         $pathReducer->reduce($bug);
     }
