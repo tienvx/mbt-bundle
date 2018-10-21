@@ -2,11 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
-use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Messenger\Command\ConsumeMessagesCommand;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Process\Process;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
@@ -30,13 +26,6 @@ abstract class MessageTestCase extends TestCase
         $this->runCommand('doctrine:database:drop --force');
         $this->runCommand('doctrine:database:create');
         $this->runCommand('doctrine:schema:create');
-
-        /** @var MessageBusInterface $messageBus */
-        $messageBus = self::$container->get(MessageBusInterface::class);
-        /** @var ContainerInterface $receiverLocator */
-        $receiverLocator = self::$container->get('messenger.receiver_locator');
-
-        $this->application->add(new ConsumeMessagesCommand($messageBus, $receiverLocator));
 
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
