@@ -43,6 +43,17 @@ abstract class MessageTestCase extends TestCase
         while (true) {
             $this->runCommand('messenger:consume-messages filesystem --limit=1');
 
+            // Fix filesystem's receiver not getting messages on the next run
+            $transport = self::$container->get('messenger.transport.filesystem');
+            $rTransport = new \ReflectionObject($transport);
+            $refReceiver = $rTransport->getProperty('receiver');
+            $refReceiver->setAccessible(true);
+            $receiver = $refReceiver->getValue($transport);
+            $rReceiver = new \ReflectionObject($receiver);
+            $refShouldStop = $rReceiver->getProperty('shouldStop');
+            $refShouldStop->setAccessible(true);
+            $refShouldStop->setValue($receiver, false);
+
             if (!$this->hasMessages()) {
                 break;
             }
