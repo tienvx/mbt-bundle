@@ -17,6 +17,7 @@ class BugMessageTest extends MessageTestCase
      * @param string $reporter
      * @param array $expectedPathArgs
      * @dataProvider consumeMessageData
+     * @throws \Exception
      */
     public function testExecute(string $model, array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
     {
