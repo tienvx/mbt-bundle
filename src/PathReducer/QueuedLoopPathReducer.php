@@ -102,7 +102,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
     {
         $this->entityManager->beginTransaction();
         try {
-            $queuedLoop = $this->entityManager->find(QueuedLoop::class, $queuedLoopMessage->getBugId(), LockMode::PESSIMISTIC_WRITE);
+            $queuedLoop = $this->entityManager->find(QueuedLoop::class, $queuedLoopMessage->getId(), LockMode::PESSIMISTIC_WRITE);
 
             if (!$queuedLoop || !$queuedLoop instanceof QueuedLoop) {
                 return;
