@@ -1,9 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests;
+namespace App;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
@@ -25,6 +26,7 @@ class AppKernel extends Kernel
             new TwigBundle(),
             new SwiftmailerBundle(),
             new MonologBundle(),
+            new MakerBundle(),
             new TienvxMbtBundle(),
         );
 

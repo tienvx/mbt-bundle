@@ -76,7 +76,7 @@ class QueuedLoopPathReducer extends AbstractPathReducer
                 // Make sure new path shorter than old path.
                 if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
-                        $subject = $this->subjectManager->createSubjectForModel($model);
+                        $subject = $this->subjectManager->createSubject($model);
                         $workflow = $this->workflowRegistry->get($subject, $model);
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {

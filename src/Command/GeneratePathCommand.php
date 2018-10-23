@@ -71,7 +71,7 @@ class GeneratePathCommand extends AbstractCommand
         $model = $input->getArgument('model');
         $generatorName = $input->getOption('generator');
         $generator = $this->generatorManager->getGenerator($generatorName);
-        $subject = $this->subjectManager->createSubjectForModel($model);
+        $subject = $this->subjectManager->createSubject($model);
         $subject->setTesting(true);
         $subject->setUp();
         $workflow = $this->workflowRegistry->get($subject, $model);

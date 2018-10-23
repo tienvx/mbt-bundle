@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Subject;
+namespace App\Subject;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;

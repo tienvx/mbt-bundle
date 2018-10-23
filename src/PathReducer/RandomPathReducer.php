@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class RandomPathReducer extends AbstractPathReducer
 {
@@ -22,7 +23,8 @@ class RandomPathReducer extends AbstractPathReducer
         parent::reduce($bug);
 
         $model = $bug->getTask()->getModel();
-        $subject = $this->subjectManager->createSubjectForModel($model);
+        $subject = new class extends Subject {
+        };
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         if (!$workflow instanceof StateMachine) {
@@ -41,7 +43,7 @@ class RandomPathReducer extends AbstractPathReducer
             // Make sure new path shorter than old path.
             if ($newPath->countPlaces() < $path->countPlaces()) {
                 try {
-                    $subject = $this->subjectManager->createSubjectForModel($model);
+                    $subject = $this->subjectManager->createSubject($model);
                     PathRunner::run($newPath, $workflow, $subject);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $bug->getBugMessage()) {

@@ -30,9 +30,14 @@ class SubjectManager
         }
     }
 
-    public function hasSubjectForModel(string $model)
+    public function hasSubject(string $model)
     {
         return isset($this->subjects[$model]);
+    }
+
+    public function getSubject(string $model)
+    {
+        return $this->subjects[$model];
     }
 
     /**
@@ -40,7 +45,7 @@ class SubjectManager
      * @return Subject
      * @throws Exception
      */
-    public function createSubjectForModel(string $model): Subject
+    public function createSubject(string $model): Subject
     {
         if (!isset($this->subjects[$model])) {
             throw new Exception(sprintf('Subject for model %s is not specified.', $model));

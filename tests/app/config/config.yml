@@ -22,7 +22,7 @@ services:
         autoconfigure: true
         public: false
 
-    Tienvx\Bundle\MbtBundle\Tests\:
+    App\:
         resource: '../src/*'
         exclude: '../src/{AppKernel.php}'
 
@@ -37,7 +37,7 @@ services:
         tags: ['messenger.transport_factory']
 
     GuzzleHttp\Client:
-        alias:  Tienvx\Bundle\MbtBundle\Tests\Http\Client
+        alias:  App\Http\Client
 
 swiftmailer:
     url: 'null://localhost'
@@ -58,6 +58,9 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
+
+maker:
+    root_namespace: 'App'
 
 tienvx_mbt:
     generator:
@@ -96,5 +99,5 @@ tienvx_mbt:
             projectId: 10000
             issueType: 10000
     subjects:
-        shopping_cart: Tienvx\Bundle\MbtBundle\Tests\Subject\ShoppingCart
-        checkout: Tienvx\Bundle\MbtBundle\Tests\Subject\Checkout
+        shopping_cart: App\Subject\ShoppingCart
+        checkout: App\Subject\Checkout

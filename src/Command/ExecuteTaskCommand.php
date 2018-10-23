@@ -97,7 +97,7 @@ class ExecuteTaskCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $subject = $this->subjectManager->createSubjectForModel($task->getModel());
+        $subject = $this->subjectManager->createSubject($task->getModel());
         $subject->setUp();
         $generator = $this->generatorManager->getGenerator($task->getGenerator());
         $workflow = $this->workflowRegistry->get($subject, $task->getModel());
