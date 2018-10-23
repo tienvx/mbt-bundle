@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Tienvx\Bundle\MbtBundle\Tests\AppKernel as Kernel;
+use App\AppKernel as Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 

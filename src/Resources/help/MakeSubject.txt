@@ -1,0 +1,5 @@
+The <info>%command.name%</info> command generates a new subject class for a model.
+
+<info>php %command.full_name% model-name CoolStuffSubject</info>
+
+If the argument is missing, the command will ask for the model name and subject class name interactively.

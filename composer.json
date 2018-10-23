@@ -40,7 +40,8 @@
         "pnz/messenger-filesystem-transport": "^0.1.2",
         "guzzlehttp/guzzle": "~6.0",
         "symfony/security-bundle": "^4.1",
-        "symfony/monolog-bundle": "^3.3"
+        "symfony/monolog-bundle": "^3.3",
+        "symfony/maker-bundle": "^1.8"
     },
     "autoload": {
         "psr-4": {
@@ -49,7 +50,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tienvx\\Bundle\\MbtBundle\\Tests\\": ["tests", "tests/app/src"]
+            "Tienvx\\Bundle\\MbtBundle\\Tests\\": "tests/",
+            "App\\": "tests/app/src/"
         }
     },
     "scripts": {

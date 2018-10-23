@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Workflow\Registry;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 /**
  * @Annotation
@@ -18,17 +18,6 @@ class ModelValidator extends ConstraintValidator
      * @var Registry
      */
     protected $workflowRegistry;
-
-    /**
-     * @var SubjectManager
-     */
-    protected $subjectManager;
-
-    public function __construct(
-        SubjectManager $subjectManager
-    ) {
-        $this->subjectManager = $subjectManager;
-    }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
     {
@@ -58,7 +47,8 @@ class ModelValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        $subject = $this->subjectManager->createSubjectForModel($value);
+        $subject = new class extends Subject {
+        };
         if (!$this->workflowRegistry->get($subject, $value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)

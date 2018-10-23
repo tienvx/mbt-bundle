@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Http;
+namespace App\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
