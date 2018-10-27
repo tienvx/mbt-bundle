@@ -100,7 +100,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => 57], ['product' => 49], []],
                     [['home'], ['category'], ['category'], ['checkout']]
                 ],
-                'queued-loop',
+                'loop',
                 'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
@@ -115,7 +115,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '34'], ['product' => '48'], [], [], [], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['product'], ['product'], ['checkout'], ['cart'], ['product'], ['category'], ['category'], ['checkout']],
                 ],
-                'queued-loop',
+                'loop',
                 'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
@@ -205,7 +205,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20_27'], ['category' => '20'], ['product' => '33'], []],
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
-                'queued-loop',
+                'loop',
                 'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
@@ -250,7 +250,7 @@ class BugMessageTest extends MessageTestCase
                     [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
                     [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
                 ],
-                'queued-loop',
+                'loop',
                 'github',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],

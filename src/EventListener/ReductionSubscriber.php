@@ -10,7 +10,7 @@ use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
-class ReducerSubscriber implements EventSubscriberInterface
+class ReductionSubscriber implements EventSubscriberInterface
 {
     private $entityManager;
     private $reporterManager;

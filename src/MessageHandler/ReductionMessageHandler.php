@@ -7,9 +7,9 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\BugMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 
-class BugMessageHandler implements MessageHandlerInterface
+class ReductionMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var Kernel
@@ -22,12 +22,14 @@ class BugMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param BugMessage $bugMessage
+     * @param ReductionMessage $message
      * @throws Exception
      */
-    public function __invoke(BugMessage $bugMessage)
+    public function __invoke(ReductionMessage $message)
     {
-        $id = $bugMessage->getId();
-        CommandRunner::run($this->kernel, sprintf('mbt:reduce-bug %d', $id));
+        $bugId = $message->getBugId();
+        $reducer = $message->getReducer();
+        $data = $message->getData();
+        CommandRunner::run($this->kernel, sprintf("mbt:reduce-path %d %s '%s'", $bugId, $reducer, json_encode($data)));
     }
 }

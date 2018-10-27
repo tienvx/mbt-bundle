@@ -9,6 +9,7 @@ use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
@@ -70,7 +71,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $this->entityManager->flush();
     }
 
-    public function handle(string $message)
+    public function handle(ReductionMessage $message)
     {
     }
 
