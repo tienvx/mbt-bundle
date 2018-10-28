@@ -99,9 +99,9 @@ class LoopPathReducer extends AbstractPathReducer
             $this->entityManager->flush();
             $this->entityManager->commit();
 
-            if ($bug->getMessagesCount() <= 0) {
-                if ($message->getData()['distance'] > 0) {
-                    $this->dispatch($bug->getId(), $message->getData()['distance']);
+            if ($bug->getMessagesCount() === 0) {
+                if ($message->getData()['distance'] > 1) {
+                    $this->dispatch($bug->getId(), $message->getData()['distance'] - 1);
                 } else {
                     $this->finish($bug);
                 }
@@ -115,6 +115,7 @@ class LoopPathReducer extends AbstractPathReducer
     /**
      * @param int $bugId
      * @param int $distance
+     * @param Path|null $newPath
      * @throws Exception
      */
     public function dispatch(int $bugId, int $distance, Path $newPath = null)
@@ -138,19 +139,17 @@ class LoopPathReducer extends AbstractPathReducer
                 for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
                     if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
-                        $pairs[] = [$i, $j];
+                        $pair = [$i, $j];
+                        $message = new ReductionMessage($bug->getId(), static::getName(), [
+                            'length' => $path->countPlaces(),
+                            'pair' => $pair,
+                            'distance' => $distance,
+                        ]);
+                        $this->messageBus->dispatch($message);
+                        $pairs[] = $pair;
                     }
                 }
                 $distance--;
-            }
-
-            foreach ($pairs as $pair) {
-                $message = new ReductionMessage($bug->getId(), static::getName(), [
-                    'length' => $path->countPlaces(),
-                    'pair' => $pair,
-                    'distance' => $distance,
-                ]);
-                $this->messageBus->dispatch($message);
             }
 
             $bug->setMessagesCount(count($pairs));
