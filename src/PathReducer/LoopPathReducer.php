@@ -119,6 +119,7 @@ class LoopPathReducer extends AbstractPathReducer
      * @param int $bugId
      * @param int $distance
      * @param Path|null $newPath
+     * @return int
      * @throws Exception
      */
     public function dispatch(int $bugId, int $distance, Path $newPath = null): int
@@ -138,7 +139,7 @@ class LoopPathReducer extends AbstractPathReducer
             }
 
             $messagesCount = 0;
-            while ($distance > 0 && empty($pairs)) {
+            while ($distance > 0 && $messagesCount === 0) {
                 for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
                     if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
