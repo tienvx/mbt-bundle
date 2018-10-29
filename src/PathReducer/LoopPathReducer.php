@@ -101,7 +101,10 @@ class LoopPathReducer extends AbstractPathReducer
 
             if ($bug->getMessagesCount() === 0) {
                 if ($message->getData()['distance'] > 1) {
-                    $this->dispatch($bug->getId(), $message->getData()['distance'] - 1);
+                    $messagesCount = $this->dispatch($bug->getId(), $message->getData()['distance'] - 1);
+                    if ($messagesCount === 0) {
+                        $this->finish($bug);
+                    }
                 } else {
                     $this->finish($bug);
                 }
@@ -118,14 +121,14 @@ class LoopPathReducer extends AbstractPathReducer
      * @param Path|null $newPath
      * @throws Exception
      */
-    public function dispatch(int $bugId, int $distance, Path $newPath = null)
+    public function dispatch(int $bugId, int $distance, Path $newPath = null): int
     {
         $this->entityManager->beginTransaction();
         try {
             $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
             if (!$bug || !$bug instanceof Bug) {
-                return;
+                return 0;
             }
 
             $path = unserialize($bug->getPath());
@@ -134,7 +137,7 @@ class LoopPathReducer extends AbstractPathReducer
                 throw new Exception(sprintf('Path must be instance of %s', Path::class));
             }
 
-            $pairs = [];
+            $messagesCount = 0;
             while ($distance > 0 && empty($pairs)) {
                 for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
@@ -146,13 +149,13 @@ class LoopPathReducer extends AbstractPathReducer
                             'distance' => $distance,
                         ]);
                         $this->messageBus->dispatch($message);
-                        $pairs[] = $pair;
+                        $messagesCount++;
                     }
                 }
                 $distance--;
             }
 
-            $bug->setMessagesCount(count($pairs));
+            $bug->setMessagesCount($messagesCount);
             if ($newPath) {
                 $bug->setPath(serialize($newPath));
                 $bug->setLength($newPath->countPlaces());
@@ -160,9 +163,12 @@ class LoopPathReducer extends AbstractPathReducer
 
             $this->entityManager->flush();
             $this->entityManager->commit();
+
+            return $messagesCount;
         } catch (Throwable $throwable) {
             // Something happen, ignoring.
             $this->entityManager->rollBack();
+            return 0;
         }
     }
 
