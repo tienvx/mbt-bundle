@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
-class ReduceStepsCommand extends AbstractCommand
+class ReduceBugCommand extends AbstractCommand
 {
     private $pathReducerManager;
     private $entityManager;
@@ -26,8 +26,8 @@ class ReduceStepsCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:reduce-steps')
-            ->setDescription('Reduce a reproduce steps.')
+            ->setName('mbt:reduce-bug')
+            ->setDescription('Reduce the reproduce steps of the bug.')
             ->setHelp("Make bug's reproduce steps shorter.")
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.');
     }

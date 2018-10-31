@@ -8,8 +8,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
-use Tienvx\Bundle\MbtBundle\Command\HandlePathReducerMessageCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
+use Tienvx\Bundle\MbtBundle\Command\ReducePathCommand;
+use Tienvx\Bundle\MbtBundle\Command\ReduceBugCommand;
 
 class SecurityTokenPass implements CompilerPassInterface
 {
@@ -33,9 +33,9 @@ class SecurityTokenPass implements CompilerPassInterface
 
         $commands = [
             ExecuteTaskCommand::class,
-            HandlePathReducerMessageCommand::class,
+            ReducePathCommand::class,
             GeneratePathCommand::class,
-            ReduceStepsCommand::class,
+            ReduceBugCommand::class,
         ];
         foreach ($commands as $command) {
             $commandDefinition = $container->getDefinition($command);

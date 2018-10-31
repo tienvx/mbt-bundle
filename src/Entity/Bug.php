@@ -55,6 +55,11 @@ class Bug
      */
     private $bugMessage;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $messagesCount;
+
     public function getId()
     {
         return $this->id;
@@ -118,5 +123,15 @@ class Bug
     public function setBugMessage(string $bugMessage)
     {
         $this->bugMessage = $bugMessage;
+    }
+
+    public function getMessagesCount(): int
+    {
+        return $this->messagesCount;
+    }
+
+    public function setMessagesCount(int $messagesCount)
+    {
+        $this->messagesCount = $messagesCount;
     }
 }

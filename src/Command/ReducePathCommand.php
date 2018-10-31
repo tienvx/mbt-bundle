@@ -6,9 +6,10 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
-class HandlePathReducerMessageCommand extends AbstractCommand
+class ReducePathCommand extends AbstractCommand
 {
     private $pathReducerManager;
 
@@ -22,11 +23,12 @@ class HandlePathReducerMessageCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:handle-path-reducer-message')
+            ->setName('mbt:reduce-path')
             ->setDescription("Handle a path reducer's message.")
-            ->setHelp('Call path reducer to handle a message, the message was come from that path reducer')
+            ->setHelp('Call path reducer to handle a message that was come from itself')
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
             ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.')
-            ->addArgument('message', InputArgument::REQUIRED, 'The json encoded message.');
+            ->addArgument('data', InputArgument::REQUIRED, 'The json encoded data.');
     }
 
     /**
@@ -36,10 +38,14 @@ class HandlePathReducerMessageCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $bugId = $input->getArgument('bug-id');
+        $reducer = $input->getArgument('reducer');
+        $data = json_decode($input->getArgument('data'), true);
+        $message = new ReductionMessage($bugId, $reducer, $data);
+
         $this->setAnonymousToken();
 
-        $reducer = $input->getArgument('reducer');
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $pathReducer->handle($input->getArgument('message'));
+        $pathReducer->handle($message);
     }
 }
