@@ -31,13 +31,15 @@ class Randomizer
         }
     }
 
-    public static function randomPair(int $min, int $max)
+    public static function randomPairs(int $max, int $count)
     {
-        $i = mt_rand($min, $max);
-        $j = mt_rand($min, $max);
-        while ($j < $i) {
-            $j = mt_rand($min, $max);
+        $pairs = [];
+        while (count($pairs) < $count) {
+            $pair = array_rand(range(0, $max - 1), 2);
+            if (!in_array($pair, $pairs)) {
+                $pairs[] = $pair;
+            }
         }
-        return [$i, $j];
+        return $pairs;
     }
 }

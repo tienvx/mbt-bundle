@@ -100,7 +100,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => 57], ['product' => 49], []],
                     [['home'], ['category'], ['category'], ['checkout']]
                 ],
-                'loop',
+                'binary',
                 'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
@@ -130,7 +130,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['home'], ['category'], ['category'], ['checkout']],
                 ],
-                'greedy',
+                'binary',
                 'slack',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
@@ -145,7 +145,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '33'], ['product' => '31'], [], [], ['category' => '57'], ['product' => '49'], [], []],
                     [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
                 ],
-                'binary',
+                'loop',
                 'github',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
@@ -175,7 +175,7 @@ class BugMessageTest extends MessageTestCase
                     [null, [], [], ['category' => '57'], ['product' => '49'], ['category' => '25_28'], ['category' => '20'], []],
                     [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
-                'greedy',
+                'loop',
                 'jira',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
@@ -220,7 +220,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
-                'greedy',
+                'binary',
                 'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
@@ -231,16 +231,16 @@ class BugMessageTest extends MessageTestCase
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
-                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
-                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
+                    [null, ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
+                    [['home'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
-                'random',
+                'binary',
                 'slack',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
-                    [null, ['category' => '18'], ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
-                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['category'], ['category'], ['checkout']],
                 ]
             ],
             [

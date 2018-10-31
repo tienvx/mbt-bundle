@@ -3,46 +3,16 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class LoopPathReducer extends AbstractPathReducer
 {
-    /**
-     * @var MessageBusInterface
-     */
-    protected $messageBus;
-
-    public function __construct(
-        MessageBusInterface $messageBus,
-        EventDispatcherInterface $dispatcher,
-        SubjectManager $subjectManager,
-        EntityManagerInterface $entityManager
-    ) {
-        parent::__construct($dispatcher, $subjectManager, $entityManager);
-        $this->messageBus = $messageBus;
-    }
-
-    /**
-     * @param Bug $bug
-     * @throws Exception
-     */
-    public function reduce(Bug $bug)
-    {
-        parent::reduce($bug);
-
-        $this->dispatch($bug->getId(), $bug->getLength());
-    }
-
     /**
      * @param ReductionMessage $message
      * @throws Exception
@@ -71,7 +41,7 @@ class LoopPathReducer extends AbstractPathReducer
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                            $this->dispatch($bug->getId(), $newPath->countPlaces(), $newPath);
+                            $this->dispatch($bug->getId(), $newPath);
                         }
                     }
                 }
@@ -82,63 +52,41 @@ class LoopPathReducer extends AbstractPathReducer
     }
 
     /**
-     * @param ReductionMessage $message
-     * @throws Exception
-     */
-    public function postHandle(ReductionMessage $message)
-    {
-        $this->entityManager->beginTransaction();
-        try {
-            $bug = $this->entityManager->find(Bug::class, $message->getBugId(), LockMode::PESSIMISTIC_WRITE);
-
-            if (!$bug || !$bug instanceof Bug) {
-                return;
-            }
-
-            $bug->setMessagesCount($bug->getMessagesCount() - 1);
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-
-            if ($bug->getMessagesCount() === 0) {
-                if ($message->getData()['distance'] > 1) {
-                    $messagesCount = $this->dispatch($bug->getId(), $message->getData()['distance'] - 1);
-                    if ($messagesCount === 0) {
-                        $this->finish($bug);
-                    }
-                } else {
-                    $this->finish($bug);
-                }
-            }
-        } catch (Throwable $throwable) {
-            // Something happen, ignoring.
-            $this->entityManager->rollBack();
-        }
-    }
-
-    /**
      * @param int $bugId
-     * @param int $distance
      * @param Path|null $newPath
+     * @param ReductionMessage|null $message
      * @return int
      * @throws Exception
      */
-    public function dispatch(int $bugId, int $distance, Path $newPath = null): int
+    public function dispatch(int $bugId, Path $newPath = null, ReductionMessage $message = null): int
     {
         $this->entityManager->beginTransaction();
         try {
+            if ($message && $message->getData()['distance'] <= 1) {
+                return 0;
+            }
+
             $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
             if (!$bug || !$bug instanceof Bug) {
                 return 0;
             }
 
-            $path = unserialize($bug->getPath());
+            if ($newPath) {
+                $bug->setPath(serialize($newPath));
+                $bug->setLength($newPath->countPlaces());
+                $path = $newPath;
+            } else {
+                $path = unserialize($bug->getPath());
 
-            if (!$path instanceof Path) {
-                throw new Exception(sprintf('Path must be instance of %s', Path::class));
+                if (!$path instanceof Path) {
+                    throw new Exception(sprintf('Path must be instance of %s', Path::class));
+                }
             }
 
             $messagesCount = 0;
+            $distance = $newPath ? $newPath->countPlaces() :
+                ($message ? ($message->getData()['distance'] - 1) : $bug->getLength());
             while ($distance > 0 && $messagesCount === 0) {
                 for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
@@ -157,10 +105,6 @@ class LoopPathReducer extends AbstractPathReducer
             }
 
             $bug->setMessagesCount($messagesCount);
-            if ($newPath) {
-                $bug->setPath(serialize($newPath));
-                $bug->setLength($newPath->countPlaces());
-            }
 
             $this->entityManager->flush();
             $this->entityManager->commit();
