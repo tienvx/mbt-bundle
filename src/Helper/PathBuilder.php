@@ -85,6 +85,16 @@ class PathBuilder
         }
     }
 
+    /**
+     * @param Path $path
+     * @param int $from
+     * @param int $to
+     * @param array $middleTransitions
+     * @param array $middleData
+     * @param array $middlePlaces
+     * @return Path
+     * @throws Exception
+     */
     public static function create(Path $path, int $from, int $to, array $middleTransitions, array $middleData, array $middlePlaces): Path
     {
         $beginTransitions = [];

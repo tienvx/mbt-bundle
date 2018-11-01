@@ -32,7 +32,6 @@ abstract class MessageTestCase extends TestCase
         $this->cacheDir = $params->get('kernel.cache_dir');
         $this->logDir = $params->get('kernel.logs_dir');
         $this->clearMessages();
-        $this->clearEmails();
     }
 
     /**
@@ -63,11 +62,6 @@ abstract class MessageTestCase extends TestCase
     protected function clearMessages()
     {
         exec("rm -rf {$this->cacheDir}/queue/");
-    }
-
-    protected function clearEmails()
-    {
-        exec("rm -rf {$this->cacheDir}/spool/default/*");
     }
 
     protected function hasMessages()

@@ -25,7 +25,6 @@ class TaskMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator($generator);
         $task->setReducer($reducer);
-        $task->setReporter('email');
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
