@@ -8,22 +8,22 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 class ReductionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
-    private $reporterManager;
 
     /**
      * @var Kernel
      */
     private $kernel;
 
-    public function __construct(EntityManagerInterface $entityManager, ReporterManager $reporterManager, KernelInterface $kernel)
+    public function __construct(EntityManagerInterface $entityManager, KernelInterface $kernel)
     {
         $this->entityManager = $entityManager;
-        $this->reporterManager = $reporterManager;
         $this->kernel = $kernel;
     }
 

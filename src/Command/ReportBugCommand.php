@@ -4,22 +4,32 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 
 class ReportBugCommand extends Command
 {
-    private $reporterManager;
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
 
-    public function __construct(ReporterManager $reporterManager, EntityManagerInterface $entityManager)
-    {
-        $this->reporterManager = $reporterManager;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger
+    ) {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -49,10 +59,12 @@ class ReportBugCommand extends Command
             return;
         }
 
-        $reporter = $this->reporterManager->getReporter($bug->getTask()->getReporter());
-        $reporter->report($bug);
-
         $bug->setStatus('reported');
         $this->entityManager->flush();
+
+        $this->logger->error($bug->getBugMessage(), [
+          'bug' => $bug,
+          'path' => PathBuilder::build($bug->getPath()),
+        ]);
     }
 }

@@ -48,13 +48,6 @@ class Task
     private $reducer;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     * @MbtAssert\Reporter
-     */
-    private $reporter;
-
-    /**
      * @ORM\Column(type="integer")
      * @Assert\Range(
      *     min = 0,
@@ -134,16 +127,6 @@ class Task
     public function setReducer($reducer)
     {
         $this->reducer = $reducer;
-    }
-
-    public function getReporter(): string
-    {
-        return $this->reporter;
-    }
-
-    public function setReporter($reporter)
-    {
-        $this->reporter = $reporter;
     }
 
     public function getProgress(): int

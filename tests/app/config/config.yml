@@ -2,7 +2,6 @@ framework:
     secret:          secret
     test:            ~
     router:          { resource: '%kernel.project_dir%/config/routing.yml' }
-    assets:          ~
     messenger:
         transports:
             filesystem: "filesystem://%kernel.cache_dir%/queue"
@@ -36,14 +35,10 @@ services:
         # Configure the tags: this enables the `filesystem://` transport to be auto-discovered
         tags: ['messenger.transport_factory']
 
-    GuzzleHttp\Client:
-        alias:  App\Http\Client
-
-swiftmailer:
-    url: 'null://localhost'
-    spool:
-        type: file
-        path: "%kernel.cache_dir%/spool"
+    Tienvx\Bundle\MbtBundle\Command\ReportBugCommand:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $logger: '@monolog.logger.mbt'
 
 security:
     providers:
@@ -53,11 +48,15 @@ security:
             anonymous: ~
 
 monolog:
+    channels: ['mbt']
     handlers:
-        file_log:
+        file:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
+            formatter: mbt.bug_formatter
+            content_type: text/html
+            channels: [mbt]
 
 maker:
     root_namespace: 'App'
@@ -67,37 +66,8 @@ tienvx_mbt:
         max_path_length: 300
         transition_coverage: 100
         place_coverage: 100
-    default_bug_title: 'New bug found'
-    reporter:
-        email:
-            from: 'send@example.com'
-            to: 'recipient@example.com'
-        hipchat:
-            address: 'https://api.hipchat.com/v2'
-            room: 'test.ModelBasedTesting'
-            token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
-            color: 'purple'
-            notify: false
-            format: 'html'
-        slack:
-            address: 'https://slack.com/api'
-            channel: 'test.ModelBasedTesting'
-            token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
-        github:
-            address: 'https://api.github.com'
-            repoOwner: 'test'
-            repoName: 'mbt'
-            token: 'fake7f549278d7eafd9bd0ee637e5641399406b6'
-        gitlab:
-            address: 'https://gitlab.example.com/api/v4'
-            projectId: 4
-            token: 'fake9koXpg98eAheJpvBs5tK'
-        jira:
-            address: 'https://your-domain.atlassian.net/rest/api/3'
-            username: 'email@example.com'
-            password: 'fake7f54927'
-            projectId: 10000
-            issueType: 10000
+    command:
+        default_bug_title: 'New bug found'
     subjects:
         shopping_cart: App\Subject\ShoppingCart
         checkout: App\Subject\Checkout

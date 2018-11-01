@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph/Path.php,Subject/Subject.php,Message,Algorithm,Helper}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Graph/Path.php,Subject/Subject.php,Message,Algorithm,Helper,Formatter}" />
 
         <service id="Symfony\Component\ExpressionLanguage\ExpressionLanguage" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
 
@@ -20,15 +20,12 @@
         </service>
         <service id="Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager" alias="mbt.path_reducer_manager" />
 
-        <service id="mbt.reporter_manager" class="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager" public="false" autowire="true">
-            <argument type="collection" />
-        </service>
-        <service id="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager" alias="mbt.reporter_manager" />
-
         <service id="mbt.entity_subscriber" class="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
 
         <service id="GuzzleHttp\Client" class="GuzzleHttp\Client" autowire="true"/>
+
+        <service id="mbt.bug_formatter" class="Tienvx\Bundle\MbtBundle\Formatter\BugFormatter" />
     </services>
 </container>

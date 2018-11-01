@@ -14,12 +14,11 @@ class BugMessageTest extends MessageTestCase
      * @param string $model
      * @param array $pathArgs
      * @param string $reducer
-     * @param string $reporter
      * @param array $expectedPathArgs
      * @dataProvider consumeMessageData
      * @throws \Exception
      */
-    public function testExecute(string $model, array $pathArgs, string $reducer, string $reporter, array $expectedPathArgs)
+    public function testExecute(string $model, array $pathArgs, string $reducer, array $expectedPathArgs)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -33,7 +32,6 @@ class BugMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator('random');
         $task->setReducer($reducer);
-        $task->setReporter($reporter);
         $task->setProgress(0);
         $task->setStatus('not-started');
         $entityManager->persist($task);
@@ -41,9 +39,6 @@ class BugMessageTest extends MessageTestCase
         $entityManager->flush();
 
         $this->clearMessages();
-        array_map(function ($reporter) {
-            $this->clearReporterMessages($reporter);
-        }, ['hipchat', 'slack', 'github', 'gitlab', 'jira']);
         $this->clearLog();
 
         $bug = new Bug();
@@ -73,20 +68,7 @@ class BugMessageTest extends MessageTestCase
             $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
         }
 
-        if ($reporter === 'email') {
-            $command = $this->application->find('swiftmailer:spool:send');
-            $commandTester = new CommandTester($command);
-            $commandTester->execute([
-                'command' => $command->getName(),
-            ]);
-
-            $output = $commandTester->getDisplay();
-            $this->assertContains('1 emails sent', $output);
-        } elseif (in_array($reporter, ['hipchat', 'slack', 'github', 'gitlab', 'jira'])) {
-            $this->assertTrue($this->hasReporterMessages($reporter));
-        } elseif ($reporter === 'logger') {
-            $this->assertTrue($this->hasLog());
-        }
+        $this->assertTrue($this->hasLog());
         $this->assertEquals('reported', $bug->getStatus());
     }
 
@@ -101,7 +83,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['checkout']]
                 ],
                 'binary',
-                'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => 57], ['product' => 49], []],
@@ -116,7 +97,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['product'], ['product'], ['checkout'], ['cart'], ['product'], ['category'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '34'], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
@@ -131,7 +111,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['home'], ['category'], ['category'], ['checkout']],
                 ],
                 'binary',
-                'slack',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -146,7 +125,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
                 ],
                 'loop',
-                'github',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
                     [null, ['category' => '57'], ['product' => '49'], [], []],
@@ -161,7 +139,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'binary',
-                'gitlab',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '34'], ['category' => '57'], ['product' => '49'], []],
@@ -176,7 +153,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'jira',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -191,7 +167,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'logger',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
@@ -206,7 +181,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'loop',
-                'email',
                 [
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
@@ -221,7 +195,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'binary',
-                'hipchat',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -236,7 +209,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
                 'binary',
-                'slack',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -251,7 +223,6 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['step1'], ['awaitingAccount'], ['step2'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'deliveryDetailsAdded', 'step1'], ['accountAdded', 'deliveryDetailsAdded', 'awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
                 ],
                 'loop',
-                'github',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'updateStep1', 'login', 'updateStep2LoggedIn', 'useExistingBillingAddress', 'updateStep3LoggedIn', 'useExistingDeliveryAddress', 'updateStep4', 'selectDeliveryMethodAndContinue', 'goFromStep5ToStep2', 'updateStep2LoggedIn', 'useNewBillingAddress', 'fillBillingAddressLoggedIn', 'goFromStep3ToStep4'],
                     [null, [], [], [], [], [], [], [], [], [], [], [], [], [], []],
@@ -259,15 +230,5 @@ class BugMessageTest extends MessageTestCase
                 ],
             ],
         ];
-    }
-
-    protected function clearReporterMessages(string $reporter)
-    {
-        exec("rm -rf {$this->cacheDir}/{$reporter}/");
-    }
-
-    protected function hasReporterMessages(string $reporter)
-    {
-        return filesize("{$this->cacheDir}/{$reporter}/report") !== 0;
     }
 }
