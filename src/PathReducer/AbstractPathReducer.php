@@ -69,18 +69,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $this->entityManager->flush();
     }
 
-    /**
-     * @param Bug $bug
-     * @param Path $path
-     * @throws Exception
-     */
-    protected function updatePath(Bug $bug, Path $path)
-    {
-        $bug->setPath(serialize($path));
-        $bug->setLength($path->countPlaces());
-        $this->entityManager->flush();
-    }
-
     public function handle(ReductionMessage $message)
     {
     }

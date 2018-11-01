@@ -12,6 +12,7 @@ class TaskMessageTest extends MessageTestCase
     /**
      * @param string $model
      * @param string $generator
+     * @param string $reducer
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
