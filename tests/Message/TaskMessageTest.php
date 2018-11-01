@@ -12,6 +12,7 @@ class TaskMessageTest extends MessageTestCase
     /**
      * @param string $model
      * @param string $generator
+     * @param string $reducer
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
@@ -55,10 +56,10 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'random', 'binary'],
-            ['shopping_cart', 'weighted-random', 'loop'],
+            ['shopping_cart', 'random', 'random'],
+            ['shopping_cart', 'weighted-random', 'random'],
             ['shopping_cart', 'all-places', 'random'],
-            ['shopping_cart', 'all-transitions', 'binary'],
+            ['shopping_cart', 'all-transitions', 'random'],
             ['checkout', 'random', 'loop'],
             ['checkout', 'weighted-random', 'loop'],
         ];
