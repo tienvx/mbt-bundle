@@ -19,6 +19,7 @@
             <exclude>
                 <directory>./src/Resources</directory>
                 <directory>./src/Maker</directory>
+                <directory>./src/Validator/Constraints</directory>
             </exclude>
         </whitelist>
     </filter>

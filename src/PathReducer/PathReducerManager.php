@@ -32,4 +32,15 @@ class PathReducerManager
 
         throw new Exception(sprintf('Path reducer %s does not exist.', $name));
     }
+
+    /**
+     * Check if there is a path reducer by name
+     *
+     * @param $name
+     * @return bool
+     */
+    public function hasPathReducer($name): bool
+    {
+        return isset($this->pathReducers[$name]);
+    }
 }
