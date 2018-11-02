@@ -61,7 +61,6 @@ class TaskMessageTest extends MessageTestCase
             ['shopping_cart', 'all-places', 'random'],
             ['shopping_cart', 'all-transitions', 'random'],
             ['checkout', 'random', 'loop'],
-            ['checkout', 'weighted-random', 'loop'],
         ];
     }
 }

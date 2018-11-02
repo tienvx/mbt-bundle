@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\Generator\WeightedRandomGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -57,9 +56,6 @@ class TienvxMbtExtension extends Extension
         $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
         $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['generator']['transition_coverage']]);
         $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['generator']['place_coverage']]);
-
-        $weightedRandomGeneratorDefinition = $container->getDefinition(WeightedRandomGenerator::class);
-        $weightedRandomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
     }
 
     private function registerSubjectConfiguration(array $config, ContainerBuilder $container)
