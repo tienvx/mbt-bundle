@@ -17,16 +17,6 @@ class PathReducerManager
     }
 
     /**
-     * Returns a list of available path reducers.
-     *
-     * @return array
-     */
-    public function getPathReducers(): array
-    {
-        return $this->pathReducers;
-    }
-
-    /**
      * Returns one path reducer by name
      *
      * @param $name
@@ -41,16 +31,5 @@ class PathReducerManager
         }
 
         throw new Exception(sprintf('Path reducer %s does not exist.', $name));
-    }
-
-    /**
-     * Check if there is a path reducer by name
-     *
-     * @param $name
-     * @return bool
-     */
-    public function hasPathReducer($name): bool
-    {
-        return isset($this->pathReducers[$name]);
     }
 }

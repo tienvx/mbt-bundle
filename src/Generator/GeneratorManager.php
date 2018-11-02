@@ -17,16 +17,6 @@ class GeneratorManager
     }
 
     /**
-     * Returns a list of available generators.
-     *
-     * @return array
-     */
-    public function getGenerators(): array
-    {
-        return $this->generators;
-    }
-
-    /**
      * Returns one generator by name
      *
      * @param $name
@@ -41,16 +31,5 @@ class GeneratorManager
         }
 
         throw new Exception(sprintf('Generator %s does not exist.', $name));
-    }
-
-    /**
-     * Check if there is a generator by name
-     *
-     * @param $name
-     * @return bool
-     */
-    public function hasGenerator($name): bool
-    {
-        return isset($this->generators[$name]);
     }
 }
