@@ -2,29 +2,20 @@
 
 namespace Tienvx\Bundle\MbtBundle\EventListener;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
-use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 
 class ReductionSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var EntityManagerInterface
+     * @var CommandRunner
      */
-    private $entityManager;
+    private $commandRunner;
 
-    /**
-     * @var Kernel
-     */
-    private $kernel;
-
-    public function __construct(EntityManagerInterface $entityManager, KernelInterface $kernel)
+    public function __construct(CommandRunner $commandRunner)
     {
-        $this->entityManager = $entityManager;
-        $this->kernel = $kernel;
+        $this->commandRunner = $commandRunner;
     }
 
     /**
@@ -34,7 +25,7 @@ class ReductionSubscriber implements EventSubscriberInterface
     public function onFinish(ReducerFinishEvent $event)
     {
         $id = $event->getBugId();
-        CommandRunner::run($this->kernel, sprintf('mbt:report-bug %d', $id));
+        $this->commandRunner->run(sprintf('mbt:report-bug %d', $id));
     }
 
     public static function getSubscribedEvents()

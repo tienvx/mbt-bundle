@@ -40,6 +40,8 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $logger: '@monolog.logger.mbt'
 
+    Tienvx\Bundle\MbtBundle\Command\CommandRunner: '@App\Command\CommandRunner'
+
 security:
     providers:
         in_memory: { memory: ~ }

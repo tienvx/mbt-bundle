@@ -3,22 +3,20 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Exception;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Helper\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 
 class ReductionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var Kernel
+     * @var CommandRunner
      */
-    private $kernel;
+    private $commandRunner;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(CommandRunner $commandRunner)
     {
-        $this->kernel = $kernel;
+        $this->commandRunner = $commandRunner;
     }
 
     /**
@@ -30,6 +28,6 @@ class ReductionMessageHandler implements MessageHandlerInterface
         $bugId = $message->getBugId();
         $reducer = $message->getReducer();
         $data = $message->getData();
-        CommandRunner::run($this->kernel, sprintf("mbt:reduce-path %d %s '%s'", $bugId, $reducer, json_encode($data)));
+        $this->commandRunner->run(sprintf("mbt:reduce-path %d %s '%s'", $bugId, $reducer, json_encode($data)));
     }
 }
