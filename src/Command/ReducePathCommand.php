@@ -6,6 +6,7 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tienvx\Bundle\MbtBundle\Helper\Constants;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
@@ -27,8 +28,8 @@ class ReducePathCommand extends AbstractCommand
             ->setDescription("Handle a path reducer's message.")
             ->setHelp('Call path reducer to handle a message that was come from itself')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
-            ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.')
-            ->addArgument('data', InputArgument::REQUIRED, 'The json encoded data.');
+            ->addArgument('reducer', InputArgument::OPTIONAL, 'The path reducer.', Constants::DEFAULT_REDUCER)
+            ->addArgument('data', InputArgument::OPTIONAL, 'The json encoded data.', '[]');
     }
 
     /**
