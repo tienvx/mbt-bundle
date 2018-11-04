@@ -1,0 +1,44 @@
+framework:
+    workflows:
+        pull_request:
+            marking_store:
+                type: single_state
+            supports:
+                - Tienvx\Bundle\MbtBundle\Subject\Subject
+            initial_place: start
+            metadata:
+                title: workflow title
+            places:
+                start_name_not_used:
+                    name: start
+                    metadata:
+                        title: place start title
+                coding: ~
+                travis: ~
+                review: ~
+                merged: ~
+                closed: ~
+            transitions:
+                submit:
+                    from: start
+                    to: travis
+                    metadata:
+                        title: transition submit title
+                update:
+                    from: [coding, travis, review]
+                    to: travis
+                wait_for_review:
+                    from: travis
+                    to: review
+                request_change:
+                    from: review
+                    to: coding
+                accept:
+                    from: review
+                    to: merged
+                reject:
+                    from: review
+                    to: closed
+                reopen:
+                    from: closed
+                    to: review
