@@ -32,4 +32,15 @@ class GeneratorManager
 
         throw new Exception(sprintf('Generator %s does not exist.', $name));
     }
+
+    /**
+     * Check if there is a generator by name
+     *
+     * @param $name
+     * @return bool
+     */
+    public function hasGenerator($name): bool
+    {
+        return isset($this->generators[$name]);
+    }
 }
