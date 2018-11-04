@@ -2,16 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
+use App\Messenger\Connection;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $cacheDir;
-
     /**
      * @var string
      */
@@ -29,9 +25,7 @@ abstract class MessageTestCase extends TestCase
 
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
-        $this->cacheDir = $params->get('kernel.cache_dir');
         $this->logDir = $params->get('kernel.logs_dir');
-        $this->clearMessages();
     }
 
     /**
@@ -40,18 +34,7 @@ abstract class MessageTestCase extends TestCase
     protected function consumeMessages()
     {
         while (true) {
-            $this->runCommand('messenger:consume-messages filesystem --limit=1');
-
-            // Fix filesystem's receiver not getting messages on the next run
-            $transport = self::$container->get('messenger.transport.filesystem');
-            $rTransport = new \ReflectionObject($transport);
-            $refReceiver = $rTransport->getProperty('receiver');
-            $refReceiver->setAccessible(true);
-            $receiver = $refReceiver->getValue($transport);
-            $rReceiver = new \ReflectionObject($receiver);
-            $refShouldStop = $rReceiver->getProperty('shouldStop');
-            $refShouldStop->setAccessible(true);
-            $refShouldStop->setValue($receiver, false);
+            $this->runCommand('messenger:consume-messages memory --limit=1');
 
             if (!$this->hasMessages()) {
                 break;
@@ -61,14 +44,16 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearMessages()
     {
-        exec("rm -rf {$this->cacheDir}/queue/");
+        /** @var Connection $connection */
+        $connection = self::$container->get(Connection::class);
+        $connection->clear();
     }
 
     protected function hasMessages()
     {
-        // filesize is not working correctly on empty file
-        $queue = file_get_contents("{$this->cacheDir}/queue/queue.data");
-        return strlen($queue) !== 0;
+        /** @var Connection $connection */
+        $connection = self::$container->get(Connection::class);
+        return $connection->has();
     }
 
     protected function clearLog()

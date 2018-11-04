@@ -9,3 +9,5 @@
 /tests/app/var/cache/
 /tests/app/var/logs/
 /tests/logs/
+/tests/app/src/Subject/Article.php
+/tests/app/src/Subject/PullRequest.php

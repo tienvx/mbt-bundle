@@ -18,6 +18,9 @@ class TaskMessageTest extends MessageTestCase
      */
     public function testConsumeMessage(string $model, string $generator, string $reducer)
     {
+        $this->clearMessages();
+        $this->clearLog();
+
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
@@ -56,9 +59,9 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'random', 'random'],
-            ['shopping_cart', 'all-places', 'random'],
-            ['shopping_cart', 'all-transitions', 'random'],
+            ['shopping_cart', 'random', 'loop'],
+            ['shopping_cart', 'all-places', 'loop'],
+            ['shopping_cart', 'all-transitions', 'loop'],
             ['checkout', 'random', 'loop'],
         ];
     }

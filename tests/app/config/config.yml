@@ -4,9 +4,9 @@ framework:
     router:          { resource: '%kernel.project_dir%/config/routing.yml' }
     messenger:
         transports:
-            filesystem: "filesystem://%kernel.cache_dir%/queue"
+            memory: "memory://any"
         routing:
-            '*': filesystem
+            '*': memory
 
 doctrine:
     dbal:
@@ -26,14 +26,8 @@ services:
         resource: '../src/*'
         exclude: '../src/{AppKernel.php}'
 
-    Pnz\Messenger\FilesystemTransport\FilesystemTransportFactory:
-        arguments:
-            $encoder: '@messenger.transport.encoder'
-            $decoder: '@messenger.transport.decoder'
-            # Both the "filesystem" and "lock.factory" services can be auto-wired by Symfony
-            $filesystem: '@filesystem'
-            $lockFactory: '@lock.factory'
-        # Configure the tags: this enables the `filesystem://` transport to be auto-discovered
+    App\Messenger:
+        # Configure the tags: this enables the `memory://` transport to be auto-discovered
         tags: ['messenger.transport_factory']
 
     Tienvx\Bundle\MbtBundle\Command\ReportBugCommand:

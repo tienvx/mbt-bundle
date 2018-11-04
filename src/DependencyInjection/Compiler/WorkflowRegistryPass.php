@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
 use Tienvx\Bundle\MbtBundle\Maker\MakeSubject;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints\ModelValidator;
 
 class WorkflowRegistryPass implements CompilerPassInterface
 {
@@ -42,6 +43,9 @@ class WorkflowRegistryPass implements CompilerPassInterface
 
             $generatePathCommandDefinition = $container->getDefinition(GeneratePathCommand::class);
             $generatePathCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
+
+            $modelValidatorDefinition = $container->getDefinition(ModelValidator::class);
+            $modelValidatorDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
 
             if ($container->hasDefinition(MakeSubject::class)) {
                 $makeSubjectDefinition = $container->getDefinition(MakeSubject::class);

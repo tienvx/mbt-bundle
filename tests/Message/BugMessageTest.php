@@ -229,6 +229,20 @@ class BugMessageTest extends MessageTestCase
                     [['home'], ['step1'], ['awaitingAccount'], ['accountAdded', 'step2'], ['accountAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'awaitingExistingOrNewDeliveryAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'step4'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step5'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step2'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingExistingOrNewBilingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'awaitingBillingAddress'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step3'], ['accountAdded', 'billingDetailsAdded', 'deliveryDetailsAdded', 'deliveryMethodAdded', 'step4']]
                 ],
             ],
+            [
+                'shopping_cart',
+                [
+                    [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
+                ],
+                'random',
+                [
+                    [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
+                    [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
+                ]
+            ],
         ];
     }
 }

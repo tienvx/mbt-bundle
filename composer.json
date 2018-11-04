@@ -36,8 +36,7 @@
         "symfony/maker-bundle": "^1.8",
         "symfony/monolog-bundle": "^3.3",
         "php-coveralls/php-coveralls": "^2.1",
-        "friendsofphp/php-cs-fixer": "^2.13",
-        "pnz/messenger-filesystem-transport": "^0.1.2"
+        "friendsofphp/php-cs-fixer": "^2.13"
     },
     "autoload": {
         "psr-4": {
