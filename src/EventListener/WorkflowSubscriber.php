@@ -36,6 +36,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $subject = $event->getSubject();
 
         if ($subject instanceof Subject) {
+            $subject->storeData();
             $subject->applyTransition($event->getTransition()->getName());
         }
     }

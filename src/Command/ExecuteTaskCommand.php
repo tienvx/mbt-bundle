@@ -107,11 +107,16 @@ class ExecuteTaskCommand extends AbstractCommand
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
-                $data = $subject->getData();
-                $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                $path->add($transitionName, $data, $places);
-                if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                    throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));
+                try {
+                    if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
+                        throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));
+                    }
+                } catch (Throwable $throwable) {
+                    throw $throwable;
+                } finally {
+                    $data = $subject->getStoredData();
+                    $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
+                    $path->add($transitionName, $data, $places);
                 }
             }
         } catch (Throwable $throwable) {

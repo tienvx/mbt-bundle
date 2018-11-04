@@ -20,6 +20,11 @@ abstract class Subject
     protected $data = [];
 
     /**
+     * @var array
+     */
+    protected $storedData = [];
+
+    /**
      * @var boolean
      */
     protected $needData = true;
@@ -70,6 +75,19 @@ abstract class Subject
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function storeData()
+    {
+        $this->storedData = $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStoredData(): array
+    {
+        return $this->storedData;
     }
 
     public function applyTransition(string $transitionName)
