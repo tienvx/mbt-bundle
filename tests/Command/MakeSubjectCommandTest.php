@@ -35,7 +35,7 @@ class MakeSubjectCommandTest extends CommandTestCase
         $output = $commandTester->getDisplay();
         $this->assertContains('Success!', $output);
         $this->assertContains(sprintf('App\Subject\%s', $subjectClass), $output);
-        $this->assertContains('Next: Update configuration file at tienvx_mbt.subjects, add this line:', $output);
+        $this->assertContains('Next: Open configuration file, add this line to tienvx_mbt.subjects:', $output);
         unlink(__DIR__ . "/../app/src/Subject/$subjectClass.php");
     }
 }

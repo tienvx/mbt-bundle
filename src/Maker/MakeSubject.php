@@ -103,9 +103,9 @@ final class MakeSubject extends AbstractMaker
 
         $this->writeSuccessMessage($io);
         $io->text([
-            'Next: Update configuration file at tienvx_mbt.subjects, add this line:',
+            'Next: Open configuration file, add this line to tienvx_mbt.subjects:',
             sprintf('<comment>%s: %s</comment>', $model, $subjectClassNameDetails->getFullName()),
-            'Then: Open your new subject class and implement places and transitions!'
+            'Then: Open the new generated subject class and implement places and transitions!'
         ]);
     }
 
