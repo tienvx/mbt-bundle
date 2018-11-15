@@ -61,7 +61,6 @@ class ShoppingCart extends Subject
             '40', // 'iPhone',
             '48', // 'iPod Classic',
             '43', // 'MacBook',
-            '42', // 'Apple Cinema 30',
             '44', // 'MacBook Air',
             '29', // 'Palm Treo Pro',
             '35', // 'Product 8',
@@ -109,6 +108,15 @@ class ShoppingCart extends Subject
      */
     protected $outOfStock = [
         '49', // 'Samsung Galaxy Tab 10.1',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $needOptions = [
+        '42', // 'Apple Cinema 30',
+        '30', // 'Canon EOS 5D',
+        '35', // 'Product 8',
     ];
 
     public function __construct()
@@ -340,6 +348,11 @@ class ShoppingCart extends Subject
             throw new Exception('Can not add product from home: product is not selected');
         }
         $product = $this->data['product'];
+        if (!$this->testing) {
+            if (in_array($product, $this->needOptions)) {
+                throw new Exception('You need to specify options for this product! Can not add product');
+            }
+        }
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         } else {
@@ -357,6 +370,11 @@ class ShoppingCart extends Subject
             throw new Exception('Can not add product from category: product is not selected');
         }
         $product = $this->data['product'];
+        if (!$this->testing) {
+            if (in_array($product, $this->needOptions)) {
+                throw new Exception('You need to specify options for this product! Can not add product');
+            }
+        }
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         } else {
@@ -364,8 +382,16 @@ class ShoppingCart extends Subject
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function addFromProduct()
     {
+        if (!$this->testing) {
+            if (in_array($this->product, $this->needOptions)) {
+                throw new Exception('You need to specify options for this product! Can not add product');
+            }
+        }
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
         } else {
