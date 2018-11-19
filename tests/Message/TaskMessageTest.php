@@ -59,11 +59,10 @@ class TaskMessageTest extends MessageTestCase
             } else {
                 $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
             }
-            $this->assertEquals('completed', $task->getStatus());
         } else {
             $this->assertEquals(0, count($bugs));
-            $this->assertEquals('in-progress', $task->getStatus());
         }
+        $this->assertEquals('completed', $task->getStatus());
     }
 
     public function consumeMessageData()

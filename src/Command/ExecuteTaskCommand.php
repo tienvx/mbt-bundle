@@ -131,6 +131,9 @@ class ExecuteTaskCommand extends AbstractCommand
             $this->entityManager->flush();
         } finally {
             $subject->tearDown();
+
+            $task->setStatus('completed');
+            $this->entityManager->flush();
         }
     }
 }
