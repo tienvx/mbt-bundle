@@ -5,13 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Throwable;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -48,10 +47,10 @@ abstract class AbstractPathReducer implements PathReducerInterface
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus
     ) {
-        $this->dispatcher       = $dispatcher;
-        $this->subjectManager   = $subjectManager;
-        $this->entityManager    = $entityManager;
-        $this->messageBus       = $messageBus;
+        $this->dispatcher     = $dispatcher;
+        $this->subjectManager = $subjectManager;
+        $this->entityManager  = $entityManager;
+        $this->messageBus     = $messageBus;
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -64,9 +63,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $event = new ReducerFinishEvent($bug->getId());
 
         $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
-
-        $bug->getTask()->setStatus('completed');
-        $this->entityManager->flush();
     }
 
     public function handle(ReductionMessage $message)
