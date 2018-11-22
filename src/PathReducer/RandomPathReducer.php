@@ -34,10 +34,6 @@ class RandomPathReducer extends AbstractPathReducer
         };
         $workflow = $this->workflowRegistry->get($subject, $model);
 
-        if (!$workflow instanceof StateMachine) {
-            throw new Exception(sprintf('Path reducer %s only support model type state machine', static::getName()));
-        }
-
         $graph = GraphBuilder::build($workflow);
         $path = PathBuilder::build($bug->getPath());
 

@@ -7,35 +7,17 @@ framework:
                 - Tienvx\Bundle\MbtBundle\Subject\Subject
             metadata:
                 label: "Checkout"
-                tags: ["opencart's checkout process", "demo", "testing", "model-based-testing"]
+                tags: ["opencart's checkout process", "demo", "workflow", "testing", "model-based-testing"]
             places:
                 - home
-                - step1
-                - step2
-                - step3
-                - step4
-                - step5
-                - step6
                 - awaitingAccount
-                - awaitingPersonalDetails
                 - awaitingBillingAddress
-                - awaitingPassword
-                - awaitingPrivacyPolicyAgreement
-                - personalDetailsFilled
-                - billingAddressFilled
-                - passwordFilled
-                - privacyPolicyAgreed
-                - awaitingExistingOrNewBilingAddress
-                - awaitingExistingOrNewDeliveryAddress
                 - awaitingDeliveryAddress
                 - awaitingDeliveryMethod
                 - awaitingPaymentMethod
-                - awaitingTermsAndConditionsAgreement
-                - paymentMethodSelected
-                - termsAndConditionsAgreed
                 - accountAdded
-                - billingDetailsAdded
-                - deliveryDetailsAdded
+                - billingAddressAdded
+                - deliveryAddressAdded
                 - deliveryMethodAdded
                 - paymentMethodAdded
                 - orderPlaced
@@ -43,253 +25,82 @@ framework:
             transitions:
                 addProductAndCheckoutNotLoggedIn:
                     from: home
-                    to: step1
+                    to: awaitingAccount
                     guard: "!subject.loggedIn()"
                     metadata:
                         label: "Add product and go to checkout (not logged in)"
                 addProductAndCheckoutLoggedIn:
                     from: home
-                    to: step2
+                    to:
+                        - accountAdded
+                        - awaitingBillingAddress
+                        - awaitingDeliveryAddress
+                        - awaitingDeliveryMethod
+                        - awaitingPaymentMethod
                     guard: "subject.loggedIn()"
                     metadata:
                         label: "Add product and go to checkout (logged in)"
-                updateStep1:
-                    from: step1
-                    to: awaitingAccount
-                    metadata:
-                        label: "Update checkout options"
-                updateStep2LoggedIn:
-                    from: step2
-                    to: awaitingExistingOrNewBilingAddress
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Update billing details (logged in)"
-                updateStep2GuestCheckout:
-                    from: step2
-                    to:
-                        - awaitingPersonalDetails
-                        - awaitingBillingAddress
-                    guard: "subject.doingGuestCheckout()"
-                    metadata:
-                        label: "Update billing details (guest checkout)"
-                updateStep2RegisterAccount:
-                    from: step2
-                    to:
-                        - awaitingPersonalDetails
-                        - awaitingBillingAddress
-                        - awaitingPassword
-                        - awaitingPrivacyPolicyAgreement
-                    guard: "subject.registeringAccount()"
-                    metadata:
-                        label: "Update billing details (register account)"
                 login:
                     from: awaitingAccount
                     to:
                         - accountAdded
-                        - step2
+                        - awaitingBillingAddress
+                        - awaitingDeliveryAddress
+                        - awaitingDeliveryMethod
+                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
                         label: "Login"
                 guestCheckout:
                     from: awaitingAccount
-                    to: step2
+                    to:
+                        - accountAdded
+                        - awaitingBillingAddress
+                        - awaitingDeliveryAddress
+                        - awaitingDeliveryMethod
+                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
                         label: "Guest Checkout"
                 registerAccount:
                     from: awaitingAccount
-                    to: step2
+                    to:
+                        - accountAdded
+                        - awaitingBillingAddress
+                        - awaitingDeliveryAddress
+                        - awaitingDeliveryMethod
+                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
                         label: "Register Account"
-                fillPersonalDetails:
-                    from: awaitingPersonalDetails
-                    to: personalDetailsFilled
-                    guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
-                    metadata:
-                        label: "Fill personal details (guest checkout or register account)"
-                fillBillingAddress:
+                addBillingAddress:
                     from: awaitingBillingAddress
-                    to: billingAddressFilled
-                    guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                    to: billingAddressAdded
                     metadata:
-                        label: "Fill billing address (guest checkout or register account)"
-                fillPassword:
-                    from: awaitingPassword
-                    to: passwordFilled
-                    guard: "subject.registeringAccount()"
-                    metadata:
-                        label: "Fill password when register account"
-                agreePrivacyPolicy:
-                    from: awaitingPrivacyPolicyAgreement
-                    to: privacyPolicyAgreed
-                    guard: "subject.registeringAccount()"
-                    metadata:
-                        label: "Agree privacy policy (register account)"
-                useExistingBillingAddress:
-                    from: awaitingExistingOrNewBilingAddress
-                    to:
-                        - step3
-                        - billingDetailsAdded
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Use existing billing address"
-                useNewBillingAddress:
-                    from: awaitingExistingOrNewBilingAddress
-                    to: awaitingBillingAddress
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Use new billing address"
-                fillBillingAddressLoggedIn:
-                    from: awaitingBillingAddress
-                    to:
-                        - step3
-                        - billingDetailsAdded
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Fill billing address (logged in)"
-                continueRegisterAccountWithDifferentAddresses:
-                    from:
-                        - personalDetailsFilled
-                        - billingAddressFilled
-                        - passwordFilled
-                        - privacyPolicyAgreed
-                    to:
-                        - accountAdded
-                        - billingDetailsAdded
-                        - step3
-                    guard: "subject.registeringAccount()"
-                    metadata:
-                        label: "Continue register account"
-                continueGuestCheckoutDifferentAddresses:
-                    from:
-                        - personalDetailsFilled
-                        - billingAddressFilled
-                    to:
-                        - accountAdded
-                        - billingDetailsAdded
-                        - awaitingDeliveryAddress
-                    guard: "subject.doingGuestCheckout()"
-                    metadata:
-                        label: "Continue guest checkout"
-                updateStep3:
-                    from: step3
-                    to: awaitingDeliveryAddress
-                    metadata:
-                        label: "Update delivery details"
-                continueRegisterAccountWithSameAddresses:
-                    from:
-                        - personalDetailsFilled
-                        - billingAddressFilled
-                        - passwordFilled
-                        - privacyPolicyAgreed
-                    to:
-                        - accountAdded
-                        - deliveryDetailsAdded
-                        - step4
-                    guard: "subject.registeringAccount()"
-                    metadata:
-                        label: "Continue register account"
-                continueGuestCheckoutSameAddresses:
-                    from:
-                        - personalDetailsFilled
-                        - billingAddressFilled
-                    to:
-                        - accountAdded
-                        - deliveryDetailsAdded
-                        - step4
-                    guard: "subject.doingGuestCheckout()"
-                    metadata:
-                        label: "Continue guest checkout"
-                updateStep3LoggedIn:
-                    from: step3
-                    to: awaitingExistingOrNewDeliveryAddress
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Update delivery details (logged in)"
-                updateStep3NotLoggedIn:
-                    from: step3
-                    to: awaitingDeliveryAddress
-                    guard: "!subject.loggedIn()"
-                    metadata:
-                        label: "Update delivery details (not logged in)"
-                useExistingDeliveryAddress:
-                    from: awaitingExistingOrNewDeliveryAddress
-                    to:
-                        - step4
-                        - deliveryDetailsAdded
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Use existing delivery address"
-                useNewDeliveryAddress:
-                    from: awaitingExistingOrNewDeliveryAddress
-                    to: awaitingDeliveryAddress
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Use new delivery address"
-                fillDeliveryAddressLoggedIn:
-                    from: awaitingDeliveryAddress
-                    to:
-                        - step4
-                        - deliveryDetailsAdded
-                    guard: "subject.loggedIn()"
-                    metadata:
-                        label: "Fill delivery address (logged in)"
+                        label: "Add billing address"
                 addDeliveryAddress:
                     from: awaitingDeliveryAddress
-                    to:
-                        - deliveryDetailsAdded
-                        - step4
-                    guard: "subject.registeringAccount() || subject.doingGuestCheckout()"
+                    to: deliveryAddressAdded
                     metadata:
                         label: "Add delivery address"
-                updateStep4:
-                    from: step4
-                    to: awaitingDeliveryMethod
-                    metadata:
-                        label: "Update delivery method"
-                selectDeliveryMethodAndContinue:
+                addDeliveryMethod:
                     from: awaitingDeliveryMethod
-                    to:
-                        - deliveryMethodAdded
-                        - step5
+                    to: deliveryMethodAdded
                     metadata:
-                        label: "Select delivery method"
-                updateStep5:
-                    from: step5
-                    to:
-                        - awaitingPaymentMethod
-                        - awaitingTermsAndConditionsAgreement
-                    metadata:
-                        label: "Update payment method"
-                selectPaymentMethod:
+                        label: "Add delivery method"
+                addPaymentMethod:
                     from: awaitingPaymentMethod
-                    to: paymentMethodSelected
+                    to: paymentMethodAdded
                     metadata:
-                        label: "Select payment method"
-                agreeTermsAndConditions:
-                    from: awaitingTermsAndConditionsAgreement
-                    to: termsAndConditionsAgreed
-                    metadata:
-                        label: "Agreed terms and conditions"
-                continueWithPaymentMethod:
-                    from:
-                        - paymentMethodSelected
-                        - termsAndConditionsAgreed
-                    to:
-                        - paymentMethodAdded
-                        - step6
-                    metadata:
-                        label: "Continue with payment method"
+                        label: "Add payment method"
                 confirmOrder:
                     from:
-                        - step6
                         - accountAdded
-                        - billingDetailsAdded
-                        - deliveryDetailsAdded
+                        - billingAddressAdded
+                        - deliveryAddressAdded
                         - deliveryMethodAdded
                         - paymentMethodAdded
                     to: orderPlaced
@@ -300,113 +111,3 @@ framework:
                     to: home
                     metadata:
                         label: "Continue shopping"
-                goFromStep2ToStep1:
-                    from: step2
-                    to: step1
-                    guard: "!subject.loggedIn()"
-                goFromStep3ToStep1:
-                    from: step3
-                    to: step1
-                    guard: "!subject.loggedIn()"
-                goFromStep4ToStep1:
-                    from: step4
-                    to: step1
-                    guard: "!subject.loggedIn()"
-                goFromStep5ToStep1:
-                    from: step5
-                    to: step1
-                    guard: "!subject.loggedIn()"
-                goFromStep6ToStep1:
-                    from: step6
-                    to: step1
-                    guard: "!subject.loggedIn()"
-                goFromStep1ToStep2:
-                    from: step1
-                    to: step2
-                    guard: "subject.isBillingDetailsAdded()"
-                goFromStep3ToStep2:
-                    from: step3
-                    to: step2
-                goFromStep4ToStep2:
-                    from: step4
-                    to: step2
-                goFromStep5ToStep2:
-                    from: step5
-                    to: step2
-                goFromStep6ToStep2:
-                    from: step6
-                    to: step2
-                goFromStep1ToStep3:
-                    from: step1
-                    to: step3
-                    guard: "subject.isDeliveryDetailsAdded()"
-                goFromStep2ToStep3:
-                    from: step2
-                    to: step3
-                    guard: "subject.isDeliveryDetailsAdded()"
-                goFromStep4ToStep3:
-                    from: step4
-                    to: step3
-                goFromStep5ToStep3:
-                    from: step5
-                    to: step3
-                goFromStep6ToStep3:
-                    from: step6
-                    to: step3
-                goFromStep1ToStep4:
-                    from: step1
-                    to: step4
-                    guard: "subject.isDeliveryMethodAdded()"
-                goFromStep2ToStep4:
-                    from: step2
-                    to: step4
-                    guard: "subject.isDeliveryMethodAdded()"
-                goFromStep3ToStep4:
-                    from: step3
-                    to: step4
-                    guard: "subject.isDeliveryMethodAdded()"
-                goFromStep5ToStep4:
-                    from: step5
-                    to: step4
-                goFromStep6ToStep4:
-                    from: step6
-                    to: step4
-                goFromStep1ToStep5:
-                    from: step1
-                    to: step5
-                    guard: "subject.isPaymentMethodAdded()"
-                goFromStep2ToStep5:
-                    from: step2
-                    to: step5
-                    guard: "subject.isPaymentMethodAdded()"
-                goFromStep3ToStep5:
-                    from: step3
-                    to: step5
-                    guard: "subject.isPaymentMethodAdded()"
-                goFromStep4ToStep5:
-                    from: step4
-                    to: step5
-                    guard: "subject.isPaymentMethodAdded()"
-                goFromStep6ToStep5:
-                    from: step6
-                    to: step5
-                goFromStep1ToStep6:
-                    from: step1
-                    to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
-                goFromStep2ToStep6:
-                    from: step2
-                    to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
-                goFromStep3ToStep6:
-                    from: step3
-                    to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
-                goFromStep4ToStep6:
-                    from: step4
-                    to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"
-                goFromStep5ToStep6:
-                    from: step5
-                    to: step6
-                    guard: "subject.isPaymentMethodAdded() && subject.isDeliveryMethodAdded() && subject.isDeliveryDetailsAdded() && subject.isBillingDetailsAdded() && subject.isAccountAdded()"

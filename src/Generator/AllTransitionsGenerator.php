@@ -30,7 +30,7 @@ class AllTransitionsGenerator extends AbstractGenerator
         $singleComponent = $components->isSingle();
         if ($singleComponent) {
             $algorithm = new Eulerian($graph);
-            $startVertex = $graph->getVertex($workflow->getDefinition()->getInitialPlace());
+            $startVertex = $graph->getVertex(json_encode([$workflow->getDefinition()->getInitialPlace()]));
             $edges = $algorithm->getEdges($startVertex);
             $edges = $edges->getVector();
             while (!empty($edges)) {

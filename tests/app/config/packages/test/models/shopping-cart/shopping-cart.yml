@@ -7,7 +7,7 @@ framework:
                 - Tienvx\Bundle\MbtBundle\Subject\Subject
             metadata:
                 label: "Shopping Cart"
-                tags: ["opencart's shopping cart", "demo", "testing", "model-based-testing"]
+                tags: ["opencart's shopping cart", "demo", "state-machine", "testing", "model-based-testing"]
             places:
                 - home
                 - category
