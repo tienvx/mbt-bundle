@@ -12,6 +12,7 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
@@ -41,16 +42,23 @@ abstract class AbstractPathReducer implements PathReducerInterface
      */
     protected $messageBus;
 
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
+
     public function __construct(
         EventDispatcherInterface $dispatcher,
         SubjectManager $subjectManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        GraphBuilder $graphBuilder
     ) {
         $this->dispatcher     = $dispatcher;
         $this->subjectManager = $subjectManager;
         $this->entityManager  = $entityManager;
         $this->messageBus     = $messageBus;
+        $this->graphBuilder   = $graphBuilder;
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)

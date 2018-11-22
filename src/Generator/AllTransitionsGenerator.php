@@ -8,11 +8,21 @@ use Graphp\Algorithms\ConnectedComponents;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
-use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
+
+    public function __construct(GraphBuilder $graphBuilder)
+    {
+        $this->graphBuilder = $graphBuilder;
+    }
+
     /**
      * @param Workflow $workflow
      * @param Subject $subject
@@ -25,7 +35,7 @@ class AllTransitionsGenerator extends AbstractGenerator
             throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));
         }
 
-        $graph = GraphBuilder::build($workflow);
+        $graph = $this->graphBuilder->build($workflow);
         $components = new ConnectedComponents($graph);
         $singleComponent = $components->isSingle();
         if ($singleComponent) {
