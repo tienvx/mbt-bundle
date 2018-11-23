@@ -26,9 +26,9 @@ class MemoryTransport implements TransportInterface
         ($this->receiver ?? $this->getReceiver())->stop();
     }
 
-    public function send(Envelope $envelope): void
+    public function send(Envelope $envelope): Envelope
     {
-        ($this->sender ?? $this->getSender())->send($envelope);
+        return ($this->sender ?? $this->getSender())->send($envelope);
     }
 
     private function getReceiver()

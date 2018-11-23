@@ -3,7 +3,7 @@
 namespace App\Messenger;
 
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\SenderInterface;
+use Symfony\Component\Messenger\Transport\Sender\SenderInterface;
 
 class MemorySender implements SenderInterface
 {
@@ -14,8 +14,10 @@ class MemorySender implements SenderInterface
         $this->connection = $connection;
     }
 
-    public function send(Envelope $envelope)
+    public function send(Envelope $envelope): Envelope
     {
         $this->connection->publish($envelope);
+
+        return $envelope;
     }
 }
