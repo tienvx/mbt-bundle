@@ -7,11 +7,21 @@ use Generator;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class AllPlacesGenerator extends AbstractGenerator
 {
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
+
+    public function __construct(GraphBuilder $graphBuilder)
+    {
+        $this->graphBuilder = $graphBuilder;
+    }
+
     /**
      * @param Workflow $workflow
      * @param Subject $subject
@@ -24,7 +34,7 @@ class AllPlacesGenerator extends AbstractGenerator
             throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));
         }
 
-        $graph = GraphBuilder::build($workflow);
+        $graph = $this->graphBuilder->build($workflow);
         $algorithm = new Bruteforce($graph);
         $edges = $algorithm->getEdges();
         $edges = $edges->getVector();

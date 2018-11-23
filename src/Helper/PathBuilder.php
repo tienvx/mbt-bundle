@@ -40,28 +40,24 @@ class PathBuilder
         $fromPlaces = $path->getPlacesAt($from);
         $toPlaces = $path->getPlacesAt($to);
         if (array_diff($fromPlaces, $toPlaces)) {
-            if (count($fromPlaces) === 1 && count($toPlaces) === 1) {
-                // Get shortest path between 2 vertices by algorithm.
-                $fromVertex = $graph->getVertex($fromPlaces[0]);
-                $toVertex = $graph->getVertex($toPlaces[0]);
-                $algorithm = new Dijkstra($fromVertex);
-                /** @var Edges $edges */
-                $edges = $algorithm->getEdgesTo($toVertex);
-                $middleTransitions = [];
-                $middleData = array_fill(0, count($edges), null);
-                $middlePlaces = [];
-                foreach ($edges as $edge) {
-                    if ($edge instanceof Directed) {
-                        $middleTransitions[] = $edge->getAttribute('name');
-                        $middlePlaces[] = [$edge->getVertexEnd()->getId()];
-                    } else {
-                        throw new Exception('Only support directed graph');
-                    }
+            // Get shortest path between 2 vertices by algorithm.
+            $fromVertex = $graph->getVertex(json_encode($fromPlaces));
+            $toVertex = $graph->getVertex(json_encode($toPlaces));
+            $algorithm = new Dijkstra($fromVertex);
+            /** @var Edges $edges */
+            $edges = $algorithm->getEdgesTo($toVertex);
+            $middleTransitions = [];
+            $middleData = array_fill(0, count($edges), null);
+            $middlePlaces = [];
+            foreach ($edges as $edge) {
+                if ($edge instanceof Directed) {
+                    $middleTransitions[] = $edge->getAttribute('name');
+                    $middlePlaces[] = $edge->getVertexEnd()->getAttribute('places');
+                } else {
+                    throw new Exception('Only support directed graph');
                 }
-                return static::create($path, $from, $to, $middleTransitions, $middleData, $middlePlaces);
-            } else {
-                throw new Exception('Can not create new path with shortest path');
             }
+            return static::create($path, $from, $to, $middleTransitions, $middleData, $middlePlaces);
         } else {
             return static::create($path, $from, $to, [], [], []);
         }

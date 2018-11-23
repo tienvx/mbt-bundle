@@ -12,6 +12,7 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractPathReducer implements PathReducerInterface
@@ -41,16 +42,23 @@ abstract class AbstractPathReducer implements PathReducerInterface
      */
     protected $messageBus;
 
+    /**
+     * @var GraphBuilder
+     */
+    protected $graphBuilder;
+
     public function __construct(
         EventDispatcherInterface $dispatcher,
         SubjectManager $subjectManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        GraphBuilder $graphBuilder
     ) {
         $this->dispatcher     = $dispatcher;
         $this->subjectManager = $subjectManager;
         $this->entityManager  = $entityManager;
         $this->messageBus     = $messageBus;
+        $this->graphBuilder   = $graphBuilder;
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -96,14 +104,16 @@ abstract class AbstractPathReducer implements PathReducerInterface
                 return;
             }
 
-            $bug->setMessagesCount($bug->getMessagesCount() - 1);
-            $this->entityManager->flush();
-            $this->entityManager->commit();
+            if ($bug->getMessagesCount() > 0) {
+                $bug->setMessagesCount($bug->getMessagesCount() - 1);
+                $this->entityManager->flush();
+                $this->entityManager->commit();
 
-            if ($bug->getMessagesCount() === 0) {
-                $messagesCount = $this->dispatch($bug->getId(), null, $message);
-                if ($messagesCount === 0) {
-                    $this->finish($bug);
+                if ($bug->getMessagesCount() === 0) {
+                    $messagesCount = $this->dispatch($bug->getId(), null, $message);
+                    if ($messagesCount === 0) {
+                        $this->finish($bug);
+                    }
                 }
             }
         } catch (Throwable $throwable) {

@@ -57,7 +57,7 @@ class TaskMessageTest extends MessageTestCase
                     $this->fail();
                 }
             } else {
-                $this->assertContains('has been removed after using new', $bugs[0]->getBugMessage());
+                $this->assertEquals('Should login automatically after registering', $bugs[0]->getBugMessage());
             }
         } else {
             $this->assertEquals(0, count($bugs));
@@ -69,11 +69,15 @@ class TaskMessageTest extends MessageTestCase
     {
         return [
             ['shopping_cart', 'random', 'loop'],
+            ['shopping_cart', 'random', 'binary'],
+            ['shopping_cart', 'random', 'random'],
             ['shopping_cart', 'weight', 'loop'],
             ['shopping_cart', 'all-places', 'loop'],
             ['shopping_cart', 'all-transitions', 'loop'],
-            //['checkout', 'random', 'loop'],
-            //['checkout', 'weight', 'loop'],
+            ['checkout', 'random', 'loop'],
+            ['checkout', 'random', 'binary'],
+            ['checkout', 'random', 'random'],
+            ['checkout', 'weight', 'loop'],
         ];
     }
 }

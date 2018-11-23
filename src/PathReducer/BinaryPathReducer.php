@@ -4,11 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\DBAL\LockMode;
 use Exception;
-use Symfony\Component\Workflow\StateMachine;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Helper\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
@@ -33,11 +31,7 @@ class BinaryPathReducer extends AbstractPathReducer
         };
         $workflow = $this->workflowRegistry->get($subject, $model);
 
-        if (!$workflow instanceof StateMachine) {
-            throw new Exception(sprintf('Path reducer %s only support model type state machine', static::getName()));
-        }
-
-        $graph = GraphBuilder::build($workflow);
+        $graph = $this->graphBuilder->build($workflow);
         $path = PathBuilder::build($bug->getPath());
 
         if ($bug->getLength() >= $message->getData()['length']) {
