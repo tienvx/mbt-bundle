@@ -2,7 +2,7 @@
 
 namespace App\Messenger;
 
-use Symfony\Component\Messenger\Transport\ReceiverInterface;
+use Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface;
 
 class MemoryReceiver implements ReceiverInterface
 {

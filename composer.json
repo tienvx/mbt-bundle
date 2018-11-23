@@ -16,28 +16,30 @@
         }
     ],
     "require": {
-        "php": "^7.1.0",
+        "php": "^7.1.3",
         "ext-json": "*",
         "graphp/algorithms": "^0.8.1",
-        "symfony/framework-bundle": "^4.1",
-        "symfony/console": "^4.1",
-        "symfony/workflow": "^4.1",
-        "symfony/validator": "^4.1",
-        "symfony/messenger": "^4.1",
-        "symfony/process": "^4.1",
+        "symfony/framework-bundle": "^v4.2@beta",
+        "symfony/console": "^v4.2@beta",
+        "symfony/workflow": "^v4.2@beta",
+        "symfony/validator": "^v4.2@beta",
+        "symfony/messenger": "^v4.2@beta",
+        "symfony/process": "^v4.2@beta",
+        "symfony/serializer": "^4.2@beta",
         "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.3",
+        "phpunit/phpunit": "^7.4",
         "php-coveralls/php-coveralls": "^2.1",
         "friendsofphp/php-cs-fixer": "^2.13",
-        "symfony/yaml": "^4.1",
-        "symfony/expression-language": "^4.1",
-        "symfony/security-bundle": "^4.1",
-        "symfony/maker-bundle": "^1.8",
+        "symfony/yaml": "^4.2@beta",
+        "symfony/expression-language": "^4.2@beta",
+        "symfony/security-bundle": "^4.2@beta",
+        "symfony/maker-bundle": "^1.9",
         "symfony/monolog-bundle": "^3.3"
     },
+    "minimum-stability": "beta",
     "autoload": {
         "psr-4": {
             "Tienvx\\Bundle\\MbtBundle\\": "src/"
