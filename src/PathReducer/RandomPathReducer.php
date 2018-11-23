@@ -89,6 +89,10 @@ class RandomPathReducer extends AbstractPathReducer
                 }
             }
 
+            if ($path->countPlaces() <= 2) {
+                return 0;
+            }
+
             $messagesCount = 0;
             $pairs = Randomizer::randomPairs($path->countPlaces(), $path->countPlaces());
             foreach ($pairs as $pair) {
