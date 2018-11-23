@@ -14,7 +14,7 @@ matrix:
       env: dependencies="--ignore-platform-reqs"
 
 install:
-  - composer install
+  - composer install $dependencies
 
 script:
   - composer run-script cs-fix
