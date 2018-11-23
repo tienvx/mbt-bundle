@@ -9,6 +9,9 @@ php:
 matrix:
   allow_failures:
     - php: nightly
+  include:
+    - php: 7.3
+      env: dependencies="--ignore-platform-reqs"
 
 install:
   - composer install
