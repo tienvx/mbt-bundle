@@ -17,7 +17,7 @@ install:
   - composer install $dependencies
 
 script:
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.3" ]]; then composer run-script cs-fix; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "7.3" ]]; then composer run-script cs-fix; fi
   - composer run-script coverage --timeout=0
 
 after_success:
