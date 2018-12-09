@@ -125,7 +125,7 @@ class Bug
         return $this->task;
     }
 
-    public function setTask(Task $task)
+    public function setTask(?Task $task)
     {
         $this->task = $task;
     }
@@ -189,6 +189,8 @@ class Bug
      */
     public function preUpdate()
     {
-        $this->setUpdatedAt(new \DateTime());
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
     }
 }
