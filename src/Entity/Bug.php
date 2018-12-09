@@ -29,7 +29,7 @@ class Bug
      * @ORM\Column(type="string")
      * @Assert\Choice({"new", "reducing", "reported"})
      */
-    private $status;
+    private $status = 'new';
 
     /**
      * @ORM\Column(type="text")

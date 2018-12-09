@@ -32,8 +32,6 @@ class BugMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator('random');
         $task->setReducer($reducer);
-        $task->setProgress(0);
-        $task->setStatus('not-started');
         $entityManager->persist($task);
 
         $entityManager->flush();
@@ -43,7 +41,6 @@ class BugMessageTest extends MessageTestCase
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setStatus('new');
         $bug->setPath(serialize($path));
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
