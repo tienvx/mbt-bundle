@@ -55,13 +55,13 @@ class Task
      *     max = 100
      * )
      */
-    private $progress;
+    private $progress = 0;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\Choice({"not-started", "in-progress", "completed"})
      */
-    private $status;
+    private $status = 'not-started';
 
     /**
      * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})
