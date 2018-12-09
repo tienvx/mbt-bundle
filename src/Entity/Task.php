@@ -211,6 +211,8 @@ class Task
      */
     public function preUpdate()
     {
-        $this->setUpdatedAt(new \DateTime());
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
     }
 }
