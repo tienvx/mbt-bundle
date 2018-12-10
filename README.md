@@ -23,8 +23,8 @@ All you have to do:
 
 ## Requirements
 
-* PHP 7.1 / 7.2
-* Symfony 4.1
+* PHP 7.1 / 7.2 / 7.3
+* Symfony 4.2
 * See also the `require` section of [composer.json](composer.json)
 
 ## Installation
