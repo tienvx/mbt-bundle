@@ -122,7 +122,7 @@ class ExecuteTaskCommand extends AbstractCommand
         } catch (Throwable $throwable) {
             $bug = new Bug();
             $bug->setTitle($this->defaultBugTitle);
-            $bug->setPath(serialize($path));
+            $bug->setPath(Path::serialize($path));
             $bug->setLength($path->countPlaces());
             $bug->setBugMessage($throwable->getMessage());
             $bug->setTask($task);
