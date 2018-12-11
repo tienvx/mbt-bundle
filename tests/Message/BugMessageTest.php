@@ -41,7 +41,7 @@ class BugMessageTest extends MessageTestCase
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setPath(serialize($path));
+        $bug->setPath(Path::serialize($path));
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
@@ -59,7 +59,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ($reducer !== 'random') {
-            $this->assertEquals(serialize($expectedPath), $bugs[0]->getPath());
+            $this->assertEquals(Path::serialize($expectedPath), $bugs[0]->getPath());
             $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
             $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());

@@ -4,9 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Graph;
 
 use Exception;
 use Iterator;
-use Serializable;
 
-class Path implements Serializable, Iterator
+class Path implements Iterator
 {
     /**
      * @var array[]
@@ -93,24 +92,40 @@ class Path implements Serializable, Iterator
         $this->data[$index] = $data;
     }
 
-    public function serialize()
+    /**
+     * @param Path $path
+     * @return false|string
+     */
+    public static function serialize(Path $path)
     {
-        return serialize([$this->transitions, $this->data, $this->places]);
+        $result = [];
+        foreach ($path as $step) {
+            $result[] = [
+                'transition' => $step[0],
+                'data' => json_encode($step[1]),
+                'places' => json_encode($step[2]),
+            ];
+        }
+        return json_encode($result);
     }
 
     /**
      * @param string $serialized
+     * @return Path
      * @throws Exception
      */
-    public function unserialize($serialized)
+    public static function unserialize(string $serialized): Path
     {
-        list($transitions, $data, $places) = unserialize($serialized);
-        if (count($transitions) !== count($data) || count($transitions) !== count($places)) {
-            throw new Exception('Invalid transitions, data or places for path');
+        $transitions = [];
+        $data = [];
+        $places = [];
+        $steps = json_decode($serialized, true);
+        foreach ($steps as $step) {
+            $transitions[] = $step['transition'];
+            $data[] = json_decode($step['data'], true);
+            $places[] = json_decode($step['places'], true);
         }
-        $this->transitions = $transitions;
-        $this->data = $data;
-        $this->places = $places;
+        return new Path($transitions, $data, $places);
     }
 
     public function current()

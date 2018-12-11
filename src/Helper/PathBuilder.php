@@ -18,11 +18,7 @@ class PathBuilder
      */
     public static function build(string $path): Path
     {
-        $path = unserialize($path);
-
-        if (!$path instanceof Path) {
-            throw new Exception(sprintf('Path must be instance of %s', Path::class));
-        }
+        $path = Path::unserialize($path);
 
         return $path;
     }

@@ -43,11 +43,11 @@ class TaskMessageTest extends MessageTestCase
             $this->assertEquals(1, count($bugs));
             if ($model === 'shopping_cart') {
                 if ($bugs[0]->getBugMessage() === 'You added an out-of-stock product into cart! Can not checkout') {
-                    $this->assertContains('{s:7:"product";s:2:"49";}', $bugs[0]->getPath());
+                    $this->assertContains('{\"product\":\"49\"}', $bugs[0]->getPath());
                 } elseif ($bugs[0]->getBugMessage() === 'You need to specify options for this product! Can not add product') {
-                    if (strstr($bugs[0]->getPath(), '{s:7:"product";s:2:"42";}') === false &&
-                        strstr($bugs[0]->getPath(), '{s:7:"product";s:2:"30";}') === false &&
-                        strstr($bugs[0]->getPath(), '{s:7:"product";s:2:"35";}') === false
+                    if (strstr($bugs[0]->getPath(), '{\"product\":\"42\"}') === false &&
+                        strstr($bugs[0]->getPath(), '{\"product\":\"30\"}') === false &&
+                        strstr($bugs[0]->getPath(), '{\"product\":\"35\"}') === false
                     ) {
                         $this->fail();
                     }

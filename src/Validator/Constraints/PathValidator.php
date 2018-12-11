@@ -28,14 +28,11 @@ class PathValidator extends ConstraintValidator
         }
 
         try {
-            $path = unserialize($value);
+            $path = GraphPath::unserialize($value);
         } catch (Exception $exception) {
-        } finally {
-            if (isset($exception) || !$path instanceof GraphPath) {
-                $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ string }}', $value)
-                    ->addViolation();
-            }
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
         }
     }
 }

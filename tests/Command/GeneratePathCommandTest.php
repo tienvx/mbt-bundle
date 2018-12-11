@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
+use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
@@ -30,6 +31,7 @@ class GeneratePathCommandTest extends CommandTestCase
      * @param $placeCoverage
      * @param $transitionCount
      * @param $placeCount
+     * @throws Exception
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
@@ -49,7 +51,7 @@ class GeneratePathCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $path = unserialize($output);
+        $path = Path::unserialize($output);
         $this->assertInstanceOf(Path::class, $path);
 
         if ($path instanceof Path) {

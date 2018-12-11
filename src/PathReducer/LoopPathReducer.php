@@ -73,15 +73,11 @@ class LoopPathReducer extends AbstractPathReducer
             }
 
             if ($newPath) {
-                $bug->setPath(serialize($newPath));
+                $bug->setPath(Path::serialize($newPath));
                 $bug->setLength($newPath->countPlaces());
                 $path = $newPath;
             } else {
-                $path = unserialize($bug->getPath());
-
-                if (!$path instanceof Path) {
-                    throw new Exception(sprintf('Path must be instance of %s', Path::class));
-                }
+                $path = Path::unserialize($bug->getPath());
             }
 
             $messagesCount = 0;
