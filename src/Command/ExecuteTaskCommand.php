@@ -57,7 +57,7 @@ class ExecuteTaskCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:execute-task')
+            ->setName('mbt:task:execute')
             ->setDescription('Execute a task.')
             ->setHelp('This command execute a task, then create a bug if found.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');

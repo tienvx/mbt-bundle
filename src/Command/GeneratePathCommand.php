@@ -43,7 +43,7 @@ class GeneratePathCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:generate-path')
+            ->setName('mbt:path:generate')
             ->setDescription('Generate path from model.')
             ->setHelp('Generate path from model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')

@@ -24,7 +24,7 @@ class CommandRunner
      */
     public function run(string $command)
     {
-        $process = new Process(sprintf('bin/console %s', $command));
+        $process = new Process(['bin/console', $command]);
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->kernel->getProjectDir());
         $process->disableOutput();

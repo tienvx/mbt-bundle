@@ -35,7 +35,7 @@ class GeneratePathCommandTest extends CommandTestCase
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
-        $command = $this->application->find('mbt:generate-path');
+        $command = $this->application->find('mbt:path:generate');
         if ($generator === 'random') {
             /** @var RandomGenerator $randomGenerator */
             $randomGenerator = self::$container->get(RandomGenerator::class);
