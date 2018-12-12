@@ -37,7 +37,7 @@ class ReportBugCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:report-bug')
+            ->setName('mbt:bug:report')
             ->setDescription('Report a bug.')
             ->setHelp('Report a bug to email, hipchat or jira.')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');

@@ -25,7 +25,7 @@ class ReductionSubscriber implements EventSubscriberInterface
     public function onFinish(ReducerFinishEvent $event)
     {
         $id = $event->getBugId();
-        $this->commandRunner->run(sprintf('mbt:report-bug %d', $id));
+        $this->commandRunner->run(sprintf('mbt:bug:report %d', $id));
     }
 
     public static function getSubscribedEvents()

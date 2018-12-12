@@ -26,7 +26,7 @@ class ReduceBugCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:reduce-bug')
+            ->setName('mbt:bug:reduce')
             ->setDescription('Reduce the reproduce steps of the bug.')
             ->setHelp("Make bug's reproduce steps shorter.")
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.');

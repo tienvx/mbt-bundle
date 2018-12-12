@@ -26,6 +26,6 @@ class BugMessageHandler implements MessageHandlerInterface
     public function __invoke(BugMessage $bugMessage)
     {
         $id = $bugMessage->getId();
-        $this->commandRunner->run(sprintf('mbt:reduce-bug %d', $id));
+        $this->commandRunner->run(sprintf('mbt:bug:reduce %d', $id));
     }
 }

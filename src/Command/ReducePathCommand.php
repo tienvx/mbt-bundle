@@ -24,7 +24,7 @@ class ReducePathCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:reduce-path')
+            ->setName('mbt:path:reduce')
             ->setDescription("Handle a path reducer's message.")
             ->setHelp('Call path reducer to handle a message that was come from itself')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
