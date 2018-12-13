@@ -96,11 +96,12 @@ class GraphBuilder
                 {
                     $vertices = $graph->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($froms) {
                         $places = $vertex->getAttribute('places');
-                        return array_diff($places, $froms) && array_intersect($places, $froms) && !array_diff(array_intersect($places, $froms), $froms);
+                        $intersect = array_intersect($places, $froms);
+                        return array_diff($places, $froms) && count($intersect) === count($froms) && !array_diff($intersect, $froms);
                     });
                     foreach ($vertices as $vertex) {
                         $places = $vertex->getAttribute('places');
-                        $newPlaces = array_replace($places, $froms, $tos);
+                        $newPlaces = array_unique(array_merge(array_diff($places, $froms), $tos));
                         sort($places);
                         sort($newPlaces);
                         $from = json_encode($places);
