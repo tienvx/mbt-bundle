@@ -32,13 +32,13 @@ class PlantUmlDumper implements DumperInterface
         $code = $this->initialize($options);
         /** @var Vertex $vertex */
         foreach ($graph->getVertices() as $vertex) {
-            $placeEscaped = $this->escape($vertex->getId());
+            $placeEscaped = $this->escape(implode(',', json_decode($vertex->getId(), true)));
             $code[] = "state $placeEscaped" . ($initialPlaces === $vertex->getId() ? ' '.self::INITIAL : '');
         }
         /** @var Directed $edge */
         foreach ($graph->getEdges() as $edge) {
-            $fromEscaped = $this->escape($edge->getVertexStart()->getId());
-            $toEscaped = $this->escape($edge->getVertexEnd()->getId());
+            $fromEscaped = $this->escape(implode(',', json_decode($edge->getVertexStart()->getId())));
+            $toEscaped = $this->escape(implode(',', json_decode($edge->getVertexEnd()->getId())));
             $transitionEscaped = $this->escape($edge->getAttribute('name'));
             $code[] = "$fromEscaped --> $toEscaped: $transitionEscaped";
         }
