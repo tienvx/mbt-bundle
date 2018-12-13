@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 use Exception;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
+use Graphp\Algorithms\ConnectedComponents;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\CacheException;
 use Symfony\Component\Workflow\StateMachine;
@@ -38,6 +39,9 @@ class GraphBuilder
             $graph = $this->buildForStateMachine($workflow);
         } else {
             $graph = $this->buildForWorkflow($workflow);
+            $initVertex = json_encode([$workflow->getDefinition()->getInitialPlace()]);
+            $components = new ConnectedComponents($graph);
+            return $components->createGraphComponentVertex($graph->getVertex($initVertex));
         }
 
         $this->cache->set('mbt.graph.' . $workflow->getName(), $graph);
