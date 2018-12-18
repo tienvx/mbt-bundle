@@ -19,12 +19,12 @@ class CommandRunner
     }
 
     /**
-     * @param string $command
+     * @param array $parameters
      * @throws \Exception
      */
-    public function run(string $command)
+    public function run(array $parameters)
     {
-        $process = new Process(['bin/console', $command]);
+        $process = new Process(array_merge(['bin/console'], $parameters));
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->kernel->getProjectDir());
         $process->disableOutput();

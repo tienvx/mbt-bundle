@@ -28,6 +28,6 @@ class ReductionMessageHandler implements MessageHandlerInterface
         $bugId = $message->getBugId();
         $reducer = $message->getReducer();
         $data = $message->getData();
-        $this->commandRunner->run(sprintf("mbt:path:reduce %d %s '%s'", $bugId, $reducer, json_encode($data)));
+        $this->commandRunner->run(['mbt:path:reduce', $bugId, $reducer, "'" . json_encode($data) . "'"]);
     }
 }
