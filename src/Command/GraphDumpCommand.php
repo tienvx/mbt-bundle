@@ -30,7 +30,6 @@ class GraphDumpCommand extends Command
         $this->graphBuilder = $graphBuilder;
     }
 
-
     /**
      * {@inheritdoc}
      */
