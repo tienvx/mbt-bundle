@@ -35,10 +35,10 @@ class CommandRunner
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->kernel->getProjectDir());
 
+        $process->run();
+
         if ($error = $process->getErrorOutput()) {
             $this->logger->error($error);
         }
-
-        $process->run();
     }
 }
