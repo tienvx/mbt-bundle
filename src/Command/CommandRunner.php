@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Process;
@@ -13,9 +14,15 @@ class CommandRunner
      */
     protected $kernel;
 
-    public function __construct(KernelInterface $kernel)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(KernelInterface $kernel, LoggerInterface $logger)
     {
         $this->kernel = $kernel;
+        $this->logger = $logger;
     }
 
     /**
@@ -27,7 +34,10 @@ class CommandRunner
         $process = new Process(array_merge(['bin/console'], $parameters));
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->kernel->getProjectDir());
-        $process->disableOutput();
+
+        if ($error = $process->getErrorOutput()) {
+            $this->logger->error($error);
+        }
 
         $process->run();
     }
