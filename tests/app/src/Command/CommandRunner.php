@@ -17,6 +17,9 @@ class CommandRunner extends BaseCommandRunner
     {
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
+        if ($parameters[0] === 'mbt:path:reduce') {
+            $parameters[3] = "'{$parameters[3]}'";
+        }
         $application->run(new StringInput(implode(' ', $parameters)), new NullOutput());
     }
 }
