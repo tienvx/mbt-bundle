@@ -41,7 +41,8 @@ class ReducePathCommand extends AbstractCommand
     {
         $bugId = $input->getArgument('bug-id');
         $reducer = $input->getArgument('reducer');
-        $data = json_decode($input->getArgument('data'), true);
+        $data = $input->getArgument('data');
+        $data = json_decode(trim($data, "'"), true);
         $message = new ReductionMessage($bugId, $reducer, $data);
 
         $this->setAnonymousToken();

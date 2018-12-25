@@ -35,9 +35,10 @@ class CommandRunner
         $process->setTimeout(null);
         $process->setWorkingDirectory($this->kernel->getProjectDir());
 
-        $process->run();
+        $exitCode = $process->run();
 
-        if ($error = $process->getErrorOutput()) {
+        if ($exitCode) {
+            $error = $process->getErrorOutput();
             $this->logger->error($error);
         }
     }
