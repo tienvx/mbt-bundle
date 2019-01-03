@@ -25,7 +25,7 @@ class BugMessageTest extends MessageTestCase
         $path = new Path(...$pathArgs);
         $expectedPath = new Path(...$expectedPathArgs);
         $bugMessage = ($model === 'shopping_cart') ? 'You added an out-of-stock product into cart! Can not checkout' :
-            'Should login automatically after registering';
+            'Still able to do register account, guest checkout or login when logged in!';
 
         $task = new Task();
         $task->setTitle('Test task title');
@@ -215,15 +215,15 @@ class BugMessageTest extends MessageTestCase
             [
                 'checkout',
                 [
-                    [null, 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'addBillingAddress', 'addDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'guestCheckout', 'addBillingAddress', 'addDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'login'],
-                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['accountAdded', 'awaitingBillingAddress', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['accountAdded', 'awaitingBillingAddress', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['accountAdded', 'awaitingBillingAddress', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod']]
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'guestCheckout', 'fillPersonalDetails', 'fillBillingAddress', 'guestCheckoutAndAddBillingAddress', 'useExistingDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
+                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
+                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded', 'awaitingOrderConfirm'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']]
                 ],
                 'loop',
                 [
-                    [null, 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'addBillingAddress', 'addDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'login'],
-                    [null, [], [], [], [], [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['accountAdded', 'awaitingBillingAddress', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['accountAdded', 'awaitingBillingAddress', 'awaitingDeliveryAddress', 'awaitingDeliveryMethod', 'awaitingPaymentMethod']]
+                    [null, 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
+                    [null, [], [], [], [], [], []],
+                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']]
                 ],
             ],
             [

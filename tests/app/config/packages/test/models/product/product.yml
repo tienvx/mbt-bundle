@@ -1,0 +1,167 @@
+framework:
+    workflows:
+        # https://demo.opencart.com
+        product:
+            type: 'workflow'
+            supports:
+                - Tienvx\Bundle\MbtBundle\Subject\Subject
+            metadata:
+                label: "Product Page"
+                tags: ["product page", "demo", "workflow", "testing", "model-based-testing"]
+            places:
+                - product
+                - awaitingRadio
+                - awaitingCheckbox
+                - awaitingText
+                - awaitingSelect
+                - awaitingTextarea
+                - awaitingFile
+                - awaitingDate
+                - awaitingTime
+                - awaitingDateTime
+                - radioSelected
+                - checkboxSelected
+                - textFilled
+                - selectSelected
+                - textareaFilled
+                - fileSelected
+                - dateSelected
+                - timeSelected
+                - dateTimeSelected
+                - awaitingName
+                - awaitingReview
+                - awaitingRating
+                - nameFilled
+                - reviewFilled
+                - ratingFilled
+            initial_place: product
+            transitions:
+                selectOptions:
+                    from: product
+                    to:
+                        - awaitingRadio
+                        - awaitingCheckbox
+                        - awaitingText
+                        - awaitingSelect
+                        - awaitingTextarea
+                        - awaitingFile
+                        - awaitingDate
+                        - awaitingTime
+                        - awaitingDateTime
+                    metadata:
+                        label: "Select required options"
+                selectRadio:
+                    from: awaitingRadio
+                    to: radioSelected
+                    metadata:
+                        label: "Select radio"
+                selectCheckbox:
+                    from: awaitingCheckbox
+                    to: checkboxSelected
+                    metadata:
+                        label: "Select checkbox"
+                fillText:
+                    from: awaitingText
+                    to: textFilled
+                    metadata:
+                        label: "Fill text"
+                selectSelect:
+                    from: awaitingSelect
+                    to: selectSelected
+                    metadata:
+                        label: "Select select"
+                fillTextarea:
+                    from: awaitingTextarea
+                    to: textareaFilled
+                    metadata:
+                        label: "Fill textarea"
+                selectFile:
+                    from: awaitingFile
+                    to: fileSelected
+                    metadata:
+                        label: "Select file"
+                selectDate:
+                    from: awaitingDate
+                    to: dateSelected
+                    metadata:
+                        label: "Select date"
+                selectTime:
+                    from: awaitingTime
+                    to: timeSelected
+                    metadata:
+                        label: "Select time"
+                selectDateTime:
+                    from: awaitingDateTime
+                    to: dateTimeSelected
+                    metadata:
+                        label: "Select date time"
+                addToCart:
+                    from:
+                        - radioSelected
+                        - checkboxSelected
+                        - textFilled
+                        - selectSelected
+                        - textareaFilled
+                        - fileSelected
+                        - dateSelected
+                        - timeSelected
+                        - dateTimeSelected
+                    to: product
+                    metadata:
+                        label: "Add to cart"
+                addToWishList:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "Add to wish list"
+                compareThisProduct:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "Compare this product"
+                writeAReview:
+                    from: product
+                    to:
+                        - awaitingName
+                        - awaitingReview
+                        - awaitingRating
+                    metadata:
+                        label: "Write a review"
+                fillName:
+                    from: awaitingName
+                    to: nameFilled
+                    metadata:
+                        label: "Fill name"
+                fillReview:
+                    from: awaitingReview
+                    to: reviewFilled
+                    metadata:
+                        label: "Fill review"
+                fillRating:
+                    from: awaitingRating
+                    to: ratingFilled
+                    metadata:
+                        label: "Fill rating"
+                submitReview:
+                    from:
+                        - nameFilled
+                        - reviewFilled
+                        - ratingFilled
+                    to: product
+                    metadata:
+                        label: "Submit review"
+                like:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "Like"
+                tweet:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "Tweet"
+                share:
+                    from: product
+                    to: product
+                    metadata:
+                        label: "Share"

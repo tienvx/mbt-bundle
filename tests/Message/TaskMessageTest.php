@@ -54,8 +54,10 @@ class TaskMessageTest extends MessageTestCase
                 } else {
                     $this->fail();
                 }
-            } else {
-                $this->assertEquals('Should login automatically after registering', $bugs[0]->getBugMessage());
+            } elseif ($model === 'checkout') {
+                $this->assertEquals('Still able to do register account, guest checkout or login when logged in!', $bugs[0]->getBugMessage());
+            } elseif ($model === 'product') {
+                $this->assertEquals('Upload required!', $bugs[0]->getBugMessage());
             }
         } else {
             $this->assertEquals(0, count($bugs));
@@ -76,6 +78,10 @@ class TaskMessageTest extends MessageTestCase
             ['checkout', 'random', 'binary'],
             ['checkout', 'random', 'random'],
             ['checkout', 'weight', 'loop'],
+            ['product', 'random', 'loop'],
+            ['product', 'random', 'binary'],
+            //['product', 'random', 'random'],
+            ['product', 'weight', 'loop'],
         ];
     }
 }

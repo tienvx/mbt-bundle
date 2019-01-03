@@ -494,4 +494,14 @@ class ShoppingCart extends Subject
         $product = $products[array_rand($products)];
         return ['product' => $product];
     }
+
+    public function hasCoupon()
+    {
+        return true;
+    }
+
+    public function hasGiftCertificate()
+    {
+        return true;
+    }
 }
