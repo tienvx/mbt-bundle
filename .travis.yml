@@ -3,21 +3,18 @@ language: php
 php:
   - 7.1
   - 7.2
-  #- 7.3
+  - 7.3
   - nightly
 
 matrix:
   allow_failures:
     - php: nightly
-  include:
-    - php: 7.3
-      env: dependencies="--ignore-platform-reqs"
 
 install:
-  - composer install $dependencies
+  - composer install
 
 script:
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "7.3" ]]; then composer run-script cs-fix; fi
+  - composer run-script cs-fix
   - composer run-script coverage --timeout=0
 
 after_success:
