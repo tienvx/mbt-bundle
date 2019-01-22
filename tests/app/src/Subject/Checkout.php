@@ -8,6 +8,11 @@ use Tienvx\Bundle\MbtBundle\Subject\Subject;
 class Checkout extends Subject
 {
     /**
+     * @var int
+     */
+    protected $productId = 47;
+
+    /**
      * @var bool
      */
     protected $loggedIn = false;
@@ -15,28 +20,57 @@ class Checkout extends Subject
     /**
      * @var bool
      */
-    protected $registered = false;
+    protected $guestCheckout = false;
 
     /**
-     * @throws Exception
+     * @var bool
      */
-    public function login()
-    {
-        if (!$this->testing) {
-            if (!$this->loggedIn && $this->registered) {
-                throw new Exception('Should login automatically after registering');
-            }
-        }
-        $this->loggedIn = true;
-    }
+    protected $registerAccount = false;
 
     public function loggedIn()
     {
         return $this->loggedIn;
     }
 
+    public function doingGuestCheckout()
+    {
+        return $this->guestCheckout;
+    }
+
+    public function doingRegisterAccount()
+    {
+        return $this->registerAccount;
+    }
+
+    public function login()
+    {
+        $this->loggedIn = true;
+    }
+
+    public function guestCheckout()
+    {
+        $this->guestCheckout = true;
+    }
+
     public function registerAccount()
     {
-        $this->registered = true;
+        $this->registerAccount = true;
+    }
+
+    public function guestCheckoutAndAddBillingAddress()
+    {
+        $this->guestCheckout = false;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function registerAndAddBillingAddress()
+    {
+        $this->registerAccount = false;
+        $this->loggedIn = true;
+        if (!$this->testing) {
+            throw new Exception('Still able to do register account, guest checkout or login when logged in!');
+        }
     }
 }

@@ -42,7 +42,7 @@ framework:
                     to: category
                     guard: "subject.categoryHasBeenSelected()"
                     metadata:
-                        weight: 30
+                        weight: 25
                         label: "From cart page, choose a random category and open it"
                 viewProductFromHome:
                     from: home
@@ -57,7 +57,7 @@ framework:
                     guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
                     metadata:
                         label: "From cart page, choose a random product and open it"
-                        weight: 25
+                        weight: 15
                 viewProductFromCategory:
                     from: category
                     to: product
@@ -148,6 +148,26 @@ framework:
                     from: cart
                     to: cart
                     guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                    metadata:
+                        weight: 5
+                        label: "From cart page, choose a random product and remove it"
+                useCoupon:
+                    from: cart
+                    to: cart
+                    guard: "subject.hasCoupon()"
+                    metadata:
+                        weight: 5
+                        label: "From cart page, apply coupon code if any"
+                estimateShippingAndTaxes:
+                    from: cart
+                    to: cart
+                    metadata:
+                        weight: 5
+                        label: "From cart page, enter destination to get a shipping estimate"
+                useGiftCertificate:
+                    from: cart
+                    to: cart
+                    guard: "subject.hasGiftCertificate()"
                     metadata:
                         weight: 5
                         label: "From cart page, choose a random product and remove it"

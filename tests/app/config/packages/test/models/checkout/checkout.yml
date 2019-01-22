@@ -10,11 +10,18 @@ framework:
                 tags: ["opencart's checkout process", "demo", "workflow", "testing", "model-based-testing"]
             places:
                 - home
+                - awaitingPersonalDetails
+                - awaitingPassword
+                - personalDetailsFilled
+                - passwordFilled
+                - billingAddressFilled
+                - deliveryAddressFilled
                 - awaitingAccount
                 - awaitingBillingAddress
                 - awaitingDeliveryAddress
                 - awaitingDeliveryMethod
                 - awaitingPaymentMethod
+                - awaitingOrderConfirm
                 - accountAdded
                 - billingAddressAdded
                 - deliveryAddressAdded
@@ -34,9 +41,6 @@ framework:
                     to:
                         - accountAdded
                         - awaitingBillingAddress
-                        - awaitingDeliveryAddress
-                        - awaitingDeliveryMethod
-                        - awaitingPaymentMethod
                     guard: "subject.loggedIn()"
                     metadata:
                         label: "Add product and go to checkout (logged in)"
@@ -45,9 +49,6 @@ framework:
                     to:
                         - accountAdded
                         - awaitingBillingAddress
-                        - awaitingDeliveryAddress
-                        - awaitingDeliveryMethod
-                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
@@ -55,11 +56,8 @@ framework:
                 guestCheckout:
                     from: awaitingAccount
                     to:
-                        - accountAdded
+                        - awaitingPersonalDetails
                         - awaitingBillingAddress
-                        - awaitingDeliveryAddress
-                        - awaitingDeliveryMethod
-                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
@@ -67,33 +65,107 @@ framework:
                 registerAccount:
                     from: awaitingAccount
                     to:
-                        - accountAdded
+                        - awaitingPersonalDetails
+                        - awaitingPassword
                         - awaitingBillingAddress
-                        - awaitingDeliveryAddress
-                        - awaitingDeliveryMethod
-                        - awaitingPaymentMethod
                     guard: "!subject.loggedIn()"
                     metadata:
                         weight: 33
                         label: "Register Account"
-                addBillingAddress:
+                useExistingBillingAddress:
                     from: awaitingBillingAddress
-                    to: billingAddressAdded
+                    to:
+                        - billingAddressAdded
+                        - awaitingDeliveryAddress
+                    guard: "subject.loggedIn()"
+                    metadata:
+                        label: "Use existing billing address"
+                useNewBillingAddress:
+                    from: awaitingBillingAddress
+                    to: billingAddressFilled
+                    guard: "subject.loggedIn()"
+                    metadata:
+                        label: "Use new billing address"
+                addBillingAddress:
+                    from: billingAddressFilled
+                    to:
+                        - billingAddressAdded
+                        - awaitingDeliveryAddress
+                    guard: "subject.loggedIn()"
                     metadata:
                         label: "Add billing address"
-                addDeliveryAddress:
+                fillPersonalDetails:
+                    from: awaitingPersonalDetails
+                    to: personalDetailsFilled
+                    guard: "!subject.loggedIn()"
+                    metadata:
+                        label: "Fill personal details"
+                fillPassword:
+                    from: awaitingPassword
+                    to: passwordFilled
+                    guard: "!subject.loggedIn()"
+                    metadata:
+                        label: "Fill password"
+                fillBillingAddress:
+                    from: awaitingBillingAddress
+                    to: billingAddressFilled
+                    guard: "!subject.loggedIn()"
+                    metadata:
+                        label: "Fill billing address"
+                registerAndAddBillingAddress:
+                    from:
+                        - personalDetailsFilled
+                        - passwordFilled
+                        - billingAddressFilled
+                    to:
+                        - accountAdded
+                        - billingAddressAdded
+                        - awaitingDeliveryAddress
+                    guard: "subject.doingRegisterAccount()"
+                    metadata:
+                        label: "Register and add billing address"
+                guestCheckoutAndAddBillingAddress:
+                    from:
+                        - personalDetailsFilled
+                        - billingAddressFilled
+                    to:
+                        - accountAdded
+                        - billingAddressAdded
+                        - awaitingDeliveryAddress
+                    guard: "subject.doingGuestCheckout()"
+                    metadata:
+                        label: "Guest checkout and add billing address"
+                useExistingDeliveryAddress:
                     from: awaitingDeliveryAddress
-                    to: deliveryAddressAdded
+                    to:
+                        - deliveryAddressAdded
+                        - awaitingDeliveryMethod
+                    metadata:
+                        label: "Use existing delivery address"
+                useNewDeliveryAddress:
+                    from: awaitingDeliveryAddress
+                    to: deliveryAddressFilled
+                    metadata:
+                        label: "Use new delivery address"
+                addDeliveryAddress:
+                    from: deliveryAddressFilled
+                    to:
+                        - deliveryAddressAdded
+                        - awaitingDeliveryMethod
                     metadata:
                         label: "Add delivery address"
                 addDeliveryMethod:
                     from: awaitingDeliveryMethod
-                    to: deliveryMethodAdded
+                    to:
+                        - deliveryMethodAdded
+                        - awaitingPaymentMethod
                     metadata:
                         label: "Add delivery method"
                 addPaymentMethod:
                     from: awaitingPaymentMethod
-                    to: paymentMethodAdded
+                    to:
+                        - paymentMethodAdded
+                        - awaitingOrderConfirm
                     metadata:
                         label: "Add payment method"
                 confirmOrder:
@@ -103,6 +175,7 @@ framework:
                         - deliveryAddressAdded
                         - deliveryMethodAdded
                         - paymentMethodAdded
+                        - awaitingOrderConfirm
                     to: orderPlaced
                     metadata:
                         label: "Confirm order"

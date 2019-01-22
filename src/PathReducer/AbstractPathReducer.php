@@ -108,12 +108,12 @@ abstract class AbstractPathReducer implements PathReducerInterface
                 $bug->setMessagesCount($bug->getMessagesCount() - 1);
                 $this->entityManager->flush();
                 $this->entityManager->commit();
+            }
 
-                if ($bug->getMessagesCount() === 0) {
-                    $messagesCount = $this->dispatch($bug->getId(), null, $message);
-                    if ($messagesCount === 0) {
-                        $this->finish($bug);
-                    }
+            if ($bug->getMessagesCount() === 0) {
+                $messagesCount = $this->dispatch($bug->getId(), null, $message);
+                if ($messagesCount === 0) {
+                    $this->finish($bug);
                 }
             }
         } catch (Throwable $throwable) {
