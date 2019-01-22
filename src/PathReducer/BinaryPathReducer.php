@@ -34,6 +34,7 @@ class BinaryPathReducer extends AbstractPathReducer
         $graph = $this->graphBuilder->build($workflow);
         $path = PathBuilder::build($bug->getPath());
 
+        $messagesCount = 0;
         if ($bug->getLength() >= $message->getData()['length']) {
             // The reproduce path has not been reduced.
             list($i, $j) = $message->getData()['pair'];
@@ -45,13 +46,15 @@ class BinaryPathReducer extends AbstractPathReducer
                     PathRunner::run($newPath, $workflow, $subject);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                        $this->dispatch($bug->getId(), $newPath);
+                        $messagesCount = $this->dispatch($bug->getId(), $newPath);
                     }
                 }
             }
         }
 
-        $this->postHandle($message);
+        if ($messagesCount === 0) {
+            $this->postHandle($message);
+        }
     }
 
     /**
