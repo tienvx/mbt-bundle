@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
-use App\Messenger\Connection;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
+use Tienvx\Messenger\MemoryTransport\Connection;
 
 abstract class MessageTestCase extends TestCase
 {

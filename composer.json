@@ -37,7 +37,8 @@
         "symfony/expression-language": "^4.2",
         "symfony/security-bundle": "^4.2",
         "symfony/maker-bundle": "^1.11",
-        "symfony/monolog-bundle": "^3.3"
+        "symfony/monolog-bundle": "^3.3",
+        "tienvx/messenger-memory-transport": "^0.1"
     },
     "autoload": {
         "psr-4": {
