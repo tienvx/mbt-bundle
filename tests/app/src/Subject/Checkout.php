@@ -73,4 +73,9 @@ class Checkout extends Subject
             throw new Exception('Still able to do register account, guest checkout or login when logged in!');
         }
     }
+
+    public function hasExistingBillingAddress()
+    {
+        return true;
+    }
 }
