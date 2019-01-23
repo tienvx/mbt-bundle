@@ -77,13 +77,13 @@ framework:
                     to:
                         - billingAddressAdded
                         - awaitingDeliveryAddress
-                    guard: "subject.loggedIn()"
+                    guard: "subject.loggedIn() && subject.hasExistingBillingAddress()"
                     metadata:
                         label: "Use existing billing address"
                 useNewBillingAddress:
                     from: awaitingBillingAddress
                     to: billingAddressFilled
-                    guard: "subject.loggedIn()"
+                    guard: "subject.loggedIn() && subject.hasExistingBillingAddress()"
                     metadata:
                         label: "Use new billing address"
                 addBillingAddress:
@@ -109,7 +109,7 @@ framework:
                 fillBillingAddress:
                     from: awaitingBillingAddress
                     to: billingAddressFilled
-                    guard: "!subject.loggedIn()"
+                    guard: "!subject.loggedIn() || !subject.hasExistingBillingAddress()"
                     metadata:
                         label: "Fill billing address"
                 registerAndAddBillingAddress:
