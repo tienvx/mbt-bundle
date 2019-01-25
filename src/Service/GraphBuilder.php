@@ -137,7 +137,7 @@ class GraphBuilder
         $edge->setAttribute('name', $transition->getName());
         $transitionMetadata = $workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
         $edge->setAttribute('label', $transitionMetadata['label'] ?? '');
-        $edge->setWeight(1);
-        $edge->setAttribute('weight', $transitionMetadata['weight'] ?? 1);
+        $edge->setWeight($transitionMetadata['weight'] ?? 1);
+        $edge->setAttribute('probability', $transitionMetadata['probability'] ?? 1);
     }
 }

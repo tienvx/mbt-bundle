@@ -51,7 +51,7 @@ framework:
                         - awaitingBillingAddress
                     guard: "!subject.loggedIn()"
                     metadata:
-                        weight: 33
+                        probability: 33
                         label: "Login"
                 guestCheckout:
                     from: awaitingAccount
@@ -60,7 +60,7 @@ framework:
                         - awaitingBillingAddress
                     guard: "!subject.loggedIn()"
                     metadata:
-                        weight: 33
+                        probability: 33
                         label: "Guest Checkout"
                 registerAccount:
                     from: awaitingAccount
@@ -70,7 +70,7 @@ framework:
                         - awaitingBillingAddress
                     guard: "!subject.loggedIn()"
                     metadata:
-                        weight: 33
+                        probability: 33
                         label: "Register Account"
                 useExistingBillingAddress:
                     from: awaitingBillingAddress
