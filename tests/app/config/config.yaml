@@ -1,7 +1,7 @@
 framework:
     secret:          secret
     test:            ~
-    router:          { resource: '%kernel.project_dir%/config/routing.yml' }
+    router:          { resource: '%kernel.project_dir%/config/routing.yaml' }
     messenger:
         transports:
             memory: "memory://any"
@@ -67,6 +67,5 @@ tienvx_mbt:
     command:
         default_bug_title: 'New bug found'
     subjects:
-        shopping_cart: App\Subject\ShoppingCart
-        checkout: App\Subject\Checkout
-        product: App\Subject\Product
+        # model_name is the key of any workflow you want
+        #model_name: App\Subject\YourSubject
