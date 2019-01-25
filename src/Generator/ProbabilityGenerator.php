@@ -8,7 +8,7 @@ use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
-class WeightGenerator extends AbstractGenerator
+class ProbabilityGenerator extends AbstractGenerator
 {
     /**
      * @var int
@@ -29,12 +29,12 @@ class WeightGenerator extends AbstractGenerator
             /** @var Transition[] $transitions */
             $transitions = $workflow->getEnabledTransitions($subject);
             if (!empty($transitions)) {
-                $transitionsByWeight = [];
+                $transitionsWithProbability = [];
                 foreach ($transitions as $index => $transition) {
                     $transitionMetadata = $workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
-                    $transitionsByWeight[$transition->getName()] = $transitionMetadata['weight'] ?? 1;
+                    $transitionsWithProbability[$transition->getName()] = $transitionMetadata['probability'] ?? 1;
                 }
-                $transitionName = Randomizer::randomByWeight($transitionsByWeight);
+                $transitionName = Randomizer::randomByWeight($transitionsWithProbability);
 
                 yield $transitionName;
 
@@ -52,6 +52,6 @@ class WeightGenerator extends AbstractGenerator
 
     public static function getName()
     {
-        return 'weight';
+        return 'probability';
     }
 }
