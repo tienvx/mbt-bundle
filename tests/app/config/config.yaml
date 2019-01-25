@@ -60,12 +60,7 @@ maker:
     root_namespace: 'App'
 
 tienvx_mbt:
-    generator:
-        max_path_length: 300
-        transition_coverage: 100
-        place_coverage: 100
-    command:
-        default_bug_title: 'New bug found'
-    subjects:
-        # model_name is the key of any workflow you want
-        #model_name: App\Subject\YourSubject
+    max_path_length: 300
+    transition_coverage: 100
+    place_coverage: 100
+    default_bug_title: 'New bug found'

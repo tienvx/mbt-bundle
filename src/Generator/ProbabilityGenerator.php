@@ -6,7 +6,7 @@ use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ProbabilityGenerator extends AbstractGenerator
 {
@@ -20,7 +20,7 @@ class ProbabilityGenerator extends AbstractGenerator
         $this->maxPathLength = $maxPathLength;
     }
 
-    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {
         $pathLength    = 0;
         $maxPathLength = $this->maxPathLength;

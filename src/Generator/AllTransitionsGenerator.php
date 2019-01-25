@@ -9,7 +9,7 @@ use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -25,11 +25,11 @@ class AllTransitionsGenerator extends AbstractGenerator
 
     /**
      * @param Workflow $workflow
-     * @param Subject $subject
+     * @param AbstractSubject $subject
      * @return Generator
      * @throws Exception
      */
-    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {
         if (!$workflow instanceof StateMachine) {
             throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));

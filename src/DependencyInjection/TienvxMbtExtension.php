@@ -12,7 +12,7 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -35,7 +35,6 @@ class TienvxMbtExtension extends Extension
 
         $this->registerCommandConfiguration($config, $container);
         $this->registerGeneratorConfiguration($config, $container);
-        $this->registerSubjectConfiguration($config, $container);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
@@ -43,28 +42,25 @@ class TienvxMbtExtension extends Extension
         $container->registerForAutoconfiguration(PathReducerInterface::class)
             ->setLazy(true)
             ->addTag('mbt.path_reducer');
+        $container->registerForAutoconfiguration(SubjectInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.subject');
     }
 
     private function registerCommandConfiguration(array $config, ContainerBuilder $container)
     {
         $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
-        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['command']['default_bug_title']]);
+        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
     }
 
     private function registerGeneratorConfiguration(array $config, ContainerBuilder $container)
     {
         $randomGeneratorDefinition = $container->getDefinition(RandomGenerator::class);
-        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
-        $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['generator']['transition_coverage']]);
-        $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['generator']['place_coverage']]);
+        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['transition_coverage']]);
+        $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['place_coverage']]);
 
         $probabilityGeneratorDefinition = $container->getDefinition(ProbabilityGenerator::class);
-        $probabilityGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['generator']['max_path_length']]);
-    }
-
-    private function registerSubjectConfiguration(array $config, ContainerBuilder $container)
-    {
-        $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);
-        $subjectManagerDefinition->addMethodCall('addSubjects', [$config['subjects']]);
+        $probabilityGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
-abstract class Subject
+abstract class AbstractSubject implements SubjectInterface
 {
     /**
      * @var string Required by workflow component

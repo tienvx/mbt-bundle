@@ -32,7 +32,7 @@ class PathReducerPass implements CompilerPassInterface
             return;
         }
 
-        if (!$pathReducers = $this->findTaggedServices($this->pathReducerTag, $container)) {
+        if (!$pathReducers = $this->findTaggedServices($container, $this->pathReducerTag, PluginInterface::class, 'getName')) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->pathReducerTag, $this->pathReducerService));
         }
 

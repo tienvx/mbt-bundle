@@ -4,7 +4,7 @@ framework:
         shopping_cart:
             type: "state_machine"
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\Subject
+                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             metadata:
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "state-machine", "testing", "model-based-testing"]

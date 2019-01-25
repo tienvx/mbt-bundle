@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowSubscriber implements EventSubscriberInterface
 {
@@ -25,7 +25,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
     {
         $subject = $event->getSubject();
 
-        if ($subject instanceof Subject) {
+        if ($subject instanceof AbstractSubject) {
             $places = array_keys(array_filter($event->getMarking()->getPlaces()));
             $subject->enterPlace($places);
         }
@@ -35,7 +35,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
     {
         $subject = $event->getSubject();
 
-        if ($subject instanceof Subject) {
+        if ($subject instanceof AbstractSubject) {
             $subject->storeData();
             $subject->applyTransition($event->getTransition()->getName());
         }
@@ -50,7 +50,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $subject = $event->getSubject();
         $transitionName = $event->getTransition()->getName();
 
-        if ($subject instanceof Subject) {
+        if ($subject instanceof AbstractSubject) {
             if ($subject->needData() && method_exists($subject, $transitionName)) {
                 $reflectionMethod = new ReflectionMethod(get_class($subject), $transitionName);
                 $dataProvider = $this->reader->getMethodAnnotation($reflectionMethod, DataProvider::class);

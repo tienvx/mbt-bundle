@@ -14,24 +14,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('generator')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->integerNode('max_path_length')->defaultValue(300)->end()
-                        ->floatNode('transition_coverage')->defaultValue(100)->min(0)->max(100)->end()
-                        ->floatNode('place_coverage')->defaultValue(100)->min(0)->max(100)->end()
-                    ->end()
-                ->end() // generator
-                ->arrayNode('command')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('default_bug_title')->defaultValue('')->end()
-                    ->end()
-                ->end() // command
-                ->arrayNode('subjects')
-                    ->useAttributeAsKey('name')
-                    ->scalarPrototype()->end()
-                ->end() // subjects
+                ->integerNode('max_path_length')->defaultValue(300)->end()
+                ->floatNode('transition_coverage')->defaultValue(100)->min(0)->max(100)->end()
+                ->floatNode('place_coverage')->defaultValue(100)->min(0)->max(100)->end()
+                ->scalarNode('default_bug_title')->defaultValue('')->end()
             ->end()
         ;
 

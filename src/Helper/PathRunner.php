@@ -5,17 +5,17 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class PathRunner
 {
     /**
      * @param Path $path
      * @param Workflow $workflow
-     * @param Subject $subject
+     * @param AbstractSubject $subject
      * @throws Exception
      */
-    public static function run(Path $path, Workflow $workflow, Subject $subject)
+    public static function run(Path $path, Workflow $workflow, AbstractSubject $subject)
     {
         $subject->setUp();
 
