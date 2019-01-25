@@ -1,0 +1,5 @@
+tienvx_mbt:
+    subjects:
+        shopping_cart: App\Subject\ShoppingCart
+        checkout: App\Subject\Checkout
+        product: App\Subject\Product
