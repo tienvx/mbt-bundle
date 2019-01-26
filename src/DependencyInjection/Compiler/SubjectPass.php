@@ -31,9 +31,7 @@ class SubjectPass implements CompilerPassInterface
             return;
         }
 
-        if (!$subjects = $this->findTaggedServices($container, $this->subjectTag, SubjectInterface::class, 'support', false)) {
-            throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->subjectTag, $this->subjectService));
-        }
+        $subjects = $this->findTaggedServices($container, $this->subjectTag, SubjectInterface::class, 'support', false);
 
         $subjectDefinition = $container->getDefinition($this->subjectService);
         $subjectDefinition->replaceArgument(0, $subjects);
