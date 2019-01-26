@@ -4,7 +4,7 @@ framework:
             marking_store:
                 type: single_state
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\Subject
+                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             initial_place: start
             metadata:
                 title: workflow title

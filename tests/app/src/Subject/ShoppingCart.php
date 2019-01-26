@@ -4,9 +4,9 @@ namespace App\Subject;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
-class ShoppingCart extends Subject
+class ShoppingCart extends AbstractSubject
 {
     /**
      * @var array
@@ -124,6 +124,11 @@ class ShoppingCart extends Subject
         $this->cart = [];
         $this->category = null;
         $this->product = null;
+    }
+
+    public static function support(): string
+    {
+        return 'shopping_cart';
     }
 
     /**

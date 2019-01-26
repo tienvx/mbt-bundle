@@ -20,6 +20,11 @@
         </service>
         <service id="Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager" alias="mbt.path_reducer_manager" />
 
+        <service id="mbt.subject_manager" class="Tienvx\Bundle\MbtBundle\Subject\SubjectManager" public="false" autowire="true">
+            <argument type="collection" />
+        </service>
+        <service id="Tienvx\Bundle\MbtBundle\Subject\SubjectManager" alias="mbt.subject_manager" />
+
         <service id="mbt.entity_subscriber" class="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>

@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class RandomGenerator extends AbstractGenerator
 {
@@ -39,7 +39,7 @@ class RandomGenerator extends AbstractGenerator
         $this->placeCoverage = $placeCoverage;
     }
 
-    public function getAvailableTransitions(Workflow $workflow, Subject $subject): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {
         $pathLength         = 0;
         $visitedTransitions = [];

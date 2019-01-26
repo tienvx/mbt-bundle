@@ -3,9 +3,9 @@
 namespace App\Subject;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
-class Checkout extends Subject
+class Checkout extends AbstractSubject
 {
     /**
      * @var int
@@ -26,6 +26,11 @@ class Checkout extends Subject
      * @var bool
      */
     protected $registerAccount = false;
+
+    public static function support(): string
+    {
+        return 'checkout';
+    }
 
     public function loggedIn()
     {

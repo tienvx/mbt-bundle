@@ -9,8 +9,8 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
 
 class BinaryPathReducer extends AbstractPathReducer
 {
@@ -27,9 +27,7 @@ class BinaryPathReducer extends AbstractPathReducer
         }
 
         $model = $bug->getTask()->getModel();
-        $subject = new class extends Subject {
-        };
-        $workflow = $this->workflowRegistry->get($subject, $model);
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         $graph = $this->graphBuilder->build($workflow);
         $path = PathBuilder::build($bug->getPath());

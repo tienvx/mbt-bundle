@@ -4,7 +4,7 @@ framework:
         checkout:
             type: 'workflow'
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\Subject
+                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             metadata:
                 label: "Checkout"
                 tags: ["opencart's checkout process", "demo", "workflow", "testing", "model-based-testing"]

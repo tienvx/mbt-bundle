@@ -3,10 +3,15 @@
 namespace App\Subject;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
-class Product extends Subject
+class Product extends AbstractSubject
 {
+    public static function support(): string
+    {
+        return 'product';
+    }
+
     /**
      * @throws Exception
      */

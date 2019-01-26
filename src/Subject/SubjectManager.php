@@ -11,23 +11,9 @@ class SubjectManager
      */
     protected $subjects;
 
-    public function __construct()
+    public function __construct(array $subjects = [])
     {
-        $this->subjects = [];
-    }
-
-    public function addSubject(string $model, string $subject)
-    {
-        if (class_exists($subject)) {
-            $this->subjects[$model] = $subject;
-        }
-    }
-
-    public function addSubjects(array $subjects)
-    {
-        foreach ($subjects as $model => $subject) {
-            $this->addSubject($model, $subject);
-        }
+        $this->subjects = $subjects;
     }
 
     public function hasSubject(string $model)
@@ -42,10 +28,10 @@ class SubjectManager
 
     /**
      * @param string $model
-     * @return Subject
+     * @return AbstractSubject
      * @throws Exception
      */
-    public function createSubject(string $model): Subject
+    public function createSubject(string $model): AbstractSubject
     {
         if (!isset($this->subjects[$model])) {
             throw new Exception(sprintf('Subject for model %s is not specified.', $model));
@@ -54,8 +40,8 @@ class SubjectManager
         }
 
         $subject = new $this->subjects[$model];
-        if (!$subject instanceof Subject) {
-            throw new Exception(sprintf('Subject for model %s is not instance of %s.', $model, Subject::class));
+        if (!$subject instanceof AbstractSubject) {
+            throw new Exception(sprintf('Subject for model %s is not instance of %s.', $model, AbstractSubject::class));
         }
         return $subject;
     }

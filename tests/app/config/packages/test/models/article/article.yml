@@ -5,7 +5,7 @@ framework:
             marking_store:
                 type: multiple_state
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\Subject
+                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             initial_place: draft
             places:
                 # simple format

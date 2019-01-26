@@ -30,7 +30,7 @@ class GeneratorPass implements CompilerPassInterface
             return;
         }
 
-        if (!$generators = $this->findTaggedServices($this->generatorTag, $container)) {
+        if (!$generators = $this->findTaggedServices($container, $this->generatorTag, PluginInterface::class, 'getName')) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->generatorTag, $this->generatorService));
         }
 

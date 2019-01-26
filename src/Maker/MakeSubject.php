@@ -13,7 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Workflow\Registry;
-use Tienvx\Bundle\MbtBundle\Subject\Subject;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 final class MakeSubject extends AbstractMaker
@@ -62,9 +62,7 @@ final class MakeSubject extends AbstractMaker
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
     {
         $model = $input->getArgument('model');
-        $subject = new class extends Subject {
-        };
-        $workflow = $this->workflowRegistry->get($subject, $model);
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         if ($this->subjectManager->hasSubject($model)) {
             $subject = $this->subjectManager->getSubject($model);
@@ -96,6 +94,7 @@ final class MakeSubject extends AbstractMaker
             __DIR__.'/../Resources/skeleton/subject/Subject.tpl.php',
             [
                 'methods' => array_unique($methods),
+                'model' => $model,
             ]
         );
 
