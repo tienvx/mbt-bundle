@@ -10,12 +10,23 @@ class WorkflowHelper
 {
     public static function get(Registry $registry, string $model): Workflow
     {
-        $subject = new class extends AbstractSubject {
+        $subject = static::fakeSubject();
+        return $registry->get($subject, $model);
+    }
+
+    public static function all(Registry $registry): array
+    {
+        $subject = static::fakeSubject();
+        return $registry->all($subject);
+    }
+
+    private static function fakeSubject()
+    {
+        return new class extends AbstractSubject {
             public static function support(): string
             {
                 return '';
             }
         };
-        return $registry->get($subject, $model);
     }
 }
