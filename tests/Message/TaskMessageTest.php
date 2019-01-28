@@ -59,6 +59,7 @@ class TaskMessageTest extends MessageTestCase
             } elseif ($model === 'product') {
                 $this->assertEquals('Upload required!', $bugs[0]->getBugMessage());
             }
+            $this->assertEquals(0, $bugs[0]->getMessagesCount());
         } else {
             $this->assertEquals(0, count($bugs));
         }

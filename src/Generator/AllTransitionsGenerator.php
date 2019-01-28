@@ -8,6 +8,7 @@ use Graphp\Algorithms\ConnectedComponents;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
+use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -40,7 +41,7 @@ class AllTransitionsGenerator extends AbstractGenerator
         $singleComponent = $components->isSingle();
         if ($singleComponent) {
             $algorithm = new Eulerian($graph);
-            $startVertex = $graph->getVertex(json_encode([$workflow->getDefinition()->getInitialPlace()]));
+            $startVertex = $graph->getVertex(VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]));
             $edges = $algorithm->getEdges($startVertex);
             $edges = $edges->getVector();
             while (!empty($edges)) {

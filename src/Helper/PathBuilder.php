@@ -37,8 +37,8 @@ class PathBuilder
         $toPlaces = $path->getPlacesAt($to);
         if (array_diff($fromPlaces, $toPlaces)) {
             // Get shortest path between 2 vertices by algorithm.
-            $fromVertex = $graph->getVertex(json_encode($fromPlaces));
-            $toVertex = $graph->getVertex(json_encode($toPlaces));
+            $fromVertex = $graph->getVertex(VertexHelper::getId($fromPlaces));
+            $toVertex = $graph->getVertex(VertexHelper::getId($toPlaces));
             $algorithm = new Dijkstra($fromVertex);
             /** @var Edges $edges */
             $edges = $algorithm->getEdgesTo($toVertex);
