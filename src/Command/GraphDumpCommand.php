@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Graph\Dumper\PlantUmlDumper;
 use Tienvx\Bundle\MbtBundle\Graph\Dumper\GraphvizDumper;
+use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 
 class GraphDumpCommand extends Command
@@ -89,6 +90,6 @@ EOF
                 'label' => $input->getOption('label'),
             ),
         );
-        $output->writeln($dumper->dump(json_encode([$workflow->getDefinition()->getInitialPlace()]), $graph, $options));
+        $output->writeln($dumper->dump(VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]), $graph, $options));
     }
 }

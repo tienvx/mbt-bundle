@@ -11,6 +11,7 @@ use Psr\SimpleCache\CacheException;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 
 class GraphBuilder
 {
@@ -39,7 +40,7 @@ class GraphBuilder
             $graph = $this->buildForStateMachine($workflow);
         } else {
             $graph = $this->buildForWorkflow($workflow);
-            $initVertex = json_encode([$workflow->getDefinition()->getInitialPlace()]);
+            $initVertex = VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]);
             $components = new ConnectedComponents($graph);
             return $components->createGraphComponentVertex($graph->getVertex($initVertex));
         }
@@ -53,14 +54,14 @@ class GraphBuilder
         $graph = new Graph();
         foreach ($stateMachine->getDefinition()->getPlaces() as $place => $status) {
             if ($status) {
-                $this->createVertex($graph, json_encode([$place]));
-                $graph->getVertex(json_encode([$place]))->setAttribute('places', [$place]);
+                $this->createVertex($graph, VertexHelper::getId([$place]));
+                $graph->getVertex(VertexHelper::getId([$place]))->setAttribute('places', [$place]);
             }
         }
         foreach ($stateMachine->getDefinition()->getTransitions() as $transition) {
             foreach ($transition->getFroms() as $from) {
                 foreach ($transition->getTos() as $to) {
-                    $this->createEdge($stateMachine, $graph, $transition, json_encode([$from]), json_encode([$to]));
+                    $this->createEdge($stateMachine, $graph, $transition, VertexHelper::getId([$from]), VertexHelper::getId([$to]));
                 }
             }
         }
@@ -80,8 +81,8 @@ class GraphBuilder
                 sort($tos);
                 // TODO: Clean up vertices and edges that never appear in the path.
                 {
-                    $from = json_encode($froms);
-                    $to = json_encode($tos);
+                    $from = VertexHelper::getId($froms);
+                    $to = VertexHelper::getId($tos);
                     if (!$graph->hasVertex($from)) {
                         $this->createVertex($graph, $from);
                         $graph->getVertex($from)->setAttribute('places', $froms);
@@ -108,8 +109,8 @@ class GraphBuilder
                         $newPlaces = array_unique(array_merge(array_diff($places, $froms), $tos));
                         sort($places);
                         sort($newPlaces);
-                        $from = json_encode($places);
-                        $to = json_encode($newPlaces);
+                        $from = VertexHelper::getId($places);
+                        $to = VertexHelper::getId($newPlaces);
                         if (!$graph->hasVertex($to)) {
                             $this->createVertex($graph, $to);
                             $graph->getVertex($to)->setAttribute('places', $newPlaces);

@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Helper\Constants;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -47,7 +46,7 @@ class GeneratePathCommand extends AbstractCommand
             ->setDescription('Generate path from model.')
             ->setHelp('Generate path from model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', Constants::DEFAULT_GENERATOR);
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random');
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
