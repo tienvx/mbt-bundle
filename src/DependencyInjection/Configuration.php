@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
                 ->integerNode('max_path_length')->defaultValue(300)->end()
                 ->floatNode('transition_coverage')->defaultValue(100)->min(0)->max(100)->end()
                 ->floatNode('place_coverage')->defaultValue(100)->min(0)->max(100)->end()
-                ->scalarNode('default_bug_title')->defaultValue('')->end()
+                ->scalarNode('default_bug_title')->defaultValue('New bug found')->end()
             ->end()
         ;
 
