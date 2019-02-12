@@ -22,16 +22,31 @@ class ReductionSubscriber implements EventSubscriberInterface
      * @param ReducerFinishEvent $event
      * @throws \Exception
      */
-    public function onFinish(ReducerFinishEvent $event)
+    public function reportBug(ReducerFinishEvent $event)
     {
-        $id = $event->getBugId();
-        $this->commandRunner->run(['mbt:bug:report', $id]);
+        $bug = $event->getBug();
+        $this->commandRunner->run(['mbt:bug:report', $bug->getId()]);
+    }
+
+    /**
+     * @param ReducerFinishEvent $event
+     * @throws \Exception
+     */
+    public function captureScreenshots(ReducerFinishEvent $event)
+    {
+        $bug = $event->getBug();
+        if ($bug->getTask()->getTakeScreenshots()) {
+            $this->commandRunner->run(['mbt:bug:capture-screenshots', $bug->getId()]);
+        }
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            'tienvx_mbt.finish_reduce' => 'onFinish',
+            'tienvx_mbt.finish_reduce' => [
+                ['captureScreenshots'],
+                ['reportBug'],
+            ],
         ];
     }
 }

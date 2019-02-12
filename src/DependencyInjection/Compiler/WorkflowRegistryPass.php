@@ -6,6 +6,7 @@ use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
 use Tienvx\Bundle\MbtBundle\Maker\MakeSubject;
@@ -43,6 +44,9 @@ class WorkflowRegistryPass implements CompilerPassInterface
 
             $generatePathCommandDefinition = $container->getDefinition(GeneratePathCommand::class);
             $generatePathCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
+
+            $captureScreenshotsCommandDefinition = $container->getDefinition(CaptureScreenshotsCommand::class);
+            $captureScreenshotsCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
 
             $modelValidatorDefinition = $container->getDefinition(ModelValidator::class);
             $modelValidatorDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);

@@ -4,6 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 
 abstract class AbstractSubject implements SubjectInterface
 {
+    const SCREENSHOT_IMAGE = 'image';
+    const SCREENSHOT_TEXT = 'text';
+
     /**
      * @var string Required by workflow component
      */
@@ -28,6 +31,11 @@ abstract class AbstractSubject implements SubjectInterface
      * @var boolean
      */
     protected $needData = true;
+
+    /**
+     * @var string
+     */
+    protected $screenshotsDir = '';
 
     /**
      * @param $testing boolean
@@ -104,6 +112,59 @@ abstract class AbstractSubject implements SubjectInterface
                 call_user_func([$this, $place]);
             }
         }
+    }
+
+    /**
+     * @param string $screenshotsDir
+     */
+    public function setScreenshotsDir(string $screenshotsDir)
+    {
+        $this->screenshotsDir = rtrim($screenshotsDir, '/');
+        if (!is_dir($this->screenshotsDir)) {
+            mkdir($this->screenshotsDir, 0777, true);
+        }
+    }
+
+    public function captureScreenshot($bugId, $index)
+    {
+        if (!is_dir($this->screenshotsDir . "/{$bugId}")) {
+            mkdir($this->screenshotsDir . "/{$bugId}", 0777, true);
+        }
+        file_put_contents($this->screenshotsDir . "/{$bugId}/{$index}.txt", '');
+    }
+
+    public function getScreenshot($bugId, $index)
+    {
+        if (file_exists($this->screenshotsDir . "/{$bugId}/{$index}.txt")) {
+            return file_get_contents($this->screenshotsDir . "/{$bugId}/{$index}.txt");
+        } else {
+            return '';
+        }
+    }
+
+    public function hasScreenshot($bugId, $index)
+    {
+        return file_exists($this->screenshotsDir . "/{$bugId}/{$index}.txt");
+    }
+
+    /**
+     * @param $bugId
+     * @see https://stackoverflow.com/a/13468943
+     */
+    public function removeScreenshots($bugId)
+    {
+        if (is_dir($this->screenshotsDir . "/{$bugId}")) {
+            @array_map('unlink', glob($this->screenshotsDir . "/{$bugId}/*"));
+            rmdir($this->screenshotsDir . "/{$bugId}");
+        }
+    }
+
+    /**
+     * @return string self::SCREENSHOT_IMAGE or self::SCREENSHOT_TEXT
+     */
+    public function getScreenshotType()
+    {
+        return self::SCREENSHOT_TEXT;
     }
 
     public function setUp()

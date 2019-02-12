@@ -4,7 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\BugMessage;
@@ -12,11 +14,20 @@ use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
 
 class EntitySubscriber implements EventSubscriber
 {
+    /**
+     * @var MessageBusInterface
+     */
     private $messageBus;
 
-    public function __construct(MessageBusInterface $messageBus)
+    /**
+     * @var CommandRunner
+     */
+    private $commandRunner;
+
+    public function __construct(MessageBusInterface $messageBus, CommandRunner $commandRunner)
     {
         $this->messageBus = $messageBus;
+        $this->commandRunner = $commandRunner;
     }
 
     public function postPersist(LifecycleEventArgs $args)
@@ -31,10 +42,24 @@ class EntitySubscriber implements EventSubscriber
         }
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     * @throws \Exception
+     */
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+
+        if ($entity instanceof Bug) {
+            $this->commandRunner->run(['mbt:bug:remove-screenshots', $entity->getId()]);
+        }
+    }
+
     public function getSubscribedEvents()
     {
         return [
-            'postPersist',
+            Events::postPersist,
+            Events::preRemove,
         ];
     }
 }

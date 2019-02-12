@@ -3,27 +3,28 @@
 namespace Tienvx\Bundle\MbtBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 class ReducerFinishEvent extends Event
 {
     /**
-     * @var int
+     * @var Bug
      */
-    private $bugId;
+    private $bug;
 
     /**
-     * @param int $bugId
+     * @param Bug $bug
      */
-    public function __construct(int $bugId)
+    public function __construct(Bug $bug)
     {
-        $this->bugId = $bugId;
+        $this->bug = $bug;
     }
 
     /**
-     * @return int
+     * @return Bug
      */
-    public function getBugId()
+    public function getBug()
     {
-        return $this->bugId;
+        return $this->bug;
     }
 }
