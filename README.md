@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "1.0.x-dev"
+$ composer require tienvx/mbt-bundle "^1.1"
 ```
 
 ### Step 3: Create models and subjects
