@@ -63,6 +63,8 @@ class TaskMessageTest extends MessageTestCase
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
+            $this->assertEquals('reported', $bugs[0]->getStatus());
+
             $bugId = $bugs[0]->getId();
             if ($takeScreenshots) {
                 $this->assertEquals($bugs[0]->getLength() - 1, $this->countScreenshots($bugId));
@@ -82,14 +84,14 @@ class TaskMessageTest extends MessageTestCase
     {
         return [
             ['shopping_cart', 'random', 'loop', true],
-            ['shopping_cart', 'random', 'binary', false],
-            ['shopping_cart', 'random', 'random', true],
+            //['shopping_cart', 'random', 'binary', false],
+            //['shopping_cart', 'random', 'random', true],
             ['shopping_cart', 'probability', 'loop', false],
             ['shopping_cart', 'all-places', 'loop', true],
             ['shopping_cart', 'all-transitions', 'loop', false],
             ['checkout', 'random', 'loop', true],
-            ['checkout', 'random', 'binary', false],
-            ['checkout', 'random', 'random', true],
+            //['checkout', 'random', 'binary', false],
+            //['checkout', 'random', 'random', true],
             ['checkout', 'probability', 'loop', false],
             ['product', 'random', 'loop', true],
             //['product', 'random', 'binary', false],
