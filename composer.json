@@ -53,13 +53,11 @@
     },
     "scripts": {
         "coverage": "php vendor/bin/phpunit --coverage-clover tests/logs/clover.xml --colors=always",
-        "clear-cache": "php tests/app/bin/console cache:clear --env=test --ansi",
-        "test": "php vendor/bin/phpunit --colors=always",
         "cs-fix": "php vendor/bin/php-cs-fixer fix --dry-run --ansi",
         "coverall": "php vendor/bin/php-coveralls",
-        "clear-cache-then-test": [
-            "@clear-cache",
-            "@test"
+        "test": [
+            "php tests/app/bin/console cache:clear --env=test --ansi",
+            "php vendor/bin/phpunit --colors=always"
         ]
     },
     "conflict": {

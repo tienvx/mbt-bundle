@@ -11,7 +11,7 @@ matrix:
     - php: nightly
 
 install:
-  - composer install
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install
 
 script:
   - composer run-script cs-fix
