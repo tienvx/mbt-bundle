@@ -4,9 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 
 abstract class AbstractSubject implements SubjectInterface
 {
-    const SCREENSHOT_IMAGE = 'image';
-    const SCREENSHOT_TEXT = 'text';
-
     /**
      * @var string Required by workflow component
      */
@@ -130,13 +127,13 @@ abstract class AbstractSubject implements SubjectInterface
         if (!is_dir($this->screenshotsDir . "/{$bugId}")) {
             mkdir($this->screenshotsDir . "/{$bugId}", 0777, true);
         }
-        file_put_contents($this->screenshotsDir . "/{$bugId}/{$index}.txt", '');
+        file_put_contents($this->screenshotsDir . "/{$bugId}/{$index}.png", '');
     }
 
     public function getScreenshot($bugId, $index)
     {
-        if (file_exists($this->screenshotsDir . "/{$bugId}/{$index}.txt")) {
-            return file_get_contents($this->screenshotsDir . "/{$bugId}/{$index}.txt");
+        if (file_exists($this->screenshotsDir . "/{$bugId}/{$index}.png")) {
+            return file_get_contents($this->screenshotsDir . "/{$bugId}/{$index}.png");
         } else {
             return '';
         }
@@ -144,7 +141,7 @@ abstract class AbstractSubject implements SubjectInterface
 
     public function hasScreenshot($bugId, $index)
     {
-        return file_exists($this->screenshotsDir . "/{$bugId}/{$index}.txt");
+        return file_exists($this->screenshotsDir . "/{$bugId}/{$index}.png");
     }
 
     /**
@@ -157,14 +154,6 @@ abstract class AbstractSubject implements SubjectInterface
             @array_map('unlink', glob($this->screenshotsDir . "/{$bugId}/*"));
             rmdir($this->screenshotsDir . "/{$bugId}");
         }
-    }
-
-    /**
-     * @return string self::SCREENSHOT_IMAGE or self::SCREENSHOT_TEXT
-     */
-    public function getScreenshotType()
-    {
-        return self::SCREENSHOT_TEXT;
     }
 
     public function setUp()
