@@ -113,6 +113,9 @@ abstract class AbstractPathReducer implements PathReducerInterface
             if ($bug->getMessagesCount() === 0) {
                 $messagesCount = $this->dispatch($bug->getId(), null, $message);
                 if ($messagesCount === 0) {
+                    // TODO Add 'finished' status
+                    // TODO Support 'binary' and 'random' reducers
+                    //if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
                     $this->finish($bug);
                 }
             }
