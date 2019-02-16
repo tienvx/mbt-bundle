@@ -7,7 +7,8 @@
 
 # Ignore files created during tests
 /tests/app/var/cache/
-/tests/app/var/logs/
+/tests/app/var/log/
+/tests/app/var/screenshots/
 /tests/logs/
 /tests/app/src/Subject/Article.php
 /tests/app/src/Subject/PullRequest.php
