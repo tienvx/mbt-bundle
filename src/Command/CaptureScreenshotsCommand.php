@@ -2,14 +2,15 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Workflow\Registry;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -105,6 +106,7 @@ class CaptureScreenshotsCommand extends Command
                 $subject->setNeedData(false);
                 try {
                     $workflow->apply($subject, $transitionName);
+                } catch (Throwable $throwable) {
                 } finally {
                     $subject->captureScreenshot($bugId, $index);
                 }
