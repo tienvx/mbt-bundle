@@ -68,7 +68,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     protected function finish(Bug $bug)
     {
-        $event = new ReducerFinishEvent($bug->getId());
+        $event = new ReducerFinishEvent($bug);
 
         $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
     }

@@ -13,10 +13,11 @@ class TaskMessageTest extends MessageTestCase
      * @param string $model
      * @param string $generator
      * @param string $reducer
+     * @param bool $takeScreenshots
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $model, string $generator, string $reducer)
+    public function testConsumeMessage(string $model, string $generator, string $reducer, bool $takeScreenshots)
     {
         $this->clearMessages();
         $this->clearLog();
@@ -29,6 +30,7 @@ class TaskMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator($generator);
         $task->setReducer($reducer);
+        $task->setTakeScreenshots($takeScreenshots);
         $entityManager->persist($task);
         $entityManager->flush();
 
@@ -60,6 +62,16 @@ class TaskMessageTest extends MessageTestCase
                 $this->assertEquals('Upload required!', $bugs[0]->getBugMessage());
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
+
+            $bugId = $bugs[0]->getId();
+            if ($takeScreenshots) {
+                $this->assertEquals($bugs[0]->getLength() - 1, $this->countScreenshots($bugId));
+            } else {
+                $this->assertEquals(0, $this->countScreenshots($bugId));
+            }
+            $entityManager->remove($bugs[0]);
+            $entityManager->flush();
+            $this->assertEquals(0, $this->countScreenshots($bugId));
         } else {
             $this->assertEquals(0, count($bugs));
         }
@@ -69,20 +81,20 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'random', 'loop'],
-            ['shopping_cart', 'random', 'binary'],
-            ['shopping_cart', 'random', 'random'],
-            ['shopping_cart', 'probability', 'loop'],
-            ['shopping_cart', 'all-places', 'loop'],
-            ['shopping_cart', 'all-transitions', 'loop'],
-            ['checkout', 'random', 'loop'],
-            ['checkout', 'random', 'binary'],
-            ['checkout', 'random', 'random'],
-            ['checkout', 'probability', 'loop'],
-            ['product', 'random', 'loop'],
-            ['product', 'random', 'binary'],
-            //['product', 'random', 'random'],
-            ['product', 'probability', 'loop'],
+            ['shopping_cart', 'random', 'loop', true],
+            ['shopping_cart', 'random', 'binary', false],
+            ['shopping_cart', 'random', 'random', true],
+            ['shopping_cart', 'probability', 'loop', false],
+            ['shopping_cart', 'all-places', 'loop', true],
+            ['shopping_cart', 'all-transitions', 'loop', false],
+            ['checkout', 'random', 'loop', true],
+            ['checkout', 'random', 'binary', false],
+            ['checkout', 'random', 'random', true],
+            ['checkout', 'probability', 'loop', false],
+            ['product', 'random', 'loop', true],
+            //['product', 'random', 'binary', false],
+            //['product', 'random', 'random', true],
+            ['product', 'probability', 'loop', false],
         ];
     }
 }

@@ -69,6 +69,11 @@ class Task
     private $bugs;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $takeScreenshots = false;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -190,6 +195,16 @@ class Task
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    public function setTakeScreenshots(bool $takeScreenshots)
+    {
+        $this->takeScreenshots = $takeScreenshots;
+    }
+
+    public function getTakeScreenshots()
+    {
+        return $this->takeScreenshots;
     }
 
     /**

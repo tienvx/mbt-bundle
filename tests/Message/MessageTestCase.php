@@ -14,6 +14,11 @@ abstract class MessageTestCase extends TestCase
     protected $logDir;
 
     /**
+     * @var string
+     */
+    protected $screenshotsDir;
+
+    /**
      * @throws \Exception
      */
     protected function setUp()
@@ -26,6 +31,7 @@ abstract class MessageTestCase extends TestCase
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
         $this->logDir = $params->get('kernel.logs_dir');
+        $this->screenshotsDir = $params->get('screenshots_dir');
     }
 
     /**
@@ -64,5 +70,10 @@ abstract class MessageTestCase extends TestCase
     protected function hasLog()
     {
         return filesize("{$this->logDir}/test.log") !== 0;
+    }
+
+    protected function countScreenshots(int $bugId)
+    {
+        return count(glob($this->screenshotsDir . "/{$bugId}/*.*"));
     }
 }

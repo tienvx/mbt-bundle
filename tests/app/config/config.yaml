@@ -16,28 +16,6 @@ doctrine:
     orm:
         auto_mapping: true
 
-services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-
-    App\:
-        resource: '../src/*'
-        exclude: '../src/{AppKernel.php}'
-
-    Tienvx\Messenger\MemoryTransport\Connection: ~
-    Tienvx\Messenger\MemoryTransport\MemoryTransportFactory:
-        # Configure the tags: this enables the `memory://` transport to be auto-discovered
-        tags: ['messenger.transport_factory']
-
-    Tienvx\Bundle\MbtBundle\Command\ReportBugCommand:
-        arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-            $logger: '@monolog.logger.mbt'
-
-    Tienvx\Bundle\MbtBundle\Command\CommandRunner: '@App\Command\CommandRunner'
-
 security:
     providers:
         in_memory: { memory: ~ }
