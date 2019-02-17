@@ -83,34 +83,40 @@ class CaptureScreenshotsCommand extends Command
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
         $workflow = $this->workflowRegistry->get($subject, $model);
+
+        $subject->setUp();
         $subject->setScreenshotsDir($this->params->get('screenshots_dir'));
 
-        foreach ($path as $index => $step) {
-            $transitionName = $step[0];
-            $data = $step[1];
-            if ($transitionName) {
-                if (is_array($data)) {
-                    $subject->setData($data);
+        try {
+            foreach ($path as $index => $step) {
+                $transitionName = $step[0];
+                $data = $step[1];
+                if ($transitionName) {
+                    if (is_array($data)) {
+                        $subject->setData($data);
+                        $subject->setNeedData(false);
+                    } else {
+                        $subject->setNeedData(true);
+                    }
+                    if (!$workflow->can($subject, $transitionName)) {
+                        break;
+                    }
+                    // Store data before apply transition, because there are maybe exception happen
+                    // while applying transition.
+                    if (!is_array($data)) {
+                        $path->setDataAt($index, $subject->getData());
+                    }
                     $subject->setNeedData(false);
-                } else {
-                    $subject->setNeedData(true);
-                }
-                if (!$workflow->can($subject, $transitionName)) {
-                    break;
-                }
-                // Store data before apply transition, because there are maybe exception happen
-                // while applying transition.
-                if (!is_array($data)) {
-                    $path->setDataAt($index, $subject->getData());
-                }
-                $subject->setNeedData(false);
-                try {
-                    $workflow->apply($subject, $transitionName);
-                } catch (Throwable $throwable) {
-                } finally {
-                    $subject->captureScreenshot($bugId, $index);
+                    try {
+                        $workflow->apply($subject, $transitionName);
+                    } catch (Throwable $throwable) {
+                    } finally {
+                        $subject->captureScreenshot($bugId, $index);
+                    }
                 }
             }
+        } finally {
+            $subject->tearDown();
         }
     }
 }
