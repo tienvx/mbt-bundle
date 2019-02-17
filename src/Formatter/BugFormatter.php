@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Formatter;
 use Monolog\Formatter\HtmlFormatter;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class BugFormatter extends HtmlFormatter
 {
@@ -37,6 +38,12 @@ class BugFormatter extends HtmlFormatter
                     $embeddedTable .= $this->addRow('Transition', $this->convertToString($step[0]));
                     $embeddedTable .= $this->addRow('Data', $this->convertToString($step[1]));
                     $embeddedTable .= $this->addRow('Places', $this->convertToString(implode('|', $step[2])));
+
+                    $transitionName = $step[0];
+                    $subject = $record['context']['subject'];
+                    if ($transitionName && $subject instanceof AbstractSubject) {
+                        $embeddedTable .= $this->addRow('Screenshot', $this->addImage($subject->getScreenshot($bug->getId(), $index)), false);
+                    }
                 }
                 $embeddedTable .= '</table>';
                 $output .= $this->addRow('Steps', $embeddedTable, false);
@@ -44,5 +51,12 @@ class BugFormatter extends HtmlFormatter
         }
 
         return $output.'</table>';
+    }
+
+    public function addImage($content)
+    {
+        $imageData = base64_encode($content);
+        $src = 'data:image/png;base64, ' . $imageData;
+        return '<img src="' . $src . '">';
     }
 }

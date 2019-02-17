@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class ReportBugCommand extends Command
 {
@@ -24,12 +25,19 @@ class ReportBugCommand extends Command
      */
     private $logger;
 
+    /**
+     * @var SubjectManager
+     */
+    protected $subjectManager;
+
     public function __construct(
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SubjectManager $subjectManager
     ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
+        $this->subjectManager = $subjectManager;
 
         parent::__construct();
     }
@@ -62,9 +70,15 @@ class ReportBugCommand extends Command
         $bug->setStatus('reported');
         $this->entityManager->flush();
 
+        $path = PathBuilder::build($bug->getPath());
+        $model = $bug->getTask()->getModel();
+        $subject = $this->subjectManager->createSubject($model);
+
         $this->logger->error($bug->getBugMessage(), [
-          'bug' => $bug,
-          'path' => PathBuilder::build($bug->getPath()),
+            'bug' => $bug,
+            'path' => $path,
+            'model' => $model,
+            'subject' => $subject,
         ]);
     }
 }
