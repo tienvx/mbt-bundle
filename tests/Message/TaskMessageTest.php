@@ -59,7 +59,7 @@ class TaskMessageTest extends MessageTestCase
             } elseif ($model === 'checkout') {
                 $this->assertEquals('Still able to do register account, guest checkout or login when logged in!', $bugs[0]->getBugMessage());
             } elseif ($model === 'product') {
-                $this->assertEquals('Upload required!', $bugs[0]->getBugMessage());
+                $this->assertEquals('Can not upload file!', $bugs[0]->getBugMessage());
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
