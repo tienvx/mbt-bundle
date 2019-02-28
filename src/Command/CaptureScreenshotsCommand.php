@@ -78,6 +78,8 @@ class CaptureScreenshotsCommand extends AbstractCommand
             return;
         }
 
+        $this->setAnonymousToken();
+
         $path = PathBuilder::build($bug->getPath());
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
