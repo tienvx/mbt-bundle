@@ -83,4 +83,9 @@ class Checkout extends AbstractSubject
     {
         return true;
     }
+
+    public function hasExistingDeliveryAddress()
+    {
+        return true;
+    }
 }
