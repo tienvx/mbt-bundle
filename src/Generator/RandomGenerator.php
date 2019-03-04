@@ -39,6 +39,11 @@ class RandomGenerator extends AbstractGenerator
         $this->placeCoverage = $placeCoverage;
     }
 
+    /**
+     * @param Workflow $workflow
+     * @param AbstractSubject $subject
+     * @return Generator
+     */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {
         $pathLength         = 0;
