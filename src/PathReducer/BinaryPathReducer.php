@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\DBAL\LockMode;
 use Exception;
+use Psr\SimpleCache\CacheException;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
@@ -17,6 +18,7 @@ class BinaryPathReducer extends AbstractPathReducer
     /**
      * @param ReductionMessage $message
      * @throws Exception
+     * @throws CacheException
      */
     public function handle(ReductionMessage $message)
     {

@@ -13,3 +13,4 @@
 /tests/app/src/Subject/Article.php
 /tests/app/src/Subject/PullRequest.php
 /tests/app/src/Generator/Test.php
+/tests/app/src/PathReducer/Test.php
