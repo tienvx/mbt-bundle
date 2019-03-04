@@ -61,11 +61,5 @@ final class MakeGenerator extends AbstractMaker
 
     public function configureDependencies(DependencyBuilder $dependencies)
     {
-        $dependencies->addClassDependency(
-            // we only need doctrine/annotations, which contains
-            // the recipe that loads annotation data providers
-            Annotation::class,
-            'annotations'
-        );
     }
 }
