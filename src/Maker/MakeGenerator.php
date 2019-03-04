@@ -1,0 +1,65 @@
+<?php
+
+namespace Tienvx\Bundle\MbtBundle\Maker;
+
+use Doctrine\Common\Annotations\Annotation;
+use Symfony\Bundle\MakerBundle\ConsoleStyle;
+use Symfony\Bundle\MakerBundle\DependencyBuilder;
+use Symfony\Bundle\MakerBundle\Generator;
+use Symfony\Bundle\MakerBundle\InputConfiguration;
+use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
+use Symfony\Bundle\MakerBundle\Str;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+
+final class MakeGenerator extends AbstractMaker
+{
+    public static function getCommandName(): string
+    {
+        return 'make:generator';
+    }
+
+    public function configureCommand(Command $command, InputConfiguration $inputConf)
+    {
+        $command
+            ->setDescription('Creates a new generator class')
+            ->addArgument('name', InputArgument::OPTIONAL, 'The name of the generator.')
+            ->addArgument('generator-class', InputArgument::OPTIONAL, sprintf('Choose a name for your generator class (e.g. <fg=yellow>%s</>)', Str::asClassName(Str::getRandomTerm())))
+            ->setHelp(file_get_contents(__DIR__.'/../Resources/help/MakeGenerator.txt'))
+        ;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param ConsoleStyle $io
+     * @param Generator $generator
+     * @throws \Exception
+     */
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    {
+        $name = $input->getArgument('name');
+        $generatorClass = $input->getArgument('generator-class');
+
+        $generatorClassNameDetails = $generator->createClassNameDetails(
+            $generatorClass,
+            'Generator\\'
+        );
+
+        $generator->generateClass(
+            $generatorClassNameDetails->getFullName(),
+            __DIR__.'/../Resources/skeleton/generator/Generator.tpl.php',
+            [
+                'name' => $name,
+            ]
+        );
+
+        $generator->writeChanges();
+
+        $this->writeSuccessMessage($io);
+    }
+
+    public function configureDependencies(DependencyBuilder $dependencies)
+    {
+    }
+}

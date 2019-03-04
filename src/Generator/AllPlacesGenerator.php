@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Exception;
 use Generator;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
+use Psr\SimpleCache\CacheException;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -27,6 +28,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * @param AbstractSubject $subject
      * @return Generator
      * @throws Exception
+     * @throws CacheException
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {

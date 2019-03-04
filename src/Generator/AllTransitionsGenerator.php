@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Exception;
 use Generator;
 use Graphp\Algorithms\ConnectedComponents;
+use Psr\SimpleCache\CacheException;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
@@ -29,6 +30,7 @@ class AllTransitionsGenerator extends AbstractGenerator
      * @param AbstractSubject $subject
      * @return Generator
      * @throws Exception
+     * @throws CacheException
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
     {

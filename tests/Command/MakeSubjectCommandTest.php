@@ -3,8 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class MakeSubjectCommandTest extends CommandTestCase
 {
@@ -34,8 +32,8 @@ class MakeSubjectCommandTest extends CommandTestCase
 
         $output = $commandTester->getDisplay();
         $this->assertContains('Success!', $output);
-        $this->assertContains(sprintf('App\Subject\%s', $subjectClass), $output);
-        $this->assertContains('Next: Open configuration file, add this line to tienvx_mbt.subjects:', $output);
+        $this->assertContains('Next: Open the new generated subject class and implement places and transitions!', $output);
+        $this->assertContains("class $subjectClass extends AbstractSubject", file_get_contents(__DIR__ . "/../app/src/Subject/$subjectClass.php"));
         unlink(__DIR__ . "/../app/src/Subject/$subjectClass.php");
     }
 }
