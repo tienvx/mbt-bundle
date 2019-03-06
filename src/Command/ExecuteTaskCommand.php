@@ -105,8 +105,10 @@ class ExecuteTaskCommand extends AbstractCommand
         $path = new Path();
         $path->add(null, null, [$workflow->getDefinition()->getInitialPlace()]);
 
+        $metaData = json_decode($task->getMetaData());
+
         try {
-            foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
+            foreach ($generator->getAvailableTransitions($workflow, $subject, $metaData) as $transitionName) {
                 try {
                     if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                         throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));

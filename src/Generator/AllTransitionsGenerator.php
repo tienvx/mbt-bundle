@@ -26,13 +26,12 @@ class AllTransitionsGenerator extends AbstractGenerator
     }
 
     /**
-     * @param Workflow $workflow
-     * @param AbstractSubject $subject
-     * @return Generator
+     * @inheritdoc
+     *
      * @throws Exception
      * @throws CacheException
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, $metaData = null): Generator
     {
         if (!$workflow instanceof StateMachine) {
             throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));

@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
@@ -72,6 +73,13 @@ class Task
      * @ORM\Column(type="boolean")
      */
     private $takeScreenshots = false;
+
+    /**
+     * @ORM\Column(type="text")
+     * @Assert\NotBlank
+     * @MbtAssert\Json
+     */
+    private $metaData = '{}';
 
     /**
      * @var \DateTime
@@ -207,8 +215,19 @@ class Task
         return $this->takeScreenshots;
     }
 
+    public function setMetaData(string $metaData)
+    {
+        $this->metaData = $metaData;
+    }
+
+    public function getMetaData()
+    {
+        return $this->metaData;
+    }
+
     /**
      * @ORM\PrePersist
+     * @throws Exception
      */
     public function prePersist()
     {
@@ -223,6 +242,7 @@ class Task
 
     /**
      * @ORM\PreUpdate
+     * @throws Exception
      */
     public function preUpdate()
     {
