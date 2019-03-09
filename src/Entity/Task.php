@@ -75,11 +75,9 @@ class Task
     private $takeScreenshots = false;
 
     /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
-     * @MbtAssert\Json
+     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
      */
-    private $metaData = '{}';
+    private $metaData;
 
     /**
      * @var \DateTime
@@ -215,7 +213,7 @@ class Task
         return $this->takeScreenshots;
     }
 
-    public function setMetaData(string $metaData)
+    public function setMetaData($metaData)
     {
         $this->metaData = $metaData;
     }
