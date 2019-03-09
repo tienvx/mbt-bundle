@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
@@ -172,6 +173,7 @@ class Bug
 
     /**
      * @ORM\PrePersist
+     * @throws Exception
      */
     public function prePersist()
     {
@@ -186,6 +188,7 @@ class Bug
 
     /**
      * @ORM\PreUpdate
+     * @throws Exception
      */
     public function preUpdate()
     {
