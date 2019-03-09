@@ -42,14 +42,14 @@ class RandomGenerator extends AbstractGenerator
     /**
      * @inheritdoc
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
         $pathLength         = 0;
         $visitedTransitions = [];
         $visitedPlaces      = [$workflow->getDefinition()->getInitialPlace()];
-        $transitionCoverage = $metaData->transitionCoverage ?? $this->transitionCoverage;
-        $placeCoverage      = $metaData->placeCoverage ?? $this->placeCoverage;
-        $maxPathLength      = $metaData->maxPathLength ?? $this->maxPathLength;
+        $transitionCoverage = $metaData['transitionCoverage'] ?? $this->transitionCoverage;
+        $placeCoverage      = $metaData['placeCoverage'] ?? $this->placeCoverage;
+        $maxPathLength      = $metaData['maxPathLength'] ?? $this->maxPathLength;
 
         while (true) {
             /** @var Transition[] $transitions */

@@ -63,7 +63,7 @@ class ReplayTaskMessageTest extends MessageTestCase
         $task->setTitle('Test regression task');
         $task->setModel($model);
         $task->setGenerator($generator);
-        $task->setMetaData((object) ['bugId' => $bug->getId()]);
+        $task->setMetaData(['bugId' => $bug->getId()]);
         $task->setReducer($reducer);
         $task->setTakeScreenshots(false);
         $entityManager->persist($task);

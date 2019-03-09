@@ -27,9 +27,9 @@ class ReplayGenerator extends AbstractGenerator
      *
      * @throws Exception
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
-        $bugId = $metaData->bugId ?? null;
+        $bugId = $metaData['bugId'] ?? null;
 
         if (!$bugId) {
             throw new Exception('Missing bug id');

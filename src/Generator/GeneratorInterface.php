@@ -12,10 +12,10 @@ interface GeneratorInterface extends PluginInterface
     /**
      * @param Workflow $workflow
      * @param AbstractSubject $subject
-     * @param object|null $metaData
+     * @param array $metaData
      * @return Generator
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, $metaData = null): Generator;
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator;
 
     public function applyTransition(Workflow $workflow, AbstractSubject $subject, string $transitionName): bool;
 }
