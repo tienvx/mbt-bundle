@@ -33,7 +33,8 @@ class Bug
     private $status = 'new';
 
     /**
-     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json_document", options={"jsonb": true})
+     * @Assert\NotNull
      * @MbtAssert\Path
      */
     private $path;
