@@ -33,8 +33,7 @@ class Bug
     private $status = 'new';
 
     /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
+     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
      * @MbtAssert\Path
      */
     private $path;
@@ -101,12 +100,12 @@ class Bug
         $this->status = $status;
     }
 
-    public function getPath(): string
+    public function getPath(): array
     {
         return $this->path;
     }
 
-    public function setPath(string $path)
+    public function setPath(array $path)
     {
         $this->path = $path;
     }

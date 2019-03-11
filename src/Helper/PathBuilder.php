@@ -12,18 +12,6 @@ use Tienvx\Bundle\MbtBundle\Graph\Path;
 class PathBuilder
 {
     /**
-     * @param string $path
-     * @return Path
-     * @throws Exception
-     */
-    public static function build(string $path): Path
-    {
-        $path = Path::unserialize($path);
-
-        return $path;
-    }
-
-    /**
      * @param Graph $graph
      * @param Path $path
      * @param int $from

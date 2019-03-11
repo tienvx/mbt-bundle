@@ -94,6 +94,6 @@ class GeneratePathCommand extends AbstractCommand
             $subject->tearDown();
         }
 
-        $output->writeln(Path::serialize($path));
+        $output->writeln(json_encode(Path::serialize($path)));
     }
 }

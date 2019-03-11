@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class ReportBugCommand extends Command
@@ -70,7 +70,7 @@ class ReportBugCommand extends Command
         $bug->setStatus('reported');
         $this->entityManager->flush();
 
-        $path = PathBuilder::build($bug->getPath());
+        $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
 

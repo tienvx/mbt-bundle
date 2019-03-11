@@ -32,7 +32,7 @@ class BinaryPathReducer extends AbstractPathReducer
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         $graph = $this->graphBuilder->build($workflow);
-        $path = PathBuilder::build($bug->getPath());
+        $path = Path::unserialize($bug->getPath());
 
         $messagesCount = 0;
         if ($bug->getLength() >= $message->getData()['length']) {

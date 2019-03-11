@@ -94,36 +94,31 @@ class Path implements Iterator
 
     /**
      * @param Path $path
-     * @return false|string
+     * @return array
      */
-    public static function serialize(Path $path)
+    public static function serialize(Path $path): array
     {
         $result = [];
         foreach ($path as $step) {
-            $result[] = [
-                'transition' => $step[0],
-                'data' => json_encode($step[1]),
-                'places' => json_encode($step[2]),
-            ];
+            $result[] = $step;
         }
-        return json_encode($result);
+        return $result;
     }
 
     /**
-     * @param string $serialized
+     * @param array $steps
      * @return Path
      * @throws Exception
      */
-    public static function unserialize(string $serialized): Path
+    public static function unserialize(array $steps): Path
     {
         $transitions = [];
         $data = [];
         $places = [];
-        $steps = json_decode($serialized, true);
         foreach ($steps as $step) {
-            $transitions[] = $step['transition'];
-            $data[] = json_decode($step['data'], true);
-            $places[] = json_decode($step['places'], true);
+            $transitions[] = $step[0];
+            $data[] = $step[1];
+            $places[] = $step[2];
         }
         return new Path($transitions, $data, $places);
     }
