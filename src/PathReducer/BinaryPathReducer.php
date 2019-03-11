@@ -87,24 +87,22 @@ class BinaryPathReducer extends AbstractPathReducer
             $quotient = floor($path->countTransitions() / $divisor);
             $remainder = $path->countTransitions() % $divisor;
 
-            if ($quotient <= 0 || $path->countTransitions() < 0) {
-                return 0;
-            }
-
-            for ($k = 0; $k < $divisor; $k++) {
-                $i = $quotient * $k;
-                if ($k === ($divisor - 1)) {
-                    $j = $quotient * ($k + 1) + $remainder;
-                } else {
-                    $j = $quotient * ($k + 1);
+            if ($quotient > 0 && $path->countTransitions() >= 0) {
+                for ($k = 0; $k < $divisor; $k++) {
+                    $i = $quotient * $k;
+                    if ($k === ($divisor - 1)) {
+                        $j = $quotient * ($k + 1) + $remainder;
+                    } else {
+                        $j = $quotient * ($k + 1);
+                    }
+                    $message = new ReductionMessage($bug->getId(), static::getName(), [
+                        'length' => $path->countPlaces(),
+                        'pair' => [$i, $j],
+                        'divisor' => $divisor,
+                    ]);
+                    $this->messageBus->dispatch($message);
+                    $messagesCount++;
                 }
-                $message = new ReductionMessage($bug->getId(), static::getName(), [
-                    'length' => $path->countPlaces(),
-                    'pair' => [$i, $j],
-                    'divisor' => $divisor,
-                ]);
-                $this->messageBus->dispatch($message);
-                $messagesCount++;
             }
 
             $bug->setMessagesCount($messagesCount);

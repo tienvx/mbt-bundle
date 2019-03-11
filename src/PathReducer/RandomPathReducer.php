@@ -88,19 +88,17 @@ class RandomPathReducer extends AbstractPathReducer
                 $path = Path::unserialize($bug->getPath());
             }
 
-            if ($path->countPlaces() <= 2) {
-                return 0;
-            }
-
             $messagesCount = 0;
-            $pairs = Randomizer::randomPairs($path->countPlaces(), $path->countPlaces());
-            foreach ($pairs as $pair) {
-                $message = new ReductionMessage($bug->getId(), static::getName(), [
-                    'length' => $path->countPlaces(),
-                    'pair' => $pair,
-                ]);
-                $this->messageBus->dispatch($message);
-                $messagesCount++;
+            if ($path->countPlaces() > 2) {
+                $pairs = Randomizer::randomPairs($path->countPlaces(), $path->countPlaces());
+                foreach ($pairs as $pair) {
+                    $message = new ReductionMessage($bug->getId(), static::getName(), [
+                        'length' => $path->countPlaces(),
+                        'pair' => $pair,
+                    ]);
+                    $this->messageBus->dispatch($message);
+                    $messagesCount++;
+                }
             }
 
             $bug->setMessagesCount($messagesCount);
