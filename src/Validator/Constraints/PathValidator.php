@@ -19,12 +19,12 @@ class PathValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Path');
         }
 
-        if (empty($value)) {
-            return;
-        }
-
         if (!is_array($value)) {
             throw new UnexpectedTypeException($value, 'array');
+        }
+
+        if (empty($value)) {
+            return;
         }
 
         try {
