@@ -7,7 +7,7 @@ use Exception;
 use Generator;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ReplayGenerator extends AbstractGenerator
@@ -40,7 +40,7 @@ class ReplayGenerator extends AbstractGenerator
             throw new Exception(sprintf('No task found for id %d', $bugId));
         }
 
-        $path = PathBuilder::build($bug->getPath());
+        $path = Path::unserialize($bug->getPath());
         foreach ($path as $index => $step) {
             $transitionName = $step[0];
             $data = $step[1];

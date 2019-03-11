@@ -19,16 +19,16 @@ class PathValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Path');
         }
 
-        if (null === $value || '' === $value) {
+        if (empty($value)) {
             return;
         }
 
-        if (!is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
-            throw new UnexpectedTypeException($value, 'string');
+        if (!is_array($value)) {
+            throw new UnexpectedTypeException($value, 'array');
         }
 
         try {
-            $path = GraphPath::unserialize($value);
+            GraphPath::unserialize($value);
         } catch (Exception $exception) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)

@@ -51,7 +51,7 @@ class GeneratePathCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $path = Path::unserialize($output);
+        $path = Path::unserialize(json_decode($output, true));
         $this->assertInstanceOf(Path::class, $path);
 
         if ($path instanceof Path) {

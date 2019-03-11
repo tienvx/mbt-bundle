@@ -25,7 +25,7 @@ class LoopPathReducer extends AbstractPathReducer
             return;
         }
 
-        $path = PathBuilder::build($bug->getPath());
+        $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();
 
         $messagesCount = 0;

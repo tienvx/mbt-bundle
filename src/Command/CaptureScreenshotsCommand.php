@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class CaptureScreenshotsCommand extends AbstractCommand
@@ -80,7 +80,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $path = PathBuilder::build($bug->getPath());
+        $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
         $workflow = $this->workflowRegistry->get($subject, $model);
