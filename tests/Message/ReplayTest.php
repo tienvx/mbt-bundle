@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
-class ReplayTaskMessageTest extends MessageTestCase
+class ReplayTest extends MessageTestCase
 {
     /**
      * @param string $model
@@ -18,7 +18,7 @@ class ReplayTaskMessageTest extends MessageTestCase
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testConsumeMessage(string $model, string $generator, string $reducer, bool $regression)
+    public function testExecute(string $model, string $generator, string $reducer, bool $regression)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);

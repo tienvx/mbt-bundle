@@ -87,7 +87,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
             throw new Exception('Can not reduce the bug: No workflows were defined');
         }
 
-        $this->dispatch($bug->getId());
+        $messagesCount = $this->dispatch($bug->getId());
+        if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
+            // TODO Add 'finished' status
+            $this->finish($bug);
+        }
     }
 
     /**
@@ -112,10 +116,8 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
             if ($bug->getMessagesCount() === 0) {
                 $messagesCount = $this->dispatch($bug->getId(), null, $message);
-                if ($messagesCount === 0) {
+                if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
                     // TODO Add 'finished' status
-                    // TODO Support 'binary' and 'random' reducers
-                    //if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
                     $this->finish($bug);
                 }
             }

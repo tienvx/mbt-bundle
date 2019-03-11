@@ -7,7 +7,7 @@ class Randomizer
     /**
      * https://stackoverflow.com/a/11872928
      *
-     * @param array $values
+     * @param array $values [key => weight]
      * @return mixed random key from weighted array
      */
     public static function randomByWeight(array $values)
