@@ -93,7 +93,6 @@ class ExecuteTaskCommand extends AbstractCommand
         }
 
         $task->setStatus('in-progress');
-        $this->entityManager->flush();
 
         $this->setAnonymousToken();
 
@@ -128,7 +127,6 @@ class ExecuteTaskCommand extends AbstractCommand
             $bug->setTask($task);
             $bug->setStatus('new');
             $this->entityManager->persist($bug);
-            $this->entityManager->flush();
         } finally {
             $subject->tearDown();
 

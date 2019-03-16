@@ -10,7 +10,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Event\ReducerFinishEvent;
+use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReportMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -68,9 +69,12 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     protected function finish(Bug $bug)
     {
-        $event = new ReducerFinishEvent($bug);
-
-        $this->dispatcher->dispatch('tienvx_mbt.finish_reduce', $event);
+        $message = new ReportMessage($bug->getId());
+        $this->messageBus->dispatch($message);
+        if ($bug->getTask()->getTakeScreenshots()) {
+            $message = new CaptureScreenshotsMessage($bug->getId());
+            $this->messageBus->dispatch($message);
+        }
     }
 
     public function handle(ReductionMessage $message)
@@ -100,8 +104,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
      */
     public function postHandle(ReductionMessage $message)
     {
-        $this->entityManager->beginTransaction();
-        try {
+        $callback = function () use ($message) {
             $bug = $this->entityManager->find(Bug::class, $message->getBugId(), LockMode::PESSIMISTIC_WRITE);
 
             if (!$bug || !$bug instanceof Bug) {
@@ -110,8 +113,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
             if ($bug->getMessagesCount() > 0) {
                 $bug->setMessagesCount($bug->getMessagesCount() - 1);
-                $this->entityManager->flush();
-                $this->entityManager->commit();
             }
 
             if ($bug->getMessagesCount() === 0) {
@@ -121,9 +122,8 @@ abstract class AbstractPathReducer implements PathReducerInterface
                     $this->finish($bug);
                 }
             }
-        } catch (Throwable $throwable) {
-            // Something happen, ignoring.
-            $this->entityManager->rollBack();
-        }
+        };
+
+        $this->entityManager->transactional($callback);
     }
 }
