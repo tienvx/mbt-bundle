@@ -63,8 +63,7 @@ class LoopPathReducer extends AbstractPathReducer
      */
     public function dispatch(int $bugId, Path $newPath = null, ReductionMessage $message = null): int
     {
-        $this->entityManager->beginTransaction();
-        try {
+        $callback = function () use ($bugId, $newPath, $message) {
             if ($message && $message->getData()['distance'] <= 1) {
                 return 0;
             }
@@ -105,15 +104,11 @@ class LoopPathReducer extends AbstractPathReducer
 
             $bug->setMessagesCount($messagesCount);
 
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-
             return $messagesCount;
-        } catch (Throwable $throwable) {
-            // Something happen, ignoring.
-            $this->entityManager->rollBack();
-            return 0;
-        }
+        };
+
+        $messagesCount = $this->entityManager->transactional($callback);
+        return $messagesCount === true ? 0 : $messagesCount;
     }
 
     public static function getName()
