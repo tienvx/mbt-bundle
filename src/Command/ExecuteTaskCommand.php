@@ -7,12 +7,14 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
+use Tienvx\Bundle\MbtBundle\Message\UpdateTaskStatusMessage;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class ExecuteTaskCommand extends AbstractCommand
@@ -38,6 +40,11 @@ class ExecuteTaskCommand extends AbstractCommand
     private $entityManager;
 
     /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
+    /**
      * @var string
      */
     private $defaultBugTitle;
@@ -45,11 +52,13 @@ class ExecuteTaskCommand extends AbstractCommand
     public function __construct(
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        MessageBusInterface $messageBus
     ) {
         $this->subjectManager   = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager    = $entityManager;
+        $this->messageBus       = $messageBus;
 
         parent::__construct();
     }
@@ -85,15 +94,23 @@ class ExecuteTaskCommand extends AbstractCommand
         }
 
         $taskId = $input->getArgument('task-id');
-        $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 
-        if (!$task || !$task instanceof Task) {
+        $callback = function () use ($taskId) {
+            $task = $this->entityManager->find(Task::class, $taskId);
+
+            if ($task instanceof Task) {
+                $task->setStatus('in-progress');
+            }
+
+            return $task;
+        };
+
+        $task = $this->entityManager->transactional($callback);
+
+        if (!$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
             return;
         }
-
-        $task->setStatus('in-progress');
-        $this->entityManager->flush();
 
         $this->setAnonymousToken();
 
@@ -120,19 +137,19 @@ class ExecuteTaskCommand extends AbstractCommand
                 }
             }
         } catch (Throwable $throwable) {
-            $bug = new Bug();
-            $bug->setTitle($this->defaultBugTitle);
-            $bug->setPath(Path::serialize($path));
-            $bug->setLength($path->countPlaces());
-            $bug->setBugMessage($throwable->getMessage());
-            $bug->setTask($task);
-            $bug->setStatus('new');
-            $this->entityManager->persist($bug);
+            $message = new CreateBugMessage(
+                $this->defaultBugTitle,
+                Path::serialize($path),
+                $path->countPlaces(),
+                $throwable->getMessage(),
+                $task->getId(),
+                'new'
+            );
+            $this->messageBus->dispatch($message);
         } finally {
             $subject->tearDown();
 
-            $task->setStatus('completed');
-            $this->entityManager->flush();
+            $this->messageBus->dispatch(new UpdateTaskStatusMessage($taskId, 'completed'));
         }
     }
 }

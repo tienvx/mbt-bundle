@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ReportMessage
+class ReportBugMessage
 {
     protected $bugId;
 

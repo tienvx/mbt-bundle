@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner as BaseCommandRunner;
@@ -17,9 +18,17 @@ class CommandRunner extends BaseCommandRunner
     {
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
-        if ($parameters[0] === 'mbt:path:reduce') {
-            $parameters[3] = "'{$parameters[3]}'";
-        }
-        $application->run(new StringInput(implode(' ', $parameters)), new NullOutput());
+        $map = [
+            'mbt:bug:capture-screenshots' => ['command', 'bug-id'],
+            'mbt:bug:create' => ['command', 'title', 'path', 'length', 'message', 'task-id', 'status'],
+            'mbt:task:execute' => ['command', 'task-id'],
+            'mbt:bug:reduce' => ['command', 'bug-id'],
+            'mbt:path:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],
+            'mbt:bug:report' => ['command', 'bug-id'],
+            'mbt:task:update-status' => ['command', 'task-id', 'status'],
+            'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
+        ];
+        $command = $parameters[0];
+        $application->run(new ArrayInput(array_combine($map[$command], $parameters)), new NullOutput());
     }
 }

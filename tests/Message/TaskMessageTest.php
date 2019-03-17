@@ -21,6 +21,7 @@ class TaskMessageTest extends MessageTestCase
     {
         $this->clearMessages();
         $this->clearLog();
+        $this->removeScreenshots();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -70,6 +71,8 @@ class TaskMessageTest extends MessageTestCase
             }
             $entityManager->remove($bugs[0]);
             $entityManager->flush();
+
+            $this->consumeMessages();
             $this->assertEquals(0, $this->countScreenshots($bugId));
         } else {
             $this->assertEquals(0, count($bugs));
@@ -81,18 +84,18 @@ class TaskMessageTest extends MessageTestCase
     {
         return [
             ['shopping_cart', 'random', 'loop', true],
-            ['shopping_cart', 'random', 'binary', false],
+            ['shopping_cart', 'random', 'split', false],
             ['shopping_cart', 'random', 'random', true],
             ['shopping_cart', 'probability', 'loop', false],
             ['shopping_cart', 'all-places', 'loop', true],
             ['shopping_cart', 'all-transitions', 'loop', false],
             ['checkout', 'random', 'loop', true],
-            ['checkout', 'random', 'binary', false],
+            ['checkout', 'random', 'split', false],
             ['checkout', 'random', 'random', true],
             ['checkout', 'probability', 'loop', false],
             ['product', 'random', 'loop', true],
-            //['product', 'random', 'binary', false],
-            //['product', 'random', 'random', true],
+            ['product', 'random', 'split', false],
+            ['product', 'random', 'random', true],
             ['product', 'probability', 'loop', false],
         ];
     }

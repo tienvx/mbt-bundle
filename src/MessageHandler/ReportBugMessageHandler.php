@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\ReportMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 
-class ReportMessageHandler implements MessageHandlerInterface
+class ReportBugMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,10 +20,10 @@ class ReportMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ReportMessage $message
+     * @param ReportBugMessage $message
      * @throws Exception
      */
-    public function __invoke(ReportMessage $message)
+    public function __invoke(ReportBugMessage $message)
     {
         $bugId = $message->getBugId();
         $this->commandRunner->run(['mbt:bug:report', $bugId]);

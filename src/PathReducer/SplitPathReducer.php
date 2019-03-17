@@ -6,10 +6,9 @@ use Doctrine\DBAL\LockMode;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
-class RandomPathReducer extends AbstractPathReducer
+class SplitPathReducer extends AbstractPathReducer
 {
     /**
      * @param int $bugId
@@ -36,11 +35,28 @@ class RandomPathReducer extends AbstractPathReducer
 
             $messagesCount = 0;
             if ($path->countPlaces() > 2) {
-                $pairs = Randomizer::randomPairs($path->countPlaces(), floor(sqrt($path->countPlaces())));
-                foreach ($pairs as $pair) {
-                    $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $pair[0], $pair[1]);
-                    $this->messageBus->dispatch($message);
-                    $messagesCount++;
+                $divisor = 2;
+                $quotient = floor($path->countPlaces() / $divisor);
+                $remainder = $path->countPlaces() % $divisor;
+                while ($quotient > 1) {
+                    for ($k = 0; $k < $divisor; $k++) {
+                        $i = $quotient * $k;
+                        if ($k === ($divisor - 1)) {
+                            $j = $quotient * ($k + 1) - 1 + $remainder;
+                        } else {
+                            $j = $quotient * ($k + 1) - 1;
+                        }
+                        $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
+                        $this->messageBus->dispatch($message);
+                        $messagesCount++;
+                        if ($messagesCount >= floor(sqrt($path->countPlaces()))) {
+                            break 2;
+                        }
+                    }
+
+                    $divisor++;
+                    $quotient = floor($path->countPlaces() / $divisor);
+                    $remainder = $path->countPlaces() % $divisor;
                 }
             }
 
@@ -55,6 +71,6 @@ class RandomPathReducer extends AbstractPathReducer
 
     public static function getName()
     {
-        return 'random';
+        return 'split';
     }
 }

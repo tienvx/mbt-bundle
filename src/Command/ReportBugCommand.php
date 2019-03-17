@@ -35,8 +35,8 @@ class ReportBugCommand extends Command
         LoggerInterface $logger,
         SubjectManager $subjectManager
     ) {
-        $this->entityManager = $entityManager;
-        $this->logger = $logger;
+        $this->entityManager  = $entityManager;
+        $this->logger         = $logger;
         $this->subjectManager = $subjectManager;
 
         parent::__construct();
@@ -59,16 +59,23 @@ class ReportBugCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
-        /** @var Bug $bug */
-        $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
-        if (!$bug) {
+        $callback = function () use ($bugId) {
+            $bug = $this->entityManager->find(Bug::class, $bugId);
+
+            if ($bug instanceof Bug) {
+                $bug->setStatus('reported');
+            }
+
+            return $bug;
+        };
+
+        $bug = $this->entityManager->transactional($callback);
+
+        if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
             return;
         }
-
-        $bug->setStatus('reported');
-        $this->entityManager->flush();
 
         $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();

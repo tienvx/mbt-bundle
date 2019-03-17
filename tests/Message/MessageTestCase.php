@@ -72,6 +72,11 @@ abstract class MessageTestCase extends TestCase
         return filesize("{$this->logDir}/test.log") !== 0;
     }
 
+    protected function removeScreenshots()
+    {
+        exec("rm -rf {$this->screenshotsDir}/*");
+    }
+
     protected function countScreenshots(int $bugId)
     {
         return count(glob($this->screenshotsDir . "/{$bugId}/*.*"));

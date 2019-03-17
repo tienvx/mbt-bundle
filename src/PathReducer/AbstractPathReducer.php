@@ -5,14 +5,18 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\SimpleCache\CacheException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
+use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReportMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -69,16 +73,51 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     protected function finish(Bug $bug)
     {
-        $message = new ReportMessage($bug->getId());
-        $this->messageBus->dispatch($message);
+        $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
         if ($bug->getTask()->getTakeScreenshots()) {
-            $message = new CaptureScreenshotsMessage($bug->getId());
-            $this->messageBus->dispatch($message);
+            $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
         }
     }
 
-    public function handle(ReductionMessage $message)
+    /**
+     * @param int $bugId
+     * @param int $length
+     * @param int $from
+     * @param int $to
+     * @throws Exception
+     * @throws CacheException
+     */
+    public function handle(int $bugId, int $length, int $from, int $to)
     {
+        $bug = $this->entityManager->find(Bug::class, $bugId);
+
+        if (!$bug || !$bug instanceof Bug) {
+            return;
+        }
+
+        $model = $bug->getTask()->getModel();
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+
+        $graph = $this->graphBuilder->build($workflow);
+        $path = Path::unserialize($bug->getPath());
+
+        if ($bug->getLength() >= $length) {
+            // The reproduce path has not been reduced.
+            $newPath = PathBuilder::createWithShortestPath($graph, $path, $from, $to);
+            // Make sure new path shorter than old path.
+            if ($newPath->countPlaces() < $path->countPlaces()) {
+                try {
+                    $subject = $this->subjectManager->createSubject($model);
+                    PathRunner::run($newPath, $workflow, $subject);
+                } catch (Throwable $newThrowable) {
+                    if ($newThrowable->getMessage() === $bug->getBugMessage()) {
+                        $this->dispatch($bug->getId(), $newPath);
+                    }
+                }
+            }
+        }
+
+        $this->postHandle($bugId);
     }
 
     /**
@@ -92,38 +131,30 @@ abstract class AbstractPathReducer implements PathReducerInterface
         }
 
         $messagesCount = $this->dispatch($bug->getId());
-        if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
-            // TODO Add 'finished' status
+        if ($messagesCount === 0) {
             $this->finish($bug);
         }
     }
 
     /**
-     * @param ReductionMessage $message
+     * @param int $bugId
      * @throws Exception
      */
-    public function postHandle(ReductionMessage $message)
+    public function postHandle(int $bugId)
     {
-        $callback = function () use ($message) {
-            $bug = $this->entityManager->find(Bug::class, $message->getBugId(), LockMode::PESSIMISTIC_WRITE);
+        $callback = function () use ($bugId) {
+            $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
-            if (!$bug || !$bug instanceof Bug) {
-                return;
-            }
-
-            if ($bug->getMessagesCount() > 0) {
+            if ($bug instanceof Bug && $bug->getMessagesCount() > 0) {
                 $bug->setMessagesCount($bug->getMessagesCount() - 1);
             }
 
-            if ($bug->getMessagesCount() === 0) {
-                $messagesCount = $this->dispatch($bug->getId(), null, $message);
-                if ($messagesCount === 0 && $bug->getStatus() !== 'reported') {
-                    // TODO Add 'finished' status
-                    $this->finish($bug);
-                }
-            }
+            return $bug;
         };
 
-        $this->entityManager->transactional($callback);
+        $bug = $this->entityManager->transactional($callback);
+        if ($bug instanceof Bug && $bug->getMessagesCount() === 0) {
+            $this->finish($bug);
+        }
     }
 }

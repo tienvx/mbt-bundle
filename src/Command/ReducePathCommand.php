@@ -6,7 +6,7 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReducePathCommand extends AbstractCommand
@@ -27,8 +27,10 @@ class ReducePathCommand extends AbstractCommand
             ->setDescription("Handle a path reducer's message.")
             ->setHelp('Call path reducer to handle a message that was come from itself')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
-            ->addArgument('reducer', InputArgument::OPTIONAL, 'The path reducer.', 'random')
-            ->addArgument('data', InputArgument::OPTIONAL, 'The json encoded data.', '[]');
+            ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.')
+            ->addArgument('length', InputArgument::REQUIRED, 'The path length.')
+            ->addArgument('from', InputArgument::REQUIRED, 'From places.')
+            ->addArgument('to', InputArgument::REQUIRED, 'To places.');
     }
 
     /**
@@ -40,13 +42,13 @@ class ReducePathCommand extends AbstractCommand
     {
         $bugId = $input->getArgument('bug-id');
         $reducer = $input->getArgument('reducer');
-        $data = $input->getArgument('data');
-        $data = json_decode(trim($data, "'"), true);
-        $message = new ReductionMessage($bugId, $reducer, $data);
+        $length = $input->getArgument('length');
+        $from = $input->getArgument('from');
+        $to = $input->getArgument('to');
 
         $this->setAnonymousToken();
 
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $pathReducer->handle($message);
+        $pathReducer->handle($bugId, $length, $from, $to);
     }
 }

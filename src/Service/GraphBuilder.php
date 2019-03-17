@@ -42,7 +42,7 @@ class GraphBuilder
             $graph = $this->buildForWorkflow($workflow);
             $initVertex = VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]);
             $components = new ConnectedComponents($graph);
-            return $components->createGraphComponentVertex($graph->getVertex($initVertex));
+            $graph = $components->createGraphComponentVertex($graph->getVertex($initVertex));
         }
 
         $this->cache->set('mbt.graph.' . $workflow->getName(), $graph);
