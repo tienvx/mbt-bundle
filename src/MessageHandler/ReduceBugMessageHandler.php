@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\BugMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 
-class BugMessageHandler implements MessageHandlerInterface
+class ReduceBugMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,12 +20,12 @@ class BugMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param BugMessage $bugMessage
+     * @param ReduceBugMessage $message
      * @throws Exception
      */
-    public function __invoke(BugMessage $bugMessage)
+    public function __invoke(ReduceBugMessage $message)
     {
-        $id = $bugMessage->getId();
+        $id = $message->getId();
         $this->commandRunner->run(['mbt:bug:reduce', $id]);
     }
 }

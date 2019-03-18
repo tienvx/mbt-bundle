@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class BugMessage
+class ReduceBugMessage
 {
     protected $id;
 

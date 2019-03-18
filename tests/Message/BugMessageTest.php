@@ -38,6 +38,7 @@ class BugMessageTest extends MessageTestCase
 
         $this->clearMessages();
         $this->clearLog();
+        $this->removeScreenshots();
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
@@ -79,7 +80,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => 57], ['product' => 49], []],
                     [['home'], ['category'], ['category'], ['checkout']]
                 ],
-                'binary',
+                'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => 57], ['product' => 49], []],
@@ -107,7 +108,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['home'], ['category'], ['category'], ['checkout']],
                 ],
-                'binary',
+                'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -135,7 +136,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
-                'binary',
+                'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -173,9 +174,9 @@ class BugMessageTest extends MessageTestCase
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20_27'], ['category' => '20'], ['product' => '33'], []],
-                    [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
+                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20'], ['product' => '33'], []],
+                    [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
                 ],
                 'loop',
                 [
@@ -191,7 +192,7 @@ class BugMessageTest extends MessageTestCase
                     [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
                     [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
                 ],
-                'binary',
+                'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
@@ -201,11 +202,11 @@ class BugMessageTest extends MessageTestCase
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
-                    [null, ['category' => '57'], ['product' => '49'], ['product' => '48'], [], []],
-                    [['home'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'checkoutFromHome'],
+                    [null, ['category' => '57'], ['product' => '49'], [], [], []],
+                    [['home'], ['category'], ['category'], ['cart'], ['home'], ['checkout']],
                 ],
-                'binary',
+                'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],

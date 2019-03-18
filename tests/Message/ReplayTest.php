@@ -58,6 +58,7 @@ class ReplayTest extends MessageTestCase
 
         $this->clearMessages();
         $this->clearLog();
+        $this->removeScreenshots();
 
         $task = new Task();
         $task->setTitle('Test regression task');

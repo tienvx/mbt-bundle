@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class TaskMessage
+class ExecuteTaskMessage
 {
     protected $id;
 

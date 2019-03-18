@@ -7,18 +7,36 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Message\UpdateBugStatusMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReduceBugCommand extends AbstractCommand
 {
+    /**
+     * @var PathReducerManager
+     */
     private $pathReducerManager;
+
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
 
-    public function __construct(PathReducerManager $pathReducerManager, EntityManagerInterface $entityManager)
-    {
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
+    public function __construct(
+        PathReducerManager $pathReducerManager,
+        EntityManagerInterface $entityManager,
+        MessageBusInterface $messageBus
+    ) {
         $this->pathReducerManager = $pathReducerManager;
-        $this->entityManager = $entityManager;
+        $this->entityManager      = $entityManager;
+        $this->messageBus         = $messageBus;
 
         parent::__construct();
     }
@@ -40,18 +58,25 @@ class ReduceBugCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
-        /** @var Bug $bug */
-        $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
-        if (!$bug) {
+        $callback = function () use ($bugId) {
+            $bug = $this->entityManager->find(Bug::class, $bugId);
+
+            if ($bug instanceof Bug) {
+                $bug->setStatus('reducing');
+            }
+
+            return $bug;
+        };
+
+        $bug = $this->entityManager->transactional($callback);
+
+        if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
             return;
         }
 
         $this->setAnonymousToken();
-
-        $bug->setStatus('reducing');
-        $this->entityManager->flush();
 
         $pathReducer = $this->pathReducerManager->getPathReducer($bug->getTask()->getReducer());
         $pathReducer->reduce($bug);

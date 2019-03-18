@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\TaskMessage;
+use Tienvx\Bundle\MbtBundle\Message\UpdateTaskStatusMessage;
 
-class TaskMessageHandler implements MessageHandlerInterface
+class UpdateTaskStatusMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,12 +20,13 @@ class TaskMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param TaskMessage $taskMessage
+     * @param UpdateTaskStatusMessage $message
      * @throws Exception
      */
-    public function __invoke(TaskMessage $taskMessage)
+    public function __invoke(UpdateTaskStatusMessage $message)
     {
-        $id = $taskMessage->getId();
-        $this->commandRunner->run(['mbt:task:execute', $id]);
+        $taskId = $message->getId();
+        $status = $message->getStatus();
+        $this->commandRunner->run(['mbt:task:update-status', $taskId, $status]);
     }
 }

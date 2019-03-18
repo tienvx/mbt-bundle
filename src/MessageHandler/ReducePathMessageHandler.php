@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
-class ReductionMessageHandler implements MessageHandlerInterface
+class ReducePathMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,14 +20,16 @@ class ReductionMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ReductionMessage $message
+     * @param ReducePathMessage $message
      * @throws Exception
      */
-    public function __invoke(ReductionMessage $message)
+    public function __invoke(ReducePathMessage $message)
     {
         $bugId = $message->getBugId();
         $reducer = $message->getReducer();
-        $data = $message->getData();
-        $this->commandRunner->run(['mbt:path:reduce', $bugId, $reducer, json_encode($data)]);
+        $length = $message->getLength();
+        $from = $message->getFrom();
+        $to = $message->getTo();
+        $this->commandRunner->run(['mbt:path:reduce', $bugId, $reducer, $length, $from, $to]);
     }
 }

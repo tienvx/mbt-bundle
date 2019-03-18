@@ -9,17 +9,20 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
-use Tienvx\Bundle\MbtBundle\Message\ReductionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
 class LoopPathReducer extends AbstractPathReducer
 {
     /**
-     * @param ReductionMessage $message
+     * @param int $bugId
+     * @param int $length
+     * @param int $from
+     * @param int $to
      * @throws Exception
      */
-    public function handle(ReductionMessage $message)
+    public function handle(int $bugId, int $length, int $from, int $to)
     {
-        $bug = $this->entityManager->find(Bug::class, $message->getBugId());
+        $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug || !$bug instanceof Bug) {
             return;
@@ -28,12 +31,10 @@ class LoopPathReducer extends AbstractPathReducer
         $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();
 
-        $messagesCount = 0;
-        if ($bug->getLength() >= $message->getData()['length']) {
+        if ($bug->getLength() >= $length) {
             // The reproduce path has not been reduced.
-            list($i, $j) = $message->getData()['pair'];
-            if ($j <= $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
-                $newPath = PathBuilder::createWithoutLoop($path, $i, $j);
+            if ($to <= $path->countPlaces() && !array_diff($path->getPlacesAt($from), $path->getPlacesAt($to))) {
+                $newPath = PathBuilder::createWithoutLoop($path, $from, $to);
                 // Make sure new path shorter than old path.
                 if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
@@ -42,32 +43,25 @@ class LoopPathReducer extends AbstractPathReducer
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                            $messagesCount = $this->dispatch($bug->getId(), $newPath);
+                            $this->dispatch($bug->getId(), $newPath);
                         }
                     }
                 }
             }
         }
 
-        if ($messagesCount === 0) {
-            $this->postHandle($message);
-        }
+        $this->postHandle($bugId);
     }
 
     /**
      * @param int $bugId
      * @param Path|null $newPath
-     * @param ReductionMessage|null $message
      * @return int
      * @throws Exception
      */
-    public function dispatch(int $bugId, Path $newPath = null, ReductionMessage $message = null): int
+    public function dispatch(int $bugId, Path $newPath = null): int
     {
-        $callback = function () use ($bugId, $newPath, $message) {
-            if ($message && $message->getData()['distance'] <= 1) {
-                return 0;
-            }
-
+        $callback = function () use ($bugId, $newPath) {
             $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
             if (!$bug || !$bug instanceof Bug) {
@@ -83,26 +77,23 @@ class LoopPathReducer extends AbstractPathReducer
             }
 
             $messagesCount = 0;
-            $distance = $newPath ? $newPath->countPlaces() :
-                ($message ? ($message->getData()['distance'] - 1) : $bug->getLength());
-            while ($distance > 0 && $messagesCount === 0) {
+            $distance = $path->countPlaces();
+            while ($distance > 0) {
                 for ($i = 0; $i < $path->countPlaces(); $i++) {
                     $j = $i + $distance;
                     if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
-                        $pair = [$i, $j];
-                        $message = new ReductionMessage($bug->getId(), static::getName(), [
-                            'length' => $path->countPlaces(),
-                            'pair' => $pair,
-                            'distance' => $distance,
-                        ]);
+                        $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
                         $this->messageBus->dispatch($message);
                         $messagesCount++;
+                        if ($messagesCount >= $path->countPlaces()) {
+                            break 2;
+                        }
                     }
                 }
                 $distance--;
             }
 
-            $bug->setMessagesCount($messagesCount);
+            $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
 
             return $messagesCount;
         };

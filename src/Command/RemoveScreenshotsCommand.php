@@ -47,7 +47,8 @@ class RemoveScreenshotsCommand extends Command
             ->setName('mbt:bug:remove-screenshots')
             ->setDescription('Remove screenshots of a bug.')
             ->setHelp('Remove screenshots of a bug when the bug is removed.')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
+            ->addArgument('model', InputArgument::REQUIRED, 'The model of the task.');
     }
 
     /**
@@ -58,17 +59,9 @@ class RemoveScreenshotsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
-        /** @var Bug $bug */
-        $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
+        $model = $input->getArgument('model');
 
-        if (!$bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-            return;
-        }
-
-        $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
-
         $subject->setScreenshotsDir($this->params->get('screenshots_dir'));
         $subject->removeScreenshots($bugId);
     }
