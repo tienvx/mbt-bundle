@@ -3,14 +3,14 @@
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReducePathCommand;
 use Tienvx\Bundle\MbtBundle\Command\ReduceBugCommand;
+use Tienvx\Bundle\MbtBundle\Command\ReducePathCommand;
 
 class SecurityTokenPass implements CompilerPassInterface
 {

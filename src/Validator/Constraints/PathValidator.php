@@ -31,7 +31,7 @@ class PathValidator extends ConstraintValidator
             GraphPath::unserialize($value);
         } catch (Exception $exception) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ string }}', $value)
+                ->setParameter('{{ string }}', json_encode($value))
                 ->addViolation();
         }
     }

@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 class GeneratorPass implements CompilerPassInterface

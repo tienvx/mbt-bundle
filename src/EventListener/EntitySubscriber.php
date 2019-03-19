@@ -8,8 +8,8 @@ use Doctrine\ORM\Events;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\RemoveScreenshotsMessage;
 
 class EntitySubscriber implements EventSubscriber

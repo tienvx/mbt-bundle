@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

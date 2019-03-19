@@ -6,7 +6,6 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReducePathCommand extends AbstractCommand
