@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\EventListener;
 
-use Exception;
 use Doctrine\Common\Annotations\Reader;
+use Exception;
 use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;

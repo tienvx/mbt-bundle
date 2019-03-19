@@ -9,8 +9,8 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
+use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 

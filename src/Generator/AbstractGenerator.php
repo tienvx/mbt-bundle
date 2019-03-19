@@ -2,9 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Generator;
 use Symfony\Component\Workflow\Exception\TransitionException;
-use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 

@@ -2,14 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Message\UpdateBugStatusMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReduceBugCommand extends AbstractCommand

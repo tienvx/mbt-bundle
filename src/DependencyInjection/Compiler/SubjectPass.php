@@ -3,9 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Exception\RuntimeException;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class SubjectPass implements CompilerPassInterface

@@ -10,8 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Graph\Dumper\PlantUmlDumper;
 use Tienvx\Bundle\MbtBundle\Graph\Dumper\GraphvizDumper;
+use Tienvx\Bundle\MbtBundle\Graph\Dumper\PlantUmlDumper;
 use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 
