@@ -31,7 +31,7 @@ abstract class MessageTestCase extends TestCase
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
         $this->logDir = $params->get('kernel.logs_dir');
-        $this->screenshotsDir = $params->get('screenshots_dir');
+        $this->screenshotsDir = $params->get('mbt.screenshots_dir');
     }
 
     /**

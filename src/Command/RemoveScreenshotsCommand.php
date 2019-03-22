@@ -61,7 +61,7 @@ class RemoveScreenshotsCommand extends Command
         $model = $input->getArgument('model');
 
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setScreenshotsDir($this->params->get('screenshots_dir'));
+        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
         $subject->removeScreenshots($bugId);
     }
 }
