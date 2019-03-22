@@ -28,7 +28,7 @@ class Bug
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\Choice({"new", "reducing", "reported"})
+     * @Assert\Choice({"new", "reducing", "reduced", "reported"})
      */
     private $status = 'new';
 

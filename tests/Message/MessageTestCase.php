@@ -69,7 +69,7 @@ abstract class MessageTestCase extends TestCase
 
     protected function hasLog()
     {
-        return filesize("{$this->logDir}/test.log") !== 0;
+        return file_exists("{$this->logDir}/test.log") && filesize("{$this->logDir}/test.log") !== 0;
     }
 
     protected function removeScreenshots()

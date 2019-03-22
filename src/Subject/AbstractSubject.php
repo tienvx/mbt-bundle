@@ -139,6 +139,12 @@ abstract class AbstractSubject implements SubjectInterface
         }
     }
 
+    public function isImageScreenshot()
+    {
+        // If false, try not to put very long text to the screenshot
+        return true;
+    }
+
     public function hasScreenshot($bugId, $index)
     {
         return file_exists($this->screenshotsDir . "/{$bugId}/{$index}.png");
