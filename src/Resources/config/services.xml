@@ -36,5 +36,9 @@
         <service id="GuzzleHttp\Client" class="GuzzleHttp\Client" autowire="true"/>
 
         <service id="mbt.bug_formatter" class="Tienvx\Bundle\MbtBundle\Formatter\BugFormatter" />
+
+        <service id="Tienvx\Bundle\MbtBundle\Command\ReportBugCommand">
+            <argument key="$logger" type="service" id="monolog.logger.mbt"/>
+        </service>
     </services>
 </container>

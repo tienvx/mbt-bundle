@@ -13,9 +13,4 @@ services:
         # Configure the tags: this enables the `memory://` transport to be auto-discovered
         tags: ['messenger.transport_factory']
 
-    Tienvx\Bundle\MbtBundle\Command\ReportBugCommand:
-        arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-            $logger: '@monolog.logger.mbt'
-
     Tienvx\Bundle\MbtBundle\Command\CommandRunner: '@App\Command\CommandRunner'
