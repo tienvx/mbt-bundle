@@ -4,7 +4,6 @@ namespace App\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner as BaseCommandRunner;
 
 class CommandRunner extends BaseCommandRunner
@@ -29,6 +28,6 @@ class CommandRunner extends BaseCommandRunner
             'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
         ];
         $command = $parameters[0];
-        $application->run(new ArrayInput(array_combine($map[$command], $parameters)), new NullOutput());
+        $application->run(new ArrayInput(array_combine($map[$command], $parameters)));
     }
 }
