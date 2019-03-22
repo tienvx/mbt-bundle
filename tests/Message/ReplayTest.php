@@ -67,6 +67,7 @@ class ReplayTest extends MessageTestCase
         $task->setMetaData(['bugId' => $bug->getId()]);
         $task->setReducer($reducer);
         $task->setTakeScreenshots(false);
+        $task->setReportBug(false);
         $entityManager->persist($task);
         $entityManager->flush();
 

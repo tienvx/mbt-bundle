@@ -17,6 +17,7 @@ use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
+use Tienvx\Bundle\MbtBundle\Message\UpdateBugStatusMessage;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -73,7 +74,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     protected function finish(Bug $bug)
     {
-        $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+        if ($bug->getTask()->getReportBug()) {
+            $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+        } else {
+            $this->messageBus->dispatch(new UpdateBugStatusMessage($bug->getId(), 'reduced'));
+        }
         if ($bug->getTask()->getTakeScreenshots()) {
             $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
         }

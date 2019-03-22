@@ -41,8 +41,13 @@ class BugFormatter extends HtmlFormatter
 
                     $transitionName = $step[0];
                     $subject = $record['context']['subject'];
-                    if ($transitionName && $subject instanceof AbstractSubject) {
-                        $embeddedTable .= $this->addRow('Screenshot', $this->addImage($subject->getScreenshot($bug->getId(), $index)), false);
+                    if ($transitionName && $subject instanceof AbstractSubject && $subject->hasScreenshot($bug->getId(), $index)) {
+                        $screenshot = $subject->getScreenshot($bug->getId(), $index);
+                        if ($subject->isImageScreenshot()) {
+                            $embeddedTable .= $this->addRow('Screenshot', $this->addImage($screenshot), false);
+                        } else {
+                            $embeddedTable .= $this->addRow('Screenshot', $this->convertToString($screenshot));
+                        }
                     }
                 }
                 $embeddedTable .= '</table>';

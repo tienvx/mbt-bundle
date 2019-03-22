@@ -14,10 +14,11 @@ class TaskMessageTest extends MessageTestCase
      * @param string $generator
      * @param string $reducer
      * @param bool $takeScreenshots
+     * @param bool $reportBug
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
-    public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots)
+    public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
     {
         $this->clearMessages();
         $this->clearLog();
@@ -32,6 +33,7 @@ class TaskMessageTest extends MessageTestCase
         $task->setGenerator($generator);
         $task->setReducer($reducer);
         $task->setTakeScreenshots($takeScreenshots);
+        $task->setReportBug($reportBug);
         $entityManager->persist($task);
         $entityManager->flush();
 
@@ -61,7 +63,8 @@ class TaskMessageTest extends MessageTestCase
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
-            $this->assertEquals('reported', $bugs[0]->getStatus());
+            $this->assertEquals($reportBug, $this->hasLog());
+            $this->assertEquals($reportBug ? 'reported' : 'reduced', $bugs[0]->getStatus());
 
             $bugId = $bugs[0]->getId();
             if ($takeScreenshots) {
@@ -83,20 +86,20 @@ class TaskMessageTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'random', 'loop', true],
-            ['shopping_cart', 'random', 'split', false],
-            ['shopping_cart', 'random', 'random', true],
-            ['shopping_cart', 'probability', 'loop', false],
-            ['shopping_cart', 'all-places', 'loop', true],
-            ['shopping_cart', 'all-transitions', 'loop', false],
-            ['checkout', 'random', 'loop', true],
-            ['checkout', 'random', 'split', false],
-            ['checkout', 'random', 'random', true],
-            ['checkout', 'probability', 'loop', false],
-            ['product', 'random', 'loop', true],
-            ['product', 'random', 'split', false],
-            ['product', 'random', 'random', true],
-            ['product', 'probability', 'loop', false],
+            ['shopping_cart', 'random', 'loop', true, true],
+            ['shopping_cart', 'random', 'split', false, false],
+            ['shopping_cart', 'random', 'random', true, false],
+            ['shopping_cart', 'probability', 'loop', false, true],
+            ['shopping_cart', 'all-places', 'loop', true, true],
+            ['shopping_cart', 'all-transitions', 'loop', false, false],
+            ['checkout', 'random', 'loop', true, true],
+            ['checkout', 'random', 'split', false, false],
+            ['checkout', 'random', 'random', true, true],
+            ['checkout', 'probability', 'loop', false, false],
+            ['product', 'random', 'loop', true, false],
+            ['product', 'random', 'split', false, true],
+            ['product', 'random', 'random', true, false],
+            ['product', 'probability', 'loop', false, true],
         ];
     }
 }

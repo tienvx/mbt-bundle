@@ -25,6 +25,7 @@ class CommandRunner extends BaseCommandRunner
             'mbt:path:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],
             'mbt:bug:report' => ['command', 'bug-id'],
             'mbt:task:update-status' => ['command', 'task-id', 'status'],
+            'mbt:bug:update-status' => ['command', 'bug-id', 'status'],
             'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
         ];
         $command = $parameters[0];

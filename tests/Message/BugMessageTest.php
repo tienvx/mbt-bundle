@@ -31,6 +31,7 @@ class BugMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator('random');
         $task->setReducer($reducer);
+        $task->setReportBug(true);
         $entityManager->persist($task);
 
         $entityManager->flush();

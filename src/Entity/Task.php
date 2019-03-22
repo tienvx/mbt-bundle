@@ -43,6 +43,11 @@ class Task
     private $generator;
 
     /**
+     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
+     */
+    private $metaData;
+
+    /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      * @MbtAssert\Reducer
@@ -75,9 +80,9 @@ class Task
     private $takeScreenshots = false;
 
     /**
-     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $metaData;
+    private $reportBug = false;
 
     /**
      * @var \DateTime
@@ -143,6 +148,16 @@ class Task
     public function setGenerator(string $generator)
     {
         $this->generator = $generator;
+    }
+
+    public function setMetaData($metaData)
+    {
+        $this->metaData = $metaData;
+    }
+
+    public function getMetaData()
+    {
+        return $this->metaData;
     }
 
     public function getReducer(): string
@@ -213,14 +228,14 @@ class Task
         return $this->takeScreenshots;
     }
 
-    public function setMetaData($metaData)
+    public function setReportBug(bool $reportBug)
     {
-        $this->metaData = $metaData;
+        $this->reportBug = $reportBug;
     }
 
-    public function getMetaData()
+    public function getReportBug()
     {
-        return $this->metaData;
+        return $this->reportBug;
     }
 
     /**
