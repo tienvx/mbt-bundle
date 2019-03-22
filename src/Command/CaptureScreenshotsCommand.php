@@ -86,7 +86,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         $subject->setUp();
-        $subject->setScreenshotsDir($this->params->get('screenshots_dir'));
+        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
 
         try {
             foreach ($path as $index => $step) {

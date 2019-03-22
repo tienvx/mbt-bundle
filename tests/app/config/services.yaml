@@ -1,6 +1,3 @@
-parameters:
-    screenshots_dir: '%kernel.project_dir%/var/screenshots'
-
 services:
     _defaults:
         autowire: true
