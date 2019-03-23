@@ -32,11 +32,9 @@ class ReportBugCommand extends Command
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger,
         SubjectManager $subjectManager
     ) {
         $this->entityManager  = $entityManager;
-        $this->logger         = $logger;
         $this->subjectManager = $subjectManager;
 
         parent::__construct();
@@ -51,6 +49,11 @@ class ReportBugCommand extends Command
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
     }
 
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -58,6 +61,10 @@ class ReportBugCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->logger instanceof LoggerInterface) {
+            throw new Exception("Can not report bug: No monolog's handlers with channel 'mbt' were defined");
+        }
+
         $bugId = $input->getArgument('bug-id');
 
         $callback = function () use ($bugId) {
