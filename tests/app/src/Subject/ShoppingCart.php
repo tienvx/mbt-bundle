@@ -515,4 +515,9 @@ class ShoppingCart extends AbstractSubject
     {
         return true;
     }
+
+    public function getScreenshotUrl($bugId, $index)
+    {
+        return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
+    }
 }

@@ -141,7 +141,6 @@ abstract class AbstractSubject implements SubjectInterface
 
     public function isImageScreenshot()
     {
-        // If false, try not to put very long text to the screenshot
         return true;
     }
 
@@ -161,6 +160,11 @@ abstract class AbstractSubject implements SubjectInterface
             @array_map('unlink', glob($this->screenshotsDir."/{$bugId}/*"));
             rmdir($this->screenshotsDir."/{$bugId}");
         }
+    }
+
+    public function getScreenshotUrl($bugId, $index)
+    {
+        return '';
     }
 
     public function setUp()

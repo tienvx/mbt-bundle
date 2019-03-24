@@ -102,8 +102,8 @@ class TaskMessageTest extends MessageTestCase
             ['checkout', 'probability', 'loop', false, false],
             ['product', 'random', 'loop', true, false],
             ['product', 'random', 'split', false, true],
-            ['product', 'random', 'random', true, true],
-            ['product', 'probability', 'loop', false, false],
+            ['product', 'random', 'random', false, false],
+            ['product', 'probability', 'loop', true, true],
         ];
     }
 }
