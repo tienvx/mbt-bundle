@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class GeneratePathCommandTest extends CommandTestCase
@@ -37,20 +36,23 @@ class GeneratePathCommandTest extends CommandTestCase
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
-        $command = $this->application->find('mbt:path:generate');
-        if ('random' === $generator) {
-            /** @var RandomGenerator $randomGenerator */
-            $randomGenerator = self::$container->get(RandomGenerator::class);
-            $randomGenerator->setTransitionCoverage($transitionCoverage);
-            $randomGenerator->setPlaceCoverage($placeCoverage);
-        }
-
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command' => $command->getName(),
+        $name = 'mbt:path:generate';
+        $input = [
+            'command' => $name,
             'model' => $model,
             '--generator' => $generator,
-        ]);
+        ];
+        if ('random' === $generator) {
+            $input['--meta-data'] = [
+                'maxPathLength' => 300,
+                'transitionCoverage' => $transitionCoverage,
+                'placeCoverage' => $placeCoverage,
+            ];
+        }
+
+        $command = $this->application->find($name);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute($input);
 
         $output = $commandTester->getDisplay();
         $path = Path::unserialize(json_decode($output, true));
