@@ -23,7 +23,7 @@ class ReplayGenerator extends AbstractGenerator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws Exception
      */

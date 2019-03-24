@@ -36,7 +36,7 @@ class CreateBugCommand extends AbstractCommand
         $this
             ->setName('mbt:bug:create')
             ->setDescription('Create a bug.')
-            ->setHelp("Create a bug.")
+            ->setHelp('Create a bug.')
             ->addArgument('title', InputArgument::REQUIRED, 'Bug title.')
             ->addArgument('path', InputArgument::REQUIRED, 'Bug path.')
             ->addArgument('length', InputArgument::REQUIRED, 'Bug length.')
@@ -46,8 +46,9 @@ class CreateBugCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -64,6 +65,7 @@ class CreateBugCommand extends AbstractCommand
 
         if (!$task || !$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
+
             return;
         }
 
@@ -79,6 +81,7 @@ class CreateBugCommand extends AbstractCommand
 
         if (count($errors) > 0) {
             $output->writeln((string) $errors);
+
             return;
         }
 

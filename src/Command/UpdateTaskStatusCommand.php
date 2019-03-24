@@ -41,8 +41,9 @@ class UpdateTaskStatusCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -52,6 +53,7 @@ class UpdateTaskStatusCommand extends AbstractCommand
 
         if (!$task || !$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
+
             return;
         }
 
@@ -62,6 +64,7 @@ class UpdateTaskStatusCommand extends AbstractCommand
 
         if (count($errors) > 0) {
             $output->writeln((string) $errors);
+
             return;
         }
 

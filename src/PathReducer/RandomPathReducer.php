@@ -12,9 +12,11 @@ use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 class RandomPathReducer extends AbstractPathReducer
 {
     /**
-     * @param int $bugId
+     * @param int       $bugId
      * @param Path|null $newPath
+     *
      * @return int
+     *
      * @throws Exception
      */
     public function dispatch(int $bugId, Path $newPath = null): int
@@ -40,7 +42,7 @@ class RandomPathReducer extends AbstractPathReducer
                 foreach ($pairs as $pair) {
                     $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $pair[0], $pair[1]);
                     $this->messageBus->dispatch($message);
-                    $messagesCount++;
+                    ++$messagesCount;
                 }
             }
 
@@ -50,7 +52,8 @@ class RandomPathReducer extends AbstractPathReducer
         };
 
         $messagesCount = $this->entityManager->transactional($callback);
-        return $messagesCount === true ? 0 : $messagesCount;
+
+        return true === $messagesCount ? 0 : $messagesCount;
     }
 
     public static function getName()

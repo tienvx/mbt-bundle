@@ -66,7 +66,7 @@ EOF
         $container = $application->getKernel()->getContainer();
         $serviceId = $input->getArgument('name');
 
-        /** @var Workflow $workflow */
+        /* @var Workflow $workflow */
         if ($container->has('workflow.'.$serviceId)) {
             $workflow = $container->get('workflow.'.$serviceId);
         } elseif ($container->has('state_machine.'.$serviceId)) {

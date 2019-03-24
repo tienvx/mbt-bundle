@@ -41,7 +41,7 @@ class ReportBugCommand extends Command
         SubjectManager $subjectManager,
         ParameterBagInterface $params
     ) {
-        $this->entityManager  = $entityManager;
+        $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
         $this->params = $params;
 
@@ -63,8 +63,9 @@ class ReportBugCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -89,6 +90,7 @@ class ReportBugCommand extends Command
 
         if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
+
             return;
         }
 

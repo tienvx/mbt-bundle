@@ -13,10 +13,12 @@ class PathBuilder
 {
     /**
      * @param Graph $graph
-     * @param Path $path
-     * @param int $from
-     * @param int $to
+     * @param Path  $path
+     * @param int   $from
+     * @param int   $to
+     *
      * @return Path
+     *
      * @throws Exception
      */
     public static function createWithShortestPath(Graph $graph, Path $path, int $from, int $to): Path
@@ -41,6 +43,7 @@ class PathBuilder
                     throw new Exception('Only support directed graph');
                 }
             }
+
             return static::create($path, $from, $to, $middleTransitions, $middleData, $middlePlaces);
         } else {
             return static::create($path, $from, $to, [], [], []);
@@ -49,9 +52,11 @@ class PathBuilder
 
     /**
      * @param Path $path
-     * @param int $from
-     * @param int $to
+     * @param int  $from
+     * @param int  $to
+     *
      * @return Path
+     *
      * @throws Exception
      */
     public static function createWithoutLoop(Path $path, int $from, int $to): Path
@@ -66,13 +71,15 @@ class PathBuilder
     }
 
     /**
-     * @param Path $path
-     * @param int $from
-     * @param int $to
+     * @param Path  $path
+     * @param int   $from
+     * @param int   $to
      * @param array $middleTransitions
      * @param array $middleData
      * @param array $middlePlaces
+     *
      * @return Path
+     *
      * @throws Exception
      */
     public static function create(Path $path, int $from, int $to, array $middleTransitions, array $middleData, array $middlePlaces): Path
@@ -99,6 +106,7 @@ class PathBuilder
         $data = array_merge($beginData, $middleData, $endData);
         $places = array_merge($beginPlaces, $middlePlaces, $endPlaces);
         $newPath = new Path($transitions, $data, $places);
+
         return $newPath;
     }
 }

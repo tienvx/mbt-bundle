@@ -11,11 +11,13 @@ trait TaggedServiceTrait
 {
     /**
      * @param ContainerBuilder $container
-     * @param string $tagName
-     * @param string $interface
-     * @param string $method
-     * @param bool $reference
+     * @param string           $tagName
+     * @param string           $interface
+     * @param string           $method
+     * @param bool             $reference
+     *
      * @return array
+     *
      * @throws Exception
      */
     private function findTaggedServices(ContainerBuilder $container, string $tagName, string $interface, string $method, bool $reference = true)
@@ -38,6 +40,7 @@ trait TaggedServiceTrait
             $serviceName = call_user_func([$class, $method]);
             $services[$serviceName] = $reference ? (new Reference($serviceId)) : $class;
         }
+
         return $services;
     }
 }

@@ -18,6 +18,7 @@ class LoopPathReducer extends AbstractPathReducer
      * @param int $length
      * @param int $from
      * @param int $to
+     *
      * @throws Exception
      */
     public function handle(int $bugId, int $length, int $from, int $to)
@@ -54,9 +55,11 @@ class LoopPathReducer extends AbstractPathReducer
     }
 
     /**
-     * @param int $bugId
+     * @param int       $bugId
      * @param Path|null $newPath
+     *
      * @return int
+     *
      * @throws Exception
      */
     public function dispatch(int $bugId, Path $newPath = null): int
@@ -79,18 +82,18 @@ class LoopPathReducer extends AbstractPathReducer
             $messagesCount = 0;
             $distance = $path->countPlaces();
             while ($distance > 0) {
-                for ($i = 0; $i < $path->countPlaces(); $i++) {
+                for ($i = 0; $i < $path->countPlaces(); ++$i) {
                     $j = $i + $distance;
                     if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
                         $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
                         $this->messageBus->dispatch($message);
-                        $messagesCount++;
+                        ++$messagesCount;
                         if ($messagesCount >= $path->countPlaces()) {
                             break 2;
                         }
                     }
                 }
-                $distance--;
+                --$distance;
             }
 
             $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
@@ -99,7 +102,8 @@ class LoopPathReducer extends AbstractPathReducer
         };
 
         $messagesCount = $this->entityManager->transactional($callback);
-        return $messagesCount === true ? 0 : $messagesCount;
+
+        return true === $messagesCount ? 0 : $messagesCount;
     }
 
     public static function getName()

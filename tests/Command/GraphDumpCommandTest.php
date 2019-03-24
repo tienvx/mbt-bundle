@@ -59,6 +59,7 @@ state "closed"
 "closed" --> "review": "reopen"
 @enduml
 ';
+
         return [
             ['article', 'Article', 'dot', $articleDot],
             ['pull_request', 'Pull Request', 'puml', $pullRequestPuml],
@@ -67,6 +68,7 @@ state "closed"
 
     /**
      * @dataProvider modelData
+     *
      * @param string $model
      * @param string $label
      * @param string $format
@@ -78,9 +80,9 @@ state "closed"
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'       => $command->getName(),
-            'name'          => $model,
-            '--label'       => $label,
+            'command' => $command->getName(),
+            'name' => $model,
+            '--label' => $label,
             '--dump-format' => $format,
         ]);
 

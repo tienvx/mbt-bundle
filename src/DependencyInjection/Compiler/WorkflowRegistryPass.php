@@ -21,12 +21,13 @@ class WorkflowRegistryPass implements CompilerPassInterface
         string $pathReducerTag = 'mbt.path_reducer',
         string $workflowRegistry = 'workflow.registry'
     ) {
-        $this->pathReducerTag   = $pathReducerTag;
+        $this->pathReducerTag = $pathReducerTag;
         $this->workflowRegistry = $workflowRegistry;
     }
 
     /**
      * @param ContainerBuilder $container
+     *
      * @throws Exception
      */
     public function process(ContainerBuilder $container)

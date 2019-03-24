@@ -23,6 +23,7 @@ class SecurityTokenPass implements CompilerPassInterface
 
     /**
      * @param ContainerBuilder $container
+     *
      * @throws Exception
      */
     public function process(ContainerBuilder $container)

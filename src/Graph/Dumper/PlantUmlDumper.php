@@ -33,7 +33,7 @@ class PlantUmlDumper implements DumperInterface
         /** @var Vertex $vertex */
         foreach ($graph->getVertices() as $vertex) {
             $placeEscaped = $this->escape(implode(',', json_decode($vertex->getId(), true)));
-            $code[] = "state $placeEscaped" . ($initialPlaces === $vertex->getId() ? ' '.self::INITIAL : '');
+            $code[] = "state $placeEscaped".($initialPlaces === $vertex->getId() ? ' '.self::INITIAL : '');
         }
         /** @var Directed $edge */
         foreach ($graph->getEdges() as $edge) {

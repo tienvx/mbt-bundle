@@ -12,11 +12,11 @@ class ReducePathMessage
 
     public function __construct(int $bugId, string $reducer, int $length, int $from, int $to)
     {
-        $this->bugId   = $bugId;
+        $this->bugId = $bugId;
         $this->reducer = $reducer;
-        $this->length  = $length;
-        $this->from    = $from;
-        $this->to      = $to;
+        $this->length = $length;
+        $this->from = $from;
+        $this->to = $to;
     }
 
     public function getBugId(): int

@@ -31,8 +31,9 @@ final class MakePathReducer extends AbstractMaker
 
     /**
      * @param InputInterface $input
-     * @param ConsoleStyle $io
-     * @param Generator $generator
+     * @param ConsoleStyle   $io
+     * @param Generator      $generator
+     *
      * @throws \Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
@@ -47,7 +48,7 @@ final class MakePathReducer extends AbstractMaker
 
         $generator->generateClass(
             $reducerClassNameDetails->getFullName(),
-            __DIR__.'/../Resources/skeleton/reducer/PathReducer.tpl.php',
+            __DIR__.'/../Resources/skeleton/reducer/PathReducer.php.tpl',
             [
                 'name' => $name,
             ]

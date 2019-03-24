@@ -33,7 +33,7 @@ class GeneratePathCommand extends AbstractCommand
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager
     ) {
-        $this->subjectManager   = $subjectManager;
+        $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
 
         parent::__construct();
@@ -55,8 +55,9 @@ class GeneratePathCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)

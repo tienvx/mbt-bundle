@@ -11,9 +11,11 @@ use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 class SplitPathReducer extends AbstractPathReducer
 {
     /**
-     * @param int $bugId
+     * @param int       $bugId
      * @param Path|null $newPath
+     *
      * @return int
+     *
      * @throws Exception
      */
     public function dispatch(int $bugId, Path $newPath = null): int
@@ -39,7 +41,7 @@ class SplitPathReducer extends AbstractPathReducer
                 $quotient = floor($path->countPlaces() / $divisor);
                 $remainder = $path->countPlaces() % $divisor;
                 while ($quotient > 1) {
-                    for ($k = 0; $k < $divisor; $k++) {
+                    for ($k = 0; $k < $divisor; ++$k) {
                         $i = $quotient * $k;
                         if ($k === ($divisor - 1)) {
                             $j = $quotient * ($k + 1) - 1 + $remainder;
@@ -48,13 +50,13 @@ class SplitPathReducer extends AbstractPathReducer
                         }
                         $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
                         $this->messageBus->dispatch($message);
-                        $messagesCount++;
+                        ++$messagesCount;
                         if ($messagesCount >= floor(sqrt($path->countPlaces()))) {
                             break 2;
                         }
                     }
 
-                    $divisor++;
+                    ++$divisor;
                     $quotient = floor($path->countPlaces() / $divisor);
                     $remainder = $path->countPlaces() % $divisor;
                 }
@@ -66,7 +68,8 @@ class SplitPathReducer extends AbstractPathReducer
         };
 
         $messagesCount = $this->entityManager->transactional($callback);
-        return $messagesCount === true ? 0 : $messagesCount;
+
+        return true === $messagesCount ? 0 : $messagesCount;
     }
 
     public static function getName()

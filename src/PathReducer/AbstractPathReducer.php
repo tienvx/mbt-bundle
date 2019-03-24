@@ -60,11 +60,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
         MessageBusInterface $messageBus,
         GraphBuilder $graphBuilder
     ) {
-        $this->dispatcher     = $dispatcher;
+        $this->dispatcher = $dispatcher;
         $this->subjectManager = $subjectManager;
-        $this->entityManager  = $entityManager;
-        $this->messageBus     = $messageBus;
-        $this->graphBuilder   = $graphBuilder;
+        $this->entityManager = $entityManager;
+        $this->messageBus = $messageBus;
+        $this->graphBuilder = $graphBuilder;
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -89,6 +89,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
      * @param int $length
      * @param int $from
      * @param int $to
+     *
      * @throws Exception
      * @throws CacheException
      */
@@ -127,6 +128,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     /**
      * @param Bug $bug
+     *
      * @throws Exception
      */
     public function reduce(Bug $bug)
@@ -136,13 +138,14 @@ abstract class AbstractPathReducer implements PathReducerInterface
         }
 
         $messagesCount = $this->dispatch($bug->getId());
-        if ($messagesCount === 0) {
+        if (0 === $messagesCount) {
             $this->finish($bug);
         }
     }
 
     /**
      * @param int $bugId
+     *
      * @throws Exception
      */
     public function postHandle(int $bugId)
@@ -158,7 +161,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
         };
 
         $bug = $this->entityManager->transactional($callback);
-        if ($bug instanceof Bug && $bug->getMessagesCount() === 0) {
+        if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
             $this->finish($bug);
         }
     }

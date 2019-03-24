@@ -59,6 +59,7 @@ abstract class MessageTestCase extends TestCase
     {
         /** @var Connection $connection */
         $connection = self::$container->get(Connection::class);
+
         return $connection->has();
     }
 
@@ -69,12 +70,12 @@ abstract class MessageTestCase extends TestCase
 
     protected function hasLog()
     {
-        return file_exists("{$this->logDir}/test.log") && filesize("{$this->logDir}/test.log") !== 0;
+        return file_exists("{$this->logDir}/test.log") && 0 !== filesize("{$this->logDir}/test.log");
     }
 
     protected function logHasScreenshot()
     {
-        return strpos(file_get_contents("{$this->logDir}/test.log"), 'Screenshot') !== false;
+        return false !== strpos(file_get_contents("{$this->logDir}/test.log"), 'Screenshot');
     }
 
     protected function removeScreenshots()
@@ -84,6 +85,6 @@ abstract class MessageTestCase extends TestCase
 
     protected function countScreenshots(int $bugId)
     {
-        return count(glob($this->screenshotsDir . "/{$bugId}/*.*"));
+        return count(glob($this->screenshotsDir."/{$bugId}/*.*"));
     }
 }

@@ -9,9 +9,10 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 abstract class AbstractGenerator implements GeneratorInterface
 {
     /**
-     * @param Workflow $workflow
+     * @param Workflow        $workflow
      * @param AbstractSubject $subject
-     * @param string $transitionName
+     * @param string          $transitionName
+     *
      * @return bool
      */
     public function applyTransition(Workflow $workflow, AbstractSubject $subject, string $transitionName): bool
@@ -21,6 +22,7 @@ abstract class AbstractGenerator implements GeneratorInterface
         } catch (TransitionException $exception) {
             return false;
         }
+
         return true;
     }
 }

@@ -5,16 +5,18 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 class Randomizer
 {
     /**
-     * https://stackoverflow.com/a/11872928
+     * https://stackoverflow.com/a/11872928.
      *
      * @param array $values [key => weight]
+     *
      * @return mixed random key from weighted array
      */
     public static function randomByWeight(array $values)
     {
         $maxRand = (int) array_sum($values);
-        if ($maxRand === 0) {
+        if (0 === $maxRand) {
             $rand = mt_rand(0, count($values) - 1);
+
             return array_keys($values)[$rand];
         } else {
             $rand = mt_rand(1, $maxRand);
@@ -38,6 +40,7 @@ class Randomizer
                 $pairs[] = $pair;
             }
         }
+
         return $pairs;
     }
 }

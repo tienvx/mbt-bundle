@@ -25,18 +25,20 @@ class GeneratePathCommandTest extends CommandTestCase
 
     /**
      * @dataProvider coverageData
+     *
      * @param $model
      * @param $generator
      * @param $transitionCoverage
      * @param $placeCoverage
      * @param $transitionCount
      * @param $placeCount
+     *
      * @throws Exception
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
         $command = $this->application->find('mbt:path:generate');
-        if ($generator === 'random') {
+        if ('random' === $generator) {
             /** @var RandomGenerator $randomGenerator */
             $randomGenerator = self::$container->get(RandomGenerator::class);
             $randomGenerator->setTransitionCoverage($transitionCoverage);
@@ -45,8 +47,8 @@ class GeneratePathCommandTest extends CommandTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'     => $command->getName(),
-            'model'       => $model,
+            'command' => $command->getName(),
+            'model' => $model,
             '--generator' => $generator,
         ]);
 
@@ -57,11 +59,11 @@ class GeneratePathCommandTest extends CommandTestCase
         if ($path instanceof Path) {
             $uniquePlaces = $path->countUniquePlaces();
             $uniqueTransitions = $path->countUniqueTransitions();
-            if ($generator === 'all-transitions' && array_diff($path->getPlacesAt($path->countPlaces() - 1), ['home'])) {
+            if ('all-transitions' === $generator && array_diff($path->getPlacesAt($path->countPlaces() - 1), ['home'])) {
                 // Sometime, we can't get the path through all transitions, so ignore it.
-            } elseif ($generator === 'all-places' && $uniqueTransitions === 1) {
+            } elseif ('all-places' === $generator && 1 === $uniqueTransitions) {
                 // Sometime, we can't get the path through all places, so ignore it.
-            } elseif ($generator === 'random' && $path->countTransitions() === 300) {
+            } elseif ('random' === $generator && 300 === $path->countTransitions()) {
                 // Sometime we reach the path length limit, so ignore it.
                 $this->assertGreaterThanOrEqual(1, $uniqueTransitions);
                 $this->assertGreaterThanOrEqual(1, $uniquePlaces);

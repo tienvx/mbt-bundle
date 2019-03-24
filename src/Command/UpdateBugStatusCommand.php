@@ -41,8 +41,9 @@ class UpdateBugStatusCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -52,6 +53,7 @@ class UpdateBugStatusCommand extends AbstractCommand
 
         if (!$bug || !$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
+
             return;
         }
 
@@ -62,6 +64,7 @@ class UpdateBugStatusCommand extends AbstractCommand
 
         if (count($errors) > 0) {
             $output->writeln((string) $errors);
+
             return;
         }
 

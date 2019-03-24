@@ -20,7 +20,9 @@ abstract class TestCase extends KernelTestCase
 
     /**
      * @param $command
+     *
      * @return int
+     *
      * @throws \Exception
      */
     protected function runCommand($command)
@@ -35,6 +37,7 @@ abstract class TestCase extends KernelTestCase
         $kernel = static::bootKernel();
         $application = new Application($kernel);
         $application->setAutoExit(false);
+
         return $application;
     }
 }

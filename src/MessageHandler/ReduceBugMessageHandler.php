@@ -21,6 +21,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
 
     /**
      * @param ReduceBugMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(ReduceBugMessage $message)

@@ -29,9 +29,11 @@ class Path implements Iterator
 
     /**
      * Path constructor.
+     *
      * @param array $transitions
      * @param array $data
      * @param array $places
+     *
      * @throws Exception
      */
     public function __construct(array $transitions = [], array $data = [], array $places = [])
@@ -40,9 +42,9 @@ class Path implements Iterator
             throw new Exception('Invalid transitions, data or places for path');
         }
         $this->transitions = $transitions;
-        $this->data        = $data;
-        $this->places      = $places;
-        $this->position    = 0;
+        $this->data = $data;
+        $this->places = $places;
+        $this->position = 0;
     }
 
     public function add(?string $transition, ?array $data, array $places)
@@ -94,6 +96,7 @@ class Path implements Iterator
 
     /**
      * @param Path $path
+     *
      * @return array
      */
     public static function serialize(Path $path): array
@@ -102,12 +105,15 @@ class Path implements Iterator
         foreach ($path as $step) {
             $result[] = $step;
         }
+
         return $result;
     }
 
     /**
      * @param array $steps
+     *
      * @return Path
+     *
      * @throws Exception
      */
     public static function unserialize(array $steps): Path
@@ -120,6 +126,7 @@ class Path implements Iterator
             $data[] = $step[1];
             $places[] = $step[2];
         }
+
         return new Path($transitions, $data, $places);
     }
 

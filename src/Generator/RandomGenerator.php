@@ -40,16 +40,16 @@ class RandomGenerator extends AbstractGenerator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
-        $pathLength         = 0;
+        $pathLength = 0;
         $visitedTransitions = [];
-        $visitedPlaces      = [$workflow->getDefinition()->getInitialPlace()];
+        $visitedPlaces = [$workflow->getDefinition()->getInitialPlace()];
         $transitionCoverage = $metaData['transitionCoverage'] ?? $this->transitionCoverage;
-        $placeCoverage      = $metaData['placeCoverage'] ?? $this->placeCoverage;
-        $maxPathLength      = $metaData['maxPathLength'] ?? $this->maxPathLength;
+        $placeCoverage = $metaData['placeCoverage'] ?? $this->placeCoverage;
+        $maxPathLength = $metaData['maxPathLength'] ?? $this->maxPathLength;
 
         while (true) {
             /** @var Transition[] $transitions */
@@ -72,8 +72,8 @@ class RandomGenerator extends AbstractGenerator
 
                 // Update current state.
                 $currentTransitionCoverage = count($visitedTransitions) / count($workflow->getDefinition()->getTransitions()) * 100;
-                $currentPlaceCoverage      = count($visitedPlaces) / count($workflow->getDefinition()->getPlaces()) * 100;
-                $pathLength++;
+                $currentPlaceCoverage = count($visitedPlaces) / count($workflow->getDefinition()->getPlaces()) * 100;
+                ++$pathLength;
 
                 if (($currentTransitionCoverage >= $transitionCoverage && $currentPlaceCoverage >= $placeCoverage)) {
                     break;

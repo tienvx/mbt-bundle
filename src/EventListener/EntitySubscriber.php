@@ -38,6 +38,7 @@ class EntitySubscriber implements EventSubscriber
 
     /**
      * @param LifecycleEventArgs $args
+     *
      * @throws \Exception
      */
     public function preRemove(LifecycleEventArgs $args)

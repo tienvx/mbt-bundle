@@ -21,6 +21,7 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
 
     /**
      * @param RemoveScreenshotsMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(RemoveScreenshotsMessage $message)

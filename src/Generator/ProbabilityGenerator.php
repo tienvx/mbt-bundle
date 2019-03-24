@@ -21,11 +21,11 @@ class ProbabilityGenerator extends AbstractGenerator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
-        $pathLength    = 0;
+        $pathLength = 0;
         $maxPathLength = $metaData['maxPathLength'] ?? $this->maxPathLength;
 
         while (true) {
@@ -42,7 +42,7 @@ class ProbabilityGenerator extends AbstractGenerator
                 yield $transitionName;
 
                 // Update current state.
-                $pathLength++;
+                ++$pathLength;
 
                 if ($pathLength >= $maxPathLength) {
                     break;

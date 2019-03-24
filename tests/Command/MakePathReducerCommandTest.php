@@ -12,14 +12,14 @@ class MakePathReducerCommandTest extends CommandTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'       => $command->getName(),
-            'name'          => 'test',
+            'command' => $command->getName(),
+            'name' => 'test',
             'reducer-class' => 'Test',
         ]);
 
         $output = $commandTester->getDisplay();
         $this->assertContains('Success!', $output);
-        $this->assertContains('class Test extends AbstractPathReducer', file_get_contents(__DIR__ . "/../app/src/PathReducer/Test.php"));
-        unlink(__DIR__ . "/../app/src/PathReducer/Test.php");
+        $this->assertContains('class Test extends AbstractPathReducer', file_get_contents(__DIR__.'/../app/src/PathReducer/Test.php'));
+        unlink(__DIR__.'/../app/src/PathReducer/Test.php');
     }
 }

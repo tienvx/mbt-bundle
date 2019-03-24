@@ -16,6 +16,7 @@ class MakeSubjectCommandTest extends CommandTestCase
 
     /**
      * @dataProvider modelData
+     *
      * @param string $model
      * @param string $subjectClass
      */
@@ -25,15 +26,15 @@ class MakeSubjectCommandTest extends CommandTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'       => $command->getName(),
-            'model'         => $model,
+            'command' => $command->getName(),
+            'model' => $model,
             'subject-class' => $subjectClass,
         ]);
 
         $output = $commandTester->getDisplay();
         $this->assertContains('Success!', $output);
         $this->assertContains('Next: Open the new generated subject class and implement places and transitions!', $output);
-        $this->assertContains("class $subjectClass extends AbstractSubject", file_get_contents(__DIR__ . "/../app/src/Subject/$subjectClass.php"));
-        unlink(__DIR__ . "/../app/src/Subject/$subjectClass.php");
+        $this->assertContains("class $subjectClass extends AbstractSubject", file_get_contents(__DIR__."/../app/src/Subject/$subjectClass.php"));
+        unlink(__DIR__."/../app/src/Subject/$subjectClass.php");
     }
 }

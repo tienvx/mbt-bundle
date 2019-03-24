@@ -9,6 +9,7 @@ class VertexHelper
         if (count($places) > 1) {
             sort($places);
         }
+
         return json_encode($places);
     }
 }

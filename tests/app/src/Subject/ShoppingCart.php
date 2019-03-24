@@ -241,6 +241,7 @@ class ShoppingCart extends AbstractSubject
                 throw new Exception('Can not check if category has selected product or not: product is not selected');
             }
             $product = $this->data['product'];
+
             return in_array($product, $this->productsInCategory[$this->category]);
         }
     }
@@ -339,6 +340,7 @@ class ShoppingCart extends AbstractSubject
                 throw new Exception('Can not check if cart has selected product or not: product is not selected');
             }
             $product = $this->data['product'];
+
             return !empty($this->cart[$product]);
         }
     }
@@ -361,7 +363,7 @@ class ShoppingCart extends AbstractSubject
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         } else {
-            $this->cart[$product]++;
+            ++$this->cart[$product];
         }
     }
 
@@ -383,7 +385,7 @@ class ShoppingCart extends AbstractSubject
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
         } else {
-            $this->cart[$product]++;
+            ++$this->cart[$product];
         }
     }
 
@@ -400,7 +402,7 @@ class ShoppingCart extends AbstractSubject
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
         } else {
-            $this->cart[$this->product]++;
+            ++$this->cart[$this->product];
         }
     }
 
@@ -466,6 +468,7 @@ class ShoppingCart extends AbstractSubject
             return null;
         }
         $product = $this->featuredProducts[array_rand($this->featuredProducts)];
+
         return ['product' => $product];
     }
 
@@ -475,6 +478,7 @@ class ShoppingCart extends AbstractSubject
             return null;
         }
         $category = $this->categories[array_rand($this->categories)];
+
         return ['category' => $category];
     }
 
@@ -484,6 +488,7 @@ class ShoppingCart extends AbstractSubject
             return null;
         }
         $product = array_rand($this->cart);
+
         return ['product' => $product];
     }
 
@@ -497,6 +502,7 @@ class ShoppingCart extends AbstractSubject
             return null;
         }
         $product = $products[array_rand($products)];
+
         return ['product' => $product];
     }
 

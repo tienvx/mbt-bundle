@@ -21,6 +21,7 @@ class UpdateTaskStatusMessageHandler implements MessageHandlerInterface
 
     /**
      * @param UpdateTaskStatusMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(UpdateTaskStatusMessage $message)

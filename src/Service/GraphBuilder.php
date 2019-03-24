@@ -27,14 +27,16 @@ class GraphBuilder
 
     /**
      * @param Workflow $workflow
+     *
      * @return Graph
+     *
      * @throws Exception
      * @throws CacheException
      */
     public function build(Workflow $workflow): Graph
     {
-        if ($this->cache->has('mbt.graph.' . $workflow->getName())) {
-            return $this->cache->get('mbt.graph.' . $workflow->getName());
+        if ($this->cache->has('mbt.graph.'.$workflow->getName())) {
+            return $this->cache->get('mbt.graph.'.$workflow->getName());
         }
         if ($workflow instanceof StateMachine) {
             $graph = $this->buildForStateMachine($workflow);
@@ -45,7 +47,8 @@ class GraphBuilder
             $graph = $components->createGraphComponentVertex($graph->getVertex($initVertex));
         }
 
-        $this->cache->set('mbt.graph.' . $workflow->getName(), $graph);
+        $this->cache->set('mbt.graph.'.$workflow->getName(), $graph);
+
         return $graph;
     }
 
@@ -65,6 +68,7 @@ class GraphBuilder
                 }
             }
         }
+
         return $graph;
     }
 
@@ -72,57 +76,57 @@ class GraphBuilder
     {
         $graph = new Graph();
         $newVertices = 0;
-        while ($newVertices > 0 || count($graph->getVertices()) === 0) {
+        while ($newVertices > 0 || 0 === count($graph->getVertices())) {
             $newVertices = 0;
             foreach ($workflow->getDefinition()->getTransitions() as $transition) {
                 $froms = $transition->getFroms();
                 $tos = $transition->getTos();
                 sort($froms);
                 sort($tos);
+
                 // TODO: Clean up vertices and edges that never appear in the path.
-                {
-                    $from = VertexHelper::getId($froms);
-                    $to = VertexHelper::getId($tos);
-                    if (!$graph->hasVertex($from)) {
-                        $this->createVertex($graph, $from);
-                        $graph->getVertex($from)->setAttribute('places', $froms);
-                        $newVertices++;
-                    }
+                $from = VertexHelper::getId($froms);
+                $to = VertexHelper::getId($tos);
+                if (!$graph->hasVertex($from)) {
+                    $this->createVertex($graph, $from);
+                    $graph->getVertex($from)->setAttribute('places', $froms);
+                    ++$newVertices;
+                }
+                if (!$graph->hasVertex($to)) {
+                    $this->createVertex($graph, $to);
+                    $graph->getVertex($to)->setAttribute('places', $tos);
+                    ++$newVertices;
+                }
+                // TODO: support 2 different transitions but has exactly same froms and tos.
+                if (!$graph->getVertex($from)->hasEdgeTo($graph->getVertex($to))) {
+                    $this->createEdge($workflow, $graph, $transition, $from, $to);
+                }
+
+                $vertices = $graph->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($froms) {
+                    $places = $vertex->getAttribute('places');
+                    $intersect = array_intersect($places, $froms);
+
+                    return array_diff($places, $froms) && count($intersect) === count($froms) && !array_diff($intersect, $froms);
+                });
+                foreach ($vertices as $vertex) {
+                    $places = $vertex->getAttribute('places');
+                    $newPlaces = array_unique(array_merge(array_diff($places, $froms), $tos));
+                    sort($places);
+                    sort($newPlaces);
+                    $from = VertexHelper::getId($places);
+                    $to = VertexHelper::getId($newPlaces);
                     if (!$graph->hasVertex($to)) {
                         $this->createVertex($graph, $to);
-                        $graph->getVertex($to)->setAttribute('places', $tos);
-                        $newVertices++;
+                        $graph->getVertex($to)->setAttribute('places', $newPlaces);
+                        ++$newVertices;
                     }
-                    // TODO: support 2 different transitions but has exactly same froms and tos.
                     if (!$graph->getVertex($from)->hasEdgeTo($graph->getVertex($to))) {
                         $this->createEdge($workflow, $graph, $transition, $from, $to);
                     }
                 }
-                {
-                    $vertices = $graph->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($froms) {
-                        $places = $vertex->getAttribute('places');
-                        $intersect = array_intersect($places, $froms);
-                        return array_diff($places, $froms) && count($intersect) === count($froms) && !array_diff($intersect, $froms);
-                    });
-                    foreach ($vertices as $vertex) {
-                        $places = $vertex->getAttribute('places');
-                        $newPlaces = array_unique(array_merge(array_diff($places, $froms), $tos));
-                        sort($places);
-                        sort($newPlaces);
-                        $from = VertexHelper::getId($places);
-                        $to = VertexHelper::getId($newPlaces);
-                        if (!$graph->hasVertex($to)) {
-                            $this->createVertex($graph, $to);
-                            $graph->getVertex($to)->setAttribute('places', $newPlaces);
-                            $newVertices++;
-                        }
-                        if (!$graph->getVertex($from)->hasEdgeTo($graph->getVertex($to))) {
-                            $this->createEdge($workflow, $graph, $transition, $from, $to);
-                        }
-                    }
-                }
             }
         }
+
         return $graph;
     }
 

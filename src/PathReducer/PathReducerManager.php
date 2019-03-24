@@ -17,9 +17,10 @@ class PathReducerManager
     }
 
     /**
-     * Returns one path reducer by name
+     * Returns one path reducer by name.
      *
      * @param $name
+     *
      * @return PathReducerInterface
      *
      * @throws Exception
@@ -34,9 +35,10 @@ class PathReducerManager
     }
 
     /**
-     * Check if there is a path reducer by name
+     * Check if there is a path reducer by name.
      *
      * @param $name
+     *
      * @return bool
      */
     public function hasPathReducer($name): bool
