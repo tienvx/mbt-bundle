@@ -16,11 +16,13 @@ class <?= $class_name; ?> extends AbstractGenerator
     }
 
     /**
-     * @param Workflow $workflow
+     * @param Workflow        $workflow
      * @param AbstractSubject $subject
+     * @param array           $metaData
+     *
      * @return Generator
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
         while (true) {
             /** @var Transition[] $transitions */
