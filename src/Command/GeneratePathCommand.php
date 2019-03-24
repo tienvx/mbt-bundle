@@ -46,7 +46,8 @@ class GeneratePathCommand extends AbstractCommand
             ->setDescription('Generate path from model.')
             ->setHelp('Generate path from model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
-            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random');
+            ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random')
+            ->addOption('meta-data', 'm', InputOption::VALUE_OPTIONAL, 'The meta data for the generator.');
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -70,6 +71,7 @@ class GeneratePathCommand extends AbstractCommand
 
         $model = $input->getArgument('model');
         $generatorName = $input->getOption('generator');
+        $metaData = $input->getOption('meta-data');
         $generator = $this->generatorManager->getGenerator($generatorName);
         $subject = $this->subjectManager->createSubject($model);
         $subject->setTesting(true);
@@ -80,7 +82,7 @@ class GeneratePathCommand extends AbstractCommand
         $path->add(null, null, [$workflow->getDefinition()->getInitialPlace()]);
 
         try {
-            foreach ($generator->getAvailableTransitions($workflow, $subject) as $transitionName) {
+            foreach ($generator->getAvailableTransitions($workflow, $subject, $metaData) as $transitionName) {
                 try {
                     if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                         throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $generatorName, $transitionName));
