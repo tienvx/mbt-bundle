@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "^1.2"
+$ composer require tienvx/mbt-bundle "^1.4"
 ```
 
 ### Step 3: Create models and subjects
@@ -63,14 +63,26 @@ $ composer run-script test # if you want to clear the cache
 
 For the usage guide and reference, see [wiki][wiki]
 
+## Built With
+
+* [Symfony][symfony] - The web framework, and its components
+* [Graphp algorithms][graphp] - Common mathematical graph algorithms implemented in PHP
+* [Doctrine][doctrine] - Database storage and object mapping
+
 ## Contributing
 
 Pull requests are welcome, please [send pull requests][pulls].
 
 If you found any bug, please [report issues][issues].
 
-Thanks to
-[everyone who has contributed][contributors] already.
+Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of conduct, and [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pull requests to us.
+
+
+## Authors
+
+* **Tien Vo** - *Initial work* - [tienvx](https://tienvx.github.io/)
+
+See also the list of [contributors][contributors] who participated in this project.
 
 ## License
 
@@ -86,3 +98,7 @@ This package is available under the [MIT license](LICENSE).
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls
 [issues]: https://github.com/tienvx/mbt-bundle/issues
+
+[symfony]: https://symfony.com/
+[graphp]: https://github.com/graphp/algorithms
+[doctrine]: https://www.doctrine-project.org/
