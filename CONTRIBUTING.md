@@ -44,7 +44,7 @@ You can use [this example](https://gist.github.com/carlo/3402842)
 - Additional details / screenshot (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
 ## Use a Consistent Coding Style
-We use both of these coding standars:
+We use both of these coding standards:
 
 * [PSR-2](https://www.php-fig.org/psr/psr-2/)
 * [Symfony](https://symfony.com/doc/current/contributing/code/standards.html)
