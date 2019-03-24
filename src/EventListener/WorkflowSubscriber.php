@@ -43,6 +43,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
 
     /**
      * @param GuardEvent $event
+     *
      * @throws Exception
      */
     public function onGuard(GuardEvent $event)

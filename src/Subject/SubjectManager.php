@@ -28,7 +28,9 @@ class SubjectManager
 
     /**
      * @param string $model
+     *
      * @return AbstractSubject
+     *
      * @throws Exception
      */
     public function createSubject(string $model): AbstractSubject
@@ -39,10 +41,11 @@ class SubjectManager
             throw new Exception(sprintf('Subject class for model %s does not exist.', $model));
         }
 
-        $subject = new $this->subjects[$model];
+        $subject = new $this->subjects[$model]();
         if (!$subject instanceof AbstractSubject) {
             throw new Exception(sprintf('Subject for model %s is not instance of %s.', $model, AbstractSubject::class));
         }
+
         return $subject;
     }
 }

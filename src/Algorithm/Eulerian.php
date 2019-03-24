@@ -18,6 +18,7 @@ class Eulerian extends BaseEulerian
      * Get best path (list of edges) connecting all edges.
      *
      * @param Vertex $startVertex
+     *
      * @return Edges
      */
     public function getEdges(Vertex $startVertex)
@@ -50,10 +51,10 @@ class Eulerian extends BaseEulerian
             /** @var Directed $edge */
             foreach ($vertex->getEdges() as $edge) {
                 if ($edge->hasVertexTarget($vertex)) {
-                    $balance++;
+                    ++$balance;
                 }
                 if ($edge->hasVertexStart($vertex)) {
-                    $balance--;
+                    --$balance;
                 }
             }
             $balanceMap[$vertex->getId()] = $balance;
@@ -77,8 +78,8 @@ class Eulerian extends BaseEulerian
                 $cloneEdge->setAttribute('label', $edge->getAttribute('label'));
                 $cloneEdge->setAttribute('probability', $edge->getAttribute('probability'));
             }
-            $balanceMap[$first]++;
-            $balanceMap[$last]--;
+            ++$balanceMap[$first];
+            --$balanceMap[$last];
             asort($balanceMap);
         }
 

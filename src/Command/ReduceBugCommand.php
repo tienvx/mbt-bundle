@@ -34,8 +34,8 @@ class ReduceBugCommand extends AbstractCommand
         MessageBusInterface $messageBus
     ) {
         $this->pathReducerManager = $pathReducerManager;
-        $this->entityManager      = $entityManager;
-        $this->messageBus         = $messageBus;
+        $this->entityManager = $entityManager;
+        $this->messageBus = $messageBus;
 
         parent::__construct();
     }
@@ -50,8 +50,9 @@ class ReduceBugCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -72,6 +73,7 @@ class ReduceBugCommand extends AbstractCommand
 
         if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
+
             return;
         }
 

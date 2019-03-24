@@ -240,6 +240,7 @@ class Task
 
     /**
      * @ORM\PrePersist
+     *
      * @throws Exception
      */
     public function prePersist()
@@ -255,6 +256,7 @@ class Task
 
     /**
      * @ORM\PreUpdate
+     *
      * @throws Exception
      */
     public function preUpdate()

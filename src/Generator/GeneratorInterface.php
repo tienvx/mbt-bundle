@@ -10,9 +10,10 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 interface GeneratorInterface extends PluginInterface
 {
     /**
-     * @param Workflow $workflow
+     * @param Workflow        $workflow
      * @param AbstractSubject $subject
-     * @param array $metaData
+     * @param array           $metaData
+     *
      * @return Generator
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator;

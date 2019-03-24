@@ -63,8 +63,9 @@ class CaptureScreenshotsCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -75,6 +76,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
 
         if (!$bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
+
             return;
         }
 

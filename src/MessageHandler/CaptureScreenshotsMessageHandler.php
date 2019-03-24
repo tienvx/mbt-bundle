@@ -21,6 +21,7 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
 
     /**
      * @param CaptureScreenshotsMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(CaptureScreenshotsMessage $message)

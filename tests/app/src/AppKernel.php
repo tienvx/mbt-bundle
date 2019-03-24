@@ -33,18 +33,19 @@ class AppKernel extends Kernel
 
     /**
      * @param LoaderInterface $loader
+     *
      * @throws \Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(dirname(__DIR__) . '/config/config.yaml');
-        $loader->load(dirname(__DIR__) . '/config/services.yaml');
-        $loader->load(dirname(__DIR__) . '/config/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
+        $loader->load(dirname(__DIR__).'/config/config.yaml');
+        $loader->load(dirname(__DIR__).'/config/services.yaml');
+        $loader->load(dirname(__DIR__).'/config/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
     }
 
     public function getCacheDir()
     {
-        return dirname(__DIR__) . '/var/cache/' . $this->environment;
+        return dirname(__DIR__).'/var/cache/'.$this->environment;
     }
 
     public function getProjectDir()
@@ -54,6 +55,6 @@ class AppKernel extends Kernel
 
     public function getLogDir()
     {
-        return dirname(__DIR__) . '/var/log';
+        return dirname(__DIR__).'/var/log';
     }
 }

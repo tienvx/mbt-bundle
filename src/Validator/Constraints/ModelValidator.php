@@ -25,8 +25,9 @@ class ModelValidator extends ConstraintValidator
     }
 
     /**
-     * @param mixed $value
+     * @param mixed      $value
      * @param Constraint $constraint
+     *
      * @throws Exception
      */
     public function validate($value, Constraint $constraint)

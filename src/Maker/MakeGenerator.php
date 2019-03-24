@@ -31,8 +31,9 @@ final class MakeGenerator extends AbstractMaker
 
     /**
      * @param InputInterface $input
-     * @param ConsoleStyle $io
-     * @param Generator $generator
+     * @param ConsoleStyle   $io
+     * @param Generator      $generator
+     *
      * @throws \Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
@@ -47,7 +48,7 @@ final class MakeGenerator extends AbstractMaker
 
         $generator->generateClass(
             $generatorClassNameDetails->getFullName(),
-            __DIR__.'/../Resources/skeleton/generator/Generator.tpl.php',
+            __DIR__.'/../Resources/skeleton/generator/Generator.php.tpl',
             [
                 'name' => $name,
             ]

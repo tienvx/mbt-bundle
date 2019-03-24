@@ -21,6 +21,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
 
     /**
      * @param ExecuteTaskMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(ExecuteTaskMessage $message)

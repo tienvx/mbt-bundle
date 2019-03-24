@@ -17,9 +17,10 @@ class GeneratorManager
     }
 
     /**
-     * Returns one generator by name
+     * Returns one generator by name.
      *
      * @param $name
+     *
      * @return GeneratorInterface
      *
      * @throws Exception
@@ -34,9 +35,10 @@ class GeneratorManager
     }
 
     /**
-     * Check if there is a generator by name
+     * Check if there is a generator by name.
      *
      * @param $name
+     *
      * @return bool
      */
     public function hasGenerator($name): bool

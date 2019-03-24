@@ -10,9 +10,10 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 class PathRunner
 {
     /**
-     * @param Path $path
-     * @param Workflow $workflow
+     * @param Path            $path
+     * @param Workflow        $workflow
      * @param AbstractSubject $subject
+     *
      * @throws Exception
      */
     public static function run(Path $path, Workflow $workflow, AbstractSubject $subject)

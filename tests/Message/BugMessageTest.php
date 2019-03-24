@@ -11,10 +11,11 @@ class BugMessageTest extends MessageTestCase
 {
     /**
      * @param string $model
-     * @param array $pathArgs
+     * @param array  $pathArgs
      * @param string $reducer
-     * @param array $expectedPathArgs
+     * @param array  $expectedPathArgs
      * @dataProvider consumeMessageData
+     *
      * @throws \Exception
      */
     public function testExecute(string $model, array $pathArgs, string $reducer, array $expectedPathArgs)
@@ -23,7 +24,7 @@ class BugMessageTest extends MessageTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $path = new Path(...$pathArgs);
         $expectedPath = new Path(...$expectedPathArgs);
-        $bugMessage = ($model === 'shopping_cart') ? 'You added an out-of-stock product into cart! Can not checkout' :
+        $bugMessage = ('shopping_cart' === $model) ? 'You added an out-of-stock product into cart! Can not checkout' :
             'Still able to do register account, guest checkout or login when logged in!';
 
         $task = new Task();
@@ -61,7 +62,7 @@ class BugMessageTest extends MessageTestCase
 
         $this->assertEquals(1, count($bugs));
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
-        if ($reducer !== 'random') {
+        if ('random' !== $reducer) {
             $this->assertEquals(Path::serialize($expectedPath), $bugs[0]->getPath());
             $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
@@ -83,13 +84,13 @@ class BugMessageTest extends MessageTestCase
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => 57], ['product' => 49], []],
-                    [['home'], ['category'], ['category'], ['checkout']]
+                    [['home'], ['category'], ['category'], ['checkout']],
                 ],
                 'split',
                 [
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => 57], ['product' => 49], []],
-                    [['home'], ['category'], ['category'], ['checkout']]
+                    [['home'], ['category'], ['category'], ['checkout']],
                 ],
             ],
             [
@@ -104,7 +105,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '34'], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -118,7 +119,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -132,7 +133,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
                     [null, ['category' => '57'], ['product' => '49'], [], []],
                     [['home'], ['category'], ['product'], ['product'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -146,7 +147,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -160,7 +161,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -174,7 +175,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -188,7 +189,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -202,7 +203,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'shopping_cart',
@@ -216,20 +217,20 @@ class BugMessageTest extends MessageTestCase
                     [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
             [
                 'checkout',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'guestCheckout', 'fillPersonalDetails', 'fillBillingAddress', 'guestCheckoutAndAddBillingAddress', 'useExistingDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
                     [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded', 'awaitingOrderConfirm'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']]
+                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded', 'awaitingOrderConfirm'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']],
                 ],
                 'loop',
                 [
                     [null, 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
                     [null, [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']]
+                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']],
                 ],
             ],
             [
@@ -244,7 +245,7 @@ class BugMessageTest extends MessageTestCase
                     [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
-                ]
+                ],
             ],
         ];
     }

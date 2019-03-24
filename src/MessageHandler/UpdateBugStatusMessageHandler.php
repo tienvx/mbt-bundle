@@ -21,6 +21,7 @@ class UpdateBugStatusMessageHandler implements MessageHandlerInterface
 
     /**
      * @param UpdateBugStatusMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(UpdateBugStatusMessage $message)

@@ -55,10 +55,10 @@ class ExecuteTaskCommand extends AbstractCommand
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus
     ) {
-        $this->subjectManager   = $subjectManager;
+        $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
-        $this->entityManager    = $entityManager;
-        $this->messageBus       = $messageBus;
+        $this->entityManager = $entityManager;
+        $this->messageBus = $messageBus;
 
         parent::__construct();
     }
@@ -83,8 +83,9 @@ class ExecuteTaskCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -109,6 +110,7 @@ class ExecuteTaskCommand extends AbstractCommand
 
         if (!$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
+
             return;
         }
 

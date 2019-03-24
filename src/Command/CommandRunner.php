@@ -27,6 +27,7 @@ class CommandRunner
 
     /**
      * @param array $parameters
+     *
      * @throws \Exception
      */
     public function run(array $parameters)

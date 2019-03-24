@@ -14,7 +14,8 @@ class ReplayTest extends MessageTestCase
      * @param string $model
      * @param string $generator
      * @param string $reducer
-     * @param bool $regression
+     * @param bool   $regression
+     *
      * @throws \Exception
      * @dataProvider consumeMessageData
      */

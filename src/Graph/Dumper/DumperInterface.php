@@ -10,8 +10,8 @@ interface DumperInterface
      * Dumps a graph.
      *
      * @param string $initialPlaces
-     * @param Graph $graph
-     * @param array $options
+     * @param Graph  $graph
+     * @param array  $options
      *
      * @return string
      */

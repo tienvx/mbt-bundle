@@ -55,8 +55,9 @@ final class MakeSubject extends AbstractMaker
 
     /**
      * @param InputInterface $input
-     * @param ConsoleStyle $io
-     * @param Generator $generator
+     * @param ConsoleStyle   $io
+     * @param Generator      $generator
+     *
      * @throws \Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
@@ -68,6 +69,7 @@ final class MakeSubject extends AbstractMaker
             $subject = $this->subjectManager->getSubject($model);
             if (class_exists($subject)) {
                 $io->text(sprintf('The subject for model %s has been already defined: %s!', $model, $subject));
+
                 return;
             }
         } else {
@@ -91,7 +93,7 @@ final class MakeSubject extends AbstractMaker
 
         $generator->generateClass(
             $subjectClassNameDetails->getFullName(),
-            __DIR__.'/../Resources/skeleton/subject/Subject.tpl.php',
+            __DIR__.'/../Resources/skeleton/subject/Subject.php.tpl',
             [
                 'methods' => array_unique($methods),
                 'model' => $model,
@@ -102,7 +104,7 @@ final class MakeSubject extends AbstractMaker
 
         $this->writeSuccessMessage($io);
         $io->text([
-            'Next: Open the new generated subject class and implement places and transitions!'
+            'Next: Open the new generated subject class and implement places and transitions!',
         ]);
     }
 

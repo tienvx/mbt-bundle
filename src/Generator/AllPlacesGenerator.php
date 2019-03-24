@@ -24,7 +24,7 @@ class AllPlacesGenerator extends AbstractGenerator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws Exception
      * @throws CacheException

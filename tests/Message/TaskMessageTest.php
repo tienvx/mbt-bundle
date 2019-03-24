@@ -13,8 +13,9 @@ class TaskMessageTest extends MessageTestCase
      * @param string $model
      * @param string $generator
      * @param string $reducer
-     * @param bool $takeScreenshots
-     * @param bool $reportBug
+     * @param bool   $takeScreenshots
+     * @param bool   $reportBug
+     *
      * @throws \Exception
      * @dataProvider consumeMessageData
      */
@@ -46,19 +47,19 @@ class TaskMessageTest extends MessageTestCase
 
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
-            if ($model === 'shopping_cart') {
+            if ('shopping_cart' === $model) {
                 $data = array_column($bugs[0]->getPath(), 1);
                 $ids = array_filter(array_column($data, 'product'));
-                if ($bugs[0]->getBugMessage() === 'You added an out-of-stock product into cart! Can not checkout') {
+                if ('You added an out-of-stock product into cart! Can not checkout' === $bugs[0]->getBugMessage()) {
                     $this->assertContains(49, $ids);
-                } elseif ($bugs[0]->getBugMessage() === 'You need to specify options for this product! Can not add product') {
+                } elseif ('You need to specify options for this product! Can not add product' === $bugs[0]->getBugMessage()) {
                     $this->assertGreaterThanOrEqual(1, count(array_intersect([42, 30, 35], $ids)));
                 } else {
                     $this->fail();
                 }
-            } elseif ($model === 'checkout') {
+            } elseif ('checkout' === $model) {
                 $this->assertEquals('Still able to do register account, guest checkout or login when logged in!', $bugs[0]->getBugMessage());
-            } elseif ($model === 'product') {
+            } elseif ('product' === $model) {
                 $this->assertEquals('Can not upload file!', $bugs[0]->getBugMessage());
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());

@@ -21,6 +21,7 @@ class ReducePathMessageHandler implements MessageHandlerInterface
 
     /**
      * @param ReducePathMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(ReducePathMessage $message)

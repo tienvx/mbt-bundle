@@ -12,14 +12,14 @@ class MakeGeneratorCommandTest extends CommandTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'         => $command->getName(),
-            'name'            => 'test',
+            'command' => $command->getName(),
+            'name' => 'test',
             'generator-class' => 'Test',
         ]);
 
         $output = $commandTester->getDisplay();
         $this->assertContains('Success!', $output);
-        $this->assertContains('class Test extends AbstractGenerator', file_get_contents(__DIR__ . "/../app/src/Generator/Test.php"));
-        unlink(__DIR__ . "/../app/src/Generator/Test.php");
+        $this->assertContains('class Test extends AbstractGenerator', file_get_contents(__DIR__.'/../app/src/Generator/Test.php'));
+        unlink(__DIR__.'/../app/src/Generator/Test.php');
     }
 }

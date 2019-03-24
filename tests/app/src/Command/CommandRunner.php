@@ -10,6 +10,7 @@ class CommandRunner extends BaseCommandRunner
 {
     /**
      * @param array $parameters
+     *
      * @throws \Exception
      */
     public function run(array $parameters)

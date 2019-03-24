@@ -12,7 +12,8 @@ class BugFormatter extends HtmlFormatter
     /**
      * Formats a log record.
      *
-     * @param  array $record A record to format
+     * @param array $record A record to format
+     *
      * @return mixed The formatted record
      */
     public function format(array $record)
@@ -61,7 +62,8 @@ class BugFormatter extends HtmlFormatter
     public function addImage($content)
     {
         $imageData = base64_encode($content);
-        $src = 'data:image/png;base64, ' . $imageData;
-        return '<img src="' . $src . '">';
+        $src = 'data:image/png;base64, '.$imageData;
+
+        return '<img src="'.$src.'">';
     }
 }

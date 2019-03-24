@@ -10,7 +10,7 @@ abstract class AbstractSubject implements SubjectInterface
     public $marking;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $testing = false;
 
@@ -25,7 +25,7 @@ abstract class AbstractSubject implements SubjectInterface
     protected $storedData = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $needData = true;
 
@@ -43,7 +43,7 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isTesting()
     {
@@ -59,7 +59,7 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function needData()
     {
@@ -124,16 +124,16 @@ abstract class AbstractSubject implements SubjectInterface
 
     public function captureScreenshot($bugId, $index)
     {
-        if (!is_dir($this->screenshotsDir . "/{$bugId}")) {
-            mkdir($this->screenshotsDir . "/{$bugId}", 0777, true);
+        if (!is_dir($this->screenshotsDir."/{$bugId}")) {
+            mkdir($this->screenshotsDir."/{$bugId}", 0777, true);
         }
-        file_put_contents($this->screenshotsDir . "/{$bugId}/{$index}.png", '');
+        file_put_contents($this->screenshotsDir."/{$bugId}/{$index}.png", '');
     }
 
     public function getScreenshot($bugId, $index)
     {
-        if (file_exists($this->screenshotsDir . "/{$bugId}/{$index}.png")) {
-            return file_get_contents($this->screenshotsDir . "/{$bugId}/{$index}.png");
+        if (file_exists($this->screenshotsDir."/{$bugId}/{$index}.png")) {
+            return file_get_contents($this->screenshotsDir."/{$bugId}/{$index}.png");
         } else {
             return '';
         }
@@ -147,18 +147,19 @@ abstract class AbstractSubject implements SubjectInterface
 
     public function hasScreenshot($bugId, $index)
     {
-        return file_exists($this->screenshotsDir . "/{$bugId}/{$index}.png");
+        return file_exists($this->screenshotsDir."/{$bugId}/{$index}.png");
     }
 
     /**
      * @param $bugId
+     *
      * @see https://stackoverflow.com/a/13468943
      */
     public function removeScreenshots($bugId)
     {
-        if (is_dir($this->screenshotsDir . "/{$bugId}")) {
-            @array_map('unlink', glob($this->screenshotsDir . "/{$bugId}/*"));
-            rmdir($this->screenshotsDir . "/{$bugId}");
+        if (is_dir($this->screenshotsDir."/{$bugId}")) {
+            @array_map('unlink', glob($this->screenshotsDir."/{$bugId}/*"));
+            rmdir($this->screenshotsDir."/{$bugId}");
         }
     }
 

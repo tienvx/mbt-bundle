@@ -26,7 +26,7 @@ class AllTransitionsGenerator extends AbstractGenerator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws Exception
      * @throws CacheException

@@ -21,6 +21,7 @@ class CreateBugMessageHandler implements MessageHandlerInterface
 
     /**
      * @param CreateBugMessage $message
+     *
      * @throws Exception
      */
     public function __invoke(CreateBugMessage $message)

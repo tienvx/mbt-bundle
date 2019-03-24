@@ -19,11 +19,12 @@ class PathReducerPass implements CompilerPassInterface
         string $pathReducerTag = 'mbt.path_reducer'
     ) {
         $this->pathReducerService = $pathReducerService;
-        $this->pathReducerTag     = $pathReducerTag;
+        $this->pathReducerTag = $pathReducerTag;
     }
 
     /**
      * @param ContainerBuilder $container
+     *
      * @throws Exception
      */
     public function process(ContainerBuilder $container)
