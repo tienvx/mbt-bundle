@@ -31,6 +31,7 @@ class BugMessageTest extends MessageTestCase
         $task->setModel($model);
         $task->setGenerator('random');
         $task->setReducer($reducer);
+        $task->setTakeScreenshots(false);
         $task->setReportBug(true);
         $entityManager->persist($task);
 
@@ -38,6 +39,7 @@ class BugMessageTest extends MessageTestCase
 
         $this->clearMessages();
         $this->clearLog();
+        // Just to make sure
         $this->removeScreenshots();
 
         $bug = new Bug();
@@ -68,6 +70,9 @@ class BugMessageTest extends MessageTestCase
 
         $this->assertTrue($this->hasLog());
         $this->assertEquals('reported', $bug->getStatus());
+
+        // Because screenshots had not been captured, and had been removed during set-up, no need to test this
+        //$this->assertTrue($this->logHasScreenshot());
     }
 
     public function consumeMessageData()

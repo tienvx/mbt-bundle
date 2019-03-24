@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -30,12 +31,19 @@ class ReportBugCommand extends Command
      */
     protected $subjectManager;
 
+    /**
+     * @var ParameterBagInterface
+     */
+    protected $params;
+
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager
+        SubjectManager $subjectManager,
+        ParameterBagInterface $params
     ) {
         $this->entityManager  = $entityManager;
         $this->subjectManager = $subjectManager;
+        $this->params = $params;
 
         parent::__construct();
     }
@@ -87,6 +95,8 @@ class ReportBugCommand extends Command
         $path = Path::unserialize($bug->getPath());
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
+
+        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
 
         $this->logger->error($bug->getBugMessage(), [
             'bug' => $bug,

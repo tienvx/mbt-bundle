@@ -64,6 +64,9 @@ class TaskMessageTest extends MessageTestCase
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
             $this->assertEquals($reportBug, $this->hasLog());
+            if ($takeScreenshots && $reportBug) {
+                $this->assertTrue($this->logHasScreenshot());
+            }
             $this->assertEquals($reportBug ? 'reported' : 'reduced', $bugs[0]->getStatus());
 
             $bugId = $bugs[0]->getId();
@@ -87,19 +90,19 @@ class TaskMessageTest extends MessageTestCase
     {
         return [
             ['shopping_cart', 'random', 'loop', true, true],
-            ['shopping_cart', 'random', 'split', false, false],
+            ['shopping_cart', 'random', 'split', false, true],
             ['shopping_cart', 'random', 'random', true, false],
-            ['shopping_cart', 'probability', 'loop', false, true],
+            ['shopping_cart', 'probability', 'loop', true, true],
             ['shopping_cart', 'all-places', 'loop', true, true],
             ['shopping_cart', 'all-transitions', 'loop', false, false],
-            ['checkout', 'random', 'loop', true, true],
-            ['checkout', 'random', 'split', false, false],
+            ['checkout', 'random', 'loop', false, false],
+            ['checkout', 'random', 'split', true, true],
             ['checkout', 'random', 'random', true, true],
             ['checkout', 'probability', 'loop', false, false],
             ['product', 'random', 'loop', true, false],
             ['product', 'random', 'split', false, true],
-            ['product', 'random', 'random', true, false],
-            ['product', 'probability', 'loop', false, true],
+            ['product', 'random', 'random', true, true],
+            ['product', 'probability', 'loop', false, false],
         ];
     }
 }

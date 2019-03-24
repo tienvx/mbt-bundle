@@ -72,6 +72,11 @@ abstract class MessageTestCase extends TestCase
         return file_exists("{$this->logDir}/test.log") && filesize("{$this->logDir}/test.log") !== 0;
     }
 
+    protected function logHasScreenshot()
+    {
+        return strpos(file_get_contents("{$this->logDir}/test.log"), 'Screenshot') !== false;
+    }
+
     protected function removeScreenshots()
     {
         exec("rm -rf {$this->screenshotsDir}/*");
