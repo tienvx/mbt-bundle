@@ -12,7 +12,7 @@ abstract class AbstractSubject implements SubjectInterface
     /**
      * @var bool
      */
-    protected $testing = false;
+    protected $testingModel = false;
 
     /**
      * @var array
@@ -35,19 +35,19 @@ abstract class AbstractSubject implements SubjectInterface
     protected $screenshotsDir = '';
 
     /**
-     * @param $testing boolean
+     * @param $testingModel bool
      */
-    public function setTesting(bool $testing = false)
+    public function setTestingModel(bool $testingModel = false)
     {
-        $this->testing = $testing;
+        $this->testingModel = $testingModel;
     }
 
     /**
      * @return bool
      */
-    public function isTesting()
+    public function isTestingModel()
     {
-        return $this->testing;
+        return $this->testingModel;
     }
 
     /**

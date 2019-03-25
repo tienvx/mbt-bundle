@@ -355,7 +355,7 @@ class ShoppingCart extends AbstractSubject
             throw new Exception('Can not add product from home: product is not selected');
         }
         $product = $this->data['product'];
-        if (!$this->testing) {
+        if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
             }
@@ -377,7 +377,7 @@ class ShoppingCart extends AbstractSubject
             throw new Exception('Can not add product from category: product is not selected');
         }
         $product = $this->data['product'];
-        if (!$this->testing) {
+        if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
             }
@@ -394,7 +394,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromProduct()
     {
-        if (!$this->testing) {
+        if (!$this->testingModel) {
             if (in_array($this->product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
             }
@@ -453,7 +453,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function checkout()
     {
-        if (!$this->testing) {
+        if (!$this->testingModel) {
             foreach ($this->cart as $product => $quantity) {
                 if (in_array($product, $this->outOfStock)) {
                     throw new Exception('You added an out-of-stock product into cart! Can not checkout');

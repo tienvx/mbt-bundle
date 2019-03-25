@@ -17,7 +17,7 @@ class Product extends AbstractSubject
      */
     public function selectFile()
     {
-        if (!$this->testing) {
+        if (!$this->testingModel) {
             throw new Exception('Can not upload file!');
         }
     }
