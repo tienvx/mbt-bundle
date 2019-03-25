@@ -74,7 +74,7 @@ class GeneratePathCommand extends AbstractCommand
         $metaData = $input->getOption('meta-data');
         $generator = $this->generatorManager->getGenerator($generatorName);
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setTesting(true);
+        $subject->setTestingModel(true);
         $subject->setUp();
         $workflow = $this->workflowRegistry->get($subject, $model);
 
