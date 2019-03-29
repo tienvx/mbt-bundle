@@ -94,6 +94,11 @@ class Path implements Iterator
         $this->data[$index] = $data;
     }
 
+    public function setPlacesAt(int $index, array $places)
+    {
+        $this->places[$index] = $places;
+    }
+
     /**
      * @param Path $path
      *

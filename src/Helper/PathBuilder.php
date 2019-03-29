@@ -109,4 +109,35 @@ class PathBuilder
 
         return $newPath;
     }
+
+    /**
+     * @param Path $path
+     * @param int  $from
+     * @param int  $to
+     *
+     * @return Path
+     *
+     * @throws Exception
+     */
+    public static function createWithoutTransition(Path $path, int $from, int $to): Path
+    {
+        $fromPlaces = $path->getPlacesAt($from);
+        $toPlaces = $path->getPlacesAt($to);
+        if (count($fromPlaces) > 1 && count($toPlaces) > 1 && 1 === count(array_diff($fromPlaces, $toPlaces)) &&
+            1 === count(array_diff($toPlaces, $fromPlaces))) {
+            $path = static::create($path, $from, $to, [], [], []);
+
+            $find = array_diff($toPlaces, $fromPlaces);
+            $replace = array_diff($fromPlaces, $toPlaces);
+            for ($i = $to; $i < $path->countPlaces(); ++$i) {
+                $places = $path->getPlacesAt($i);
+                $newPlaces = array_replace($places, $find, $replace);
+                $path->setPlacesAt($i, $newPlaces);
+            }
+
+            return $path;
+        } else {
+            throw new Exception('Can not create new path without transition');
+        }
+    }
 }
