@@ -24,8 +24,19 @@ class BugMessageTest extends MessageTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $path = new Path(...$pathArgs);
         $expectedPath = new Path(...$expectedPathArgs);
-        $bugMessage = ('shopping_cart' === $model) ? 'You added an out-of-stock product into cart! Can not checkout' :
-            'Still able to do register account, guest checkout or login when logged in!';
+        switch ($model) {
+            case 'shopping_cart':
+                $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
+                break;
+            case 'checkout':
+                $bugMessage = 'Still able to do register account, guest checkout or login when logged in!';
+                break;
+            case 'product':
+                $bugMessage = 'Can not upload file!';
+                break;
+            default:
+                break;
+        }
 
         $task = new Task();
         $task->setTitle('Test task title');
@@ -245,6 +256,20 @@ class BugMessageTest extends MessageTestCase
                     [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
                     [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
                     [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
+                ],
+            ],
+            [
+                'product',
+                [
+                    [null, 'selectOptions', 'selectRadio', 'selectFile'],
+                    [null, [], ['radio' => '6'], []],
+                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['radioSelected', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['radioSelected', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime']],
+                ],
+                'transition',
+                [
+                    [null, 'selectOptions', 'selectFile'],
+                    [null, [], []],
+                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime']],
                 ],
             ],
         ];
