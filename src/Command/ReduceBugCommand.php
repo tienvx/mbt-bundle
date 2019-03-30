@@ -46,7 +46,8 @@ class ReduceBugCommand extends AbstractCommand
             ->setName('mbt:bug:reduce')
             ->setDescription('Reduce the reproduce steps of the bug.')
             ->setHelp("Make bug's reproduce steps shorter.")
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.')
+            ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.');
     }
 
     /**
@@ -58,6 +59,7 @@ class ReduceBugCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
+        $reducer = $input->getArgument('reducer');
 
         $callback = function () use ($bugId) {
             $bug = $this->entityManager->find(Bug::class, $bugId);
@@ -79,7 +81,7 @@ class ReduceBugCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $pathReducer = $this->pathReducerManager->getPathReducer($bug->getTask()->getReducer());
+        $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
         $pathReducer->reduce($bug);
     }
 }
