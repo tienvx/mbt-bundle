@@ -32,7 +32,7 @@ class EntitySubscriber implements EventSubscriber
             $this->messageBus->dispatch(new ExecuteTaskMessage($entity->getId()));
         }
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new ReduceBugMessage($entity->getId()));
+            $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $entity->getTask()->getReducer()));
         }
     }
 

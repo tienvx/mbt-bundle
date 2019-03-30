@@ -27,6 +27,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
     public function __invoke(ReduceBugMessage $message)
     {
         $id = $message->getId();
-        $this->commandRunner->run(['mbt:bug:reduce', $id]);
+        $reducer = $message->getReducer();
+        $this->commandRunner->run(['mbt:bug:reduce', $id, $reducer]);
     }
 }

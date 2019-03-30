@@ -21,7 +21,7 @@ class CommandRunner extends BaseCommandRunner
             'mbt:bug:capture-screenshots' => ['command', 'bug-id'],
             'mbt:bug:create' => ['command', 'title', 'path', 'length', 'message', 'task-id', 'status'],
             'mbt:task:execute' => ['command', 'task-id'],
-            'mbt:bug:reduce' => ['command', 'bug-id'],
+            'mbt:bug:reduce' => ['command', 'bug-id', 'reducer'],
             'mbt:path:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],
             'mbt:bug:report' => ['command', 'bug-id'],
             'mbt:task:update-status' => ['command', 'task-id', 'status'],
