@@ -76,11 +76,13 @@ class Task
 
     /**
      * @ORM\Column(type="boolean")
+     * @Assert\Type("bool")
      */
     private $takeScreenshots = false;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Assert\Type("bool")
      */
     private $reportBug = false;
 
@@ -88,6 +90,7 @@ class Task
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
+     * @Assert\DateTime
      */
     private $createdAt;
 
@@ -95,6 +98,7 @@ class Task
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime")
+     * @Assert\DateTime
      */
     private $updatedAt;
 
