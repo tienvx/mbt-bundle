@@ -261,15 +261,15 @@ class BugMessageTest extends MessageTestCase
             [
                 'product',
                 [
-                    [null, 'selectOptions', 'selectRadio', 'selectFile'],
-                    [null, [], ['radio' => '6'], []],
-                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['radioSelected', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['radioSelected', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime']],
+                    [null, 'selectOptions', 'selectSelect', 'selectTime', 'selectDateTime', 'fillText', 'selectFile'],
+                    [null, [], ['select' => 2], [], [], [], []],
+                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime', 'selectSelected'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingDateTime', 'selectSelected', 'timeSelected'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected'], 	['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected', 'textFilled'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected', 'textFilled']],
                 ],
                 'transition',
                 [
                     [null, 'selectOptions', 'selectFile'],
                     [null, [], []],
-                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime']],
+                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingSelect', 'awaitingTime', 'awaitingDateTime', 'awaitingText']],
                 ],
             ],
         ];

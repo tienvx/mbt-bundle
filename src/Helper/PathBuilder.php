@@ -127,11 +127,12 @@ class PathBuilder
             1 === count(array_diff($toPlaces, $fromPlaces))) {
             $path = static::create($path, $from, $to, [], [], []);
 
-            $find = array_diff($toPlaces, $fromPlaces);
-            $replace = array_diff($fromPlaces, $toPlaces);
+            $find = array_values(array_diff($toPlaces, $fromPlaces))[0];
+            $replace = array_values(array_diff($fromPlaces, $toPlaces))[0];
             for ($i = $to; $i < $path->countPlaces(); ++$i) {
                 $places = $path->getPlacesAt($i);
-                $newPlaces = array_replace($places, $find, $replace);
+                $key = array_search($find, $places);
+                $newPlaces = array_replace($places, [$key => $replace]);
                 $path->setPlacesAt($i, $newPlaces);
             }
 
