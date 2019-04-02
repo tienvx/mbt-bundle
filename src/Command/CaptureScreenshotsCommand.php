@@ -89,6 +89,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
 
         $subject->setUp();
         $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
+        $subject->removeScreenshots($bugId);
 
         try {
             foreach ($path as $index => $step) {
