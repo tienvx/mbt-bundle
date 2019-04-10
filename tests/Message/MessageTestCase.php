@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 use Tienvx\Messenger\MemoryTransport\Connection;
@@ -14,9 +16,9 @@ abstract class MessageTestCase extends TestCase
     protected $logDir;
 
     /**
-     * @var string
+     * @var Filesystem
      */
-    protected $screenshotsDir;
+    protected $filesystem;
 
     /**
      * @throws \Exception
@@ -31,7 +33,8 @@ abstract class MessageTestCase extends TestCase
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
         $this->logDir = $params->get('kernel.logs_dir');
-        $this->screenshotsDir = $params->get('mbt.screenshots_dir');
+
+        $this->filesystem = self::$container->get('oneup_flysystem.mbt_filesystem');
     }
 
     /**
@@ -80,11 +83,17 @@ abstract class MessageTestCase extends TestCase
 
     protected function removeScreenshots()
     {
-        exec("rm -rf {$this->screenshotsDir}/*");
+        $contents = $this->filesystem->listContents('', true);
+        foreach ($contents as $object) {
+            try {
+                $this->filesystem->delete($object['path']);
+            } catch (FileNotFoundException $e) {
+            }
+        }
     }
 
     protected function countScreenshots(int $bugId)
     {
-        return count(glob($this->screenshotsDir."/{$bugId}/*.*"));
+        return count($this->filesystem->listContents("$bugId/", false));
     }
 }

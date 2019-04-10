@@ -2,6 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
+
 abstract class AbstractSubject implements SubjectInterface
 {
     /**
@@ -30,9 +33,9 @@ abstract class AbstractSubject implements SubjectInterface
     protected $needData = true;
 
     /**
-     * @var string
+     * @var Filesystem
      */
-    protected $screenshotsDir = '';
+    protected $filesystem;
 
     /**
      * @param $testingModel bool
@@ -112,29 +115,23 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param string $screenshotsDir
+     * @param Filesystem $filesystem
      */
-    public function setScreenshotsDir(string $screenshotsDir)
+    public function setFilesystem(Filesystem $filesystem)
     {
-        $this->screenshotsDir = rtrim($screenshotsDir, '/');
-        if (!is_dir($this->screenshotsDir)) {
-            mkdir($this->screenshotsDir, 0777, true);
-        }
+        $this->filesystem = $filesystem;
     }
 
     public function captureScreenshot($bugId, $index)
     {
-        if (!is_dir($this->screenshotsDir."/{$bugId}")) {
-            mkdir($this->screenshotsDir."/{$bugId}", 0777, true);
-        }
-        file_put_contents($this->screenshotsDir."/{$bugId}/{$index}.png", '');
+        $this->filesystem->put("{$bugId}/{$index}.png", '');
     }
 
     public function getScreenshot($bugId, $index)
     {
-        if (file_exists($this->screenshotsDir."/{$bugId}/{$index}.png")) {
-            return file_get_contents($this->screenshotsDir."/{$bugId}/{$index}.png");
-        } else {
+        try {
+            return $this->filesystem->read("{$bugId}/{$index}.png");
+        } catch (FileNotFoundException $e) {
             return '';
         }
     }
@@ -146,7 +143,7 @@ abstract class AbstractSubject implements SubjectInterface
 
     public function hasScreenshot($bugId, $index)
     {
-        return file_exists($this->screenshotsDir."/{$bugId}/{$index}.png");
+        return $this->filesystem->has("{$bugId}/{$index}.png");
     }
 
     /**
@@ -156,10 +153,7 @@ abstract class AbstractSubject implements SubjectInterface
      */
     public function removeScreenshots($bugId)
     {
-        if (is_dir($this->screenshotsDir."/{$bugId}")) {
-            @array_map('unlink', glob($this->screenshotsDir."/{$bugId}/*"));
-            rmdir($this->screenshotsDir."/{$bugId}");
-        }
+        $this->filesystem->deleteDir("$bugId/");
     }
 
     public function getScreenshotUrl($bugId, $index)

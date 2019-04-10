@@ -4,12 +4,12 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use League\Flysystem\Filesystem;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -32,18 +32,16 @@ class ReportBugCommand extends Command
     protected $subjectManager;
 
     /**
-     * @var ParameterBagInterface
+     * @var Filesystem
      */
-    protected $params;
+    protected $filesystem;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager,
-        ParameterBagInterface $params
+        SubjectManager $subjectManager
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
-        $this->params = $params;
 
         parent::__construct();
     }
@@ -60,6 +58,11 @@ class ReportBugCommand extends Command
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -98,7 +101,7 @@ class ReportBugCommand extends Command
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
 
-        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
+        $subject->setFilesystem($this->filesystem);
 
         $this->logger->error($bug->getBugMessage(), [
             'bug' => $bug,

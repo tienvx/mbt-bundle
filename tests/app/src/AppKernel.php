@@ -4,6 +4,7 @@ namespace App;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Dunglas\DoctrineJsonOdm\Bundle\DunglasDoctrineJsonOdmBundle;
+use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -25,6 +26,7 @@ class AppKernel extends Kernel
             new MonologBundle(),
             new MakerBundle(),
             new DunglasDoctrineJsonOdmBundle(),
+            new OneupFlysystemBundle(),
             new TienvxMbtBundle(),
         );
 

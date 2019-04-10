@@ -4,11 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class RemoveScreenshotsCommand extends Command
@@ -24,18 +24,16 @@ class RemoveScreenshotsCommand extends Command
     protected $subjectManager;
 
     /**
-     * @var ParameterBagInterface
+     * @var Filesystem
      */
-    protected $params;
+    protected $filesystem;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager,
-        ParameterBagInterface $params
+        SubjectManager $subjectManager
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
-        $this->params = $params;
 
         parent::__construct();
     }
@@ -50,6 +48,11 @@ class RemoveScreenshotsCommand extends Command
             ->addArgument('model', InputArgument::REQUIRED, 'The model of the task.');
     }
 
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -62,7 +65,7 @@ class RemoveScreenshotsCommand extends Command
         $model = $input->getArgument('model');
 
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
+        $subject->setFilesystem($this->filesystem);
         $subject->removeScreenshots($bugId);
     }
 }

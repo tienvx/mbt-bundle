@@ -36,3 +36,11 @@ monolog:
 
 maker:
     root_namespace: 'App'
+
+oneup_flysystem:
+    adapters:
+        memory:
+            memory: ~
+    filesystems:
+        mbt:
+            adapter: memory
