@@ -29,7 +29,8 @@
         "doctrine/doctrine-bundle": "^1.10",
         "doctrine/orm": "^2.6",
         "dunglas/doctrine-json-odm": "^0.1.3",
-        "symfony/monolog-bundle": "^3.3"
+        "symfony/monolog-bundle": "^3.3",
+        "oneup/flysystem-bundle": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.4",
@@ -39,7 +40,8 @@
         "symfony/expression-language": "^4.2",
         "symfony/security-bundle": "^4.2",
         "symfony/maker-bundle": "^1.11",
-        "tienvx/messenger-memory-transport": "^0.1"
+        "tienvx/messenger-memory-transport": "^0.1",
+        "league/flysystem-memory": "^1.0"
     },
     "autoload": {
         "psr-4": {

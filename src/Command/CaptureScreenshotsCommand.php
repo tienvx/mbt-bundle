@@ -4,10 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
@@ -32,18 +32,16 @@ class CaptureScreenshotsCommand extends AbstractCommand
     protected $workflowRegistry;
 
     /**
-     * @var ParameterBagInterface
+     * @var Filesystem
      */
-    protected $params;
+    protected $filesystem;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager,
-        ParameterBagInterface $params
+        SubjectManager $subjectManager
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
-        $this->params = $params;
 
         parent::__construct();
     }
@@ -60,6 +58,11 @@ class CaptureScreenshotsCommand extends AbstractCommand
     public function setWorkflowRegistry(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
+    }
+
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -88,7 +91,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         $subject->setUp();
-        $subject->setScreenshotsDir($this->params->get('mbt.screenshots_dir'));
+        $subject->setFilesystem($this->filesystem);
         $subject->removeScreenshots($bugId);
 
         try {

@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\FlysystemFilesystemPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\GeneratorPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\MonologChannelPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PathReducerPass;
@@ -21,5 +22,6 @@ class TienvxMbtBundle extends Bundle
         $container->addCompilerPass(new WorkflowRegistryPass());
         $container->addCompilerPass(new SubjectPass());
         $container->addCompilerPass(new MonologChannelPass());
+        $container->addCompilerPass(new FlysystemFilesystemPass());
     }
 }
