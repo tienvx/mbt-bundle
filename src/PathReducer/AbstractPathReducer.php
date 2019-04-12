@@ -101,6 +101,10 @@ abstract class AbstractPathReducer implements PathReducerInterface
             return;
         }
 
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not handle reduce path message: No workflows were defined');
+        }
+
         $model = $bug->getTask()->getModel();
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 

@@ -83,6 +83,14 @@ class CaptureScreenshotsCommand extends AbstractCommand
             return;
         }
 
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not capture screenshots: No workflows were defined');
+        }
+
+        if (!$this->filesystem instanceof Filesystem) {
+            throw new Exception("Can not capture screenshots: No filesystems with name 'mbt' were defined");
+        }
+
         $this->setAnonymousToken();
 
         $path = Path::unserialize($bug->getPath());

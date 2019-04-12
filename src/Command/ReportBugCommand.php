@@ -77,6 +77,10 @@ class ReportBugCommand extends Command
             throw new Exception("Can not report bug: No monolog's handlers with channel 'mbt' were defined");
         }
 
+        if (!$this->filesystem instanceof Filesystem) {
+            throw new Exception("Can not report bug: No filesystems with name 'mbt' were defined");
+        }
+
         $bugId = $input->getArgument('bug-id');
 
         $callback = function () use ($bugId) {

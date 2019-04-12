@@ -64,6 +64,10 @@ class RemoveScreenshotsCommand extends Command
         $bugId = $input->getArgument('bug-id');
         $model = $input->getArgument('model');
 
+        if (!$this->filesystem instanceof Filesystem) {
+            throw new Exception("Can not remove screenshots: No filesystems with name 'mbt' were defined");
+        }
+
         $subject = $this->subjectManager->createSubject($model);
         $subject->setFilesystem($this->filesystem);
         $subject->removeScreenshots($bugId);

@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
+use Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -62,6 +63,10 @@ final class MakeSubject extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
     {
+        if (!$this->workflowRegistry instanceof Registry) {
+            throw new Exception('Can not make subject: No workflows were defined');
+        }
+
         $model = $input->getArgument('model');
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
