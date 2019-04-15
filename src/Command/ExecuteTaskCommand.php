@@ -128,7 +128,7 @@ class ExecuteTaskCommand extends AbstractCommand
             foreach ($generator->getAvailableTransitions($workflow, $subject, $task->getMetaData()) as $transitionName) {
                 try {
                     if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                        throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $task->getGenerator(), $transitionName));
+                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $task->getGenerator(), $transitionName));
                     }
                 } catch (Throwable $throwable) {
                     throw $throwable;

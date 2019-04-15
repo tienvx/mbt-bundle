@@ -85,7 +85,7 @@ class GeneratePathCommand extends AbstractCommand
             foreach ($generator->getAvailableTransitions($workflow, $subject, $metaData) as $transitionName) {
                 try {
                     if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                        throw new Exception(sprintf('Generator %s generated transition %s that can not be applied', $generatorName, $transitionName));
+                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $generatorName, $transitionName));
                     }
                 } finally {
                     $data = $subject->getStoredData();
