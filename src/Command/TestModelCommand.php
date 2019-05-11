@@ -12,7 +12,7 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class GeneratePathCommand extends AbstractCommand
+class TestModelCommand extends AbstractCommand
 {
     /**
      * @var Registry
@@ -42,10 +42,10 @@ class GeneratePathCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:path:generate')
-            ->setDescription('Generate path from model.')
-            ->setHelp('Generate path from model.')
-            ->addArgument('model', InputArgument::REQUIRED, 'The model to generate.')
+            ->setName('mbt:model:test')
+            ->setDescription('Generate path for model.')
+            ->setHelp('Generate path for model.')
+            ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random')
             ->addOption('meta-data', 'm', InputOption::VALUE_OPTIONAL, 'The meta data for the generator.');
     }
@@ -64,7 +64,7 @@ class GeneratePathCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not generate path: No workflows were defined');
+            throw new Exception('Can not test model: No workflows were defined');
         }
 
         $this->setAnonymousToken();

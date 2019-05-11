@@ -8,7 +8,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
-use Tienvx\Bundle\MbtBundle\Command\GeneratePathCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestSubjectCommand;
 use Tienvx\Bundle\MbtBundle\Maker\MakeSubject;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints\ModelValidator;
 
@@ -43,8 +44,11 @@ class WorkflowRegistryPass implements CompilerPassInterface
             $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
             $executeTaskCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
 
-            $generatePathCommandDefinition = $container->getDefinition(GeneratePathCommand::class);
-            $generatePathCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
+            $testModelCommandDefinition = $container->getDefinition(TestModelCommand::class);
+            $testModelCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
+
+            $testSubjectCommandDefinition = $container->getDefinition(TestSubjectCommand::class);
+            $testSubjectCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
 
             $captureScreenshotsCommandDefinition = $container->getDefinition(CaptureScreenshotsCommand::class);
             $captureScreenshotsCommandDefinition->addMethodCall('setWorkflowRegistry', [$workflowRegistry]);
