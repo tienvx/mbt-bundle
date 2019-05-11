@@ -18,6 +18,11 @@ abstract class AbstractSubject implements SubjectInterface
     protected $testingModel = false;
 
     /**
+     * @var bool
+     */
+    protected $testingSubject = false;
+
+    /**
      * @var array
      */
     protected $data = [];
@@ -51,6 +56,22 @@ abstract class AbstractSubject implements SubjectInterface
     public function isTestingModel()
     {
         return $this->testingModel;
+    }
+
+    /**
+     * @param $testingSubject bool
+     */
+    public function setTestingSubject(bool $testingSubject = false)
+    {
+        $this->testingModel = $testingSubject;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTestingSubject()
+    {
+        return $this->testingSubject;
     }
 
     /**

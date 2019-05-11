@@ -6,7 +6,7 @@ use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
-class GeneratePathCommandTest extends CommandTestCase
+class TestModelCommandTest extends CommandTestCase
 {
     public function coverageData()
     {
@@ -36,7 +36,7 @@ class GeneratePathCommandTest extends CommandTestCase
      */
     public function testExecute($model, $generator, $transitionCoverage, $placeCoverage, $transitionCount, $placeCount)
     {
-        $name = 'mbt:path:generate';
+        $name = 'mbt:model:test';
         $input = [
             'command' => $name,
             'model' => $model,
