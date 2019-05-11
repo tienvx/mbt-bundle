@@ -90,8 +90,7 @@ class TestSubjectCommand extends AbstractCommand
                 sprintf("There is an issue while testing subject '%s':", $subjectClass),
                 $throwable->getMessage(),
             ]);
-        }
-        finally {
+        } finally {
             $subject->tearDown();
         }
 
