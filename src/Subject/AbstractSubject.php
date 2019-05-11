@@ -63,7 +63,7 @@ abstract class AbstractSubject implements SubjectInterface
      */
     public function setTestingSubject(bool $testingSubject = false)
     {
-        $this->testingModel = $testingSubject;
+        $this->testingSubject = $testingSubject;
     }
 
     /**
