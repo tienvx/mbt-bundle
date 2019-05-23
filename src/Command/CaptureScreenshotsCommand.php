@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,16 +32,18 @@ class CaptureScreenshotsCommand extends AbstractCommand
     protected $workflowRegistry;
 
     /**
-     * @var Filesystem
+     * @var FilesystemInterface
      */
-    protected $filesystem;
+    protected $mbtStorage;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager
+        SubjectManager $subjectManager,
+        FilesystemInterface $mbtStorage
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
+        $this->mbtStorage = $mbtStorage;
 
         parent::__construct();
     }
@@ -58,11 +60,6 @@ class CaptureScreenshotsCommand extends AbstractCommand
     public function setWorkflowRegistry(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
-    }
-
-    public function setFilesystem(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
     }
 
     /**
@@ -87,10 +84,6 @@ class CaptureScreenshotsCommand extends AbstractCommand
             throw new Exception('Can not capture screenshots: No workflows were defined');
         }
 
-        if (!$this->filesystem instanceof Filesystem) {
-            throw new Exception("Can not capture screenshots: No filesystems with name 'mbt' were defined");
-        }
-
         $this->setAnonymousToken();
 
         $path = Path::unserialize($bug->getPath());
@@ -99,7 +92,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         $subject->setUp();
-        $subject->setFilesystem($this->filesystem);
+        $subject->setFilesystem($this->mbtStorage);
         $subject->removeScreenshots($bugId);
 
         try {

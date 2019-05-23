@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\StringInput;
@@ -23,7 +24,7 @@ abstract class TestCase extends KernelTestCase
      *
      * @return int
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function runCommand($command)
     {

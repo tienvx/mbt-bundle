@@ -4,7 +4,7 @@ framework:
     router:          { resource: '%kernel.project_dir%/config/routing.yaml' }
     messenger:
         transports:
-            memory: "memory://any"
+            memory: "memory://"
         routing:
             '*': memory
 
@@ -37,10 +37,7 @@ monolog:
 maker:
     root_namespace: 'App'
 
-oneup_flysystem:
-    adapters:
-        memory:
-            memory: ~
-    filesystems:
-        mbt:
-            adapter: memory
+flysystem:
+    storages:
+        mbt.storage:
+            adapter: 'memory'
