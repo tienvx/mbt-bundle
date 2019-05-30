@@ -2,11 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
+use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
-use Tienvx\Messenger\MemoryTransport\Connection;
 
 abstract class MessageTestCase extends TestCase
 {
@@ -21,7 +23,12 @@ abstract class MessageTestCase extends TestCase
     protected $filesystem;
 
     /**
-     * @throws \Exception
+     * @var InMemoryTransport
+     */
+    protected $transport;
+
+    /**
+     * @throws Exception
      */
     protected function setUp()
     {
@@ -34,16 +41,20 @@ abstract class MessageTestCase extends TestCase
         $params = self::$container->get(ParameterBagInterface::class);
         $this->logDir = $params->get('kernel.logs_dir');
 
-        $this->filesystem = self::$container->get('oneup_flysystem.mbt_filesystem');
+        $this->filesystem = self::$container->get('mbt.storage');
+
+        /** @var ContainerInterface $receiverLocator */
+        $receiverLocator = self::$container->get('messenger.receiver_locator');
+        $this->transport = $receiverLocator->get('memory');
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function consumeMessages()
     {
         while (true) {
-            $this->runCommand('messenger:consume-messages memory --limit=1');
+            $this->runCommand('messenger:consume memory --limit=1');
 
             if (!$this->hasMessages()) {
                 break;
@@ -53,17 +64,12 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearMessages()
     {
-        /** @var Connection $connection */
-        $connection = self::$container->get(Connection::class);
-        $connection->clear();
+        $this->transport->reset();
     }
 
     protected function hasMessages()
     {
-        /** @var Connection $connection */
-        $connection = self::$container->get(Connection::class);
-
-        return $connection->has();
+        return count($this->transport->get()) > 0;
     }
 
     protected function clearLog()

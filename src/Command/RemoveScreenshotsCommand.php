@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,16 +24,18 @@ class RemoveScreenshotsCommand extends Command
     protected $subjectManager;
 
     /**
-     * @var Filesystem
+     * @var FilesystemInterface
      */
-    protected $filesystem;
+    protected $mbtStorage;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager
+        SubjectManager $subjectManager,
+        FilesystemInterface $mbtStorage
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
+        $this->mbtStorage = $mbtStorage;
 
         parent::__construct();
     }
@@ -48,11 +50,6 @@ class RemoveScreenshotsCommand extends Command
             ->addArgument('model', InputArgument::REQUIRED, 'The model of the task.');
     }
 
-    public function setFilesystem(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
-    }
-
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -64,12 +61,8 @@ class RemoveScreenshotsCommand extends Command
         $bugId = $input->getArgument('bug-id');
         $model = $input->getArgument('model');
 
-        if (!$this->filesystem instanceof Filesystem) {
-            throw new Exception("Can not remove screenshots: No filesystems with name 'mbt' were defined");
-        }
-
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setFilesystem($this->filesystem);
+        $subject->setFilesystem($this->mbtStorage);
         $subject->removeScreenshots($bugId);
     }
 }

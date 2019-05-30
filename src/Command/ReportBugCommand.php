@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,16 +32,18 @@ class ReportBugCommand extends Command
     protected $subjectManager;
 
     /**
-     * @var Filesystem
+     * @var FilesystemInterface
      */
-    protected $filesystem;
+    protected $mbtStorage;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager
+        SubjectManager $subjectManager,
+        FilesystemInterface $mbtStorage
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
+        $this->mbtStorage = $mbtStorage;
 
         parent::__construct();
     }
@@ -60,11 +62,6 @@ class ReportBugCommand extends Command
         $this->logger = $logger;
     }
 
-    public function setFilesystem(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
-    }
-
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -75,10 +72,6 @@ class ReportBugCommand extends Command
     {
         if (!$this->logger instanceof LoggerInterface) {
             throw new Exception("Can not report bug: No monolog's handlers with channel 'mbt' were defined");
-        }
-
-        if (!$this->filesystem instanceof Filesystem) {
-            throw new Exception("Can not report bug: No filesystems with name 'mbt' were defined");
         }
 
         $bugId = $input->getArgument('bug-id');
@@ -105,7 +98,7 @@ class ReportBugCommand extends Command
         $model = $bug->getTask()->getModel();
         $subject = $this->subjectManager->createSubject($model);
 
-        $subject->setFilesystem($this->filesystem);
+        $subject->setFilesystem($this->mbtStorage);
 
         $this->logger->error($bug->getBugMessage(), [
             'bug' => $bug,

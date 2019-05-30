@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use League\Flysystem\FileNotFoundException;
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
 
 abstract class AbstractSubject implements SubjectInterface
 {
@@ -38,7 +38,7 @@ abstract class AbstractSubject implements SubjectInterface
     protected $needData = true;
 
     /**
-     * @var Filesystem
+     * @var FilesystemInterface
      */
     protected $filesystem;
 
@@ -136,9 +136,9 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param Filesystem $filesystem
+     * @param FilesystemInterface $filesystem
      */
-    public function setFilesystem(Filesystem $filesystem)
+    public function setFilesystem(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
     }

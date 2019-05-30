@@ -6,8 +6,8 @@ use Exception;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Graphp\Algorithms\ConnectedComponents;
-use Psr\SimpleCache\CacheException;
-use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
@@ -16,11 +16,11 @@ use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 class GraphBuilder
 {
     /**
-     * @var CacheInterface
+     * @var AdapterInterface
      */
     protected $cache;
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(AdapterInterface $cache)
     {
         $this->cache = $cache;
     }
@@ -31,23 +31,26 @@ class GraphBuilder
      * @return Graph
      *
      * @throws Exception
-     * @throws CacheException
+     * @throws InvalidArgumentException
      */
     public function build(Workflow $workflow): Graph
     {
-        if ($this->cache->has('mbt.graph.'.$workflow->getName())) {
-            return $this->cache->get('mbt.graph.'.$workflow->getName());
-        }
-        if ($workflow instanceof StateMachine) {
-            $graph = $this->buildForStateMachine($workflow);
-        } else {
-            $graph = $this->buildForWorkflow($workflow);
-            $initVertex = VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]);
-            $components = new ConnectedComponents($graph);
-            $graph = $components->createGraphComponentVertex($graph->getVertex($initVertex));
-        }
+        $cacheItem = $this->cache->getItem('mbt.graph.'.$workflow->getName());
+        if (!$cacheItem->isHit()) {
+            if ($workflow instanceof StateMachine) {
+                $graph = $this->buildForStateMachine($workflow);
+            } else {
+                $graph = $this->buildForWorkflow($workflow);
+                $initVertex = VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]);
+                $components = new ConnectedComponents($graph);
+                $graph = $components->createGraphComponentVertex($graph->getVertex($initVertex));
+            }
 
-        $this->cache->set('mbt.graph.'.$workflow->getName(), $graph);
+            $cacheItem->set($graph);
+            $this->cache->save($cacheItem);
+        } else {
+            $graph = $cacheItem->get();
+        }
 
         return $graph;
     }
