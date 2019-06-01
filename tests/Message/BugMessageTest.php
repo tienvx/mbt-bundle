@@ -45,12 +45,13 @@ class BugMessageTest extends MessageTestCase
         $task->setReducer($reducer);
         $task->setTakeScreenshots(false);
         $task->setReportBug(true);
+        $task->setReporters(['in-memory']);
         $entityManager->persist($task);
 
         $entityManager->flush();
 
         $this->clearMessages();
-        $this->clearLog();
+        $this->clearReport();
         // Just to make sure
         $this->removeScreenshots();
 
@@ -80,7 +81,7 @@ class BugMessageTest extends MessageTestCase
             $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
         }
 
-        $this->assertTrue($this->hasLog());
+        $this->assertTrue($this->hasReport($bugs[0]));
         $this->assertEquals('reported', $bug->getStatus());
 
         // Because screenshots had not been captured, and had been removed during set-up, no need to test this

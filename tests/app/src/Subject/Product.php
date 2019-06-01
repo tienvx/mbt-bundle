@@ -7,7 +7,7 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class Product extends AbstractSubject
 {
-    public static function support(): string
+    public static function getName(): string
     {
         return 'product';
     }

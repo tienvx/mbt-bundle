@@ -23,17 +23,6 @@ security:
         main:
             anonymous: ~
 
-monolog:
-    channels: ['mbt']
-    handlers:
-        file:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: error
-            formatter: mbt.bug_formatter
-            content_type: text/html
-            channels: [mbt]
-
 maker:
     root_namespace: 'App'
 

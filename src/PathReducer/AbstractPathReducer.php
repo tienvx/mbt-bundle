@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Psr\SimpleCache\CacheException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
@@ -67,6 +67,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
         $this->graphBuilder = $graphBuilder;
     }
 
+    public static function support(): bool
+    {
+        return true;
+    }
+
     public function setWorkflowRegistry(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
@@ -91,7 +96,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
      * @param int $to
      *
      * @throws Exception
-     * @throws CacheException
+     * @throws InvalidArgumentException
      */
     public function handle(int $bugId, int $length, int $from, int $to)
     {

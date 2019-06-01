@@ -56,7 +56,7 @@ class ReplayGenerator extends AbstractGenerator
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'replay';
     }

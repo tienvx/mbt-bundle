@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner as BaseCommandRunner;
@@ -11,7 +12,7 @@ class CommandRunner extends BaseCommandRunner
     /**
      * @param array $parameters
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function run(array $parameters)
     {

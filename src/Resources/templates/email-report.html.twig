@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+
+<h2>{{ title }}</h2>
+
+<dl>
+    <dt>ID:</dt>
+    <dd>{{ id }}</dd>
+
+    <dt>Task:</dt>
+    <dd>{{ task }}</dd>
+
+    <dt>Bug Message:</dt>
+    <dd>{{ bugMessage }}</dd>
+</dl>
+
+<h3>Steps:</h3>
+
+<table>
+    <tr>
+        <th>Step</th>
+        <th>Transition</th>
+        <th>Data</th>
+        <th>Places</th>
+        <th>Screenshot</th>
+    </tr>
+    {% for step in steps %}
+        <tr>
+            <td>{{ step[0] }}</td>
+            <td>{{ step[1] }}</td>
+            <td>{{ step[2] }}</td>
+            <td>{{ step[3] }}</td>
+            <td>
+                {% if step[4] %}
+                    <a href="{{ step[4] }}" target="_blank" rel="noreferrer noopener">
+                        <img src="{{ step[4] }}" alt="Screenshot">
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

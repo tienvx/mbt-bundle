@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class Reducer extends Constraint
+class Reporters extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid or supported path reducer.';
+    public $message = '"{{ string }}" is not a valid or supported reporter.';
 }

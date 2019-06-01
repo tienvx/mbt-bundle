@@ -20,7 +20,7 @@ trait TaggedServiceTrait
      *
      * @throws Exception
      */
-    private function findTaggedServices(ContainerBuilder $container, string $tagName, string $interface, string $method, bool $reference = true)
+    private function findTaggedServices(ContainerBuilder $container, string $tagName, bool $reference = true)
     {
         $services = [];
         foreach ($container->findTaggedServiceIds($tagName, true) as $serviceId => $attributes) {
@@ -32,13 +32,16 @@ trait TaggedServiceTrait
             if (!$r = $container->getReflectionClass($class)) {
                 throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $serviceId));
             }
-            if (!$r->isSubclassOf($interface)) {
+            if (!$r->isSubclassOf(PluginInterface::class)) {
                 throw new InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $serviceId, PluginInterface::class));
             }
             $class = $r->name;
 
-            $serviceName = call_user_func([$class, $method]);
-            $services[$serviceName] = $reference ? (new Reference($serviceId)) : $class;
+            $support = call_user_func([$class, 'support']);
+            if ($support) {
+                $serviceName = call_user_func([$class, 'getName']);
+                $services[$serviceName] = $reference ? (new Reference($serviceId)) : $class;
+            }
         }
 
         return $services;

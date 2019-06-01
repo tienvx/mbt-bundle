@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Exception;
 use Generator;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
-use Psr\SimpleCache\CacheException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
@@ -27,7 +27,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * {@inheritdoc}
      *
      * @throws Exception
-     * @throws CacheException
+     * @throws InvalidArgumentException
      */
     public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
     {
@@ -50,7 +50,7 @@ class AllPlacesGenerator extends AbstractGenerator
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'all-places';
     }

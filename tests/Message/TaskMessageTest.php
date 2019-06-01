@@ -22,7 +22,7 @@ class TaskMessageTest extends MessageTestCase
     public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
     {
         $this->clearMessages();
-        $this->clearLog();
+        $this->clearReport();
         $this->removeScreenshots();
 
         /** @var EntityManagerInterface $entityManager */
@@ -35,6 +35,7 @@ class TaskMessageTest extends MessageTestCase
         $task->setReducer($reducer);
         $task->setTakeScreenshots($takeScreenshots);
         $task->setReportBug($reportBug);
+        $task->setReporters(['in-memory']);
         $entityManager->persist($task);
         $entityManager->flush();
 
@@ -64,9 +65,9 @@ class TaskMessageTest extends MessageTestCase
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
-            $this->assertEquals($reportBug, $this->hasLog());
+            $this->assertEquals($reportBug, $this->hasReport($bugs[0]));
             if ($takeScreenshots && $reportBug) {
-                $this->assertTrue($this->logHasScreenshot());
+                $this->assertTrue($this->reportHasScreenshot($bugs[0]));
             }
             $this->assertEquals($reportBug ? 'reported' : 'reduced', $bugs[0]->getStatus());
 

@@ -4,15 +4,12 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\FilesystemInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 class ReportBugCommand extends Command
 {
@@ -22,28 +19,16 @@ class ReportBugCommand extends Command
     private $entityManager;
 
     /**
-     * @var LoggerInterface
+     * @var ReporterManager
      */
-    private $logger;
-
-    /**
-     * @var SubjectManager
-     */
-    protected $subjectManager;
-
-    /**
-     * @var FilesystemInterface
-     */
-    protected $mbtStorage;
+    protected $reporterManager;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        SubjectManager $subjectManager,
-        FilesystemInterface $mbtStorage
+        ReporterManager $reporterManager
     ) {
         $this->entityManager = $entityManager;
-        $this->subjectManager = $subjectManager;
-        $this->mbtStorage = $mbtStorage;
+        $this->reporterManager = $reporterManager;
 
         parent::__construct();
     }
@@ -57,11 +42,6 @@ class ReportBugCommand extends Command
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
     }
 
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -70,10 +50,6 @@ class ReportBugCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->logger instanceof LoggerInterface) {
-            throw new Exception("Can not report bug: No monolog's handlers with channel 'mbt' were defined");
-        }
-
         $bugId = $input->getArgument('bug-id');
 
         $callback = function () use ($bugId) {
@@ -94,17 +70,9 @@ class ReportBugCommand extends Command
             return;
         }
 
-        $path = Path::unserialize($bug->getPath());
-        $model = $bug->getTask()->getModel();
-        $subject = $this->subjectManager->createSubject($model);
-
-        $subject->setFilesystem($this->mbtStorage);
-
-        $this->logger->error($bug->getBugMessage(), [
-            'bug' => $bug,
-            'path' => $path,
-            'model' => $model,
-            'subject' => $subject,
-        ]);
+        foreach ($bug->getTask()->getReporters() as $reporter) {
+            $reporterPlugin = $this->reporterManager->getReporter($reporter);
+            $reporterPlugin->report($bug);
+        }
     }
 }

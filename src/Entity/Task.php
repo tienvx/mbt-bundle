@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -55,6 +56,13 @@ class Task
     private $reducer;
 
     /**
+     * @ORM\Column(type="json_document", options={"jsonb": true})
+     * @Assert\NotNull
+     * @MbtAssert\Reporters
+     */
+    private $reporters = [];
+
+    /**
      * @ORM\Column(type="integer")
      * @Assert\Range(
      *     min = 0,
@@ -87,7 +95,7 @@ class Task
     private $reportBug = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
      * @Assert\DateTime
@@ -95,7 +103,7 @@ class Task
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime")
      * @Assert\DateTime
@@ -174,6 +182,16 @@ class Task
         $this->reducer = $reducer;
     }
 
+    public function getReporters(): array
+    {
+        return $this->reporters;
+    }
+
+    public function setReporters(array $reporters)
+    {
+        $this->reporters = $reporters;
+    }
+
     public function getProgress(): int
     {
         return $this->progress;
@@ -250,11 +268,11 @@ class Task
     public function prePersist()
     {
         if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
+            $this->setCreatedAt(new DateTime());
         }
 
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 
@@ -266,7 +284,7 @@ class Task
     public function preUpdate()
     {
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 }

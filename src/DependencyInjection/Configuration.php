@@ -18,6 +18,12 @@ class Configuration implements ConfigurationInterface
                 ->floatNode('transition_coverage')->defaultValue(100)->min(0)->max(100)->end()
                 ->floatNode('place_coverage')->defaultValue(100)->min(0)->max(100)->end()
                 ->scalarNode('default_bug_title')->defaultValue('New bug found')->end()
+                // 'https://hooks.slack.com/...'
+                ->scalarNode('slack_hook_url')->defaultValue('')->end()
+                // '#operations'
+                ->scalarNode('slack_channel')->defaultValue('')->end()
+                ->scalarNode('email_from')->defaultValue('')->end()
+                ->scalarNode('email_to')->defaultValue('')->end()
             ->end()
         ;
 
