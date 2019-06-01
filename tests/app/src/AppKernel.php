@@ -7,7 +7,6 @@ use Dunglas\DoctrineJsonOdm\Bundle\DunglasDoctrineJsonOdmBundle;
 use League\FlysystemBundle\FlysystemBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
-use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -23,7 +22,6 @@ class AppKernel extends Kernel
             new SecurityBundle(),
             new FrameworkBundle(),
             new DoctrineBundle(),
-            new MonologBundle(),
             new MakerBundle(),
             new DunglasDoctrineJsonOdmBundle(),
             new FlysystemBundle(),

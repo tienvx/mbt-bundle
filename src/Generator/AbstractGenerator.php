@@ -8,6 +8,11 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 abstract class AbstractGenerator implements GeneratorInterface
 {
+    public static function support(): bool
+    {
+        return true;
+    }
+
     /**
      * @param Workflow        $workflow
      * @param AbstractSubject $subject

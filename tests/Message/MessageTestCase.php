@@ -2,12 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
+use App\Reporter\InMemoryReporter;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
@@ -28,6 +30,11 @@ abstract class MessageTestCase extends TestCase
     protected $transport;
 
     /**
+     * @var InMemoryReporter
+     */
+    protected $report;
+
+    /**
      * @throws Exception
      */
     protected function setUp()
@@ -46,6 +53,9 @@ abstract class MessageTestCase extends TestCase
         /** @var ContainerInterface $receiverLocator */
         $receiverLocator = self::$container->get('messenger.receiver_locator');
         $this->transport = $receiverLocator->get('memory');
+
+        $reporterManager = self::$container->get('mbt.reporter_manager');
+        $this->report = $reporterManager->getReporter('in-memory');
     }
 
     /**
@@ -72,19 +82,19 @@ abstract class MessageTestCase extends TestCase
         return count($this->transport->get()) > 0;
     }
 
-    protected function clearLog()
+    protected function clearReport()
     {
-        exec("rm -f {$this->logDir}/test.log");
+        $this->report->reset();
     }
 
-    protected function hasLog()
+    protected function hasReport(Bug $bug)
     {
-        return file_exists("{$this->logDir}/test.log") && 0 !== filesize("{$this->logDir}/test.log");
+        return $this->report->isReported($bug->getId());
     }
 
-    protected function logHasScreenshot()
+    protected function reportHasScreenshot(Bug $bug)
     {
-        return false !== strpos(file_get_contents("{$this->logDir}/test.log"), 'Screenshot');
+        return $this->report->hasScreenshot($bug->getId());
     }
 
     protected function removeScreenshots()

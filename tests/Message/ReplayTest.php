@@ -58,7 +58,7 @@ class ReplayTest extends MessageTestCase
         $entityManager->flush();
 
         $this->clearMessages();
-        $this->clearLog();
+        $this->clearReport();
         $this->removeScreenshots();
 
         $task = new Task();

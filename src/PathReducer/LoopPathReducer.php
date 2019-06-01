@@ -106,7 +106,7 @@ class LoopPathReducer extends AbstractPathReducer
         return true === $messagesCount ? 0 : $messagesCount;
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'loop';
     }

@@ -10,6 +10,9 @@ use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReducePathCommand extends AbstractCommand
 {
+    /**
+     * @var PathReducerManager
+     */
     private $pathReducerManager;
 
     public function __construct(PathReducerManager $pathReducerManager)

@@ -126,7 +126,7 @@ class ShoppingCart extends AbstractSubject
         $this->product = null;
     }
 
-    public static function support(): string
+    public static function getName(): string
     {
         return 'shopping_cart';
     }

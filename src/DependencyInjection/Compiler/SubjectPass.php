@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class SubjectPass implements CompilerPassInterface
 {
@@ -31,7 +30,7 @@ class SubjectPass implements CompilerPassInterface
             return;
         }
 
-        $subjects = $this->findTaggedServices($container, $this->subjectTag, SubjectInterface::class, 'support', false);
+        $subjects = $this->findTaggedServices($container, $this->subjectTag, false);
 
         $subjectDefinition = $container->getDefinition($this->subjectService);
         $subjectDefinition->replaceArgument(0, $subjects);

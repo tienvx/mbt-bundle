@@ -2,10 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
-interface SubjectInterface
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
+
+interface SubjectInterface extends PluginInterface
 {
-    /**
-     * @return string Model name
-     */
-    public static function support(): string;
 }

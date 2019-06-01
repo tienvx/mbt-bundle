@@ -42,6 +42,11 @@ abstract class AbstractSubject implements SubjectInterface
      */
     protected $filesystem;
 
+    public static function support(): bool
+    {
+        return true;
+    }
+
     /**
      * @param $testingModel bool
      */

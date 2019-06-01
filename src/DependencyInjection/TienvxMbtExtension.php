@@ -12,6 +12,9 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 /**
@@ -46,6 +49,9 @@ class TienvxMbtExtension extends Extension
         $container->registerForAutoconfiguration(SubjectInterface::class)
             ->setLazy(true)
             ->addTag('mbt.subject');
+        $container->registerForAutoconfiguration(ReporterInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.reporter');
     }
 
     private function registerCommandConfiguration(array $config, ContainerBuilder $container)
@@ -63,5 +69,13 @@ class TienvxMbtExtension extends Extension
 
         $probabilityGeneratorDefinition = $container->getDefinition(ProbabilityGenerator::class);
         $probabilityGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+
+        $slackReporterDefinition = $container->getDefinition(SlackReporter::class);
+        $slackReporterDefinition->addMethodCall('setSlackHookUrl', [$config['slack_hook_url']]);
+        $slackReporterDefinition->addMethodCall('setSlackChannel', [$config['slack_channel']]);
+
+        $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
+        $emailReporterDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
+        $emailReporterDefinition->addMethodCall('setEmailTo', [$config['email_to']]);
     }
 }

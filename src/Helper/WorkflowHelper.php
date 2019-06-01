@@ -36,7 +36,12 @@ class WorkflowHelper
     private static function fakeSubject()
     {
         return new class() extends AbstractSubject {
-            public static function support(): string
+            public static function support(): bool
+            {
+                return true;
+            }
+
+            public static function getName(): string
             {
                 return '';
             }

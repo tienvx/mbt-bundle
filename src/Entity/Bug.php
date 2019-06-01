@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -63,14 +64,14 @@ class Bug
     private $messagesCount = 0;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime")
      */
@@ -179,11 +180,11 @@ class Bug
     public function prePersist()
     {
         if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
+            $this->setCreatedAt(new DateTime());
         }
 
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 
@@ -195,7 +196,7 @@ class Bug
     public function preUpdate()
     {
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 }
