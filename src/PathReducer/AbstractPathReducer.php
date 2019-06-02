@@ -79,7 +79,7 @@ abstract class AbstractPathReducer implements PathReducerInterface
 
     protected function finish(Bug $bug)
     {
-        if ($bug->getTask()->getReportBug()) {
+        if (!empty($bug->getTask()->getReporters())) {
             $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
         } else {
             $this->messageBus->dispatch(new UpdateBugStatusMessage($bug->getId(), 'reduced'));

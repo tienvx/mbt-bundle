@@ -34,8 +34,9 @@ class TaskMessageTest extends MessageTestCase
         $task->setGenerator($generator);
         $task->setReducer($reducer);
         $task->setTakeScreenshots($takeScreenshots);
-        $task->setReportBug($reportBug);
-        $task->setReporters(['in-memory']);
+        if ($reportBug) {
+            $task->setReporters(['in-memory']);
+        }
         $entityManager->persist($task);
         $entityManager->flush();
 
