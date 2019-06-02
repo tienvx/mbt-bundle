@@ -89,12 +89,6 @@ class Task
     private $takeScreenshots = false;
 
     /**
-     * @ORM\Column(type="boolean")
-     * @Assert\Type("bool")
-     */
-    private $reportBug = false;
-
-    /**
      * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -248,16 +242,6 @@ class Task
     public function getTakeScreenshots()
     {
         return $this->takeScreenshots;
-    }
-
-    public function setReportBug(bool $reportBug)
-    {
-        $this->reportBug = $reportBug;
-    }
-
-    public function getReportBug()
-    {
-        return $this->reportBug;
     }
 
     /**

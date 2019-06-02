@@ -35,6 +35,8 @@ class BugMessageTest extends MessageTestCase
                 $bugMessage = 'Can not upload file!';
                 break;
             default:
+                // Make PHP happy
+                $bugMessage = '';
                 break;
         }
 
@@ -44,7 +46,6 @@ class BugMessageTest extends MessageTestCase
         $task->setGenerator('random');
         $task->setReducer($reducer);
         $task->setTakeScreenshots(false);
-        $task->setReportBug(true);
         $task->setReporters(['in-memory']);
         $entityManager->persist($task);
 
@@ -85,7 +86,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals('reported', $bug->getStatus());
 
         // Because screenshots had not been captured, and had been removed during set-up, no need to test this
-        //$this->assertTrue($this->logHasScreenshot());
+        //$this->assertTrue($this->reportHasScreenshot());
     }
 
     public function consumeMessageData()
