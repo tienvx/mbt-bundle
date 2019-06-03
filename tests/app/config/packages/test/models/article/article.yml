@@ -6,7 +6,7 @@ framework:
                 type: multiple_state
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
-            initial_place: draft
+            initial_marking: draft
             places:
                 # simple format
                 - draft

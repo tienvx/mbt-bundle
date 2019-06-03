@@ -41,7 +41,7 @@ class GraphBuilder
                 $graph = $this->buildForStateMachine($workflow);
             } else {
                 $graph = $this->buildForWorkflow($workflow);
-                $initVertex = VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]);
+                $initVertex = VertexHelper::getId($workflow->getDefinition()->getInitialPlaces());
                 $components = new ConnectedComponents($graph);
                 $graph = $components->createGraphComponentVertex($graph->getVertex($initVertex));
             }

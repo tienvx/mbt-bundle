@@ -27,7 +27,7 @@ framework:
                 - deliveryMethodAdded
                 - paymentMethodAdded
                 - orderPlaced
-            initial_place: home
+            initial_marking: home
             transitions:
                 addProductAndCheckoutNotLoggedIn:
                     from: home
