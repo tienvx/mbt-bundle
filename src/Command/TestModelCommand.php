@@ -79,7 +79,7 @@ class TestModelCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         $path = new Path();
-        $path->add(null, null, [$workflow->getDefinition()->getInitialPlace()]);
+        $path->add(null, null, $workflow->getDefinition()->getInitialPlaces());
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject, $metaData) as $transitionName) {

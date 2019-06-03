@@ -14,7 +14,7 @@ framework:
                 - product
                 - cart
                 - checkout
-            initial_place: home
+            initial_marking: home
             transitions:
                 viewAnyCategoryFromHome:
                     from: home

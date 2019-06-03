@@ -34,7 +34,7 @@ framework:
                 - nameFilled
                 - reviewFilled
                 - ratingFilled
-            initial_place: product
+            initial_marking: product
             transitions:
                 selectOptions:
                     from: product

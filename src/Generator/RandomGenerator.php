@@ -46,7 +46,7 @@ class RandomGenerator extends AbstractGenerator
     {
         $pathLength = 0;
         $visitedTransitions = [];
-        $visitedPlaces = [$workflow->getDefinition()->getInitialPlace()];
+        $visitedPlaces = $workflow->getDefinition()->getInitialPlaces();
         $transitionCoverage = $metaData['transitionCoverage'] ?? $this->transitionCoverage;
         $placeCoverage = $metaData['placeCoverage'] ?? $this->placeCoverage;
         $maxPathLength = $metaData['maxPathLength'] ?? $this->maxPathLength;

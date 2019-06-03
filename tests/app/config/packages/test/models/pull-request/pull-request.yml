@@ -5,7 +5,7 @@ framework:
                 type: single_state
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
-            initial_place: start
+            initial_marking: start
             metadata:
                 title: workflow title
             places:

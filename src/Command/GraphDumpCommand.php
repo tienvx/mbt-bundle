@@ -90,6 +90,6 @@ EOF
                 'label' => $input->getOption('label'),
             ),
         );
-        $output->writeln($dumper->dump(VertexHelper::getId([$workflow->getDefinition()->getInitialPlace()]), $graph, $options));
+        $output->writeln($dumper->dump(VertexHelper::getId($workflow->getDefinition()->getInitialPlaces()), $graph, $options));
     }
 }
