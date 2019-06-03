@@ -6,8 +6,9 @@ use Doctrine\Common\Annotations\Reader;
 use Exception;
 use ReflectionMethod;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Workflow\Event\Event;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
+use Symfony\Component\Workflow\Event\TransitionEvent;
 use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -21,7 +22,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $this->reader = $reader;
     }
 
-    public function onEntered(Event $event)
+    public function onEntered(EnteredEvent $event)
     {
         $subject = $event->getSubject();
 
@@ -31,7 +32,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onTransition(Event $event)
+    public function onTransition(TransitionEvent $event)
     {
         $subject = $event->getSubject();
 
@@ -71,9 +72,9 @@ class WorkflowSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'workflow.guard' => 'onGuard',
-            'workflow.transition' => 'onTransition',
-            'workflow.entered' => 'onEntered',
+            GuardEvent::class => 'onGuard',
+            TransitionEvent::class => 'onTransition',
+            EnteredEvent::class => 'onEntered',
         ];
     }
 }
