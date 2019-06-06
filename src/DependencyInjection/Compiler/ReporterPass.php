@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 class ReporterPass implements CompilerPassInterface
 {
@@ -31,9 +30,7 @@ class ReporterPass implements CompilerPassInterface
             return;
         }
 
-        if (!$reporters = $this->findTaggedServices($container, $this->reporterTag)) {
-            throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->reporterTag, $this->reporterService));
-        }
+        $reporters = $this->findTaggedServices($container, $this->reporterTag);
 
         $reporterDefinition = $container->getDefinition($this->reporterService);
         $reporterDefinition->replaceArgument(0, $reporters);
