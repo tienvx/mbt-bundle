@@ -32,7 +32,7 @@ class EntitySubscriber implements EventSubscriber
             $this->messageBus->dispatch(new ExecuteTaskMessage($entity->getId()));
         }
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $entity->getTask()->getReducer()));
+            $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $entity->getTask()->getReducer()->getName()));
         }
     }
 
@@ -46,7 +46,7 @@ class EntitySubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getTask()->getModel()));
+            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getTask()->getModel()->getName()));
         }
     }
 

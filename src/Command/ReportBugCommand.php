@@ -71,7 +71,7 @@ class ReportBugCommand extends Command
         }
 
         foreach ($bug->getTask()->getReporters() as $reporter) {
-            $reporterPlugin = $this->reporterManager->getReporter($reporter);
+            $reporterPlugin = $this->reporterManager->getReporter($reporter->getName());
             $reporterPlugin->report($bug);
         }
     }

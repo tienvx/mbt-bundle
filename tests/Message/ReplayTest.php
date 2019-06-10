@@ -5,6 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Generator;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
@@ -42,14 +45,14 @@ class ReplayTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Just dummy task');
-        $task->setModel($model);
-        $task->setGenerator('random');
-        $task->setReducer('loop');
+        $task->setModel(new Model($model));
+        $task->setGenerator(new Generator('random'));
+        $task->setReducer(new Reducer('loop'));
         $entityManager->persist($task);
 
         $bug = new Bug();
         $bug->setTitle('Test regression bug');
-        $bug->setPath(Path::serialize($path));
+        $bug->setPath($path);
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
@@ -63,10 +66,10 @@ class ReplayTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test regression task');
-        $task->setModel($model);
-        $task->setGenerator($generator);
+        $task->setModel(new Model($model));
+        $task->setGenerator(new Generator($generator));
         $task->setMetaData(['bugId' => $bug->getId()]);
-        $task->setReducer($reducer);
+        $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
         $entityManager->persist($task);
         $entityManager->flush();

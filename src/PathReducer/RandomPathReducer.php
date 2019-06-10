@@ -29,11 +29,11 @@ class RandomPathReducer extends AbstractPathReducer
             }
 
             if ($newPath) {
-                $bug->setPath(Path::serialize($newPath));
+                $bug->setPath($newPath);
                 $bug->setLength($newPath->countPlaces());
                 $path = $newPath;
             } else {
-                $path = Path::unserialize($bug->getPath());
+                $path = $bug->getPath();
             }
 
             $messagesCount = 0;

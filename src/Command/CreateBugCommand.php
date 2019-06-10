@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class CreateBugCommand extends AbstractCommand
 {
@@ -55,7 +56,7 @@ class CreateBugCommand extends AbstractCommand
     {
         $title = $input->getArgument('title');
         $path = $input->getArgument('path');
-        $path = json_decode(trim($path, "'"), true);
+        $path = trim($path, "'");
         $length = $input->getArgument('length');
         $message = $input->getArgument('message');
         $taskId = $input->getArgument('task-id');
@@ -71,7 +72,7 @@ class CreateBugCommand extends AbstractCommand
 
         $bug = new Bug();
         $bug->setTitle($title);
-        $bug->setPath($path);
+        $bug->setPath(Path::deserialize($path));
         $bug->setLength($length);
         $bug->setBugMessage($message);
         $bug->setTask($task);

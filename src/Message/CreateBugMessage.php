@@ -11,7 +11,7 @@ class CreateBugMessage
     protected $taskId;
     protected $status;
 
-    public function __construct(string $title, array $path, int $length, string $message, int $taskId, string $status)
+    public function __construct(string $title, string $path, int $length, string $message, int $taskId, string $status)
     {
         $this->title = $title;
         $this->path = $path;

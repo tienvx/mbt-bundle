@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Tienvx\Bundle\MbtBundle\Entity\Generator as GeneratorEntity;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 
 /**
@@ -28,17 +29,13 @@ class GeneratorValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Generator');
         }
 
-        if (null === $value || '' === $value) {
-            return;
+        if (!($value instanceof GeneratorEntity)) {
+            throw new UnexpectedTypeException($value, GeneratorEntity::class);
         }
 
-        if (!is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
-            throw new UnexpectedTypeException($value, 'string');
-        }
-
-        if (!$this->generatorManager->hasGenerator($value)) {
+        if (!$this->generatorManager->hasGenerator($value->getName())) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ string }}', $value)
+                ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();
         }
     }

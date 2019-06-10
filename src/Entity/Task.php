@@ -32,35 +32,31 @@ class Task
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
-     * @MbtAssert\Model
      */
     private $model;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
-     * @MbtAssert\Generator
      */
     private $generator;
 
     /**
-     * @ORM\Column(type="json_document", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $metaData;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
-     * @MbtAssert\Reducer
      */
     private $reducer;
 
     /**
-     * @ORM\Column(type="json_document", options={"jsonb": true})
+     * @ORM\Column(type="text")
      * @Assert\NotNull
-     * @MbtAssert\Reporters
      */
-    private $reporters = [];
+    private $reporters = '[]';
 
     /**
      * @ORM\Column(type="integer")
@@ -136,54 +132,85 @@ class Task
         $this->title = $title;
     }
 
-    public function getModel(): string
+    /**
+     * @MbtAssert\Model
+     *
+     * @return Model
+     */
+    public function getModel(): Model
     {
-        return $this->model;
+        return new Model($this->model);
     }
 
-    public function setModel(string $model)
+    public function setModel(Model $model)
     {
-        $this->model = $model;
+        $this->model = $model->getName();
     }
 
-    public function getGenerator(): string
+    /**
+     * @MbtAssert\Generator
+     *
+     * @return Generator
+     */
+    public function getGenerator(): Generator
     {
-        return $this->generator;
+        return new Generator($this->generator);
     }
 
-    public function setGenerator(string $generator)
+    public function setGenerator(Generator $generator)
     {
-        $this->generator = $generator;
+        $this->generator = $generator->getName();
     }
 
-    public function setMetaData($metaData)
+    public function setMetaData(array $metaData)
     {
-        $this->metaData = $metaData;
+        $this->metaData = json_encode($metaData);
     }
 
-    public function getMetaData()
+    public function getMetaData(): ?array
     {
-        return $this->metaData;
+        return json_decode($this->metaData, true);
     }
 
-    public function getReducer(): string
+    /**
+     * @MbtAssert\Reducer
+     *
+     * @return Reducer
+     */
+    public function getReducer(): Reducer
     {
-        return $this->reducer;
+        return new Reducer($this->reducer);
     }
 
-    public function setReducer($reducer)
+    public function setReducer(Reducer $reducer)
     {
-        $this->reducer = $reducer;
+        $this->reducer = $reducer->getName();
     }
 
+    /**
+     * @MbtAssert\Reporters
+     *
+     * @return Reporter[]
+     */
     public function getReporters(): array
     {
-        return $this->reporters;
+        $values = [];
+        foreach (json_decode($this->reporters, true) as $reporter) {
+            $values[] = new Reporter($reporter);
+        }
+
+        return $values;
     }
 
     public function setReporters(array $reporters)
     {
-        $this->reporters = $reporters;
+        $values = [];
+        foreach ($reporters as $reporter) {
+            if ($reporter instanceof Reporter) {
+                $values[] = $reporter->getName();
+            }
+        }
+        $this->reporters = json_encode($values);
     }
 
     public function getProgress(): int
@@ -214,22 +241,22 @@ class Task
         return $this->bugs;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }

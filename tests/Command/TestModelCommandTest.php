@@ -55,7 +55,7 @@ class TestModelCommandTest extends CommandTestCase
         $commandTester->execute($input);
 
         $output = $commandTester->getDisplay();
-        $path = Path::unserialize(json_decode($output, true));
+        $path = Path::deserialize($output);
         $this->assertInstanceOf(Path::class, $path);
 
         if ($path instanceof Path) {

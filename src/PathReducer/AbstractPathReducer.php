@@ -11,7 +11,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -110,11 +109,11 @@ abstract class AbstractPathReducer implements PathReducerInterface
             throw new Exception('Can not handle reduce path message: No workflows were defined');
         }
 
-        $model = $bug->getTask()->getModel();
+        $model = $bug->getTask()->getModel()->getName();
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         $graph = $this->graphBuilder->build($workflow);
-        $path = Path::unserialize($bug->getPath());
+        $path = $bug->getPath();
 
         if ($bug->getLength() >= $length) {
             // The reproduce path has not been reduced.

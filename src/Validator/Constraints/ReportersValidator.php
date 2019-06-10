@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Tienvx\Bundle\MbtBundle\Entity\Reporter as ReporterEntity;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 /**
@@ -22,24 +23,28 @@ class ReportersValidator extends ConstraintValidator
         $this->reporterManager = $reporterManager;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($values, Constraint $constraint)
     {
         if (!$constraint instanceof Reporters) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Reporters');
         }
 
-        if (!is_array($value)) {
-            throw new UnexpectedTypeException($value, 'array');
+        if (!is_array($values)) {
+            throw new UnexpectedTypeException($values, 'array');
         }
 
-        if (empty($value)) {
+        if (empty($values)) {
             return;
         }
 
-        foreach ($value as $reporter) {
-            if (!$this->reporterManager->hasReporter($reporter)) {
+        foreach ($values as $value) {
+            if (!($value instanceof ReporterEntity)) {
+                throw new UnexpectedTypeException($value, ReporterEntity::class);
+            }
+
+            if (!$this->reporterManager->hasReporter($value->getName())) {
                 $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ string }}', $reporter)
+                    ->setParameter('{{ string }}', $value->getName())
                     ->addViolation();
             }
         }
