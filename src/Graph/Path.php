@@ -104,14 +104,24 @@ class Path implements Iterator
      *
      * @return array
      */
-    public static function serialize(Path $path): array
+    public static function normalize(Path $path): array
     {
-        $result = [];
+        $values = [];
         foreach ($path as $step) {
-            $result[] = $step;
+            $values[] = $step;
         }
 
-        return $result;
+        return $values;
+    }
+
+    /**
+     * @param Path $path
+     *
+     * @return string
+     */
+    public static function serialize(Path $path): string
+    {
+        return json_encode(self::normalize($path));
     }
 
     /**
@@ -121,7 +131,7 @@ class Path implements Iterator
      *
      * @throws Exception
      */
-    public static function unserialize(array $steps): Path
+    public static function denormalize(array $steps): Path
     {
         $transitions = [];
         $data = [];
@@ -133,6 +143,18 @@ class Path implements Iterator
         }
 
         return new Path($transitions, $data, $places);
+    }
+
+    /**
+     * @param string $steps
+     *
+     * @return Path
+     *
+     * @throws Exception
+     */
+    public static function deserialize(string $steps): Path
+    {
+        return self::denormalize(json_decode($steps, true));
     }
 
     public function current()

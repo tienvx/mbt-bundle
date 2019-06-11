@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 use Tienvx\Bundle\MbtBundle\Helper\TableHelper;
 use Swift_Mailer;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -79,8 +78,8 @@ class EmailReporter implements ReporterInterface
             return;
         }
 
-        $path = Path::unserialize($bug->getPath());
-        $model = $bug->getTask()->getModel();
+        $path = $bug->getPath();
+        $model = $bug->getTask()->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
 
         $steps = [];
@@ -113,7 +112,7 @@ class EmailReporter implements ReporterInterface
                     'task' => $bug->getTask()->getTitle(),
                     'title' => $bug->getTitle(),
                     'bugMessage' => $bug->getBugMessage(),
-                    'steps' => TableHelper::render(Path::unserialize($bug->getPath())),
+                    'steps' => TableHelper::render($bug->getPath()),
                 ]),
                 'text/plain'
             )

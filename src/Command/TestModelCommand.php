@@ -97,6 +97,6 @@ class TestModelCommand extends AbstractCommand
             $subject->tearDown();
         }
 
-        $output->writeln(json_encode(Path::serialize($path)));
+        $output->writeln(Path::serialize($path));
     }
 }

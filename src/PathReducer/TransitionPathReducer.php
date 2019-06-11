@@ -29,8 +29,8 @@ class TransitionPathReducer extends AbstractPathReducer
             return;
         }
 
-        $path = Path::unserialize($bug->getPath());
-        $model = $bug->getTask()->getModel();
+        $path = $bug->getPath();
+        $model = $bug->getTask()->getModel()->getName();
 
         if ($bug->getLength() >= $length) {
             // The reproduce path has not been reduced.
@@ -75,11 +75,11 @@ class TransitionPathReducer extends AbstractPathReducer
             }
 
             if ($newPath) {
-                $bug->setPath(Path::serialize($newPath));
+                $bug->setPath($newPath);
                 $bug->setLength($newPath->countPlaces());
                 $path = $newPath;
             } else {
-                $path = Path::unserialize($bug->getPath());
+                $path = $bug->getPath();
             }
 
             $messagesCount = 0;

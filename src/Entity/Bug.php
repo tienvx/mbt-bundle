@@ -6,7 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 /**
  * @ORM\Entity
@@ -34,9 +34,8 @@ class Bug
     private $status = 'new';
 
     /**
-     * @ORM\Column(type="json_document", options={"jsonb": true})
+     * @ORM\Column(type="text")
      * @Assert\NotNull
-     * @MbtAssert\Path
      */
     private $path;
 
@@ -102,14 +101,19 @@ class Bug
         $this->status = $status;
     }
 
-    public function getPath(): array
+    /**
+     * @return Path
+     *
+     * @throws Exception
+     */
+    public function getPath(): Path
     {
-        return $this->path;
+        return Path::deserialize($this->path);
     }
 
-    public function setPath(array $path)
+    public function setPath(Path $path)
     {
-        $this->path = $path;
+        $this->path = Path::serialize($path);
     }
 
     public function getLength(): int
@@ -152,22 +156,22 @@ class Bug
         $this->messagesCount = $messagesCount;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }

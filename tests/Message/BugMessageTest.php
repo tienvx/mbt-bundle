@@ -4,6 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Generator;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Reducer;
+use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Graph\Path;
 
@@ -42,11 +46,11 @@ class BugMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel($model);
-        $task->setGenerator('random');
-        $task->setReducer($reducer);
+        $task->setModel(new Model($model));
+        $task->setGenerator(new Generator('random'));
+        $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
-        $task->setReporters(['in-memory']);
+        $task->setReporters([new Reporter('in-memory')]);
         $entityManager->persist($task);
 
         $entityManager->flush();
@@ -58,7 +62,7 @@ class BugMessageTest extends MessageTestCase
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setPath(Path::serialize($path));
+        $bug->setPath($path);
         $bug->setLength($path->countPlaces());
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
@@ -76,7 +80,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ('random' !== $reducer) {
-            $this->assertEquals(Path::serialize($expectedPath), $bugs[0]->getPath());
+            $this->assertEquals(Path::serialize($expectedPath), Path::serialize($bugs[0]->getPath()));
             $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
             $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());

@@ -5,7 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Generator;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Reducer;
+use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 class TaskMessageTest extends MessageTestCase
 {
@@ -30,12 +35,12 @@ class TaskMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel($model);
-        $task->setGenerator($generator);
-        $task->setReducer($reducer);
+        $task->setModel(new Model($model));
+        $task->setGenerator(new Generator($generator));
+        $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots($takeScreenshots);
         if ($reportBug) {
-            $task->setReporters(['in-memory']);
+            $task->setReporters([new Reporter('in-memory')]);
         }
         $entityManager->persist($task);
         $entityManager->flush();
@@ -50,7 +55,7 @@ class TaskMessageTest extends MessageTestCase
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
             if ('shopping_cart' === $model) {
-                $data = array_column($bugs[0]->getPath(), 1);
+                $data = array_column(Path::normalize($bugs[0]->getPath()), 1);
                 $ids = array_filter(array_column($data, 'product'));
                 if ('You added an out-of-stock product into cart! Can not checkout' === $bugs[0]->getBugMessage()) {
                     $this->assertContains(49, $ids);

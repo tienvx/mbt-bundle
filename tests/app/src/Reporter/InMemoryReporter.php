@@ -41,7 +41,7 @@ class InMemoryReporter implements ReporterInterface
      */
     public function report(Bug $bug)
     {
-        $model = $bug->getTask()->getModel();
+        $model = $bug->getTask()->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
         $this->reports[$bug->getId()] = [
             'status' => true,

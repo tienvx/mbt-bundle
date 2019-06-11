@@ -116,10 +116,10 @@ class ExecuteTaskCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $subject = $this->subjectManager->createSubject($task->getModel());
+        $subject = $this->subjectManager->createSubject($task->getModel()->getName());
         $subject->setUp();
-        $generator = $this->generatorManager->getGenerator($task->getGenerator());
-        $workflow = $this->workflowRegistry->get($subject, $task->getModel());
+        $generator = $this->generatorManager->getGenerator($task->getGenerator()->getName());
+        $workflow = $this->workflowRegistry->get($subject, $task->getModel()->getName());
 
         $path = new Path();
         $path->add(null, null, $workflow->getDefinition()->getInitialPlaces());
@@ -128,7 +128,7 @@ class ExecuteTaskCommand extends AbstractCommand
             foreach ($generator->getAvailableTransitions($workflow, $subject, $task->getMetaData()) as $transitionName) {
                 try {
                     if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $task->getGenerator(), $transitionName));
+                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $task->getGenerator()->getName(), $transitionName));
                     }
                 } catch (Throwable $throwable) {
                     throw $throwable;

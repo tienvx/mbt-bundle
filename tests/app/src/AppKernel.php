@@ -3,7 +3,6 @@
 namespace App;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Dunglas\DoctrineJsonOdm\Bundle\DunglasDoctrineJsonOdmBundle;
 use League\FlysystemBundle\FlysystemBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
@@ -23,7 +22,6 @@ class AppKernel extends Kernel
             new FrameworkBundle(),
             new DoctrineBundle(),
             new MakerBundle(),
-            new DunglasDoctrineJsonOdmBundle(),
             new FlysystemBundle(),
             new TienvxMbtBundle(),
         );
