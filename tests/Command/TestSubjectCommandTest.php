@@ -17,7 +17,7 @@ class TestSubjectCommandTest extends CommandTestCase
             'command' => $name,
             'model' => 'checkout',
             '--generator' => 'random',
-            '--meta-data' => [
+            '--generator-options' => [
                 'maxPathLength' => 300,
                 'transitionCoverage' => 100,
                 'placeCoverage' => 100,

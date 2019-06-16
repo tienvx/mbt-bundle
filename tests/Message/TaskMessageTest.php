@@ -39,6 +39,8 @@ class TaskMessageTest extends MessageTestCase
         $task->setGenerator(new Generator($generator));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots($takeScreenshots);
+        // Use default generator options.
+        //$task->setGeneratorOptions($generatorOptions);
         if ($reportBug) {
             $task->setReporters([new Reporter('in-memory')]);
         }

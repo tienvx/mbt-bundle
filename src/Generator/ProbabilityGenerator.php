@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -23,10 +24,10 @@ class ProbabilityGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $pathLength = 0;
-        $maxPathLength = $metaData['maxPathLength'] ?? $this->maxPathLength;
+        $maxPathLength = $generatorOptions->getMaxPathLength() ?? $this->maxPathLength;
 
         while (true) {
             /** @var Transition[] $transitions */

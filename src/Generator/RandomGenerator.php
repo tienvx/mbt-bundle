@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class RandomGenerator extends AbstractGenerator
@@ -42,14 +43,14 @@ class RandomGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $pathLength = 0;
         $visitedTransitions = [];
         $visitedPlaces = $workflow->getDefinition()->getInitialPlaces();
-        $transitionCoverage = $metaData['transitionCoverage'] ?? $this->transitionCoverage;
-        $placeCoverage = $metaData['placeCoverage'] ?? $this->placeCoverage;
-        $maxPathLength = $metaData['maxPathLength'] ?? $this->maxPathLength;
+        $transitionCoverage = $generatorOptions->getTransitionCoverage() ?? $this->transitionCoverage;
+        $placeCoverage = $generatorOptions->getPlaceCoverage() ?? $this->placeCoverage;
+        $maxPathLength = $generatorOptions->getMaxPathLength() ?? $this->maxPathLength;
 
         while (true) {
             /** @var Transition[] $transitions */

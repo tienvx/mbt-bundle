@@ -44,7 +44,7 @@ class Task
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $metaData;
+    private $generatorOptions;
 
     /**
      * @ORM\Column(type="string")
@@ -162,14 +162,14 @@ class Task
         $this->generator = $generator->getName();
     }
 
-    public function setMetaData(array $metaData)
+    public function setGeneratorOptions(?GeneratorOptions $generatorOptions)
     {
-        $this->metaData = json_encode($metaData);
+        $this->generatorOptions = GeneratorOptions::serialize($generatorOptions);
     }
 
-    public function getMetaData(): ?array
+    public function getGeneratorOptions(): GeneratorOptions
     {
-        return json_decode($this->metaData, true);
+        return GeneratorOptions::deserialize($this->generatorOptions);
     }
 
     /**
