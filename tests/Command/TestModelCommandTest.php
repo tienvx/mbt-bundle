@@ -43,7 +43,7 @@ class TestModelCommandTest extends CommandTestCase
             '--generator' => $generator,
         ];
         if ('random' === $generator) {
-            $input['--meta-data'] = [
+            $input['--generator-options'] = [
                 'maxPathLength' => 300,
                 'transitionCoverage' => $transitionCoverage,
                 'placeCoverage' => $placeCoverage,

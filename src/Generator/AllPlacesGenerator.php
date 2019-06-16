@@ -8,6 +8,7 @@ use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\StateMachine;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -29,7 +30,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         if (!$workflow instanceof StateMachine) {
             throw new Exception(sprintf('Generator %s only support model type state machine', static::getName()));

@@ -5,6 +5,7 @@ namespace <?= $namespace; ?>;
 use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\AbstractGenerator;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -16,13 +17,13 @@ class <?= $class_name; ?> extends AbstractGenerator
     }
 
     /**
-     * @param Workflow        $workflow
-     * @param AbstractSubject $subject
-     * @param array           $metaData
+     * @param Workflow         $workflow
+     * @param AbstractSubject  $subject
+     * @param GeneratorOptions $generatorOptions
      *
      * @return Generator
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         while (true) {
             /** @var Transition[] $transitions */

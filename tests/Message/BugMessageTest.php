@@ -51,6 +51,8 @@ class BugMessageTest extends MessageTestCase
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
         $task->setReporters([new Reporter('in-memory')]);
+        // Does not matter, because we are testing reducer.
+        //$task->setGeneratorOptions($generatorOptions);
         $entityManager->persist($task);
 
         $entityManager->flush();

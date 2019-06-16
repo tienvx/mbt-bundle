@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -47,7 +48,7 @@ class TestSubjectCommand extends AbstractCommand
             ->setHelp('Call system under test to test model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random')
-            ->addOption('meta-data', 'm', InputOption::VALUE_OPTIONAL, 'The meta data for the generator.');
+            ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator.');
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -71,7 +72,7 @@ class TestSubjectCommand extends AbstractCommand
 
         $model = $input->getArgument('model');
         $generatorName = $input->getOption('generator');
-        $metaData = $input->getOption('meta-data');
+        $generatorOptions = $input->getOption('generator-options');
         $generator = $this->generatorManager->getGenerator($generatorName);
         $subject = $this->subjectManager->createSubject($model);
         $subject->setTestingSubject(true);
@@ -79,7 +80,7 @@ class TestSubjectCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $model);
 
         try {
-            foreach ($generator->getAvailableTransitions($workflow, $subject, $metaData) as $transitionName) {
+            foreach ($generator->getAvailableTransitions($workflow, $subject, GeneratorOptions::denormalize($generatorOptions)) as $transitionName) {
                 if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
                     throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $generatorName, $transitionName));
                 }

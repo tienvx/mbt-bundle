@@ -7,6 +7,7 @@ use Exception;
 use Generator;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ReplayGenerator extends AbstractGenerator
@@ -26,9 +27,9 @@ class ReplayGenerator extends AbstractGenerator
      *
      * @throws Exception
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, array $metaData = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
-        $bugId = $metaData['bugId'] ?? null;
+        $bugId = $generatorOptions->getBugId();
 
         if (!$bugId) {
             throw new Exception('Missing bug id');

@@ -15,7 +15,7 @@ class Reducer
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -23,9 +23,9 @@ class Reducer
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
