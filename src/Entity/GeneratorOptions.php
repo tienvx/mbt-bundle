@@ -115,7 +115,7 @@ class GeneratorOptions
             'bugId' => $generatorOptions->getBugId(),
         ];
 
-        return $values;
+        return array_filter($values);
     }
 
     /**
