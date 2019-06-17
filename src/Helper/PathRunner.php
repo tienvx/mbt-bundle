@@ -21,7 +21,7 @@ class PathRunner
         $subject->setUp();
 
         try {
-            foreach ($path as $index => $step) {
+            foreach ($path->getSteps() as $index => $step) {
                 $transitionName = $step[0];
                 $data = $step[1];
                 if ($transitionName) {

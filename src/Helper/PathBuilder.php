@@ -32,21 +32,22 @@ class PathBuilder
             $algorithm = new Dijkstra($fromVertex);
             /** @var Edges $edges */
             $edges = $algorithm->getEdgesTo($toVertex);
-            $middleTransitions = [];
-            $middleData = array_fill(0, count($edges), null);
-            $middlePlaces = [];
+            $middleSteps = [];
             foreach ($edges as $edge) {
                 if ($edge instanceof Directed) {
-                    $middleTransitions[] = $edge->getAttribute('name');
-                    $middlePlaces[] = $edge->getVertexEnd()->getAttribute('places');
+                    $middleSteps[] = [
+                        $edge->getAttribute('name'),
+                        null,
+                        $edge->getVertexEnd()->getAttribute('places'),
+                    ];
                 } else {
                     throw new Exception('Only support directed graph');
                 }
             }
 
-            return static::create($path, $from, $to, $middleTransitions, $middleData, $middlePlaces);
+            return static::create($path, $from, $to, $middleSteps);
         } else {
-            return static::create($path, $from, $to, [], [], []);
+            return static::create($path, $from, $to, []);
         }
     }
 
@@ -64,7 +65,7 @@ class PathBuilder
         $fromPlaces = $path->getPlacesAt($from);
         $toPlaces = $path->getPlacesAt($to);
         if (!array_diff($fromPlaces, $toPlaces)) {
-            return static::create($path, $from, $to, [], [], []);
+            return static::create($path, $from, $to, []);
         } else {
             throw new Exception('Can not create new path without loop');
         }
@@ -74,38 +75,26 @@ class PathBuilder
      * @param Path  $path
      * @param int   $from
      * @param int   $to
-     * @param array $middleTransitions
-     * @param array $middleData
-     * @param array $middlePlaces
+     * @param array $middleSteps
      *
      * @return Path
      *
      * @throws Exception
      */
-    public static function create(Path $path, int $from, int $to, array $middleTransitions, array $middleData, array $middlePlaces): Path
+    public static function create(Path $path, int $from, int $to, array $middleSteps): Path
     {
-        $beginTransitions = [];
-        $endTransitions = [];
-        $beginData = [];
-        $endData = [];
-        $beginPlaces = [];
-        $endPlaces = [];
-        foreach ($path as $index => $step) {
+        $beginSteps = [];
+        $endSteps = [];
+        foreach ($path->getSteps() as $index => $step) {
             if ($index <= $from) {
-                $beginTransitions[] = $step[0];
-                $beginData[] = $step[1];
-                $beginPlaces[] = $step[2];
+                $beginSteps[] = $step;
             } elseif ($index > $to) {
-                $endTransitions[] = $step[0];
-                $endData[] = $step[1];
-                $endPlaces[] = $step[2];
+                $endSteps[] = $step;
             }
         }
 
-        $transitions = array_merge($beginTransitions, $middleTransitions, $endTransitions);
-        $data = array_merge($beginData, $middleData, $endData);
-        $places = array_merge($beginPlaces, $middlePlaces, $endPlaces);
-        $newPath = new Path($transitions, $data, $places);
+        $steps = array_merge($beginSteps, $middleSteps, $endSteps);
+        $newPath = new Path($steps);
 
         return $newPath;
     }
@@ -125,7 +114,7 @@ class PathBuilder
         $toPlaces = $path->getPlacesAt($to);
         if (count($fromPlaces) > 1 && count($toPlaces) > 1 && 1 === count(array_diff($fromPlaces, $toPlaces)) &&
             1 === count(array_diff($toPlaces, $fromPlaces))) {
-            $path = static::create($path, $from, $to, [], [], []);
+            $path = static::create($path, $from, $to, []);
 
             $find = array_values(array_diff($toPlaces, $fromPlaces))[0];
             $replace = array_values(array_diff($fromPlaces, $toPlaces))[0];

@@ -15,19 +15,19 @@ class BugMessageTest extends MessageTestCase
 {
     /**
      * @param string $model
-     * @param array  $pathArgs
+     * @param array  $steps
      * @param string $reducer
-     * @param array  $expectedPathArgs
+     * @param array  $expectedSteps
      * @dataProvider consumeMessageData
      *
      * @throws \Exception
      */
-    public function testExecute(string $model, array $pathArgs, string $reducer, array $expectedPathArgs)
+    public function testExecute(string $model, array $steps, string $reducer, array $expectedSteps)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $path = new Path(...$pathArgs);
-        $expectedPath = new Path(...$expectedPathArgs);
+        $path = new Path($steps);
+        $expectedPath = new Path($expectedSteps);
         switch ($model) {
             case 'shopping_cart':
                 $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
@@ -101,183 +101,1588 @@ class BugMessageTest extends MessageTestCase
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => 57], ['product' => 49], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [null, null, ['home']],
+                    ['viewAnyCategoryFromHome', ['category' => 57], ['category']],
+                    ['addFromCategory', ['product' => 49], ['category']],
+                    ['checkoutFromCategory', [], ['checkout']],
                 ],
                 'split',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => 57], ['product' => 49], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [null, null, ['home']],
+                    ['viewAnyCategoryFromHome', ['category' => 57], ['category']],
+                    ['addFromCategory', ['product' => 49], ['category']],
+                    ['checkoutFromCategory', [], ['checkout']],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct', 'viewCartFromCheckout', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '34'], ['product' => '48'], [], [], [], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['product'], ['product'], ['checkout'], ['cart'], ['product'], ['category'], ['category'], ['checkout']],
+                    [null, null, ['home']],
+                    ['viewAnyCategoryFromHome', ['category' => '34'], ['category']],
+                    ['viewProductFromCategory', ['product' => '48'], ['product']],
+                    ['addFromProduct', [], ['product']],
+                    ['checkoutFromProduct', [], ['checkout']],
+                    ['viewCartFromCheckout', [], ['cart']],
+                    ['viewProductFromCart', ['product' => '48'], ['product']],
+                    ['viewAnyCategoryFromProduct', ['category' => '57'], ['category']],
+                    ['addFromCategory', ['product' => '49'], ['category']],
+                    ['checkoutFromCategory', [], ['checkout']],
                 ],
                 'loop',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '34'], ['product' => '48'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '34',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '48',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['product' => '40'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '40',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'split',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
-                    [null, ['category' => '33'], ['product' => '31'], [], [], ['category' => '57'], ['product' => '49'], [], []],
-                    [['home'], ['category'], ['category'], ['cart'], ['home'], ['category'], ['product'], ['product'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '33',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '31',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewCartFromCategory',
+                        [
+                        ],
+                        [
+                            'cart',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCart',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'addFromProduct',
+                        [
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'checkoutFromProduct',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'loop',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'addFromProduct', 'checkoutFromProduct'],
-                    [null, ['category' => '57'], ['product' => '49'], [], []],
-                    [['home'], ['category'], ['product'], ['product'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'addFromProduct',
+                        [
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'checkoutFromProduct',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
-                    [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
-                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '34',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '48',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromProduct',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'split',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewCartFromHome', 'backToHomeFromCart', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewOtherCategory', 'checkoutFromCategory'],
-                    [null, [], [], ['category' => '57'], ['product' => '49'], ['category' => '25_28'], ['category' => '20'], []],
-                    [['home'], ['cart'], ['home'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewCartFromHome',
+                        [
+                        ],
+                        [
+                            'cart',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCart',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '25_28',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '20',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'loop',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'checkoutFromHome', 'backToHomeFromCheckout', 'viewAnyCategoryFromHome', 'addFromCategory', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewCartFromCategory', 'viewProductFromCart', 'viewAnyCategoryFromProduct', 'checkoutFromCategory'],
-                    [null, [], [], ['category' => '20'], ['product' => '46'], ['product' => '33'], ['category' => '57'], ['product' => '49'], [], ['product' => '46'], ['category' => '57'], []],
-                    [['home'], ['checkout'], ['home'], ['category'], ['category'], ['product'], ['category'], ['category'], ['cart'], ['product'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCheckout',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '20',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '46',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '33',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewCartFromCategory',
+                        [
+                        ],
+                        [
+                            'cart',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCart',
+                        [
+                            'product' => '46',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'loop',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '20'], ['product' => '33'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '20',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '33',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'viewOtherCategory', 'viewOtherCategory', 'viewProductFromCategory', 'addFromProduct', 'viewAnyCategoryFromProduct', 'addFromCategory', 'viewOtherCategory', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '24'], ['category' => '17'], ['category' => '24'], ['product' => '28'], [], ['category' => '57'], ['product' => '49'], ['category' => '20'], ['product' => '33'], []],
-                    [['home'], ['category'], ['product'], ['category'], ['category'], ['category'], ['product'], ['product'], ['category'], ['category'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '20_27',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '41',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '24',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '17',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '24',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '28',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'addFromProduct',
+                        [
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '20',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '33',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'loop',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'viewProductFromCategory', 'viewAnyCategoryFromProduct', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '20_27'], ['product' => '41'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['product'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '20_27',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '41',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromProduct',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewOtherCategory', 'viewProductFromCategory', 'backToHomeFromProduct', 'checkoutFromHome'],
-                    [null, ['category' => '57'], ['product' => '49'], ['category' => '34'], ['product' => '48'], [], []],
-                    [['home'], ['category'], ['category'], ['category'], ['product'], ['home'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewOtherCategory',
+                        [
+                            'category' => '34',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewProductFromCategory',
+                        [
+                            'product' => '48',
+                        ],
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromProduct',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'split',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'viewCartFromCategory', 'backToHomeFromCart', 'checkoutFromHome'],
-                    [null, ['category' => '57'], ['product' => '49'], [], [], []],
-                    [['home'], ['category'], ['category'], ['cart'], ['home'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'viewCartFromCategory',
+                        [
+                        ],
+                        [
+                            'cart',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCart',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'split',
                 [
-                    [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'checkout',
                 [
-                    [null, 'addProductAndCheckoutNotLoggedIn', 'guestCheckout', 'fillPersonalDetails', 'fillBillingAddress', 'guestCheckoutAndAddBillingAddress', 'useExistingDeliveryAddress', 'addDeliveryMethod', 'addPaymentMethod', 'confirmOrder', 'continueShopping', 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
-                    [null, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'awaitingDeliveryMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'awaitingPaymentMethod'], ['accountAdded', 'billingAddressAdded', 'deliveryAddressAdded', 'deliveryMethodAdded', 'paymentMethodAdded', 'awaitingOrderConfirm'], ['orderPlaced'], ['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addProductAndCheckoutNotLoggedIn',
+                        [
+                        ],
+                        [
+                            'awaitingAccount',
+                        ],
+                    ],
+                    [
+                        'guestCheckout',
+                        [
+                        ],
+                        [
+                            'awaitingPersonalDetails',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillPersonalDetails',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillBillingAddress',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'billingAddressFilled',
+                        ],
+                    ],
+                    [
+                        'guestCheckoutAndAddBillingAddress',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'awaitingDeliveryAddress',
+                        ],
+                    ],
+                    [
+                        'useExistingDeliveryAddress',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'deliveryAddressAdded',
+                            'awaitingDeliveryMethod',
+                        ],
+                    ],
+                    [
+                        'addDeliveryMethod',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'deliveryAddressAdded',
+                            'deliveryMethodAdded',
+                            'awaitingPaymentMethod',
+                        ],
+                    ],
+                    [
+                        'addPaymentMethod',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'deliveryAddressAdded',
+                            'deliveryMethodAdded',
+                            'paymentMethodAdded',
+                            'awaitingOrderConfirm',
+                        ],
+                    ],
+                    [
+                        'confirmOrder',
+                        [
+                        ],
+                        [
+                            'orderPlaced',
+                        ],
+                    ],
+                    [
+                        'continueShopping',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addProductAndCheckoutNotLoggedIn',
+                        [
+                        ],
+                        [
+                            'awaitingAccount',
+                        ],
+                    ],
+                    [
+                        'registerAccount',
+                        [
+                        ],
+                        [
+                            'awaitingPersonalDetails',
+                            'awaitingPassword',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillPersonalDetails',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'awaitingPassword',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillPassword',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'passwordFilled',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillBillingAddress',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'passwordFilled',
+                            'billingAddressFilled',
+                        ],
+                    ],
+                    [
+                        'registerAndAddBillingAddress',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'awaitingDeliveryAddress',
+                        ],
+                    ],
                 ],
                 'loop',
                 [
-                    [null, 'addProductAndCheckoutNotLoggedIn', 'registerAccount', 'fillPersonalDetails', 'fillPassword', 'fillBillingAddress', 'registerAndAddBillingAddress'],
-                    [null, [], [], [], [], [], []],
-                    [['home'], ['awaitingAccount'], ['awaitingPersonalDetails', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'awaitingPassword', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'awaitingBillingAddress'], ['personalDetailsFilled', 'passwordFilled', 'billingAddressFilled'], ['accountAdded', 'billingAddressAdded', 'awaitingDeliveryAddress']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addProductAndCheckoutNotLoggedIn',
+                        [
+                        ],
+                        [
+                            'awaitingAccount',
+                        ],
+                    ],
+                    [
+                        'registerAccount',
+                        [
+                        ],
+                        [
+                            'awaitingPersonalDetails',
+                            'awaitingPassword',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillPersonalDetails',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'awaitingPassword',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillPassword',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'passwordFilled',
+                            'awaitingBillingAddress',
+                        ],
+                    ],
+                    [
+                        'fillBillingAddress',
+                        [
+                        ],
+                        [
+                            'personalDetailsFilled',
+                            'passwordFilled',
+                            'billingAddressFilled',
+                        ],
+                    ],
+                    [
+                        'registerAndAddBillingAddress',
+                        [
+                        ],
+                        [
+                            'accountAdded',
+                            'billingAddressAdded',
+                            'awaitingDeliveryAddress',
+                        ],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '40',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCheckout',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '42',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '30',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '43',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
                 'random',
                 [
-                    [null, 'addFromHome', 'checkoutFromHome', 'backToHomeFromCheckout', 'addFromHome', 'addFromHome', 'addFromHome', 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                    [null, ['product' => '40'], [], [], ['product' => '42'], ['product' => '30'], ['product' => '43'], ['category' => '57'], ['product' => '49'], []],
-                    [['home'], ['home'], ['checkout'], ['home'], ['home'], ['home'], ['home'], ['category'], ['category'], ['checkout']],
+                    [
+                        null,
+                        null,
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '40',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'checkoutFromHome',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
+                    [
+                        'backToHomeFromCheckout',
+                        [
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '42',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '30',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'addFromHome',
+                        [
+                            'product' => '43',
+                        ],
+                        [
+                            'home',
+                        ],
+                    ],
+                    [
+                        'viewAnyCategoryFromHome',
+                        [
+                            'category' => '57',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'addFromCategory',
+                        [
+                            'product' => '49',
+                        ],
+                        [
+                            'category',
+                        ],
+                    ],
+                    [
+                        'checkoutFromCategory',
+                        [
+                        ],
+                        [
+                            'checkout',
+                        ],
+                    ],
                 ],
             ],
             [
                 'product',
                 [
-                    [null, 'selectOptions', 'selectSelect', 'selectTime', 'selectDateTime', 'fillText', 'selectFile'],
-                    [null, [], ['select' => 2], [], [], [], []],
-                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime', 'selectSelected'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingDateTime', 'selectSelected', 'timeSelected'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected'], 	['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected', 'textFilled'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'selectSelected', 'timeSelected', 'dateTimeSelected', 'textFilled']],
+                    [
+                        null,
+                        null,
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'selectOptions',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingText',
+                            'awaitingSelect',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'awaitingTime',
+                            'awaitingDateTime',
+                        ],
+                    ],
+                    [
+                        'selectSelect',
+                        [
+                            'select' => 2,
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingText',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'awaitingTime',
+                            'awaitingDateTime',
+                            'selectSelected',
+                        ],
+                    ],
+                    [
+                        'selectTime',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingText',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'awaitingDateTime',
+                            'selectSelected',
+                            'timeSelected',
+                        ],
+                    ],
+                    [
+                        'selectDateTime',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingText',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'selectSelected',
+                            'timeSelected',
+                            'dateTimeSelected',
+                        ],
+                    ],
+                    [
+                        'fillText',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'selectSelected',
+                            'timeSelected',
+                            'dateTimeSelected',
+                            'textFilled',
+                        ],
+                    ],
+                    [
+                        'selectFile',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'selectSelected',
+                            'timeSelected',
+                            'dateTimeSelected',
+                            'textFilled',
+                        ],
+                    ],
                 ],
                 'transition',
                 [
-                    [null, 'selectOptions', 'selectFile'],
-                    [null, [], []],
-                    [['product'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingText', 'awaitingSelect', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingTime', 'awaitingDateTime'], ['awaitingRadio', 'awaitingCheckbox', 'awaitingTextarea', 'awaitingFile', 'awaitingDate', 'awaitingSelect', 'awaitingTime', 'awaitingDateTime', 'awaitingText']],
+                    [
+                        null,
+                        null,
+                        [
+                            'product',
+                        ],
+                    ],
+                    [
+                        'selectOptions',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingText',
+                            'awaitingSelect',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'awaitingTime',
+                            'awaitingDateTime',
+                        ],
+                    ],
+                    [
+                        'selectFile',
+                        [
+                        ],
+                        [
+                            'awaitingRadio',
+                            'awaitingCheckbox',
+                            'awaitingTextarea',
+                            'awaitingFile',
+                            'awaitingDate',
+                            'awaitingSelect',
+                            'awaitingTime',
+                            'awaitingDateTime',
+                            'awaitingText',
+                        ],
+                    ],
                 ],
             ],
         ];
