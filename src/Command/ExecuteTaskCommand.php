@@ -122,7 +122,7 @@ class ExecuteTaskCommand extends AbstractCommand
         $workflow = $this->workflowRegistry->get($subject, $task->getModel()->getName());
 
         $path = new Path();
-        $path->add(null, null, $workflow->getDefinition()->getInitialPlaces());
+        $path->addStep([null, null, $workflow->getDefinition()->getInitialPlaces()]);
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject, $task->getGeneratorOptions()) as $transitionName) {
@@ -135,7 +135,7 @@ class ExecuteTaskCommand extends AbstractCommand
                 } finally {
                     $data = $subject->getStoredData();
                     $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                    $path->add($transitionName, $data, $places);
+                    $path->addStep([$transitionName, $data, $places]);
                 }
             }
         } catch (Throwable $throwable) {

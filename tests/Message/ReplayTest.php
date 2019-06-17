@@ -30,17 +30,20 @@ class ReplayTest extends MessageTestCase
 
         if ($regression) {
             $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
-            $path = new Path(...[
-                [null, 'viewAnyCategoryFromHome', 'addFromCategory', 'checkoutFromCategory'],
-                [null, ['category' => '57'], ['product' => '49'], []],
-                [['home'], ['category'], ['category'], ['checkout']],
+            $path = new Path([
+                [null, null, ['home']],
+                ['viewAnyCategoryFromHome', ['category' => '57'], ['category']],
+                ['addFromCategory', ['product' => '49'], ['category']],
+                ['checkoutFromCategory', [], ['checkout']],
             ]);
         } else {
             $bugMessage = 'Fixed bug';
-            $path = new Path(...[
-                [null, 'viewProductFromHome', 'addFromProduct', 'viewCartFromProduct', 'useCoupon'],
-                [null, ['product' => '40'], [], [], []],
-                [['home'], ['product'], ['product'], ['cart'], ['cart']],
+            $path = new Path([
+                [null, null, ['home']],
+                ['viewProductFromHome', ['product' => '40'], ['product']],
+                ['addFromProduct', [], ['product']],
+                ['viewCartFromProduct', [], ['cart']],
+                ['useCoupon', [], ['cart']],
             ]);
         }
 

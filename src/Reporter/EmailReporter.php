@@ -83,7 +83,7 @@ class EmailReporter implements ReporterInterface
         $subject = $this->subjectManager->createSubject($model);
 
         $steps = [];
-        foreach ($path as $index => $step) {
+        foreach ($path->getSteps() as $index => $step) {
             $steps[] = [
                 $index + 1,
                 $step[0],

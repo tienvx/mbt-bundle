@@ -11,7 +11,7 @@ class TableHelper
     public static function render(Path $path): string
     {
         $steps = [];
-        foreach ($path as $index => $step) {
+        foreach ($path->getSteps() as $index => $step) {
             $steps[] = [$index + 1, $step[0], json_encode($step[1]), implode(',', $step[2])];
         }
 
