@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 
 class TableHelper
 {

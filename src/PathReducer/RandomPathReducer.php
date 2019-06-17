@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Doctrine\DBAL\LockMode;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 

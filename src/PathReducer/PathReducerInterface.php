@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 
 interface PathReducerInterface extends PluginInterface
 {

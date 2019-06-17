@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Graph;
+namespace Tienvx\Bundle\MbtBundle\Entity;
 
 class Path
 {

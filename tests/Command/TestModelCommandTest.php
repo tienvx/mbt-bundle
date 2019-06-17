@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 
 class TestModelCommandTest extends CommandTestCase
 {
