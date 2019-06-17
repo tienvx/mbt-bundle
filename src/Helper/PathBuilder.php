@@ -7,7 +7,7 @@ use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 
 class PathBuilder
 {

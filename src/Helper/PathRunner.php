@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Exception;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class PathRunner

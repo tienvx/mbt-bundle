@@ -6,7 +6,6 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Graph\Path;
 
 /**
  * @ORM\Entity
