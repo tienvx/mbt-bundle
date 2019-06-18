@@ -38,6 +38,28 @@ class GeneratorOptions
     private $bugId;
 
     /**
+     * @var int|null
+     * @MbtAssert\StaticCaseId
+     */
+    private $staticCaseId;
+
+    /**
+     * @return int|null
+     */
+    public function getStaticCaseId(): ?int
+    {
+        return $this->staticCaseId;
+    }
+
+    /**
+     * @param int|null $staticCaseId
+     */
+    public function setStaticCaseId(?int $staticCaseId): void
+    {
+        $this->staticCaseId = $staticCaseId;
+    }
+
+    /**
      * @return int|null
      */
     public function getBugId(): ?int
@@ -113,6 +135,7 @@ class GeneratorOptions
             'placeCoverage' => $generatorOptions->getPlaceCoverage(),
             'maxPathLength' => $generatorOptions->getMaxPathLength(),
             'bugId' => $generatorOptions->getBugId(),
+            'staticCaseId' => $generatorOptions->getStaticCaseId(),
         ];
 
         return array_filter($values);
@@ -143,6 +166,7 @@ class GeneratorOptions
         $generatorOptions->setPlaceCoverage($data['placeCoverage'] ?? null);
         $generatorOptions->setMaxPathLength($data['maxPathLength'] ?? null);
         $generatorOptions->setBugId($data['bugId'] ?? null);
+        $generatorOptions->setStaticCaseId($data['staticCaseId'] ?? null);
 
         return $generatorOptions;
     }

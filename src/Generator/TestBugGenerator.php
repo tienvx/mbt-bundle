@@ -10,7 +10,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
-class ReplayGenerator extends AbstractGenerator
+class TestBugGenerator extends AbstractGenerator
 {
     /**
      * @var EntityManagerInterface
@@ -58,6 +58,6 @@ class ReplayGenerator extends AbstractGenerator
 
     public static function getName(): string
     {
-        return 'replay';
+        return 'test-bug';
     }
 }

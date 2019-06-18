@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
+use Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
@@ -12,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 
-class ReplayTest extends MessageTestCase
+class TestBugTest extends MessageTestCase
 {
     /**
      * @param string $model
@@ -20,7 +21,7 @@ class ReplayTest extends MessageTestCase
      * @param string $reducer
      * @param bool   $regression
      *
-     * @throws \Exception
+     * @throws Exception
      * @dataProvider consumeMessageData
      */
     public function testExecute(string $model, string $generator, string $reducer, bool $regression)
@@ -95,8 +96,8 @@ class ReplayTest extends MessageTestCase
     public function consumeMessageData()
     {
         return [
-            ['shopping_cart', 'replay', 'loop', true],
-            ['shopping_cart', 'replay', 'loop', false],
+            ['shopping_cart', 'test-bug', 'loop', true],
+            ['shopping_cart', 'test-bug', 'loop', false],
         ];
     }
 }
