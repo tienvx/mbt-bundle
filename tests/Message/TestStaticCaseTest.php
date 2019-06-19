@@ -41,6 +41,7 @@ class TestStaticCaseTest extends MessageTestCase
         ]);
 
         $staticCase = new StaticCase();
+        $staticCase->setModel(new Model($model));
         $staticCase->setPath($path);
         $entityManager->persist($staticCase);
 
