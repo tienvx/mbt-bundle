@@ -45,4 +45,12 @@ class PathReducerManager
     {
         return isset($this->pathReducers[$name]);
     }
+
+    /**
+     * @return array
+     */
+    public function getAllPathReducers(): array
+    {
+        return $this->pathReducers;
+    }
 }
