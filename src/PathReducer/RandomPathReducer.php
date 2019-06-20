@@ -60,4 +60,9 @@ class RandomPathReducer extends AbstractPathReducer
     {
         return 'random';
     }
+
+    public function getLabel(): string
+    {
+        return 'Random';
+    }
 }

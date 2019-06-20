@@ -110,4 +110,9 @@ class LoopPathReducer extends AbstractPathReducer
     {
         return 'loop';
     }
+
+    public function getLabel(): string
+    {
+        return 'Loop';
+    }
 }

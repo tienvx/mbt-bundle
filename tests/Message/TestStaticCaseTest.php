@@ -42,6 +42,7 @@ class TestStaticCaseTest extends MessageTestCase
 
         $staticCase = new StaticCase();
         $staticCase->setModel(new Model($model));
+        $staticCase->setTitle('Test checkout out-of-stock product');
         $staticCase->setPath($path);
         $entityManager->persist($staticCase);
 

@@ -91,4 +91,9 @@ class RandomGenerator extends AbstractGenerator
     {
         return 'random';
     }
+
+    public function getLabel(): string
+    {
+        return 'Random';
+    }
 }

@@ -58,4 +58,9 @@ class ProbabilityGenerator extends AbstractGenerator
     {
         return 'probability';
     }
+
+    public function getLabel(): string
+    {
+        return 'Probability';
+    }
 }

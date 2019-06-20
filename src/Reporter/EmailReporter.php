@@ -48,6 +48,11 @@ class EmailReporter implements ReporterInterface
         return 'email';
     }
 
+    public function getLabel(): string
+    {
+        return 'Email';
+    }
+
     public static function support(): bool
     {
         return class_exists('Swift_Message');

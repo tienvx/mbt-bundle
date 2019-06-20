@@ -23,6 +23,11 @@ class SlackReporter implements ReporterInterface
         return 'slack';
     }
 
+    public function getLabel(): string
+    {
+        return 'Slack';
+    }
+
     public static function support(): bool
     {
         return class_exists('Maknz\Slack\Client');

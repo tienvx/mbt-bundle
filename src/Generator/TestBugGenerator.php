@@ -60,4 +60,9 @@ class TestBugGenerator extends AbstractGenerator
     {
         return 'test-bug';
     }
+
+    public function getLabel(): string
+    {
+        return 'Test Bug';
+    }
 }

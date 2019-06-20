@@ -62,4 +62,9 @@ class AllTransitionsGenerator extends AbstractGenerator
     {
         return 'all-transitions';
     }
+
+    public function getLabel(): string
+    {
+        return 'All Transitions';
+    }
 }

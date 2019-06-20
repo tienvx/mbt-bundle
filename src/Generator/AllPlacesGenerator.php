@@ -55,4 +55,9 @@ class AllPlacesGenerator extends AbstractGenerator
     {
         return 'all-places';
     }
+
+    public function getLabel(): string
+    {
+        return 'All Places';
+    }
 }
