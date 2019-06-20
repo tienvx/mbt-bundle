@@ -60,4 +60,9 @@ class TestStaticCaseGenerator extends AbstractGenerator
     {
         return 'test-static-case';
     }
+
+    public function getLabel(): string
+    {
+        return 'Test Static Case';
+    }
 }

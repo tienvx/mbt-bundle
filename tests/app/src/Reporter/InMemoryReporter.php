@@ -29,6 +29,11 @@ class InMemoryReporter implements ReporterInterface
         return 'in-memory';
     }
 
+    public function getLabel(): string
+    {
+        return 'In Memory';
+    }
+
     public static function support(): bool
     {
         return true;

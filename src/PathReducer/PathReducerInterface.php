@@ -16,4 +16,6 @@ interface PathReducerInterface extends PluginInterface
     public function setWorkflowRegistry(Registry $workflowRegistry);
 
     public function dispatch(int $bugId, Path $newPath = null): int;
+
+    public function getLabel(): string;
 }

@@ -111,4 +111,9 @@ class TransitionPathReducer extends AbstractPathReducer
     {
         return 'transition';
     }
+
+    public function getLabel(): string
+    {
+        return 'Transition';
+    }
 }

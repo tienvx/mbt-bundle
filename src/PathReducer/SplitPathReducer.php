@@ -76,4 +76,9 @@ class SplitPathReducer extends AbstractPathReducer
     {
         return 'split';
     }
+
+    public function getLabel(): string
+    {
+        return 'Split';
+    }
 }
