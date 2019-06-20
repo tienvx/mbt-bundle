@@ -45,4 +45,12 @@ class ReporterManager
     {
         return isset($this->reporters[$name]);
     }
+
+    /**
+     * @return array
+     */
+    public function getAllReporters(): array
+    {
+        return $this->reporters;
+    }
 }

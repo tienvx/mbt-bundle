@@ -45,4 +45,12 @@ class GeneratorManager
     {
         return isset($this->generators[$name]);
     }
+
+    /**
+     * @return array
+     */
+    public function getAllGenerators(): array
+    {
+        return $this->generators;
+    }
 }
