@@ -47,7 +47,7 @@ class PathReducerManager
     }
 
     /**
-     * @return array
+     * @return PathReducerInterface[]
      */
     public function getAllPathReducers(): array
     {

@@ -47,7 +47,7 @@ class GeneratorManager
     }
 
     /**
-     * @return array
+     * @return GeneratorInterface[]
      */
     public function getAllGenerators(): array
     {

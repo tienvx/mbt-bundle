@@ -47,7 +47,7 @@ class ReporterManager
     }
 
     /**
-     * @return array
+     * @return ReporterInterface[]
      */
     public function getAllReporters(): array
     {
