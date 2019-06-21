@@ -3,12 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Exception;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\TableHelper;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
-use Twig\Environment as Twig;
 
 class EmailReporter implements ReporterInterface
 {
@@ -16,11 +15,6 @@ class EmailReporter implements ReporterInterface
      * @var MailerInterface
      */
     protected $mailer;
-
-    /**
-     * @var Twig
-     */
-    protected $twig;
 
     /**
      * @var SubjectManager
@@ -37,10 +31,9 @@ class EmailReporter implements ReporterInterface
      */
     protected $emailTo = '';
 
-    public function __construct(MailerInterface $mailer, Twig $twig, SubjectManager $subjectManager)
+    public function __construct(MailerInterface $mailer, SubjectManager $subjectManager)
     {
         $this->mailer = $mailer;
-        $this->twig = $twig;
         $this->subjectManager = $subjectManager;
     }
 
@@ -57,8 +50,7 @@ class EmailReporter implements ReporterInterface
     public static function support(): bool
     {
         return class_exists('Symfony\Component\Mailer\MailerInterface') &&
-            class_exists('Twig\Environment') &&
-            class_exists('Symfony\Component\Mime\Email');
+            class_exists('Symfony\Bridge\Twig\Mime\TemplatedEmail');
     }
 
     public function setEmailFrom(string $emailFrom)
@@ -78,7 +70,7 @@ class EmailReporter implements ReporterInterface
      */
     public function report(Bug $bug)
     {
-        if (!class_exists('Symfony\Component\Mime\Email')) {
+        if (!class_exists('Symfony\Bridge\Twig\Mime\TemplatedEmail')) {
             return;
         }
 
@@ -101,25 +93,20 @@ class EmailReporter implements ReporterInterface
             ];
         }
 
-        $email = (new Email())
+        $email = (new TemplatedEmail())
             ->from($this->emailFrom)
             ->to($this->emailTo)
-            ->subject('New bug found')
-            ->text($this->twig->render('reporters/email/report.txt.twig', [
-                'id' => $bug->getId(),
-                'task' => $bug->getTask()->getTitle(),
-                'title' => $bug->getTitle(),
-                'bugMessage' => $bug->getBugMessage(),
-                'steps' => TableHelper::render($bug->getPath()),
-            ]))
-            ->html($this->twig->render('reporters/email/report.html.twig', [
+            ->subject('New bug found!')
+            ->textTemplate('reporters/email/report.txt.twig')
+            ->htmlTemplate('reporters/email/report.html.twig')
+            ->context([
                 'id' => $bug->getId(),
                 'task' => $bug->getTask()->getTitle(),
                 'title' => $bug->getTitle(),
                 'bugMessage' => $bug->getBugMessage(),
                 'steps' => $steps,
-            ]))
-        ;
+                'tableSteps' => TableHelper::render($bug->getPath()),
+            ]);
 
         $this->mailer->send($email);
     }
