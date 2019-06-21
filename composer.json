@@ -73,7 +73,8 @@
     "suggest": {
         "ext-amqp": "Needed to support amqp transport",
         "alek13/slack": "Send bug report to Slack",
-        "symfony/swiftmailer-bundle": "Send bug report to an email",
-        "symfony/twig-bundle": "Send bug report to an email with html format"
+        "symfony/mailer": "Send bug report to an email",
+        "symfony/twig-bundle": "Render bug reporter in html format, for email reporting",
+        "symfony/mime": "Create email"
     }
 }
