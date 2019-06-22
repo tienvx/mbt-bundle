@@ -16,7 +16,17 @@ class SlackReporter implements ReporterInterface
     /**
      * @var string
      */
-    protected $slackChannel = '';
+    protected $slackFrom = '';
+
+    /**
+     * @var string
+     */
+    protected $slackTo = '';
+
+    /**
+     * @var string
+     */
+    protected $slackMessage = '';
 
     public static function getName(): string
     {
@@ -38,9 +48,19 @@ class SlackReporter implements ReporterInterface
         $this->slackHookUrl = $slackHookUrl;
     }
 
-    public function setSlackChannel(string $slackChannel)
+    public function setSlackFrom(string $slackFrom)
     {
-        $this->slackChannel = $slackChannel;
+        $this->slackFrom = $slackFrom;
+    }
+
+    public function setSlackTo(string $slackTo)
+    {
+        $this->slackTo = $slackTo;
+    }
+
+    public function setSlackMessage(string $slackMessage)
+    {
+        $this->slackMessage = $slackMessage;
     }
 
     /**
@@ -54,30 +74,38 @@ class SlackReporter implements ReporterInterface
             return;
         }
 
-        if (empty($this->slackChannel) || empty($this->slackHookUrl)) {
+        if (empty($this->slackTo) || empty($this->slackHookUrl)) {
             return;
         }
 
         $client = new \Maknz\Slack\Client($this->slackHookUrl);
 
-        $client->to($this->slackChannel)->attach([
-            'fallback' => $bug->getBugMessage(),
-            'text' => $bug->getBugMessage(),
-            'color' => 'danger',
-            'fields' => [
-                [
-                    'title' => 'ID',
-                    'value' => $bug->getId(),
+        $client
+            ->from($this->slackFrom)
+            ->to($this->slackTo)
+            ->send($this->slackMessage)
+            ->attach([
+                'fallback' => $bug->getBugMessage(),
+                'text' => $bug->getTitle(),
+                'color' => 'danger',
+                'fields' => [
+                    [
+                        'title' => 'ID',
+                        'value' => $bug->getId(),
+                    ],
+                    [
+                        'title' => 'Task',
+                        'value' => $bug->getTask()->getTitle(),
+                    ],
+                    [
+                        'title' => 'Bug Message',
+                        'value' => $bug->getBugMessage(),
+                    ],
+                    [
+                        'title' => 'Steps',
+                        'value' => TableHelper::render($bug->getPath()),
+                    ],
                 ],
-                [
-                    'title' => 'Task',
-                    'value' => $bug->getTask()->getTitle(),
-                ],
-                [
-                    'title' => 'Steps',
-                    'value' => TableHelper::render($bug->getPath()),
-                ],
-            ],
-        ])->send($bug->getTitle());
+            ]);
     }
 }

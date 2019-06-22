@@ -20,8 +20,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_bug_title')->defaultValue('New bug found')->end()
                 // 'https://hooks.slack.com/...'
                 ->scalarNode('slack_hook_url')->defaultValue('')->end()
-                // '#operations'
-                ->scalarNode('slack_channel')->defaultValue('')->end()
+                // 'QA Team'
+                ->scalarNode('slack_from')->defaultValue('')->end()
+                // '#a-channel' or '@a-person'
+                ->scalarNode('slack_to')->defaultValue('')->end()
+                ->scalarNode('slack_message')->defaultValue('')->end()
                 ->scalarNode('email_from')->defaultValue('')->end()
                 ->scalarNode('email_to')->defaultValue('')->end()
                 ->scalarNode('email_subject')->defaultValue('')->end()
