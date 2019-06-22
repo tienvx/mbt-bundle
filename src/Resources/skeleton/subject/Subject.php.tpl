@@ -6,7 +6,7 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class <?= $class_name; ?> extends AbstractSubject
 {
-    public static function support(): string
+    public static function getName(): string
     {
         return '<?= $model; ?>';
     }

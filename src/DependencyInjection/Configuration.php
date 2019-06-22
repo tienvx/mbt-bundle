@@ -9,8 +9,8 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('tienvx_mbt');
+        $treeBuilder = new TreeBuilder('tienvx_mbt');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('slack_channel')->defaultValue('')->end()
                 ->scalarNode('email_from')->defaultValue('')->end()
                 ->scalarNode('email_to')->defaultValue('')->end()
+                ->scalarNode('email_subject')->defaultValue('')->end()
             ->end()
         ;
 

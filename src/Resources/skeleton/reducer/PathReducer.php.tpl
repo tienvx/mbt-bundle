@@ -2,7 +2,7 @@
 
 namespace <?= $namespace; ?>;
 
-use Tienvx\Bundle\MbtBundle\Graph\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\PathReducer\AbstractPathReducer;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
@@ -11,6 +11,11 @@ class <?= $class_name; ?> extends AbstractPathReducer
     public static function getName()
     {
         return '<?= $name; ?>';
+    }
+
+    public function getLabel(): string
+    {
+        return '';
     }
 
     public function handle(int $bugId, int $length, int $from, int $to)
