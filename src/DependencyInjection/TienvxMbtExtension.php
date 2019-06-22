@@ -72,7 +72,9 @@ class TienvxMbtExtension extends Extension
 
         $slackReporterDefinition = $container->getDefinition(SlackReporter::class);
         $slackReporterDefinition->addMethodCall('setSlackHookUrl', [$config['slack_hook_url']]);
-        $slackReporterDefinition->addMethodCall('setSlackChannel', [$config['slack_channel']]);
+        $slackReporterDefinition->addMethodCall('setSlackFrom', [$config['slack_from']]);
+        $slackReporterDefinition->addMethodCall('setSlackTo', [$config['slack_to']]);
+        $slackReporterDefinition->addMethodCall('setSlackMessage', [$config['slack_message']]);
 
         $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
         $emailReporterDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
