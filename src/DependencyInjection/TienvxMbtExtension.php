@@ -79,5 +79,6 @@ class TienvxMbtExtension extends Extension
         $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
         $emailReporterDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
         $emailReporterDefinition->addMethodCall('setEmailTo', [$config['email_to']]);
+        $emailReporterDefinition->addMethodCall('setEmailSubject', [$config['email_subject']]);
     }
 }
