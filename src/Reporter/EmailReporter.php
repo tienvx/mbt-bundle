@@ -31,6 +31,11 @@ class EmailReporter implements ReporterInterface
      */
     protected $emailTo = '';
 
+    /**
+     * @var string
+     */
+    protected $emailSubject = 'A new bug found!';
+
     public function __construct(MailerInterface $mailer, SubjectManager $subjectManager)
     {
         $this->mailer = $mailer;
@@ -61,6 +66,11 @@ class EmailReporter implements ReporterInterface
     public function setEmailTo(string $emailTo)
     {
         $this->emailTo = $emailTo;
+    }
+
+    public function setEmailSubject(string $emailSubject)
+    {
+        $this->emailSubject = $emailSubject;
     }
 
     /**
@@ -96,7 +106,7 @@ class EmailReporter implements ReporterInterface
         $email = (new TemplatedEmail())
             ->from($this->emailFrom)
             ->to($this->emailTo)
-            ->subject('New bug found!')
+            ->subject($this->emailSubject)
             ->textTemplate('reporters/email/report.txt.twig')
             ->htmlTemplate('reporters/email/report.html.twig')
             ->context([

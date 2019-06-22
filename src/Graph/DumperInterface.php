@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Graph\Dumper;
+namespace Tienvx\Bundle\MbtBundle\Graph;
 
 use Fhaculty\Graph\Graph;
 

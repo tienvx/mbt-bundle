@@ -16,6 +16,11 @@ class <?= $class_name; ?> extends AbstractGenerator
         return '<?= $name; ?>';
     }
 
+    public function getLabel(): string
+    {
+        return '';
+    }
+
     /**
      * @param Workflow         $workflow
      * @param AbstractSubject  $subject
