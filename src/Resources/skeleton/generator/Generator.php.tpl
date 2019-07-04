@@ -11,7 +11,7 @@ use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class <?= $class_name; ?> extends AbstractGenerator
 {
-    public static function getName()
+    public static function getName(): string
     {
         return '<?= $name; ?>';
     }

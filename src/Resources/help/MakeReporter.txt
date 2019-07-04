@@ -1,0 +1,5 @@
+The <info>%command.name%</info> command generates a new reporter class.
+
+<info>php %command.full_name% reporter-name CoolStuffReporter</info>
+
+If the argument is missing, the command will ask for the reporter name and reporter class name interactively.
