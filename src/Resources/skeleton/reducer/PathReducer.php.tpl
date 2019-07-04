@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
 class <?= $class_name; ?> extends AbstractPathReducer
 {
-    public static function getName()
+    public static function getName(): string
     {
         return '<?= $name; ?>';
     }
