@@ -19,3 +19,4 @@ script:
 
 after_success:
   - travis_retry composer run-script coverall
+  - composer run-script insights

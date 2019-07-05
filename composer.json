@@ -33,6 +33,7 @@
         "phpunit/phpunit": "~7.5.12",
         "php-coveralls/php-coveralls": "~2.1.0",
         "friendsofphp/php-cs-fixer": "~2.15.1",
+        "nunomaduro/phpinsights": "~1.7.0",
         "symfony/yaml": "~4.3.1",
         "symfony/expression-language": "~4.3.1",
         "symfony/security-bundle": "~4.3.1",
@@ -55,6 +56,7 @@
         "coverage": "php vendor/bin/phpunit --coverage-clover tests/logs/clover.xml --colors=always",
         "cs-fix": "php vendor/bin/php-cs-fixer fix --dry-run --ansi",
         "coverall": "php vendor/bin/php-coveralls",
+        "insights": "php vendor/bin/phpinsights",
         "test": [
             "php tests/app/bin/console cache:clear --env=test --ansi",
             "php vendor/bin/phpunit --colors=always"
