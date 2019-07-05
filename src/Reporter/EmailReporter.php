@@ -54,7 +54,7 @@ class EmailReporter implements ReporterInterface
 
     public static function support(): bool
     {
-        return class_exists('Symfony\Component\Mailer\MailerInterface') &&
+        return interface_exists('Symfony\Component\Mailer\MailerInterface') &&
             class_exists('Symfony\Bridge\Twig\Mime\TemplatedEmail');
     }
 
