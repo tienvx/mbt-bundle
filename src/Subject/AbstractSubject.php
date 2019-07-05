@@ -8,9 +8,14 @@ use League\Flysystem\FilesystemInterface;
 abstract class AbstractSubject implements SubjectInterface
 {
     /**
-     * @var string Required by workflow component
+     * @var mixed Required by workflow component
      */
-    public $marking;
+    private $marking;
+
+    /**
+     * @var mixed Required by workflow component
+     */
+    private $context;
 
     /**
      * @var bool
@@ -41,6 +46,28 @@ abstract class AbstractSubject implements SubjectInterface
      * @var FilesystemInterface
      */
     protected $filesystem;
+
+    public function __construct($marking = null)
+    {
+        $this->marking = $marking;
+        $this->context = [];
+    }
+
+    public function getMarking()
+    {
+        return $this->marking;
+    }
+
+    public function setMarking($marking, array $context = [])
+    {
+        $this->marking = $marking;
+        $this->context = $context;
+    }
+
+    public function getContext(): array
+    {
+        return $this->context;
+    }
 
     public static function support(): bool
     {
