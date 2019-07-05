@@ -121,6 +121,7 @@ class ShoppingCart extends AbstractSubject
 
     public function __construct()
     {
+        parent::__construct();
         $this->cart = [];
         $this->category = null;
         $this->product = null;
