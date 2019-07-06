@@ -83,7 +83,6 @@ class SlackReporter implements ReporterInterface
         $client
             ->from($this->slackFrom)
             ->to($this->slackTo)
-            ->send($this->slackMessage)
             ->attach([
                 'fallback' => $bug->getBugMessage(),
                 'text' => $bug->getTitle(),
@@ -106,6 +105,7 @@ class SlackReporter implements ReporterInterface
                         'value' => TableHelper::render($bug->getPath()),
                     ],
                 ],
-            ]);
+            ])
+            ->send($this->slackMessage);
     }
 }
