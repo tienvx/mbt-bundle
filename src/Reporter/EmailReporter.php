@@ -84,7 +84,7 @@ class EmailReporter implements ReporterInterface
             return;
         }
 
-        if (empty($this->emailTo) || empty($this->emailFrom) || empty($this->mailer) || empty($this->twig)) {
+        if (empty($this->emailTo) || empty($this->emailFrom) || empty($this->mailer)) {
             return;
         }
 
@@ -107,8 +107,8 @@ class EmailReporter implements ReporterInterface
             ->from($this->emailFrom)
             ->to($this->emailTo)
             ->subject($this->emailSubject)
-            ->textTemplate('reporters/email/report.txt.twig')
-            ->htmlTemplate('reporters/email/report.html.twig')
+            ->textTemplate('@TienvxMbt/reporters/email/report.txt.twig')
+            ->htmlTemplate('@TienvxMbt/reporters/email/report.html.twig')
             ->context([
                 'id' => $bug->getId(),
                 'task' => $bug->getTask()->getTitle(),
