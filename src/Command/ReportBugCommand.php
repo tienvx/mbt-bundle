@@ -39,7 +39,8 @@ class ReportBugCommand extends Command
             ->setName('mbt:bug:report')
             ->setDescription('Report a bug.')
             ->setHelp('Report a bug to email, hipchat or jira.')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
+            ->addArgument('reporter', InputArgument::REQUIRED, 'The bug reporter.');
     }
 
     /**
@@ -51,18 +52,9 @@ class ReportBugCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
+        $reporter = $input->getArgument('reporter');
 
-        $callback = function () use ($bugId) {
-            $bug = $this->entityManager->find(Bug::class, $bugId);
-
-            if ($bug instanceof Bug) {
-                $bug->setStatus('reported');
-            }
-
-            return $bug;
-        };
-
-        $bug = $this->entityManager->transactional($callback);
+        $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
@@ -70,9 +62,7 @@ class ReportBugCommand extends Command
             return;
         }
 
-        foreach ($bug->getTask()->getReporters() as $reporter) {
-            $reporterPlugin = $this->reporterManager->getReporter($reporter->getName());
-            $reporterPlugin->report($bug);
-        }
+        $reporterPlugin = $this->reporterManager->getReporter($reporter);
+        $reporterPlugin->report($bug);
     }
 }
