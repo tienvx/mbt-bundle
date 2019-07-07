@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Exception;
+use Fhaculty\Graph\Exception as GraphException;
 use Generator;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Psr\Cache\InvalidArgumentException;
@@ -33,16 +34,19 @@ class AllPlacesGenerator extends AbstractGenerator
     {
         $graph = $this->graphBuilder->build($workflow);
         $algorithm = new Bruteforce($graph);
-        $edges = $algorithm->getEdges();
-        $edges = $edges->getVector();
-        while (!empty($edges)) {
-            $edge = array_shift($edges);
-            $transitionName = $edge->getAttribute('name');
-            if ($workflow->can($subject, $transitionName)) {
-                yield $transitionName;
-            } else {
-                break;
+        try {
+            $edges = $algorithm->getEdges();
+            $edges = $edges->getVector();
+            while (!empty($edges)) {
+                $edge = array_shift($edges);
+                $transitionName = $edge->getAttribute('name');
+                if ($workflow->can($subject, $transitionName)) {
+                    yield $transitionName;
+                } else {
+                    break;
+                }
             }
+        } catch (GraphException $exception) {
         }
     }
 
