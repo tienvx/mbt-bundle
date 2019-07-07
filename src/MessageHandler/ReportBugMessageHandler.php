@@ -27,6 +27,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     public function __invoke(ReportBugMessage $message)
     {
         $bugId = $message->getBugId();
-        $this->commandRunner->run(['mbt:bug:report', $bugId]);
+        $reporter = $message->getReporter();
+        $this->commandRunner->run(['mbt:bug:report', $bugId, $reporter]);
     }
 }
