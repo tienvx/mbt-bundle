@@ -22,16 +22,16 @@ class StaticCase
     private $id;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    private $model;
-
-    /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank
      */
     private $title;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    private $model;
 
     /**
      * @ORM\Column(type="text")
@@ -75,21 +75,6 @@ class StaticCase
     }
 
     /**
-     * @return Path
-     *
-     * @throws Exception
-     */
-    public function getPath(): Path
-    {
-        return Path::deserialize($this->path);
-    }
-
-    public function setPath(Path $path)
-    {
-        $this->path = Path::serialize($path);
-    }
-
-    /**
      * @MbtAssert\Model
      *
      * @return Model
@@ -102,6 +87,21 @@ class StaticCase
     public function setModel(Model $model)
     {
         $this->model = $model->getName();
+    }
+
+    /**
+     * @return Path
+     *
+     * @throws Exception
+     */
+    public function getPath(): Path
+    {
+        return Path::deserialize($this->path);
+    }
+
+    public function setPath(Path $path)
+    {
+        $this->path = Path::serialize($path);
     }
 
     public function setCreatedAt(DateTime $createdAt)
