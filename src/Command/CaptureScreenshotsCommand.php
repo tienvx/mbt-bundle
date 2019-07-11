@@ -8,6 +8,7 @@ use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
@@ -88,7 +89,12 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
-        $workflow = $this->workflowRegistry->get($subject, $model);
+
+        try {
+            $workflow = $this->workflowRegistry->get($subject, $model);
+        } catch (InvalidArgumentException $exception) {
+            throw new Exception(sprintf('Model "%s" does not exist', $model));
+        }
 
         $subject->setUp();
         $subject->setFilesystem($this->mbtStorage);

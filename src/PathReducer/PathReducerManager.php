@@ -31,7 +31,7 @@ class PathReducerManager
             return $this->pathReducers[$name];
         }
 
-        throw new Exception(sprintf('Path reducer %s does not exist.', $name));
+        throw new Exception(sprintf('Path reducer "%s" does not exist.', $name));
     }
 
     /**

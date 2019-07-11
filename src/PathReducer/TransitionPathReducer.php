@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Doctrine\DBAL\LockMode;
 use Exception;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
@@ -43,7 +44,13 @@ class TransitionPathReducer extends AbstractPathReducer
                 if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
                         $subject = $this->subjectManager->createSubject($model);
-                        $workflow = $this->workflowRegistry->get($subject, $model);
+
+                        try {
+                            $workflow = $this->workflowRegistry->get($subject, $model);
+                        } catch (InvalidArgumentException $exception) {
+                            throw new Exception(sprintf('Model "%s" does not exist', $model));
+                        }
+
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {

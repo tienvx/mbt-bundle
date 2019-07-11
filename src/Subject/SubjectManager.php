@@ -36,14 +36,14 @@ class SubjectManager
     public function createSubject(string $model): AbstractSubject
     {
         if (!isset($this->subjects[$model])) {
-            throw new Exception(sprintf('Subject for model %s is not specified.', $model));
+            throw new Exception(sprintf('Subject for model "%s" is not specified.', $model));
         } elseif (!class_exists($this->subjects[$model])) {
-            throw new Exception(sprintf('Subject class for model %s does not exist.', $model));
+            throw new Exception(sprintf('Subject class for model "%s" does not exist.', $model));
         }
 
         $subject = new $this->subjects[$model]();
         if (!$subject instanceof AbstractSubject) {
-            throw new Exception(sprintf('Subject for model %s is not instance of %s.', $model, AbstractSubject::class));
+            throw new Exception(sprintf('Subject for model "%s" is not instance of "%s".', $model, AbstractSubject::class));
         }
 
         return $subject;

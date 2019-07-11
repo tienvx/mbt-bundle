@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
+use Exception;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
@@ -13,12 +15,18 @@ class WorkflowHelper
      * @param string   $model
      *
      * @return Workflow
+     *
+     * @throws Exception
      */
     public static function get(Registry $registry, string $model): Workflow
     {
         $subject = static::fakeSubject();
 
-        return $registry->get($subject, $model);
+        try {
+            return $registry->get($subject, $model);
+        } catch (InvalidArgumentException $exception) {
+            throw new Exception(sprintf('Model "%s" does not exist', $model));
+        }
     }
 
     /**

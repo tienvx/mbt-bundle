@@ -31,7 +31,7 @@ class ReporterManager
             return $this->reporters[$name];
         }
 
-        throw new Exception(sprintf('Reporter %s does not exist.', $name));
+        throw new Exception(sprintf('Reporter "%s" does not exist.', $name));
     }
 
     /**
