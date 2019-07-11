@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -119,7 +120,12 @@ class ExecuteTaskCommand extends AbstractCommand
         $subject = $this->subjectManager->createSubject($task->getModel()->getName());
         $subject->setUp();
         $generator = $this->generatorManager->getGenerator($task->getGenerator()->getName());
-        $workflow = $this->workflowRegistry->get($subject, $task->getModel()->getName());
+
+        try {
+            $workflow = $this->workflowRegistry->get($subject, $task->getModel()->getName());
+        } catch (InvalidArgumentException $exception) {
+            throw new Exception(sprintf('Model "%s" does not exist', $task->getModel()->getName()));
+        }
 
         $path = new Path();
         $path->addStep([null, null, $workflow->getDefinition()->getInitialPlaces()]);

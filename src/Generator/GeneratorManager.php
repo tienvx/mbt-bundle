@@ -31,7 +31,7 @@ class GeneratorManager
             return $this->generators[$name];
         }
 
-        throw new Exception(sprintf('Generator %s does not exist.', $name));
+        throw new Exception(sprintf('Generator "%s" does not exist.', $name));
     }
 
     /**
