@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\TableHelper;
 
 class SlackReporter implements ReporterInterface
 {
@@ -101,8 +100,8 @@ class SlackReporter implements ReporterInterface
                         'value' => $bug->getBugMessage(),
                     ],
                     [
-                        'title' => 'Steps',
-                        'value' => TableHelper::render($bug->getPath()),
+                        'title' => 'Number of Steps',
+                        'value' => $bug->getPath()->countTransitions(),
                     ],
                 ],
             ])
