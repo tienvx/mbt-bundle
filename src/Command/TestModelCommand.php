@@ -49,7 +49,8 @@ class TestModelCommand extends AbstractCommand
             ->setHelp('Generate path for model.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
             ->addOption('generator', 'g', InputOption::VALUE_OPTIONAL, 'The generator to generate path from the model.', 'random')
-            ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator.');
+            ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator.')
+            ->addOption('pretty', 'p', InputOption::VALUE_NONE, 'Whether print json in pretty format.', null);
     }
 
     public function setWorkflowRegistry(Registry $workflowRegistry)
@@ -74,6 +75,7 @@ class TestModelCommand extends AbstractCommand
         $model = $input->getArgument('model');
         $generatorName = $input->getOption('generator');
         $generatorOptions = $input->getOption('generator-options');
+        $pretty = $input->getOption('pretty');
         $generator = $this->generatorManager->getGenerator($generatorName);
         $subject = $this->subjectManager->createSubject($model);
         $subject->setTestingModel(true);
@@ -104,6 +106,6 @@ class TestModelCommand extends AbstractCommand
             $subject->tearDown();
         }
 
-        $output->writeln(Path::serialize($path));
+        $output->writeln($pretty ? json_encode(Path::normalize($path), JSON_PRETTY_PRINT) : Path::serialize($path));
     }
 }
