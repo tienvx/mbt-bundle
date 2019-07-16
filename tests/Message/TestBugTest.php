@@ -31,20 +31,20 @@ class TestBugTest extends MessageTestCase
 
         if ($regression) {
             $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
-            $path = new Path([
-                [null, null, ['home']],
-                ['viewAnyCategoryFromHome', ['category' => '57'], ['category']],
-                ['addFromCategory', ['product' => '49'], ['category']],
-                ['checkoutFromCategory', [], ['checkout']],
+            $path = Path::denormalize([
+                ['transition' => null, 'data' => null, 'places' => ['home']],
+                ['transition' => 'viewAnyCategoryFromHome', 'data' => [['key' => 'category', 'value' => '57']], 'places' => ['category']],
+                ['transition' => 'addFromCategory', 'data' => [['key' => 'product', 'value' => '49']], 'places' => ['category']],
+                ['transition' => 'checkoutFromCategory', 'data' => [], 'places' => ['checkout']],
             ]);
         } else {
             $bugMessage = 'Fixed bug';
-            $path = new Path([
-                [null, null, ['home']],
-                ['viewProductFromHome', ['product' => '40'], ['product']],
-                ['addFromProduct', [], ['product']],
-                ['viewCartFromProduct', [], ['cart']],
-                ['useCoupon', [], ['cart']],
+            $path = Path::denormalize([
+                ['transition' => null, 'data' => null, 'places' => ['home']],
+                ['transition' => 'viewProductFromHome', 'data' => [['key' => 'product', 'value' => '40']], 'places' => ['product']],
+                ['transition' => 'addFromProduct', 'data' => [], 'places' => ['product']],
+                ['transition' => 'viewCartFromProduct', 'data' => [], 'places' => ['cart']],
+                ['transition' => 'useCoupon', 'data' => [], 'places' => ['cart']],
             ]);
         }
 

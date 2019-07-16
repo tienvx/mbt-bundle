@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -88,7 +89,7 @@ class TestModelCommand extends AbstractCommand
         }
 
         $path = new Path();
-        $path->addStep([null, null, $workflow->getDefinition()->getInitialPlaces()]);
+        $path->addStep(new Step(null, null, $workflow->getDefinition()->getInitialPlaces()));
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject, GeneratorOptions::denormalize($generatorOptions)) as $transitionName) {
@@ -99,13 +100,13 @@ class TestModelCommand extends AbstractCommand
                 } finally {
                     $data = $subject->getStoredData();
                     $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                    $path->addStep([$transitionName, $data, $places]);
+                    $path->addStep(new Step($transitionName, $data, $places));
                 }
             }
         } finally {
             $subject->tearDown();
         }
 
-        $output->writeln($pretty ? json_encode(Path::normalize($path), JSON_PRETTY_PRINT) : Path::serialize($path));
+        $output->writeln($path->serialize($pretty ? JSON_PRETTY_PRINT : 0));
     }
 }

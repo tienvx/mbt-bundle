@@ -10,6 +10,7 @@ use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowSubscriber implements EventSubscriberInterface
@@ -58,11 +59,11 @@ class WorkflowSubscriber implements EventSubscriberInterface
                 $dataProvider = $this->reader->getMethodAnnotation($reflectionMethod, DataProvider::class);
                 if ($dataProvider && $dataProvider instanceof DataProvider) {
                     $data = call_user_func([$subject, $dataProvider->method]);
-                    if (!is_array($data)) {
+                    if (!($data instanceof StepData)) {
                         return;
                     }
                 } else {
-                    $data = [];
+                    $data = new StepData();
                 }
                 $subject->setData($data);
             }

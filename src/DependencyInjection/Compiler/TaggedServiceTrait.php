@@ -12,8 +12,6 @@ trait TaggedServiceTrait
     /**
      * @param ContainerBuilder $container
      * @param string           $tagName
-     * @param string           $interface
-     * @param string           $method
      * @param bool             $reference
      *
      * @return array

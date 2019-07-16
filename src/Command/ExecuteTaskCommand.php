@@ -11,6 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
@@ -128,7 +129,7 @@ class ExecuteTaskCommand extends AbstractCommand
         }
 
         $path = new Path();
-        $path->addStep([null, null, $workflow->getDefinition()->getInitialPlaces()]);
+        $path->addStep(new Step(null, null, $workflow->getDefinition()->getInitialPlaces()));
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject, $task->getGeneratorOptions()) as $transitionName) {
@@ -141,13 +142,13 @@ class ExecuteTaskCommand extends AbstractCommand
                 } finally {
                     $data = $subject->getStoredData();
                     $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                    $path->addStep([$transitionName, $data, $places]);
+                    $path->addStep(new Step($transitionName, $data, $places));
                 }
             }
         } catch (Throwable $throwable) {
             $message = new CreateBugMessage(
                 $this->defaultBugTitle,
-                Path::serialize($path),
+                $path->serialize(),
                 $path->countPlaces(),
                 $throwable->getMessage(),
                 $task->getId(),

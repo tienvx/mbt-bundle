@@ -2,40 +2,24 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use Exception;
+
 class Path
 {
     /**
-     * @var array
+     * @var Step[]
      */
     protected $steps;
 
     /**
-     * @return array
+     * @return Step[]
      */
     public function getSteps(): array
     {
         return $this->steps;
     }
 
-    /**
-     * @param array $steps
-     */
-    public function setSteps(array $steps): void
-    {
-        $this->steps = $steps;
-    }
-
-    /**
-     * Path constructor.
-     *
-     * @param array $steps
-     */
-    public function __construct(array $steps = [])
-    {
-        $this->steps = $steps;
-    }
-
-    public function addStep(array $step)
+    public function addStep(Step $step)
     {
         $this->steps[] = $step;
     }
@@ -52,78 +36,108 @@ class Path
 
     public function countUniqueTransitions(): int
     {
-        return count(array_unique(array_filter(array_column($this->steps, 0))));
+        $transitions = [];
+        foreach ($this->steps as $step) {
+            if (!in_array($step->getTransition(), $transitions)) {
+                $transitions[] = $step->getTransition();
+            }
+        }
+
+        return count(array_filter($transitions));
     }
 
     public function countUniquePlaces(): int
     {
-        return count(array_unique(call_user_func_array('array_merge', array_column($this->steps, 2))));
+        $places = [];
+        foreach ($this->steps as $step) {
+            $places = array_merge($places, $step->getPlaces());
+        }
+
+        return count(array_unique($places));
     }
 
     public function getTransitionAt(int $index): ?string
     {
-        return $this->steps[$index][0];
+        return isset($this->steps[$index]) ? $this->steps[$index]->getTransition() : null;
     }
 
-    public function getDataAt(int $index): ?array
+    public function getDataAt(int $index): ?StepData
     {
-        return $this->steps[$index][1];
+        return isset($this->steps[$index]) ? $this->steps[$index]->getData() : null;
     }
 
-    public function getPlacesAt(int $index): array
+    public function getPlacesAt(int $index): ?array
     {
-        return $this->steps[$index][2];
+        return isset($this->steps[$index]) ? $this->steps[$index]->getPlaces() : null;
     }
 
-    public function setTransitionAt(int $index, array $transition)
+    public function setTransitionAt(int $index, string $transition)
     {
-        $this->steps[$index][0] = $transition;
+        if (isset($this->steps[$index])) {
+            $this->steps[$index]->setTransition($transition);
+        }
     }
 
-    public function setDataAt(int $index, array $data)
+    public function setDataAt(int $index, StepData $data)
     {
-        $this->steps[$index][1] = $data;
+        if (isset($this->steps[$index])) {
+            $this->steps[$index]->setData($data);
+        }
     }
 
     public function setPlacesAt(int $index, array $places)
     {
-        $this->steps[$index][2] = $places;
+        if (isset($this->steps[$index])) {
+            $this->steps[$index]->setPlaces($places);
+        }
     }
 
     /**
-     * @param Path $path
-     *
      * @return array
      */
-    public static function normalize(Path $path): array
+    public function normalize(): array
     {
-        return $path->getSteps();
+        $return = [];
+        foreach ($this->getSteps() as $step) {
+            $return[] = $step->normalize();
+        }
+
+        return $return;
     }
 
     /**
-     * @param Path $path
+     * @param $options
      *
      * @return string
      */
-    public static function serialize(Path $path): string
+    public function serialize($options = 0): string
     {
-        return json_encode(self::normalize($path));
+        return json_encode($this->normalize(), $options);
     }
 
     /**
      * @param array $steps
      *
      * @return Path
+     *
+     * @throws Exception
      */
     public static function denormalize(array $steps): Path
     {
-        return new Path($steps);
+        $path = new Path();
+        foreach ($steps as $step) {
+            $path->addStep(Step::denormalize($step));
+        }
+
+        return $path;
     }
 
     /**
      * @param string $steps
      *
      * @return Path
+     *
+     * @throws Exception
      */
     public static function deserialize(string $steps): Path
     {

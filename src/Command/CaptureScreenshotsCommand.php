@@ -12,6 +12,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class CaptureScreenshotsCommand extends AbstractCommand
@@ -102,26 +103,26 @@ class CaptureScreenshotsCommand extends AbstractCommand
 
         try {
             foreach ($path->getSteps() as $index => $step) {
-                $transitionName = $step[0];
-                $data = $step[1];
-                if ($transitionName) {
-                    if (is_array($data)) {
+                $transition = $step->getTransition();
+                $data = $step->getData();
+                if ($transition) {
+                    if ($data instanceof StepData) {
                         $subject->setData($data);
                         $subject->setNeedData(false);
                     } else {
                         $subject->setNeedData(true);
                     }
-                    if (!$workflow->can($subject, $transitionName)) {
+                    if (!$workflow->can($subject, $transition)) {
                         break;
                     }
                     // Store data before apply transition, because there are maybe exception happen
                     // while applying transition.
-                    if (!is_array($data)) {
+                    if (!($data instanceof StepData)) {
                         $path->setDataAt($index, $subject->getData());
                     }
                     $subject->setNeedData(false);
                     try {
-                        $workflow->apply($subject, $transitionName);
+                        $workflow->apply($subject, $transition);
                     } catch (Throwable $throwable) {
                     } finally {
                         $subject->captureScreenshot($bugId, $index);

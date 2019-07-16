@@ -26,8 +26,8 @@ class BugMessageTest extends MessageTestCase
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $path = new Path($steps);
-        $expectedPath = new Path($expectedSteps);
+        $path = Path::denormalize($steps);
+        $expectedPath = Path::denormalize($expectedSteps);
         switch ($model) {
             case 'shopping_cart':
                 $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
@@ -82,7 +82,7 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ('random' !== $reducer) {
-            $this->assertEquals(Path::serialize($expectedPath), Path::serialize($bugs[0]->getPath()));
+            $this->assertEquals($expectedPath->serialize(), $bugs[0]->getPath()->serialize());
             $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
         } else {
             $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
@@ -101,83 +101,155 @@ class BugMessageTest extends MessageTestCase
             [
                 'shopping_cart',
                 [
-                    [null, null, ['home']],
-                    ['viewAnyCategoryFromHome', ['category' => 57], ['category']],
-                    ['addFromCategory', ['product' => 49], ['category']],
-                    ['checkoutFromCategory', [], ['checkout']],
+                    [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => ['home'],
+                    ],
+                    [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [['key' => 'category', 'value' => 57]],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'addFromCategory',
+                        'data' => [['key' => 'product', 'value' => 49]],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [],
+                        'places' => ['checkout'],
+                    ],
                 ],
                 'split',
                 [
-                    [null, null, ['home']],
-                    ['viewAnyCategoryFromHome', ['category' => 57], ['category']],
-                    ['addFromCategory', ['product' => 49], ['category']],
-                    ['checkoutFromCategory', [], ['checkout']],
+                    [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => ['home'],
+                    ],
+                    [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [['key' => 'category', 'value' => 57]],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'addFromCategory',
+                        'data' => [['key' => 'product', 'value' => 49]],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [],
+                        'places' => ['checkout'],
+                    ],
                 ],
             ],
             [
                 'shopping_cart',
                 [
-                    [null, null, ['home']],
-                    ['viewAnyCategoryFromHome', ['category' => '34'], ['category']],
-                    ['viewProductFromCategory', ['product' => '48'], ['product']],
-                    ['addFromProduct', [], ['product']],
-                    ['checkoutFromProduct', [], ['checkout']],
-                    ['viewCartFromCheckout', [], ['cart']],
-                    ['viewProductFromCart', ['product' => '48'], ['product']],
-                    ['viewAnyCategoryFromProduct', ['category' => '57'], ['category']],
-                    ['addFromCategory', ['product' => '49'], ['category']],
-                    ['checkoutFromCategory', [], ['checkout']],
+                    [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => ['home'],
+                    ],
+                    [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [['key' => 'category', 'value' => '34']],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [['key' => 'product', 'value' => '48']],
+                        'places' => ['product'],
+                    ],
+                    [
+                        'transition' => 'addFromProduct',
+                        'data' => [],
+                        'places' => ['product'],
+                    ],
+                    [
+                        'transition' => 'checkoutFromProduct',
+                        'data' => [],
+                        'places' => ['checkout'],
+                    ],
+                    [
+                        'transition' => 'viewCartFromCheckout',
+                        'data' => [],
+                        'places' => ['cart'],
+                    ],
+                    [
+                        'transition' => 'viewProductFromCart',
+                        'data' => [['key' => 'product', 'value' => '48']],
+                        'places' => ['product'],
+                    ],
+                    [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [['key' => 'category', 'value' => '57']],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'addFromCategory',
+                        'data' => [['key' => 'product', 'value' => '49']],
+                        'places' => ['category'],
+                    ],
+                    [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [],
+                        'places' => ['checkout'],
+                    ],
                 ],
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '34',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '34',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '48',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '48',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -187,44 +259,44 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '40',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '40',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -232,35 +304,35 @@ class BugMessageTest extends MessageTestCase
                 'split',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -270,77 +342,77 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '33',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '33',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '31',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '31',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewCartFromCategory',
-                        [
+                        'transition' => 'viewCartFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'cart',
                         ],
                     ],
                     [
-                        'backToHomeFromCart',
-                        [
+                        'transition' => 'backToHomeFromCart',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'addFromProduct',
-                        [
+                        'transition' => 'addFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'checkoutFromProduct',
-                        [
+                        'transition' => 'checkoutFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -348,43 +420,43 @@ class BugMessageTest extends MessageTestCase
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'addFromProduct',
-                        [
+                        'transition' => 'addFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'checkoutFromProduct',
-                        [
+                        'transition' => 'checkoutFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -394,61 +466,61 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '34',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '34',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '48',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '48',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'backToHomeFromProduct',
-                        [
+                        'transition' => 'backToHomeFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -456,35 +528,35 @@ class BugMessageTest extends MessageTestCase
                 'split',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -494,69 +566,69 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewCartFromHome',
-                        [
+                        'transition' => 'viewCartFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'cart',
                         ],
                     ],
                     [
-                        'backToHomeFromCart',
-                        [
+                        'transition' => 'backToHomeFromCart',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '25_28',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '25_28',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '20',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -564,35 +636,35 @@ class BugMessageTest extends MessageTestCase
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -602,104 +674,104 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
                     [
-                        'backToHomeFromCheckout',
-                        [
+                        'transition' => 'backToHomeFromCheckout',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '20',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '46',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '46',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '33',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '33',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewCartFromCategory',
-                        [
+                        'transition' => 'viewCartFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'cart',
                         ],
                     ],
                     [
-                        'viewProductFromCart',
-                        [
-                            'product' => '46',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCart',
+                        'data' => [[
+                            'key' => 'product', 'value' => '46',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -707,53 +779,53 @@ class BugMessageTest extends MessageTestCase
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '20',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '33',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '33',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -763,115 +835,115 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '20_27',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20_27',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '41',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '41',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '24',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '24',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '17',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '17',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '24',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '24',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '28',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '28',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'addFromProduct',
-                        [
+                        'transition' => 'addFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '20',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '33',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '33',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -879,53 +951,53 @@ class BugMessageTest extends MessageTestCase
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '20_27',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '20_27',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '41',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '41',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromProduct',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromProduct',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -935,61 +1007,61 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewOtherCategory',
-                        [
-                            'category' => '34',
-                        ],
-                        [
+                        'transition' => 'viewOtherCategory',
+                        'data' => [[
+                            'key' => 'category', 'value' => '34',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewProductFromCategory',
-                        [
-                            'product' => '48',
-                        ],
-                        [
+                        'transition' => 'viewProductFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '48',
+                        ]],
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'backToHomeFromProduct',
-                        [
+                        'transition' => 'backToHomeFromProduct',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -997,35 +1069,35 @@ class BugMessageTest extends MessageTestCase
                 'split',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -1035,51 +1107,51 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'viewCartFromCategory',
-                        [
+                        'transition' => 'viewCartFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'cart',
                         ],
                     ],
                     [
-                        'backToHomeFromCart',
-                        [
+                        'transition' => 'backToHomeFromCart',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -1087,35 +1159,35 @@ class BugMessageTest extends MessageTestCase
                 'split',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -1125,62 +1197,62 @@ class BugMessageTest extends MessageTestCase
                 'checkout',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addProductAndCheckoutNotLoggedIn',
-                        [
+                        'transition' => 'addProductAndCheckoutNotLoggedIn',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingAccount',
                         ],
                     ],
                     [
-                        'guestCheckout',
-                        [
+                        'transition' => 'guestCheckout',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingPersonalDetails',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillPersonalDetails',
-                        [
+                        'transition' => 'fillPersonalDetails',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillBillingAddress',
-                        [
+                        'transition' => 'fillBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'billingAddressFilled',
                         ],
                     ],
                     [
-                        'guestCheckoutAndAddBillingAddress',
-                        [
+                        'transition' => 'guestCheckoutAndAddBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'awaitingDeliveryAddress',
                         ],
                     ],
                     [
-                        'useExistingDeliveryAddress',
-                        [
+                        'transition' => 'useExistingDeliveryAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'deliveryAddressAdded',
@@ -1188,10 +1260,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'addDeliveryMethod',
-                        [
+                        'transition' => 'addDeliveryMethod',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'deliveryAddressAdded',
@@ -1200,10 +1272,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'addPaymentMethod',
-                        [
+                        'transition' => 'addPaymentMethod',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'deliveryAddressAdded',
@@ -1213,74 +1285,74 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'confirmOrder',
-                        [
+                        'transition' => 'confirmOrder',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'orderPlaced',
                         ],
                     ],
                     [
-                        'continueShopping',
-                        [
+                        'transition' => 'continueShopping',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addProductAndCheckoutNotLoggedIn',
-                        [
+                        'transition' => 'addProductAndCheckoutNotLoggedIn',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingAccount',
                         ],
                     ],
                     [
-                        'registerAccount',
-                        [
+                        'transition' => 'registerAccount',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingPersonalDetails',
                             'awaitingPassword',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillPersonalDetails',
-                        [
+                        'transition' => 'fillPersonalDetails',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'awaitingPassword',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillPassword',
-                        [
+                        'transition' => 'fillPassword',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'passwordFilled',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillBillingAddress',
-                        [
+                        'transition' => 'fillBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'passwordFilled',
                             'billingAddressFilled',
                         ],
                     ],
                     [
-                        'registerAndAddBillingAddress',
-                        [
+                        'transition' => 'registerAndAddBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'awaitingDeliveryAddress',
@@ -1290,65 +1362,65 @@ class BugMessageTest extends MessageTestCase
                 'loop',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addProductAndCheckoutNotLoggedIn',
-                        [
+                        'transition' => 'addProductAndCheckoutNotLoggedIn',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingAccount',
                         ],
                     ],
                     [
-                        'registerAccount',
-                        [
+                        'transition' => 'registerAccount',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingPersonalDetails',
                             'awaitingPassword',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillPersonalDetails',
-                        [
+                        'transition' => 'fillPersonalDetails',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'awaitingPassword',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillPassword',
-                        [
+                        'transition' => 'fillPassword',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'passwordFilled',
                             'awaitingBillingAddress',
                         ],
                     ],
                     [
-                        'fillBillingAddress',
-                        [
+                        'transition' => 'fillBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'personalDetailsFilled',
                             'passwordFilled',
                             'billingAddressFilled',
                         ],
                     ],
                     [
-                        'registerAndAddBillingAddress',
-                        [
+                        'transition' => 'registerAndAddBillingAddress',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'accountAdded',
                             'billingAddressAdded',
                             'awaitingDeliveryAddress',
@@ -1360,87 +1432,87 @@ class BugMessageTest extends MessageTestCase
                 'shopping_cart',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '40',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '40',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
                     [
-                        'backToHomeFromCheckout',
-                        [
+                        'transition' => 'backToHomeFromCheckout',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '42',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '42',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '30',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '30',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '43',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '43',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -1448,87 +1520,87 @@ class BugMessageTest extends MessageTestCase
                 'random',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '40',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '40',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'checkoutFromHome',
-                        [
+                        'transition' => 'checkoutFromHome',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
                     [
-                        'backToHomeFromCheckout',
-                        [
+                        'transition' => 'backToHomeFromCheckout',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '42',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '42',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '30',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '30',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'addFromHome',
-                        [
-                            'product' => '43',
-                        ],
-                        [
+                        'transition' => 'addFromHome',
+                        'data' => [[
+                            'key' => 'product', 'value' => '43',
+                        ]],
+                        'places' => [
                             'home',
                         ],
                     ],
                     [
-                        'viewAnyCategoryFromHome',
-                        [
-                            'category' => '57',
-                        ],
-                        [
+                        'transition' => 'viewAnyCategoryFromHome',
+                        'data' => [[
+                            'key' => 'category', 'value' => '57',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'addFromCategory',
-                        [
-                            'product' => '49',
-                        ],
-                        [
+                        'transition' => 'addFromCategory',
+                        'data' => [[
+                            'key' => 'product', 'value' => '49',
+                        ]],
+                        'places' => [
                             'category',
                         ],
                     ],
                     [
-                        'checkoutFromCategory',
-                        [
+                        'transition' => 'checkoutFromCategory',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'checkout',
                         ],
                     ],
@@ -1538,17 +1610,17 @@ class BugMessageTest extends MessageTestCase
                 'product',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'selectOptions',
-                        [
+                        'transition' => 'selectOptions',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingText',
@@ -1561,11 +1633,11 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'selectSelect',
-                        [
-                            'select' => 2,
-                        ],
-                        [
+                        'transition' => 'selectSelect',
+                        'data' => [[
+                            'key' => 'select', 'value' => 2,
+                        ]],
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingText',
@@ -1578,10 +1650,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'selectTime',
-                        [
+                        'transition' => 'selectTime',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingText',
@@ -1594,10 +1666,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'selectDateTime',
-                        [
+                        'transition' => 'selectDateTime',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingText',
@@ -1610,10 +1682,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'fillText',
-                        [
+                        'transition' => 'fillText',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingTextarea',
@@ -1626,10 +1698,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'selectFile',
-                        [
+                        'transition' => 'selectFile',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingTextarea',
@@ -1645,17 +1717,17 @@ class BugMessageTest extends MessageTestCase
                 'transition',
                 [
                     [
-                        null,
-                        null,
-                        [
+                        'transition' => null,
+                        'data' => null,
+                        'places' => [
                             'product',
                         ],
                     ],
                     [
-                        'selectOptions',
-                        [
+                        'transition' => 'selectOptions',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingText',
@@ -1668,10 +1740,10 @@ class BugMessageTest extends MessageTestCase
                         ],
                     ],
                     [
-                        'selectFile',
-                        [
+                        'transition' => 'selectFile',
+                        'data' => [
                         ],
-                        [
+                        'places' => [
                             'awaitingRadio',
                             'awaitingCheckbox',
                             'awaitingTextarea',

@@ -8,6 +8,7 @@ use Generator;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class TestBugGenerator extends AbstractGenerator
@@ -42,16 +43,16 @@ class TestBugGenerator extends AbstractGenerator
 
         $path = $bug->getPath();
         foreach ($path->getSteps() as $index => $step) {
-            $transitionName = $step[0];
-            $data = $step[1];
-            if ($transitionName) {
-                if (is_array($data)) {
+            $transition = $step->getTransition();
+            $data = $step->getData();
+            if ($transition) {
+                if ($data instanceof StepData) {
                     $subject->setData($data);
                     $subject->setNeedData(false);
                 } else {
                     $subject->setNeedData(true);
                 }
-                yield $transitionName;
+                yield $transition;
             }
         }
     }

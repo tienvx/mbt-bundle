@@ -10,7 +10,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
 
 class TaskMessageTest extends MessageTestCase
 {
@@ -57,8 +56,12 @@ class TaskMessageTest extends MessageTestCase
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
             if ('shopping_cart' === $model) {
-                $data = array_column(Path::normalize($bugs[0]->getPath()), 1);
-                $ids = array_filter(array_column($data, 'product'));
+                $ids = [];
+                foreach ($bugs[0]->getPath()->getSteps() as $step) {
+                    if ($step->getData() && $step->getData()->has('product')) {
+                        $ids[] = $step->getData()->get('product');
+                    }
+                }
                 if ('You added an out-of-stock product into cart! Can not checkout' === $bugs[0]->getBugMessage()) {
                     $this->assertContains(49, $ids);
                 } elseif ('You need to specify options for this product! Can not add product' === $bugs[0]->getBugMessage()) {
