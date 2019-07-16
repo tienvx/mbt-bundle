@@ -8,6 +8,7 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
 
 class PathBuilder
 {
@@ -35,11 +36,11 @@ class PathBuilder
             $middleSteps = [];
             foreach ($edges as $edge) {
                 if ($edge instanceof Directed) {
-                    $middleSteps[] = [
-                        $edge->getAttribute('name'),
+                    $middleSteps[] = new Step(
+                        $edge->getAttribute('name', ''),
                         null,
-                        $edge->getVertexEnd()->getAttribute('places'),
-                    ];
+                        $edge->getVertexEnd()->getAttribute('places', [])
+                    );
                 } else {
                     throw new Exception('Only support directed graph');
                 }
@@ -83,18 +84,20 @@ class PathBuilder
      */
     public static function create(Path $path, int $from, int $to, array $middleSteps): Path
     {
-        $beginSteps = [];
-        $endSteps = [];
+        $newPath = new Path();
         foreach ($path->getSteps() as $index => $step) {
             if ($index <= $from) {
-                $beginSteps[] = $step;
-            } elseif ($index > $to) {
-                $endSteps[] = $step;
+                $newPath->addStep($step);
             }
         }
-
-        $steps = array_merge($beginSteps, $middleSteps, $endSteps);
-        $newPath = new Path($steps);
+        foreach ($middleSteps as $step) {
+            $newPath->addStep($step);
+        }
+        foreach ($path->getSteps() as $index => $step) {
+            if ($index > $to) {
+                $newPath->addStep($step);
+            }
+        }
 
         return $newPath;
     }

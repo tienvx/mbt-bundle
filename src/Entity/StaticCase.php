@@ -101,7 +101,7 @@ class StaticCase
 
     public function setPath(Path $path)
     {
-        $this->path = Path::serialize($path);
+        $this->path = $path->serialize();
     }
 
     public function setCreatedAt(DateTime $createdAt)

@@ -29,15 +29,15 @@ class TestStaticCaseTest extends MessageTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $path = new Path([
-            [null, null, ['home']],
-            ['addFromHome', ['product' => 40], ['home']],
-            ['viewAnyCategoryFromHome', ['category' => 57], ['category']],
-            ['addFromCategory', ['product' => 49], ['category']],
-            ['viewCartFromCategory', [], ['cart']],
-            ['update', ['product' => 49], ['cart']],
-            ['remove', ['product' => 40], ['cart']],
-            ['checkoutFromCart', [], ['checkout']],
+        $path = Path::denormalize([
+            ['transition' => null, 'data' => null, 'places' => ['home']],
+            ['transition' => 'addFromHome', 'data' => [['key' => 'product', 'value' => 40]], 'places' => ['home']],
+            ['transition' => 'viewAnyCategoryFromHome', 'data' => [['key' => 'category', 'value' => 57]], 'places' => ['category']],
+            ['transition' => 'addFromCategory', 'data' => [['key' => 'product', 'value' => 49]], 'places' => ['category']],
+            ['transition' => 'viewCartFromCategory', 'data' => [], 'places' => ['cart']],
+            ['transition' => 'update', 'data' => [['key' => 'product', 'value' => 49]], 'places' => ['cart']],
+            ['transition' => 'remove', 'data' => [['key' => 'product', 'value' => 40]], 'places' => ['cart']],
+            ['transition' => 'checkoutFromCart', 'data' => [], 'places' => ['checkout']],
         ]);
 
         $staticCase = new StaticCase();

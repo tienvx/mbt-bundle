@@ -4,6 +4,7 @@ namespace App\Subject;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ShoppingCart extends AbstractSubject
@@ -138,10 +139,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromHome()
     {
-        if (empty($this->data['category'])) {
+        if (!$this->data->has('category')) {
             throw new Exception('Can not view category from home: category is not selected');
         }
-        $category = $this->data['category'];
+        $category = $this->data->get('category');
         $this->category = $category;
         $this->product = null;
     }
@@ -152,10 +153,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewOtherCategory()
     {
-        if (empty($this->data['category'])) {
+        if (!$this->data->has('category')) {
             throw new Exception('Can not view category from other category: category is not selected');
         }
-        $category = $this->data['category'];
+        $category = $this->data->get('category');
         $this->category = $category;
         $this->product = null;
     }
@@ -166,10 +167,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromProduct()
     {
-        if (empty($this->data['category'])) {
+        if (!$this->data->has('category')) {
             throw new Exception('Can not view category from product: category is not selected');
         }
-        $category = $this->data['category'];
+        $category = $this->data->get('category');
         $this->category = $category;
         $this->product = null;
     }
@@ -180,10 +181,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromCart()
     {
-        if (empty($this->data['category'])) {
+        if (!$this->data->has('category')) {
             throw new Exception('Can not view category from cart: category is not selected');
         }
-        $category = $this->data['category'];
+        $category = $this->data->get('category');
         $this->category = $category;
         $this->product = null;
     }
@@ -194,10 +195,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromHome()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not view product from home: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         $this->product = $product;
         $this->category = null;
     }
@@ -208,10 +209,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCart()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not view product from cart: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         $this->product = $product;
         $this->category = null;
     }
@@ -222,10 +223,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCategory()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not view product from category: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         $this->product = $product;
         $this->category = null;
     }
@@ -238,10 +239,10 @@ class ShoppingCart extends AbstractSubject
         if (empty($this->productsInCategory[$this->category])) {
             return false;
         } else {
-            if (empty($this->data['product'])) {
+            if (!$this->data->has('product')) {
                 throw new Exception('Can not check if category has selected product or not: product is not selected');
             }
-            $product = $this->data['product'];
+            $product = $this->data->get('product');
 
             return in_array($product, $this->productsInCategory[$this->category]);
         }
@@ -249,12 +250,12 @@ class ShoppingCart extends AbstractSubject
 
     public function productHasBeenSelected()
     {
-        return !empty($this->data['product']);
+        return $this->data->has('product');
     }
 
     public function categoryHasBeenSelected()
     {
-        return !empty($this->data['category']);
+        return $this->data->has('category');
     }
 
     public function viewCartFromHome()
@@ -337,10 +338,10 @@ class ShoppingCart extends AbstractSubject
         if (empty($this->cart)) {
             return false;
         } else {
-            if (empty($this->data['product'])) {
+            if (!$this->data->has('product')) {
                 throw new Exception('Can not check if cart has selected product or not: product is not selected');
             }
-            $product = $this->data['product'];
+            $product = $this->data->get('product');
 
             return !empty($this->cart[$product]);
         }
@@ -352,10 +353,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromHome()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not add product from home: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -374,10 +375,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromCategory()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not add product from category: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -413,10 +414,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function remove()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not remove product from cart: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         unset($this->cart[$product]);
     }
 
@@ -426,10 +427,10 @@ class ShoppingCart extends AbstractSubject
      */
     public function update()
     {
-        if (empty($this->data['product'])) {
+        if (!$this->data->has('product')) {
             throw new Exception('Can not update product in cart: product is not selected');
         }
-        $product = $this->data['product'];
+        $product = $this->data->get('product');
         $this->cart[$product] = rand(1, 99);
     }
 
@@ -463,37 +464,46 @@ class ShoppingCart extends AbstractSubject
         }
     }
 
-    public function getRandomProductFromHome()
+    public function getRandomProductFromHome(): ?StepData
     {
         if (empty($this->featuredProducts)) {
             return null;
         }
         $product = $this->featuredProducts[array_rand($this->featuredProducts)];
 
-        return ['product' => $product];
+        $data = new StepData();
+        $data->set('product', $product);
+
+        return $data;
     }
 
-    public function getRandomCategory()
+    public function getRandomCategory(): ?StepData
     {
         if (empty($this->categories)) {
             return null;
         }
         $category = $this->categories[array_rand($this->categories)];
 
-        return ['category' => $category];
+        $data = new StepData();
+        $data->set('category', $category);
+
+        return $data;
     }
 
-    public function getRandomProductFromCart()
+    public function getRandomProductFromCart(): ?StepData
     {
         if (empty($this->cart)) {
             return null;
         }
         $product = array_rand($this->cart);
 
-        return ['product' => $product];
+        $data = new StepData();
+        $data->set('product', $product);
+
+        return $data;
     }
 
-    public function getRandomProductFromCategory()
+    public function getRandomProductFromCategory(): ?StepData
     {
         if (!isset($this->productsInCategory[$this->category])) {
             return null;
@@ -504,7 +514,10 @@ class ShoppingCart extends AbstractSubject
         }
         $product = $products[array_rand($products)];
 
-        return ['product' => $product];
+        $data = new StepData();
+        $data->set('product', $product);
+
+        return $data;
     }
 
     public function hasCoupon()

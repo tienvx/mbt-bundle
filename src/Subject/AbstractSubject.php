@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 
 abstract class AbstractSubject implements SubjectInterface
 {
@@ -28,14 +29,14 @@ abstract class AbstractSubject implements SubjectInterface
     protected $testingSubject = false;
 
     /**
-     * @var array
+     * @var StepData
      */
-    protected $data = [];
+    protected $data;
 
     /**
-     * @var array
+     * @var StepData
      */
-    protected $storedData = [];
+    protected $storedData;
 
     /**
      * @var bool
@@ -51,6 +52,8 @@ abstract class AbstractSubject implements SubjectInterface
     {
         $this->marking = $marking;
         $this->context = [];
+        $this->data = new StepData();
+        $this->storedData = new StepData();
     }
 
     public function getMarking()
@@ -75,7 +78,7 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param $testingModel bool
+     * @param bool $testingModel
      */
     public function setTestingModel(bool $testingModel = false)
     {
@@ -91,7 +94,7 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param $testingSubject bool
+     * @param bool $testingSubject
      */
     public function setTestingSubject(bool $testingSubject = false)
     {
@@ -107,7 +110,7 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param $needData boolean
+     * @param bool $needData
      */
     public function setNeedData(bool $needData = true)
     {
@@ -123,17 +126,17 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @param array $data
+     * @param StepData $data
      */
-    public function setData(array $data)
+    public function setData(StepData $data)
     {
         $this->data = $data;
     }
 
     /**
-     * @return array
+     * @return StepData
      */
-    public function getData(): array
+    public function getData(): StepData
     {
         return $this->data;
     }
@@ -144,9 +147,9 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @return array
+     * @return StepData
      */
-    public function getStoredData(): array
+    public function getStoredData(): StepData
     {
         return $this->storedData;
     }
