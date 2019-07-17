@@ -43,12 +43,12 @@ class Step
         return $this->places;
     }
 
-    public function setTransition(string $transition)
+    public function setTransition(?string $transition)
     {
         $this->transition = $transition;
     }
 
-    public function setData(StepData $data)
+    public function setData(?StepData $data)
     {
         $this->data = $data;
     }

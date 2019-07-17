@@ -9,7 +9,7 @@ class Path
     /**
      * @var Step[]
      */
-    protected $steps;
+    protected $steps = [];
 
     /**
      * @return Step[]
