@@ -87,11 +87,11 @@ class Step
      */
     public static function denormalize(array $step): Step
     {
-        if (!isset($step['places'])) {
-            throw new Exception('Invalid step: missing places');
-        }
-
-        return new Step($step['transition'], is_array($step['data']) ? StepData::denormalize($step['data']) : null, $step['places']);
+        return new Step(
+            $step['transition'],
+            is_array($step['data']) ? StepData::denormalize($step['data']) : null,
+            is_array($step['places']) ? $step['places'] : []
+        );
     }
 
     /**
