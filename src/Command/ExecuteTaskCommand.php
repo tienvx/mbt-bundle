@@ -52,11 +52,13 @@ class ExecuteTaskCommand extends AbstractCommand
     private $defaultBugTitle;
 
     public function __construct(
+        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus
     ) {
+        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
@@ -74,11 +76,6 @@ class ExecuteTaskCommand extends AbstractCommand
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
     }
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
-    }
-
     public function setDefaultBugTitle(string $defaultBugTitle)
     {
         $this->defaultBugTitle = $defaultBugTitle;
@@ -92,10 +89,6 @@ class ExecuteTaskCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not execute task: No workflows were defined');
-        }
-
         $taskId = $input->getArgument('task-id');
 
         $callback = function () use ($taskId) {
