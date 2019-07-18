@@ -53,12 +53,14 @@ abstract class AbstractPathReducer implements PathReducerInterface
     protected $graphBuilder;
 
     public function __construct(
+        Registry $workflowRegistry,
         EventDispatcherInterface $dispatcher,
         SubjectManager $subjectManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         GraphBuilder $graphBuilder
     ) {
+        $this->workflowRegistry = $workflowRegistry;
         $this->dispatcher = $dispatcher;
         $this->subjectManager = $subjectManager;
         $this->entityManager = $entityManager;
@@ -69,11 +71,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
     public static function support(): bool
     {
         return true;
-    }
-
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function finish(Bug $bug)
@@ -108,10 +105,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
             return;
         }
 
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not handle reduce path message: No workflows were defined');
-        }
-
         $model = $bug->getTask()->getModel()->getName();
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
@@ -144,10 +137,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
      */
     public function reduce(Bug $bug)
     {
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not reduce the bug: No workflows were defined');
-        }
-
         $messagesCount = $this->dispatch($bug->getId());
         if (0 === $messagesCount) {
             $this->finish($bug);

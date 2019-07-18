@@ -33,9 +33,11 @@ class TestModelCommand extends AbstractCommand
     private $generatorManager;
 
     public function __construct(
+        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager
     ) {
+        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
 
@@ -54,11 +56,6 @@ class TestModelCommand extends AbstractCommand
             ->addOption('pretty', 'p', InputOption::VALUE_NONE, 'Whether print json in pretty format.', null);
     }
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
-    }
-
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -67,10 +64,6 @@ class TestModelCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not test model: No workflows were defined');
-        }
-
         $this->setAnonymousToken();
 
         $model = $input->getArgument('model');

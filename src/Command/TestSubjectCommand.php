@@ -32,9 +32,11 @@ class TestSubjectCommand extends AbstractCommand
     private $generatorManager;
 
     public function __construct(
+        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager
     ) {
+        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
 
@@ -52,11 +54,6 @@ class TestSubjectCommand extends AbstractCommand
             ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator.');
     }
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
-    }
-
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
@@ -65,10 +62,6 @@ class TestSubjectCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not test subject: No workflows were defined');
-        }
-
         $this->setAnonymousToken();
 
         $model = $input->getArgument('model');

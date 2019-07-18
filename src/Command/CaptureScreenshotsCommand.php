@@ -38,10 +38,12 @@ class CaptureScreenshotsCommand extends AbstractCommand
     protected $mbtStorage;
 
     public function __construct(
+        Registry $workflowRegistry,
         EntityManagerInterface $entityManager,
         SubjectManager $subjectManager,
         FilesystemInterface $mbtStorage
     ) {
+        $this->workflowRegistry = $workflowRegistry;
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
         $this->mbtStorage = $mbtStorage;
@@ -56,11 +58,6 @@ class CaptureScreenshotsCommand extends AbstractCommand
             ->setDescription('Capture screenshots of a bug.')
             ->setHelp('Capture screenshots of every reproduce steps of a bug.')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
-    }
-
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
     }
 
     /**
@@ -79,10 +76,6 @@ class CaptureScreenshotsCommand extends AbstractCommand
             $output->writeln(sprintf('No bug found for id %d', $bugId));
 
             return;
-        }
-
-        if (!$this->workflowRegistry instanceof Registry) {
-            throw new Exception('Can not capture screenshots: No workflows were defined');
         }
 
         $this->setAnonymousToken();

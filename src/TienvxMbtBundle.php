@@ -9,7 +9,6 @@ use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PathReducerPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\ReporterPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\SecurityTokenPass;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\SubjectPass;
-use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\WorkflowRegistryPass;
 
 class TienvxMbtBundle extends Bundle
 {
@@ -18,7 +17,6 @@ class TienvxMbtBundle extends Bundle
         $container->addCompilerPass(new GeneratorPass());
         $container->addCompilerPass(new PathReducerPass());
         $container->addCompilerPass(new SecurityTokenPass());
-        $container->addCompilerPass(new WorkflowRegistryPass());
         $container->addCompilerPass(new SubjectPass());
         $container->addCompilerPass(new ReporterPass());
     }
