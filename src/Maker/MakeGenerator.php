@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Maker;
 
+use Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -34,7 +35,7 @@ final class MakeGenerator extends AbstractMaker
      * @param ConsoleStyle   $io
      * @param Generator      $generator
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
     {
