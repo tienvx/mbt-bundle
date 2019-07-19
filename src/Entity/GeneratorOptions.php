@@ -124,31 +124,27 @@ class GeneratorOptions
     }
 
     /**
-     * @param GeneratorOptions $generatorOptions
-     *
      * @return array
      */
-    public static function normalize(GeneratorOptions $generatorOptions): array
+    public function normalize(): array
     {
         $values = [
-            'transitionCoverage' => $generatorOptions->getTransitionCoverage(),
-            'placeCoverage' => $generatorOptions->getPlaceCoverage(),
-            'maxPathLength' => $generatorOptions->getMaxPathLength(),
-            'bugId' => $generatorOptions->getBugId(),
-            'staticCaseId' => $generatorOptions->getStaticCaseId(),
+            'transitionCoverage' => $this->getTransitionCoverage(),
+            'placeCoverage' => $this->getPlaceCoverage(),
+            'maxPathLength' => $this->getMaxPathLength(),
+            'bugId' => $this->getBugId(),
+            'staticCaseId' => $this->getStaticCaseId(),
         ];
 
         return array_filter($values);
     }
 
     /**
-     * @param GeneratorOptions $generatorOptions
-     *
      * @return string
      */
-    public static function serialize(GeneratorOptions $generatorOptions): string
+    public function serialize(): string
     {
-        return json_encode(self::normalize($generatorOptions));
+        return json_encode($this->normalize());
     }
 
     /**

@@ -164,7 +164,7 @@ class Task
 
     public function setGeneratorOptions(?GeneratorOptions $generatorOptions)
     {
-        $this->generatorOptions = GeneratorOptions::serialize($generatorOptions);
+        $this->generatorOptions = $generatorOptions->serialize();
     }
 
     public function getGeneratorOptions(): GeneratorOptions
