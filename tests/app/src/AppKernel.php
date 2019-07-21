@@ -2,31 +2,21 @@
 
 namespace App;
 
-use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use League\FlysystemBundle\FlysystemBundle;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\MakerBundle\MakerBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use Tienvx\Bundle\MbtBundle\TienvxMbtBundle;
 
 class AppKernel extends Kernel
 {
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        $bundles = array(
-            new SecurityBundle(),
-            new FrameworkBundle(),
-            new DoctrineBundle(),
-            new MakerBundle(),
-            new FlysystemBundle(),
-            new TienvxMbtBundle(),
-        );
-
-        return $bundles;
+        $contents = require $this->getProjectDir().'/config/bundles.php';
+        foreach ($contents as $class => $envs) {
+            if ($envs[$this->environment] ?? $envs['all'] ?? false) {
+                yield new $class();
+            }
+        }
     }
 
     /**
