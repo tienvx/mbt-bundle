@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./tests/app/bootstrap.php" colors="true">
+<phpunit bootstrap="./tests/app/config/bootstrap.php" colors="true">
     <php>
         <server name="KERNEL_CLASS" value="App\AppKernel" />
         <env    name="APP_ENV"      value="test" />

@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 set_time_limit(0);
 
-require __DIR__ . '/../../../vendor/autoload.php';
+require dirname(__DIR__, 3).'/vendor/autoload.php';
 
 $input = new ArgvInput();
 
