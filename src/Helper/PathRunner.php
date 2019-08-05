@@ -26,26 +26,47 @@ class PathRunner
                 $transition = $step->getTransition();
                 $data = $step->getData();
                 if ($transition) {
-                    if ($data instanceof StepData) {
-                        $subject->setData($data);
-                        $subject->setNeedData(false);
-                    } else {
-                        $subject->setNeedData(true);
-                    }
-                    if (!$workflow->can($subject, $transition)) {
+                    $success = self::setData($path, $workflow, $subject, $transition, $index, $data);
+                    if (!$success) {
                         break;
                     }
-                    // Store data before apply transition, because there are maybe exception happen
-                    // while applying transition.
-                    if (!($data instanceof StepData)) {
-                        $path->setDataAt($index, $subject->getData());
-                    }
-                    $subject->setNeedData(false);
+
                     $workflow->apply($subject, $transition);
                 }
             }
         } finally {
             $subject->tearDown();
         }
+    }
+
+    /**
+     * @param Path            $path
+     * @param Workflow        $workflow
+     * @param AbstractSubject $subject
+     * @param string          $transition
+     * @param int             $index
+     * @param $data
+     *
+     * @return bool
+     */
+    public static function setData(Path $path, Workflow $workflow, AbstractSubject $subject, string $transition, int $index, $data): bool
+    {
+        if ($data instanceof StepData) {
+            $subject->setData($data);
+            $subject->setNeedData(false);
+        } else {
+            $subject->setNeedData(true);
+        }
+        if (!$workflow->can($subject, $transition)) {
+            return false;
+        }
+        // Store data before apply transition, because there are maybe exception happen
+        // while applying transition.
+        if (!($data instanceof StepData)) {
+            $path->setDataAt($index, $subject->getData());
+        }
+        $subject->setNeedData(false);
+
+        return true;
     }
 }

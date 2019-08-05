@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
-use Doctrine\DBAL\LockMode;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
@@ -21,21 +20,15 @@ class SplitPathReducer extends AbstractPathReducer
     public function dispatch(int $bugId, Path $newPath = null): int
     {
         $callback = function () use ($bugId, $newPath) {
-            $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
+            $bug = $this->getBug($bugId, $newPath);
 
             if (!$bug || !$bug instanceof Bug) {
                 return 0;
             }
 
-            if ($newPath) {
-                $bug->setPath($newPath);
-                $bug->setLength($newPath->countPlaces());
-                $path = $newPath;
-            } else {
-                $path = $bug->getPath();
-            }
-
+            $path = $bug->getPath();
             $messagesCount = 0;
+
             if ($path->countPlaces() > 2) {
                 $divisor = 2;
                 $quotient = floor($path->countPlaces() / $divisor);

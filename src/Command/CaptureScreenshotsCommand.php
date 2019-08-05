@@ -8,11 +8,11 @@ use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class CaptureScreenshotsCommand extends AbstractCommand
@@ -83,12 +83,7 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
-
-        try {
-            $workflow = $this->workflowRegistry->get($subject, $model);
-        } catch (InvalidArgumentException $exception) {
-            throw new Exception(sprintf('Model "%s" does not exist', $model));
-        }
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         $subject->setUp();
         $subject->setFilesystem($this->mbtStorage);
@@ -99,21 +94,11 @@ class CaptureScreenshotsCommand extends AbstractCommand
                 $transition = $step->getTransition();
                 $data = $step->getData();
                 if ($transition) {
-                    if ($data instanceof StepData) {
-                        $subject->setData($data);
-                        $subject->setNeedData(false);
-                    } else {
-                        $subject->setNeedData(true);
-                    }
-                    if (!$workflow->can($subject, $transition)) {
+                    $success = PathRunner::setData($path, $workflow, $subject, $transition, $index, $data);
+                    if (!$success) {
                         break;
                     }
-                    // Store data before apply transition, because there are maybe exception happen
-                    // while applying transition.
-                    if (!($data instanceof StepData)) {
-                        $path->setDataAt($index, $subject->getData());
-                    }
-                    $subject->setNeedData(false);
+
                     try {
                         $workflow->apply($subject, $transition);
                     } catch (Throwable $throwable) {
