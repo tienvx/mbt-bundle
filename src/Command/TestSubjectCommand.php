@@ -7,11 +7,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestSubjectCommand extends AbstractCommand
@@ -71,12 +71,7 @@ class TestSubjectCommand extends AbstractCommand
         $subject = $this->subjectManager->createSubject($model);
         $subject->setTestingSubject(true);
         $subject->setUp();
-
-        try {
-            $workflow = $this->workflowRegistry->get($subject, $model);
-        } catch (InvalidArgumentException $exception) {
-            throw new Exception(sprintf('Model "%s" does not exist', $model));
-        }
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         try {
             foreach ($generator->getAvailableTransitions($workflow, $subject, GeneratorOptions::denormalize($generatorOptions)) as $transitionName) {

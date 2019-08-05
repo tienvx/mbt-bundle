@@ -11,6 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -164,5 +165,17 @@ abstract class AbstractPathReducer implements PathReducerInterface
         if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
             $this->finish($bug);
         }
+    }
+
+    protected function getBug(int $bugId, Path $newPath = null)
+    {
+        $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
+
+        if ($bug instanceof Bug && $newPath) {
+            $bug->setPath($newPath);
+            $bug->setLength($newPath->countPlaces());
+        }
+
+        return $bug;
     }
 }

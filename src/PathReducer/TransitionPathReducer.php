@@ -2,14 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
-use Doctrine\DBAL\LockMode;
 use Exception;
-use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
 class TransitionPathReducer extends AbstractPathReducer
@@ -32,6 +31,7 @@ class TransitionPathReducer extends AbstractPathReducer
 
         $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         if ($bug->getLength() >= $length) {
             // The reproduce path has not been reduced.
@@ -44,13 +44,6 @@ class TransitionPathReducer extends AbstractPathReducer
                 if ($newPath->countPlaces() < $path->countPlaces()) {
                     try {
                         $subject = $this->subjectManager->createSubject($model);
-
-                        try {
-                            $workflow = $this->workflowRegistry->get($subject, $model);
-                        } catch (InvalidArgumentException $exception) {
-                            throw new Exception(sprintf('Model "%s" does not exist', $model));
-                        }
-
                         PathRunner::run($newPath, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
@@ -75,21 +68,15 @@ class TransitionPathReducer extends AbstractPathReducer
     public function dispatch(int $bugId, Path $newPath = null): int
     {
         $callback = function () use ($bugId, $newPath) {
-            $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
+            $bug = $this->getBug($bugId, $newPath);
 
             if (!$bug || !$bug instanceof Bug) {
                 return 0;
             }
 
-            if ($newPath) {
-                $bug->setPath($newPath);
-                $bug->setLength($newPath->countPlaces());
-                $path = $newPath;
-            } else {
-                $path = $bug->getPath();
-            }
-
+            $path = $bug->getPath();
             $messagesCount = 0;
+
             for ($i = 0; $i < $path->countPlaces() - 1; ++$i) {
                 $fromPlaces = $path->getPlacesAt($i);
                 $toPlaces = $path->getPlacesAt($i + 1);
