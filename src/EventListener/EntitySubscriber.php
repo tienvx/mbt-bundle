@@ -5,12 +5,17 @@ namespace Tienvx\Bundle\MbtBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Exception;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\RemoveScreenshotsMessage;
+use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class EntitySubscriber implements EventSubscriber
 {
@@ -29,9 +34,11 @@ class EntitySubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         if ($entity instanceof Task) {
+            $this->messageBus->dispatch(new ApplyTaskTransitionMessage($entity->getId(), TaskWorkflow::START));
             $this->messageBus->dispatch(new ExecuteTaskMessage($entity->getId()));
         }
         if ($entity instanceof Bug) {
+            $this->messageBus->dispatch(new ApplyBugTransitionMessage($entity->getId(), BugWorkflow::REDUCE));
             $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $entity->getTask()->getReducer()->getName()));
         }
     }
@@ -39,7 +46,7 @@ class EntitySubscriber implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function preRemove(LifecycleEventArgs $args)
     {

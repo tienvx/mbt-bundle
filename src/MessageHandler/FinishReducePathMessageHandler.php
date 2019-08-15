@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\UpdateBugStatusMessage;
+use Tienvx\Bundle\MbtBundle\Message\FinishReducePathMessage;
 
-class UpdateBugStatusMessageHandler implements MessageHandlerInterface
+class FinishReducePathMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,14 +20,13 @@ class UpdateBugStatusMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param UpdateBugStatusMessage $message
+     * @param FinishReducePathMessage $message
      *
      * @throws Exception
      */
-    public function __invoke(UpdateBugStatusMessage $message)
+    public function __invoke(FinishReducePathMessage $message)
     {
-        $bugId = $message->getId();
-        $status = $message->getStatus();
-        $this->commandRunner->run(['mbt:bug:update-status', $bugId, $status]);
+        $bugId = $message->getBugId();
+        $this->commandRunner->run(['mbt:path:finish-reduce', $bugId]);
     }
 }

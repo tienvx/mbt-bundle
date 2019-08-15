@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 /**
  * @ORM\Entity
@@ -59,19 +60,10 @@ class Task
     private $reporters = '[]';
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\Range(
-     *     min = 0,
-     *     max = 100
-     * )
-     */
-    private $progress = 0;
-
-    /**
      * @ORM\Column(type="string")
-     * @Assert\Choice({"not-started", "in-progress", "completed"})
+     * @MbtAssert\TaskStatus
      */
-    private $status = 'not-started';
+    private $status = TaskWorkflow::NOT_STARTED;
 
     /**
      * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})

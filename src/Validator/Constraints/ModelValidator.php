@@ -6,6 +6,7 @@ use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Model as ModelEntity;
@@ -39,7 +40,7 @@ class ModelValidator extends ConstraintValidator
         }
 
         if (!($value instanceof ModelEntity)) {
-            throw new UnexpectedTypeException($value, ModelEntity::class);
+            throw new UnexpectedValueException($value, ModelEntity::class);
         }
 
         try {

@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer as ReducerEntity;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
@@ -30,7 +31,7 @@ class ReducerValidator extends ConstraintValidator
         }
 
         if (!($value instanceof ReducerEntity)) {
-            throw new UnexpectedTypeException($value, ReducerEntity::class);
+            throw new UnexpectedValueException($value, ReducerEntity::class);
         }
 
         if (!$this->pathReducerManager->hasPathReducer($value->getName())) {

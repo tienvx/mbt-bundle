@@ -11,13 +11,16 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
-use Tienvx\Bundle\MbtBundle\Message\UpdateTaskStatusMessage;
+use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class ExecuteTaskCommand extends AbstractCommand
 {
@@ -90,18 +93,7 @@ class ExecuteTaskCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $taskId = $input->getArgument('task-id');
-
-        $callback = function () use ($taskId) {
-            $task = $this->entityManager->find(Task::class, $taskId);
-
-            if ($task instanceof Task) {
-                $task->setStatus('in-progress');
-            }
-
-            return $task;
-        };
-
-        $task = $this->entityManager->transactional($callback);
+        $task = $this->entityManager->find(Task::class, $taskId);
 
         if (!$task instanceof Task) {
             $output->writeln(sprintf('No task found for id %d', $taskId));
@@ -109,44 +101,65 @@ class ExecuteTaskCommand extends AbstractCommand
             return;
         }
 
-        $this->setAnonymousToken();
-
-        $subject = $this->subjectManager->createSubject($task->getModel()->getName());
-        $subject->setUp();
+        $subject = $this->getSubject($task->getModel()->getName());
         $generator = $this->generatorManager->getGenerator($task->getGenerator()->getName());
         $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
 
+        $this->setAnonymousToken();
+
         $path = new Path();
-        $path->addStep(new Step(null, null, $workflow->getDefinition()->getInitialPlaces()));
+        $path->addStep(new Step(null, new StepData(), $workflow->getDefinition()->getInitialPlaces()));
 
         try {
-            foreach ($generator->getAvailableTransitions($workflow, $subject, $task->getGeneratorOptions()) as $transitionName) {
-                try {
-                    if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $task->getGenerator()->getName(), $transitionName));
+            foreach ($generator->generate($workflow, $subject, $task->getGeneratorOptions()) as $step) {
+                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof StepData) {
+                    try {
+                        $workflow->apply($subject, $step->getTransition(), [
+                            'data' => $step->getData(),
+                        ]);
+                    } catch (Throwable $throwable) {
+                        throw $throwable;
+                    } finally {
+                        $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
+                        $step->setPlaces($places);
+                        $path->addStep($step);
                     }
-                } catch (Throwable $throwable) {
-                    throw $throwable;
-                } finally {
-                    $data = $subject->getStoredData();
-                    $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                    $path->addStep(new Step($transitionName, $data, $places));
                 }
             }
         } catch (Throwable $throwable) {
-            $message = new CreateBugMessage(
-                $this->defaultBugTitle,
-                $path->serialize(),
-                $path->countPlaces(),
-                $throwable->getMessage(),
-                $task->getId(),
-                'new'
-            );
-            $this->messageBus->dispatch($message);
+            $this->createBug($path, $throwable->getMessage(), $taskId);
         } finally {
             $subject->tearDown();
 
-            $this->messageBus->dispatch(new UpdateTaskStatusMessage($taskId, 'completed'));
+            $this->messageBus->dispatch(new ApplyTaskTransitionMessage($taskId, TaskWorkflow::COMPLETE));
         }
+    }
+
+    private function createBug(Path $path, string $bugMessage, int $taskId)
+    {
+        $message = new CreateBugMessage(
+            $this->defaultBugTitle,
+            $path->serialize(),
+            $path->countPlaces(),
+            $bugMessage,
+            $taskId,
+            'new'
+        );
+        $this->messageBus->dispatch($message);
+    }
+
+    /**
+     * @param string $model
+     *
+     * @return AbstractSubject
+     *
+     * @throws Exception
+     */
+    private function getSubject(string $model): AbstractSubject
+    {
+        $subject = $this->subjectManager->createSubject($model);
+        $subject->setUp();
+
+        return $subject;
     }
 }

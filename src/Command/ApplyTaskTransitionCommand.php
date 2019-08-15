@@ -7,25 +7,25 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
-class UpdateTaskStatusCommand extends AbstractCommand
+class ApplyTaskTransitionCommand extends AbstractCommand
 {
     /**
-     * @var ValidatorInterface
+     * @var TaskWorkflow
      */
-    private $validator;
+    private $taskWorkflow;
 
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, TaskWorkflow $taskWorkflow)
     {
         $this->entityManager = $entityManager;
-        $this->validator = $validator;
+        $this->taskWorkflow = $taskWorkflow;
 
         parent::__construct();
     }
@@ -33,11 +33,11 @@ class UpdateTaskStatusCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:task:update-status')
-            ->setDescription('Update status of a task.')
-            ->setHelp('This command update status of a task.')
+            ->setName('mbt:task:apply-transition')
+            ->setDescription('Apply transition of a task.')
+            ->setHelp("This command update status of a task by applying a transition of task's workflow.")
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to update.')
-            ->addArgument('status', InputArgument::REQUIRED, 'The status to update.');
+            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.');
     }
 
     /**
@@ -57,17 +57,9 @@ class UpdateTaskStatusCommand extends AbstractCommand
             return;
         }
 
-        $status = $input->getArgument('status');
-        $task->setStatus($status);
+        $transition = $input->getArgument('transition');
 
-        $errors = $this->validator->validate($task);
-
-        if (count($errors) > 0) {
-            $output->writeln((string) $errors);
-
-            return;
-        }
-
+        $this->taskWorkflow->apply($task, $transition);
         $this->entityManager->flush();
     }
 }

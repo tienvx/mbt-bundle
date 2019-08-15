@@ -25,9 +25,11 @@ class CommandRunner extends BaseCommandRunner
             'mbt:bug:reduce' => ['command', 'bug-id', 'reducer'],
             'mbt:path:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],
             'mbt:bug:report' => ['command', 'bug-id', 'reporter'],
-            'mbt:task:update-status' => ['command', 'task-id', 'status'],
-            'mbt:bug:update-status' => ['command', 'bug-id', 'status'],
+            'mbt:task:apply-transition' => ['command', 'task-id', 'transition'],
+            'mbt:bug:apply-transition' => ['command', 'bug-id', 'transition'],
             'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
+            'mbt:bug:finish-reduce' => ['command', 'bug-id'],
+            'mbt:path:finish-reduce' => ['command', 'bug-id'],
         ];
         $command = $parameters[0];
         $application->run(new ArrayInput(array_combine($map[$command], $parameters)));

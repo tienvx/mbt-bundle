@@ -10,9 +10,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestModelCommand extends AbstractCommand
@@ -64,31 +66,30 @@ class TestModelCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $model = $input->getArgument('model');
+        $subject = $this->getSubject($model);
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+        $pretty = $input->getOption('pretty');
+        $generator = $this->generatorManager->getGenerator($input->getOption('generator'));
+        $generatorOptions = GeneratorOptions::denormalize($input->getOption('generator-options'));
+
         $this->setAnonymousToken();
 
-        $model = $input->getArgument('model');
-        $generatorName = $input->getOption('generator');
-        $generatorOptions = $input->getOption('generator-options');
-        $pretty = $input->getOption('pretty');
-        $generator = $this->generatorManager->getGenerator($generatorName);
-        $subject = $this->subjectManager->createSubject($model);
-        $subject->setTestingModel(true);
-        $subject->setUp();
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
-
         $path = new Path();
-        $path->addStep(new Step(null, null, $workflow->getDefinition()->getInitialPlaces()));
+        $path->addStep(new Step(null, new StepData(), $workflow->getDefinition()->getInitialPlaces()));
 
         try {
-            foreach ($generator->getAvailableTransitions($workflow, $subject, GeneratorOptions::denormalize($generatorOptions)) as $transitionName) {
-                try {
-                    if (!$generator->applyTransition($workflow, $subject, $transitionName)) {
-                        throw new Exception(sprintf("Generator '%s' generated transition '%s' that can not be applied", $generatorName, $transitionName));
+            foreach ($generator->generate($workflow, $subject, $generatorOptions) as $step) {
+                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof StepData) {
+                    try {
+                        $workflow->apply($subject, $step->getTransition(), [
+                            'data' => $step->getData(),
+                        ]);
+                    } finally {
+                        $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
+                        $step->setPlaces($places);
+                        $path->addStep($step);
                     }
-                } finally {
-                    $data = $subject->getStoredData();
-                    $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
-                    $path->addStep(new Step($transitionName, $data, $places));
                 }
             }
         } finally {
@@ -96,5 +97,21 @@ class TestModelCommand extends AbstractCommand
         }
 
         $output->writeln($path->serialize($pretty ? JSON_PRETTY_PRINT : 0));
+    }
+
+    /**
+     * @param string $model
+     *
+     * @return AbstractSubject
+     *
+     * @throws Exception
+     */
+    private function getSubject(string $model): AbstractSubject
+    {
+        $subject = $this->subjectManager->createSubject($model);
+        $subject->setTestingModel(true);
+        $subject->setUp();
+
+        return $subject;
     }
 }

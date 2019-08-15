@@ -17,9 +17,7 @@ interface GeneratorInterface extends PluginInterface
      *
      * @return Generator
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator;
-
-    public function applyTransition(Workflow $workflow, AbstractSubject $subject, string $transitionName): bool;
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator;
 
     public function getLabel(): string;
 }

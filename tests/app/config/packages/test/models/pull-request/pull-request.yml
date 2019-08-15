@@ -2,7 +2,7 @@ framework:
     workflows:
         pull_request:
             marking_store:
-                type: single_state
+                type: "method"
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             initial_marking: start

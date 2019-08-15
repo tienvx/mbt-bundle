@@ -6,6 +6,8 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 /**
  * @ORM\Entity
@@ -28,9 +30,9 @@ class Bug
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\Choice({"new", "reducing", "reduced", "reported"})
+     * @MbtAssert\BugStatus
      */
-    private $status = 'new';
+    private $status = BugWorkflow::NEW;
 
     /**
      * @ORM\Column(type="text")

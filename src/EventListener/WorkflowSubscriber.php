@@ -3,13 +3,12 @@
 namespace Tienvx\Bundle\MbtBundle\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
-use Exception;
-use ReflectionMethod;
+use ReflectionObject;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\EnteredEvent;
-use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Event\TransitionEvent;
-use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
+use Tienvx\Bundle\MbtBundle\Annotation\Place;
+use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -29,7 +28,16 @@ class WorkflowSubscriber implements EventSubscriberInterface
 
         if ($subject instanceof AbstractSubject) {
             $places = array_keys(array_filter($event->getMarking()->getPlaces()));
-            $subject->enterPlace($places);
+            foreach ($places as $place) {
+                $reflectionObject = new ReflectionObject($subject);
+
+                foreach ($reflectionObject->getMethods() as $reflectionMethod) {
+                    $annotation = $this->reader->getMethodAnnotation($reflectionMethod, Place::class);
+                    if ($annotation instanceof Place && $annotation->getName() === $place) {
+                        $reflectionMethod->invoke($subject);
+                    }
+                }
+            }
         }
     }
 
@@ -38,34 +46,16 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $subject = $event->getSubject();
 
         if ($subject instanceof AbstractSubject) {
-            $subject->storeData();
-            $subject->applyTransition($event->getTransition()->getName());
-        }
-    }
+            $reflectionObject = new ReflectionObject($subject);
 
-    /**
-     * @param GuardEvent $event
-     *
-     * @throws Exception
-     */
-    public function onGuard(GuardEvent $event)
-    {
-        $subject = $event->getSubject();
-        $transitionName = $event->getTransition()->getName();
-
-        if ($subject instanceof AbstractSubject) {
-            if ($subject->needData() && method_exists($subject, $transitionName)) {
-                $reflectionMethod = new ReflectionMethod(get_class($subject), $transitionName);
-                $dataProvider = $this->reader->getMethodAnnotation($reflectionMethod, DataProvider::class);
-                if ($dataProvider && $dataProvider instanceof DataProvider) {
-                    $data = call_user_func([$subject, $dataProvider->method]);
-                    if (!($data instanceof StepData)) {
-                        return;
+            foreach ($reflectionObject->getMethods() as $reflectionMethod) {
+                $annotation = $this->reader->getMethodAnnotation($reflectionMethod, Transition::class);
+                if ($annotation instanceof Transition && $annotation->getName() === $event->getTransition()->getName()) {
+                    $context = $event->getContext();
+                    if (isset($context['data']) && $context['data'] instanceof StepData) {
+                        $reflectionMethod->invoke($subject, $context['data']);
                     }
-                } else {
-                    $data = new StepData();
                 }
-                $subject->setData($data);
             }
         }
     }
@@ -73,7 +63,6 @@ class WorkflowSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            GuardEvent::class => 'onGuard',
             TransitionEvent::class => 'onTransition',
             EnteredEvent::class => 'onEntered',
         ];

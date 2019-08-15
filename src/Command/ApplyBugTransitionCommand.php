@@ -7,25 +7,25 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
-class UpdateBugStatusCommand extends AbstractCommand
+class ApplyBugTransitionCommand extends AbstractCommand
 {
     /**
-     * @var ValidatorInterface
+     * @var BugWorkflow
      */
-    private $validator;
+    private $bugWorkflow;
 
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, BugWorkflow $bugWorkflow)
     {
         $this->entityManager = $entityManager;
-        $this->validator = $validator;
+        $this->bugWorkflow = $bugWorkflow;
 
         parent::__construct();
     }
@@ -33,11 +33,11 @@ class UpdateBugStatusCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('mbt:bug:update-status')
-            ->setDescription('Update status of a bug.')
-            ->setHelp('This command update status of a bug.')
+            ->setName('mbt:bug:apply-transition')
+            ->setDescription('Apply transition of a bug.')
+            ->setHelp("This command change status of a bug by applying a transition of bug's workflow.")
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to update.')
-            ->addArgument('status', InputArgument::REQUIRED, 'The status to update.');
+            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.');
     }
 
     /**
@@ -57,17 +57,9 @@ class UpdateBugStatusCommand extends AbstractCommand
             return;
         }
 
-        $status = $input->getArgument('status');
-        $bug->setStatus($status);
+        $transition = $input->getArgument('transition');
 
-        $errors = $this->validator->validate($bug);
-
-        if (count($errors) > 0) {
-            $output->writeln((string) $errors);
-
-            return;
-        }
-
+        $this->bugWorkflow->apply($bug, $transition);
         $this->entityManager->flush();
     }
 }

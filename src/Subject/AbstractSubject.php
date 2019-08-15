@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
 
 abstract class AbstractSubject implements SubjectInterface
 {
@@ -29,21 +28,6 @@ abstract class AbstractSubject implements SubjectInterface
     protected $testingSubject = false;
 
     /**
-     * @var StepData
-     */
-    protected $data;
-
-    /**
-     * @var StepData
-     */
-    protected $storedData;
-
-    /**
-     * @var bool
-     */
-    protected $needData = true;
-
-    /**
      * @var FilesystemInterface
      */
     protected $filesystem;
@@ -52,8 +36,6 @@ abstract class AbstractSubject implements SubjectInterface
     {
         $this->marking = $marking;
         $this->context = [];
-        $this->data = new StepData();
-        $this->storedData = new StepData();
     }
 
     public function getMarking()
@@ -86,88 +68,11 @@ abstract class AbstractSubject implements SubjectInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isTestingModel()
-    {
-        return $this->testingModel;
-    }
-
-    /**
      * @param bool $testingSubject
      */
     public function setTestingSubject(bool $testingSubject = false)
     {
         $this->testingSubject = $testingSubject;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isTestingSubject()
-    {
-        return $this->testingSubject;
-    }
-
-    /**
-     * @param bool $needData
-     */
-    public function setNeedData(bool $needData = true)
-    {
-        $this->needData = $needData;
-    }
-
-    /**
-     * @return bool
-     */
-    public function needData()
-    {
-        return $this->needData;
-    }
-
-    /**
-     * @param StepData $data
-     */
-    public function setData(StepData $data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return StepData
-     */
-    public function getData(): StepData
-    {
-        return $this->data;
-    }
-
-    public function storeData()
-    {
-        $this->storedData = $this->data;
-    }
-
-    /**
-     * @return StepData
-     */
-    public function getStoredData(): StepData
-    {
-        return $this->storedData;
-    }
-
-    public function applyTransition(string $transitionName)
-    {
-        if (method_exists($this, $transitionName)) {
-            call_user_func([$this, $transitionName]);
-        }
-    }
-
-    public function enterPlace(array $places)
-    {
-        foreach ($places as $place) {
-            if (method_exists($this, $place)) {
-                call_user_func([$this, $place]);
-            }
-        }
     }
 
     /**

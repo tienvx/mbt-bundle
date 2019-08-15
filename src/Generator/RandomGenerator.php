@@ -6,6 +6,8 @@ use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class RandomGenerator extends AbstractGenerator
@@ -43,7 +45,7 @@ class RandomGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $pathLength = 0;
         $visitedTransitions = [];
@@ -59,7 +61,7 @@ class RandomGenerator extends AbstractGenerator
                 $index = array_rand($transitions);
                 $transitionName = $transitions[$index]->getName();
 
-                yield $transitionName;
+                yield new Step($transitionName, new StepData());
 
                 // Update visited places and transitions.
                 foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {

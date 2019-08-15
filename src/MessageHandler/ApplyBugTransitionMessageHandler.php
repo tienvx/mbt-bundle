@@ -5,9 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Message\UpdateTaskStatusMessage;
+use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
 
-class UpdateTaskStatusMessageHandler implements MessageHandlerInterface
+class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
 {
     /**
      * @var CommandRunner
@@ -20,14 +20,14 @@ class UpdateTaskStatusMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param UpdateTaskStatusMessage $message
+     * @param ApplyBugTransitionMessage $message
      *
      * @throws Exception
      */
-    public function __invoke(UpdateTaskStatusMessage $message)
+    public function __invoke(ApplyBugTransitionMessage $message)
     {
-        $taskId = $message->getId();
-        $status = $message->getStatus();
-        $this->commandRunner->run(['mbt:task:update-status', $taskId, $status]);
+        $bugId = $message->getId();
+        $status = $message->getTransition();
+        $this->commandRunner->run(['mbt:bug:apply-transition', $bugId, $status]);
     }
 }

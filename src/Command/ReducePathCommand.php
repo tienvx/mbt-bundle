@@ -2,10 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReducePathCommand extends AbstractCommand
@@ -15,9 +18,17 @@ class ReducePathCommand extends AbstractCommand
      */
     private $pathReducerManager;
 
-    public function __construct(PathReducerManager $pathReducerManager)
-    {
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    public function __construct(
+        PathReducerManager $pathReducerManager,
+        EntityManagerInterface $entityManager
+    ) {
         $this->pathReducerManager = $pathReducerManager;
+        $this->entityManager = $entityManager;
 
         parent::__construct();
     }
@@ -48,10 +59,15 @@ class ReducePathCommand extends AbstractCommand
         $length = $input->getArgument('length');
         $from = $input->getArgument('from');
         $to = $input->getArgument('to');
+        $bug = $this->entityManager->find(Bug::class, $bugId);
+
+        if (!$bug || !$bug instanceof Bug) {
+            return;
+        }
 
         $this->setAnonymousToken();
 
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $pathReducer->handle($bugId, $length, $from, $to);
+        $pathReducer->handle($bug, $length, $from, $to);
     }
 }

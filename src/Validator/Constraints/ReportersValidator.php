@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter as ReporterEntity;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
@@ -30,7 +31,7 @@ class ReportersValidator extends ConstraintValidator
         }
 
         if (!is_array($values)) {
-            throw new UnexpectedTypeException($values, 'array');
+            throw new UnexpectedValueException($values, 'array');
         }
 
         if (empty($values)) {
@@ -39,7 +40,7 @@ class ReportersValidator extends ConstraintValidator
 
         foreach ($values as $value) {
             if (!($value instanceof ReporterEntity)) {
-                throw new UnexpectedTypeException($value, ReporterEntity::class);
+                throw new UnexpectedValueException($value, ReporterEntity::class);
             }
 
             if (!$this->reporterManager->hasReporter($value->getName())) {
