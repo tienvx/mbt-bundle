@@ -13,6 +13,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\StaticCase;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class TestStaticCaseTest extends MessageTestCase
 {
@@ -30,7 +31,7 @@ class TestStaticCaseTest extends MessageTestCase
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $path = Path::denormalize([
-            ['transition' => null, 'data' => null, 'places' => ['home']],
+            ['transition' => null, 'data' => [], 'places' => ['home']],
             ['transition' => 'addFromHome', 'data' => [['key' => 'product', 'value' => 40]], 'places' => ['home']],
             ['transition' => 'viewAnyCategoryFromHome', 'data' => [['key' => 'category', 'value' => 57]], 'places' => ['category']],
             ['transition' => 'addFromCategory', 'data' => [['key' => 'product', 'value' => 49]], 'places' => ['category']],
@@ -73,7 +74,7 @@ class TestStaticCaseTest extends MessageTestCase
         $bugs = $entityRepository->findAll();
 
         $this->assertEquals(1, count($bugs));
-        $this->assertEquals('completed', $task->getStatus());
+        $this->assertEquals(TaskWorkflow::COMPLETED, $task->getStatus());
         $this->assertEquals('You added an out-of-stock product into cart! Can not checkout', $bugs[0]->getBugMessage());
     }
 

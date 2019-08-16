@@ -6,6 +6,8 @@ use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -24,7 +26,7 @@ class ProbabilityGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $pathLength = 0;
         $maxPathLength = $generatorOptions->getMaxPathLength() ?? $this->maxPathLength;
@@ -40,7 +42,7 @@ class ProbabilityGenerator extends AbstractGenerator
                 }
                 $transitionName = Randomizer::randomByWeight($transitionsWithProbability);
 
-                yield $transitionName;
+                yield new Step($transitionName, new StepData());
 
                 // Update current state.
                 ++$pathLength;

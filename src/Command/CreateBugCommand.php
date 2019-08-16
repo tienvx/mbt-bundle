@@ -56,7 +56,6 @@ class CreateBugCommand extends AbstractCommand
     {
         $title = $input->getArgument('title');
         $path = $input->getArgument('path');
-        $path = trim($path, "'");
         $length = $input->getArgument('length');
         $message = $input->getArgument('message');
         $taskId = $input->getArgument('task-id');

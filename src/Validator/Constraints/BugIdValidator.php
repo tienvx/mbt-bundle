@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 /**
@@ -30,7 +31,7 @@ class BugIdValidator extends ConstraintValidator
         }
 
         if (!is_int($value)) {
-            throw new UnexpectedTypeException($value, 'int');
+            throw new UnexpectedValueException($value, 'int');
         }
 
         $bug = $this->entityManager->getRepository(Bug::class)->find($value);

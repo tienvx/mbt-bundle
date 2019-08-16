@@ -2,7 +2,9 @@ framework:
     workflows:
         # https://demo.opencart.com
         product:
-            type: 'workflow'
+            type: "workflow"
+            marking_store:
+                type: "method"
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             metadata:

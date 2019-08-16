@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReduceBugCommand extends AbstractCommand
@@ -60,18 +62,7 @@ class ReduceBugCommand extends AbstractCommand
     {
         $bugId = $input->getArgument('bug-id');
         $reducer = $input->getArgument('reducer');
-
-        $callback = function () use ($bugId) {
-            $bug = $this->entityManager->find(Bug::class, $bugId);
-
-            if ($bug instanceof Bug) {
-                $bug->setStatus('reducing');
-            }
-
-            return $bug;
-        };
-
-        $bug = $this->entityManager->transactional($callback);
+        $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
@@ -79,9 +70,18 @@ class ReduceBugCommand extends AbstractCommand
             return;
         }
 
-        $this->setAnonymousToken();
-
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $pathReducer->reduce($bug);
+        $messagesCount = $pathReducer->dispatch($bug);
+        if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
+            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
+        } else {
+            $callback = function () use ($bug, $messagesCount) {
+                $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
+
+                $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
+            };
+
+            $this->entityManager->transactional($callback);
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Subject;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class Checkout extends AbstractSubject
@@ -47,27 +48,41 @@ class Checkout extends AbstractSubject
         return $this->registerAccount;
     }
 
+    /**
+     * @Transition("login")
+     */
     public function login()
     {
         $this->loggedIn = true;
     }
 
+    /**
+     * @Transition("guestCheckout")
+     */
     public function guestCheckout()
     {
         $this->guestCheckout = true;
     }
 
+    /**
+     * @Transition("registerAccount")
+     */
     public function registerAccount()
     {
         $this->registerAccount = true;
     }
 
+    /**
+     * @Transition("guestCheckoutAndAddBillingAddress")
+     */
     public function guestCheckoutAndAddBillingAddress()
     {
         $this->guestCheckout = false;
     }
 
     /**
+     * @Transition("registerAndAddBillingAddress")
+     *
      * @throws Exception
      */
     public function registerAndAddBillingAddress()
@@ -79,12 +94,12 @@ class Checkout extends AbstractSubject
         }
     }
 
-    public function hasExistingBillingAddress()
+    public function hasExistingBillingAddress(): bool
     {
         return true;
     }
 
-    public function hasExistingDeliveryAddress()
+    public function hasExistingDeliveryAddress(): bool
     {
         return true;
     }

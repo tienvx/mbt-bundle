@@ -10,6 +10,8 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class TaskMessageTest extends MessageTestCase
 {
@@ -80,7 +82,7 @@ class TaskMessageTest extends MessageTestCase
             if ($takeScreenshots && $reportBug) {
                 $this->assertTrue($this->reportHasScreenshot($bugs[0]));
             }
-            $this->assertEquals($reportBug ? 'reported' : 'reduced', $bugs[0]->getStatus());
+            $this->assertEquals(BugWorkflow::REDUCED, $bugs[0]->getStatus());
 
             $bugId = $bugs[0]->getId();
             if ($takeScreenshots) {
@@ -96,7 +98,7 @@ class TaskMessageTest extends MessageTestCase
         } else {
             $this->assertEquals(0, count($bugs));
         }
-        $this->assertEquals('completed', $task->getStatus());
+        $this->assertEquals(TaskWorkflow::COMPLETED, $task->getStatus());
     }
 
     public function consumeMessageData()

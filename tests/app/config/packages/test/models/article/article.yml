@@ -1,9 +1,9 @@
 framework:
     workflows:
         article:
-            type: workflow
+            type: "workflow"
             marking_store:
-                type: multiple_state
+                type: "method"
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             initial_marking: draft

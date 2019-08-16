@@ -4,7 +4,13 @@ framework:
     router:          { resource: '%kernel.project_dir%/config/routing.yaml' }
     messenger:
         transports:
-            memory: "memory://"
+            memory:
+                dsn: "memory://"
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 0
         routing:
             '*': memory
 

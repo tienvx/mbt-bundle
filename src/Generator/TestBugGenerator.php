@@ -27,7 +27,7 @@ class TestBugGenerator extends AbstractGenerator
      *
      * @throws Exception
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $bugId = $generatorOptions->getBugId();
 
@@ -42,7 +42,9 @@ class TestBugGenerator extends AbstractGenerator
 
         $path = $bug->getPath();
 
-        return $this->getTransitionsFromPath($subject, $path);
+        foreach ($path->getSteps() as $step) {
+            yield $step;
+        }
     }
 
     public static function getName(): string

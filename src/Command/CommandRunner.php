@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -28,7 +29,7 @@ class CommandRunner
     /**
      * @param array $parameters
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function run(array $parameters)
     {

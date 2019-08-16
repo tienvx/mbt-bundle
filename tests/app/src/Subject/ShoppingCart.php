@@ -3,7 +3,8 @@
 namespace App\Subject;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Annotation\DataProvider;
+use Tienvx\Bundle\MbtBundle\Annotation\Transition;
+use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -134,229 +135,312 @@ class ShoppingCart extends AbstractSubject
     }
 
     /**
-     * @throws Exception
-     * @DataProvider(method="getRandomCategory")
-     */
-    public function viewAnyCategoryFromHome()
-    {
-        if (!$this->data->has('category')) {
-            throw new Exception('Can not view category from home: category is not selected');
-        }
-        $category = $this->data->get('category');
-        $this->category = $category;
-        $this->product = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomCategory")
-     */
-    public function viewOtherCategory()
-    {
-        if (!$this->data->has('category')) {
-            throw new Exception('Can not view category from other category: category is not selected');
-        }
-        $category = $this->data->get('category');
-        $this->category = $category;
-        $this->product = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomCategory")
-     */
-    public function viewAnyCategoryFromProduct()
-    {
-        if (!$this->data->has('category')) {
-            throw new Exception('Can not view category from product: category is not selected');
-        }
-        $category = $this->data->get('category');
-        $this->category = $category;
-        $this->product = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomCategory")
-     */
-    public function viewAnyCategoryFromCart()
-    {
-        if (!$this->data->has('category')) {
-            throw new Exception('Can not view category from cart: category is not selected');
-        }
-        $category = $this->data->get('category');
-        $this->category = $category;
-        $this->product = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomProductFromHome")
-     */
-    public function viewProductFromHome()
-    {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not view product from home: product is not selected');
-        }
-        $product = $this->data->get('product');
-        $this->product = $product;
-        $this->category = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomProductFromCart")
-     */
-    public function viewProductFromCart()
-    {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not view product from cart: product is not selected');
-        }
-        $product = $this->data->get('product');
-        $this->product = $product;
-        $this->category = null;
-    }
-
-    /**
-     * @throws Exception
-     * @DataProvider(method="getRandomProductFromCategory")
-     */
-    public function viewProductFromCategory()
-    {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not view product from category: product is not selected');
-        }
-        $product = $this->data->get('product');
-        $this->product = $product;
-        $this->category = null;
-    }
-
-    /**
+     * @Transition("viewAnyCategoryFromHome")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
      */
-    public function categoryHasSelectedProduct()
+    public function viewAnyCategoryFromHome(StepData $data)
     {
-        if (empty($this->productsInCategory[$this->category])) {
-            return false;
-        } else {
-            if (!$this->data->has('product')) {
-                throw new Exception('Can not check if category has selected product or not: product is not selected');
+        if ($data->has('category')) {
+            $category = $data->get('category');
+            if (!in_array($category, $this->categories)) {
+                throw new Exception('Selected category is invalid');
             }
-            $product = $this->data->get('product');
-
-            return in_array($product, $this->productsInCategory[$this->category]);
-        }
-    }
-
-    public function productHasBeenSelected()
-    {
-        return $this->data->has('product');
-    }
-
-    public function categoryHasBeenSelected()
-    {
-        return $this->data->has('category');
-    }
-
-    public function viewCartFromHome()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function viewCartFromCategory()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function viewCartFromProduct()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function viewCartFromCheckout()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function checkoutFromHome()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function checkoutFromCategory()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function checkoutFromProduct()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function checkoutFromCart()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function backToHomeFromCategory()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function backToHomeFromProduct()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function backToHomeFromCart()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    public function backToHomeFromCheckout()
-    {
-        $this->category = null;
-        $this->product = null;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function cartHasSelectedProduct()
-    {
-        if (empty($this->cart)) {
-            return false;
         } else {
-            if (!$this->data->has('product')) {
-                throw new Exception('Can not check if cart has selected product or not: product is not selected');
-            }
-            $product = $this->data->get('product');
-
-            return !empty($this->cart[$product]);
+            $category = $this->categories[array_rand($this->categories)];
+            $data->set('category', $category);
         }
+        $this->category = $category;
+        $this->product = null;
     }
 
     /**
+     * @Transition("viewOtherCategory")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
-     * @DataProvider(method="getRandomProductFromHome")
      */
-    public function addFromHome()
+    public function viewOtherCategory(StepData $data)
     {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not add product from home: product is not selected');
+        if ($data->has('category')) {
+            $category = $data->get('category');
+            if (!in_array($category, $this->categories)) {
+                throw new Exception('Selected category is invalid');
+            }
+        } else {
+            $category = $this->categories[array_rand($this->categories)];
+            $data->set('category', $category);
         }
-        $product = $this->data->get('product');
+        $this->category = $category;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewAnyCategoryFromProduct")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function viewAnyCategoryFromProduct(StepData $data)
+    {
+        if ($data->has('category')) {
+            $category = $data->get('category');
+            if (!in_array($category, $this->categories)) {
+                throw new Exception('Selected category is invalid');
+            }
+        } else {
+            $category = $this->categories[array_rand($this->categories)];
+            $data->set('category', $category);
+        }
+        $this->category = $category;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewAnyCategoryFromCart")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function viewAnyCategoryFromCart(StepData $data)
+    {
+        if ($data->has('category')) {
+            $category = $data->get('category');
+            if (!in_array($category, $this->categories)) {
+                throw new Exception('Selected category is invalid');
+            }
+        } else {
+            $category = $this->categories[array_rand($this->categories)];
+            $data->set('category', $category);
+        }
+        $this->category = $category;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewProductFromHome")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function viewProductFromHome(StepData $data)
+    {
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (!in_array($product, $this->featuredProducts)) {
+                throw new Exception('Selected product is not in featured products list');
+            }
+        } else {
+            $product = $this->featuredProducts[array_rand($this->featuredProducts)];
+            $data->set('product', $product);
+        }
+        $this->product = $product;
+        $this->category = null;
+    }
+
+    /**
+     * @Transition("viewProductFromCart")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function viewProductFromCart(StepData $data)
+    {
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (empty($this->cart[$product])) {
+                throw new Exception('Selected product is not in cart');
+            }
+        } else {
+            // This transition need this guard: subject.cartHasProducts()
+            $product = array_rand($this->cart);
+            $data->set('product', $product);
+        }
+        $this->product = $product;
+        $this->category = null;
+    }
+
+    /**
+     * @Transition("viewProductFromCategory")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function viewProductFromCategory(StepData $data)
+    {
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (!in_array($product, $this->productsInCategory[$this->category])) {
+                throw new Exception('Selected product is not in current category');
+            }
+        } else {
+            // This transition need this guard: subject.categoryHasProducts()
+            $products = $this->productsInCategory[$this->category] ?? [];
+            $product = $products[array_rand($products)];
+            $data->set('product', $product);
+        }
+        $this->product = $product;
+        $this->category = null;
+    }
+
+    /**
+     * @Transition("viewCartFromHome")
+     *
+     * @param StepData $data
+     */
+    public function viewCartFromHome(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewCartFromCategory")
+     *
+     * @param StepData $data
+     */
+    public function viewCartFromCategory(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewCartFromProduct")
+     *
+     * @param StepData $data
+     */
+    public function viewCartFromProduct(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("viewCartFromCheckout")
+     *
+     * @param StepData $data
+     */
+    public function viewCartFromCheckout(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("checkoutFromHome")
+     *
+     * @param StepData $data
+     */
+    public function checkoutFromHome(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("checkoutFromCategory")
+     *
+     * @param StepData $data
+     */
+    public function checkoutFromCategory(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("checkoutFromProduct")
+     *
+     * @param StepData $data
+     */
+    public function checkoutFromProduct(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("checkoutFromCart")
+     *
+     * @param StepData $data
+     */
+    public function checkoutFromCart(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("backToHomeFromCategory")
+     *
+     * @param StepData $data
+     */
+    public function backToHomeFromCategory(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("backToHomeFromProduct")
+     *
+     * @param StepData $data
+     */
+    public function backToHomeFromProduct(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("backToHomeFromCart")
+     *
+     * @param StepData $data
+     */
+    public function backToHomeFromCart(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("backToHomeFromCheckout")
+     *
+     * @param StepData $data
+     */
+    public function backToHomeFromCheckout(StepData $data)
+    {
+        $this->category = null;
+        $this->product = null;
+    }
+
+    /**
+     * @Transition("addFromHome")
+     *
+     * @param StepData $data
+     *
+     * @throws Exception
+     */
+    public function addFromHome(StepData $data)
+    {
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (!in_array($product, $this->featuredProducts)) {
+                throw new Exception('Selected product is not in featured products list');
+            }
+        } else {
+            $product = $this->featuredProducts[array_rand($this->featuredProducts)];
+            $data->set('product', $product);
+        }
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -370,15 +454,25 @@ class ShoppingCart extends AbstractSubject
     }
 
     /**
+     * @Transition("addFromCategory")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
-     * @DataProvider(method="getRandomProductFromCategory")
      */
-    public function addFromCategory()
+    public function addFromCategory(StepData $data)
     {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not add product from category: product is not selected');
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (!in_array($product, $this->productsInCategory[$this->category])) {
+                throw new Exception('Selected product is not in current category');
+            }
+        } else {
+            // This transition need this guard: subject.categoryHasProducts()
+            $products = $this->productsInCategory[$this->category] ?? [];
+            $product = $products[array_rand($products)];
+            $data->set('product', $product);
         }
-        $product = $this->data->get('product');
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -392,9 +486,13 @@ class ShoppingCart extends AbstractSubject
     }
 
     /**
+     * @Transition("addFromProduct")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
      */
-    public function addFromProduct()
+    public function addFromProduct(StepData $data)
     {
         if (!$this->testingModel) {
             if (in_array($this->product, $this->needOptions)) {
@@ -409,48 +507,101 @@ class ShoppingCart extends AbstractSubject
     }
 
     /**
+     * @Transition("remove")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
-     * @DataProvider(method="getRandomProductFromCart")
      */
-    public function remove()
+    public function remove(StepData $data)
     {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not remove product from cart: product is not selected');
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (empty($this->cart[$product])) {
+                throw new Exception('Selected product is not in cart');
+            }
+        } else {
+            // This transition need this guard: subject.cartHasProducts()
+            $product = array_rand($this->cart);
+            $data->set('product', $product);
         }
-        $product = $this->data->get('product');
         unset($this->cart[$product]);
     }
 
     /**
+     * @Transition("update")
+     *
+     * @param StepData $data
+     *
      * @throws Exception
-     * @DataProvider(method="getRandomProductFromCart")
      */
-    public function update()
+    public function update(StepData $data)
     {
-        if (!$this->data->has('product')) {
-            throw new Exception('Can not update product in cart: product is not selected');
+        if ($data->has('product')) {
+            $product = $data->get('product');
+            if (empty($this->cart[$product])) {
+                throw new Exception('Selected product is not in cart');
+            }
+        } else {
+            // This transition need this guard: subject.cartHasProducts()
+            $product = array_rand($this->cart);
+            $data->set('product', $product);
         }
-        $product = $this->data->get('product');
         $this->cart[$product] = rand(1, 99);
     }
 
+    /**
+     * @Transition("useCoupon")
+     */
+    public function useCoupon()
+    {
+    }
+
+    /**
+     * @Transition("estimateShippingAndTaxes")
+     */
+    public function estimateShippingAndTaxes()
+    {
+    }
+
+    /**
+     * @Transition("useGiftCertificate")
+     */
+    public function useGiftCertificate()
+    {
+    }
+
+    /**
+     * @Place("home")
+     */
     public function home()
     {
     }
 
+    /**
+     * @Place("category")
+     */
     public function category()
     {
     }
 
+    /**
+     * @Place("product")
+     */
     public function product()
     {
     }
 
+    /**
+     * @Place("cart")
+     */
     public function cart()
     {
     }
 
     /**
+     * @Place("checkout")
+     *
      * @throws Exception
      */
     public function checkout()
@@ -464,70 +615,26 @@ class ShoppingCart extends AbstractSubject
         }
     }
 
-    public function getRandomProductFromHome(): ?StepData
-    {
-        if (empty($this->featuredProducts)) {
-            return null;
-        }
-        $product = $this->featuredProducts[array_rand($this->featuredProducts)];
-
-        $data = new StepData();
-        $data->set('product', $product);
-
-        return $data;
-    }
-
-    public function getRandomCategory(): ?StepData
-    {
-        if (empty($this->categories)) {
-            return null;
-        }
-        $category = $this->categories[array_rand($this->categories)];
-
-        $data = new StepData();
-        $data->set('category', $category);
-
-        return $data;
-    }
-
-    public function getRandomProductFromCart(): ?StepData
-    {
-        if (empty($this->cart)) {
-            return null;
-        }
-        $product = array_rand($this->cart);
-
-        $data = new StepData();
-        $data->set('product', $product);
-
-        return $data;
-    }
-
-    public function getRandomProductFromCategory(): ?StepData
-    {
-        if (!isset($this->productsInCategory[$this->category])) {
-            return null;
-        }
-        $products = $this->productsInCategory[$this->category];
-        if (empty($products)) {
-            return null;
-        }
-        $product = $products[array_rand($products)];
-
-        $data = new StepData();
-        $data->set('product', $product);
-
-        return $data;
-    }
-
-    public function hasCoupon()
+    public function hasCoupon(): bool
     {
         return true;
     }
 
-    public function hasGiftCertificate()
+    public function hasGiftCertificate(): bool
     {
         return true;
+    }
+
+    public function cartHasProducts(): bool
+    {
+        return !empty($this->cart);
+    }
+
+    public function categoryHasProducts(): bool
+    {
+        $products = $this->productsInCategory[$this->category] ?? [];
+
+        return !empty($products);
     }
 
     public function getScreenshotUrl($bugId, $index)

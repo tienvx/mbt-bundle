@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class BugMessageTest extends MessageTestCase
 {
@@ -89,7 +90,7 @@ class BugMessageTest extends MessageTestCase
         }
 
         $this->assertTrue($this->hasReport($bugs[0]));
-        $this->assertEquals('reported', $bug->getStatus());
+        $this->assertEquals(BugWorkflow::REDUCED, $bug->getStatus());
 
         // Because screenshots had not been captured, and had been removed during set-up, no need to test this
         //$this->assertTrue($this->reportHasScreenshot());
@@ -103,7 +104,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => ['home'],
                     ],
                     [
@@ -126,7 +127,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => ['home'],
                     ],
                     [
@@ -151,7 +152,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => ['home'],
                     ],
                     [
@@ -204,7 +205,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -260,7 +261,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -305,7 +306,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -343,7 +344,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -421,7 +422,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -467,7 +468,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -529,7 +530,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -567,7 +568,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -637,7 +638,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -675,7 +676,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -780,7 +781,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -836,7 +837,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -952,7 +953,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1008,7 +1009,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1070,7 +1071,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1108,7 +1109,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1160,7 +1161,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1198,7 +1199,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1363,7 +1364,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1433,7 +1434,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1521,7 +1522,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'home',
                         ],
@@ -1611,7 +1612,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'product',
                         ],
@@ -1718,7 +1719,7 @@ class BugMessageTest extends MessageTestCase
                 [
                     [
                         'transition' => null,
-                        'data' => null,
+                        'data' => [],
                         'places' => [
                             'product',
                         ],

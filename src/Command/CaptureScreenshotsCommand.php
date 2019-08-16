@@ -11,8 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class CaptureScreenshotsCommand extends AbstractCommand
@@ -78,29 +79,19 @@ class CaptureScreenshotsCommand extends AbstractCommand
             return;
         }
 
-        $this->setAnonymousToken();
-
+        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
         $path = $bug->getPath();
-        $model = $bug->getTask()->getModel()->getName();
-        $subject = $this->subjectManager->createSubject($model);
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
-        $subject->setUp();
-        $subject->setFilesystem($this->mbtStorage);
-        $subject->removeScreenshots($bugId);
+        $this->setAnonymousToken();
 
         try {
             foreach ($path->getSteps() as $index => $step) {
-                $transition = $step->getTransition();
-                $data = $step->getData();
-                if ($transition) {
-                    $success = PathRunner::setData($path, $workflow, $subject, $transition, $index, $data);
-                    if (!$success) {
-                        break;
-                    }
-
+                if ($step->getTransition() && $step->getData() instanceof StepData) {
                     try {
-                        $workflow->apply($subject, $transition);
+                        $workflow->apply($subject, $step->getTransition(), [
+                            'data' => $step->getData(),
+                        ]);
                     } catch (Throwable $throwable) {
                     } finally {
                         $subject->captureScreenshot($bugId, $index);
@@ -110,5 +101,24 @@ class CaptureScreenshotsCommand extends AbstractCommand
         } finally {
             $subject->tearDown();
         }
+    }
+
+    /**
+     * @param string $model
+     * @param int    $bugId
+     *
+     * @return AbstractSubject
+     *
+     * @throws Exception
+     */
+    private function getSubject(string $model, int $bugId): AbstractSubject
+    {
+        $subject = $this->subjectManager->createSubject($model);
+
+        $subject->setUp();
+        $subject->setFilesystem($this->mbtStorage);
+        $subject->removeScreenshots($bugId);
+
+        return $subject;
     }
 }

@@ -3,6 +3,8 @@ framework:
         # https://demo.opencart.com
         shopping_cart:
             type: "state_machine"
+            marking_store:
+                type: "method"
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
             metadata:
@@ -19,49 +21,44 @@ framework:
                 viewAnyCategoryFromHome:
                     from: home
                     to: category
-                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
                         probability: 70
                         label: "From home page, choose a random category and open it"
                 viewOtherCategory:
                     from: category
                     to: category
-                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
                         probability: 20
                         label: "From category page, choose a random category and open it"
                 viewAnyCategoryFromProduct:
                     from: product
                     to: category
-                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
                         probability: 20
                         label: "From product page, choose a random category and open it"
                 viewAnyCategoryFromCart:
                     from: cart
                     to: category
-                    guard: "subject.categoryHasBeenSelected()"
                     metadata:
                         probability: 25
                         label: "From cart page, choose a random category and open it"
                 viewProductFromHome:
                     from: home
                     to: product
-                    guard: "subject.productHasBeenSelected()"
                     metadata:
                         label: "From home page, choose a random product and open it"
                         probability: 10
                 viewProductFromCart:
                     from: cart
                     to: product
-                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                    guard: "subject.cartHasProducts()"
                     metadata:
                         label: "From cart page, choose a random product and open it"
                         probability: 15
                 viewProductFromCategory:
                     from: category
                     to: product
-                    guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
+                    guard: "subject.categoryHasProducts()"
                     metadata:
                         label: "From category page, choose a random product and open it"
                         probability: 20
@@ -140,14 +137,14 @@ framework:
                 update:
                     from: cart
                     to: cart
-                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                    guard: "subject.cartHasProducts()"
                     metadata:
                         probability: 5
                         label: "From cart page, choose a random product and update quantity with a random number from 1 to 99"
                 remove:
                     from: cart
                     to: cart
-                    guard: "subject.productHasBeenSelected() && subject.cartHasSelectedProduct()"
+                    guard: "subject.cartHasProducts()"
                     metadata:
                         probability: 5
                         label: "From cart page, choose a random product and remove it"
@@ -174,14 +171,13 @@ framework:
                 addFromHome:
                     from: home
                     to: home
-                    guard: "subject.productHasBeenSelected()"
                     metadata:
                         label: "From home page, choose a random product and add it to cart"
                         probability: 5
                 addFromCategory:
                     from: category
                     to: category
-                    guard: "subject.productHasBeenSelected() && subject.categoryHasSelectedProduct()"
+                    guard: "subject.categoryHasProducts()"
                     metadata:
                         label: "From category page, choose a random product and add it to cart"
                         probability: 25

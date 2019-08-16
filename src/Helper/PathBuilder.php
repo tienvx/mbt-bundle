@@ -9,6 +9,7 @@ use Fhaculty\Graph\Set\Edges;
 use Graphp\Algorithms\ShortestPath\Dijkstra;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 
 class PathBuilder
 {
@@ -38,7 +39,7 @@ class PathBuilder
                 if ($edge instanceof Directed) {
                     $middleSteps[] = new Step(
                         $edge->getAttribute('name', ''),
-                        null,
+                        new StepData(),
                         $edge->getVertexEnd()->getAttribute('places', [])
                     );
                 } else {

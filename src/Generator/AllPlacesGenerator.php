@@ -9,6 +9,8 @@ use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Entity\Step;
+use Tienvx\Bundle\MbtBundle\Entity\StepData;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -30,7 +32,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         $graph = $this->graphBuilder->build($workflow);
         $algorithm = new Bruteforce($graph);
@@ -41,7 +43,7 @@ class AllPlacesGenerator extends AbstractGenerator
                 $edge = array_shift($edges);
                 $transitionName = $edge->getAttribute('name');
                 if ($workflow->can($subject, $transitionName)) {
-                    yield $transitionName;
+                    yield new Step($transitionName, new StepData());
                 } else {
                     break;
                 }
