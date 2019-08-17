@@ -10,9 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -75,12 +75,12 @@ class TestModelCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $path = new Path();
-        $path->addStep(new Step(null, new StepData(), $workflow->getDefinition()->getInitialPlaces()));
+        $steps = new Steps();
+        $steps->addStep(new Step(null, new Data(), $workflow->getDefinition()->getInitialPlaces()));
 
         try {
             foreach ($generator->generate($workflow, $subject, $generatorOptions) as $step) {
-                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof StepData) {
+                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
                     try {
                         $workflow->apply($subject, $step->getTransition(), [
                             'data' => $step->getData(),
@@ -88,7 +88,7 @@ class TestModelCommand extends AbstractCommand
                     } finally {
                         $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
                         $step->setPlaces($places);
-                        $path->addStep($step);
+                        $steps->addStep($step);
                     }
                 }
             }
@@ -96,7 +96,7 @@ class TestModelCommand extends AbstractCommand
             $subject->tearDown();
         }
 
-        $output->writeln($path->serialize($pretty ? JSON_PRETTY_PRINT : 0));
+        $output->writeln($steps->serialize($pretty ? JSON_PRETTY_PRINT : 0));
     }
 
     /**

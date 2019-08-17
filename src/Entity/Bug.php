@@ -38,7 +38,7 @@ class Bug
      * @ORM\Column(type="text")
      * @Assert\NotNull
      */
-    private $path;
+    private $steps;
 
     /**
      * @ORM\Column(type="string")
@@ -103,18 +103,18 @@ class Bug
     }
 
     /**
-     * @return Path
+     * @return Steps
      *
      * @throws Exception
      */
-    public function getPath(): Path
+    public function getSteps(): Steps
     {
-        return Path::deserialize($this->path);
+        return Steps::deserialize($this->steps);
     }
 
-    public function setPath(Path $path)
+    public function setSteps(Steps $steps)
     {
-        $this->path = $path->serialize();
+        $this->steps = $steps->serialize();
     }
 
     public function getModelHash(): string

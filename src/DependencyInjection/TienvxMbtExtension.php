@@ -5,13 +5,18 @@ namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
+use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerInterface;
+use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
@@ -39,13 +44,14 @@ class TienvxMbtExtension extends Extension
 
         $this->registerCommandConfiguration($config, $container);
         $this->registerGeneratorConfiguration($config, $container);
+        $this->registerPredefinedCasesConfiguration($config, $container, $loader);
 
         $container->registerForAutoconfiguration(GeneratorInterface::class)
             ->setLazy(true)
             ->addTag('mbt.generator');
-        $container->registerForAutoconfiguration(PathReducerInterface::class)
+        $container->registerForAutoconfiguration(ReducerInterface::class)
             ->setLazy(true)
-            ->addTag('mbt.path_reducer');
+            ->addTag('mbt.reducer');
         $container->registerForAutoconfiguration(SubjectInterface::class)
             ->setLazy(true)
             ->addTag('mbt.subject');
@@ -63,12 +69,12 @@ class TienvxMbtExtension extends Extension
     private function registerGeneratorConfiguration(array $config, ContainerBuilder $container)
     {
         $randomGeneratorDefinition = $container->getDefinition(RandomGenerator::class);
-        $randomGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $randomGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
         $randomGeneratorDefinition->addMethodCall('setTransitionCoverage', [$config['transition_coverage']]);
         $randomGeneratorDefinition->addMethodCall('setPlaceCoverage', [$config['place_coverage']]);
 
         $probabilityGeneratorDefinition = $container->getDefinition(ProbabilityGenerator::class);
-        $probabilityGeneratorDefinition->addMethodCall('setMaxPathLength', [$config['max_path_length']]);
+        $probabilityGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
 
         $slackReporterDefinition = $container->getDefinition(SlackReporter::class);
         $slackReporterDefinition->addMethodCall('setSlackHookUrl', [$config['slack_hook_url']]);
@@ -80,5 +86,27 @@ class TienvxMbtExtension extends Extension
         $emailReporterDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
         $emailReporterDefinition->addMethodCall('setEmailTo', [$config['email_to']]);
         $emailReporterDefinition->addMethodCall('setEmailSubject', [$config['email_subject']]);
+    }
+
+    /**
+     * @param array            $config
+     * @param ContainerBuilder $container
+     * @param XmlFileLoader    $loader
+     *
+     * @throws Exception
+     */
+    private function registerPredefinedCasesConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)
+    {
+        $managerDefinition = $container->getDefinition(PredefinedCaseManager::class);
+
+        foreach ($config['predefined_cases'] as $name => $case) {
+            $caseDefinition = new Definition(PredefinedCase::class);
+            $caseDefinition->setPublic(false);
+            $caseDefinition->addMethodCall('init', [$name, $case['title'], $case['model'], Steps::denormalize($case['steps'])->serialize()]);
+            $id = sprintf('predefined_case.%s', $name);
+            $container->setDefinition($id, $caseDefinition);
+
+            $managerDefinition->addMethodCall('add', [new Reference($id)]);
+        }
     }
 }

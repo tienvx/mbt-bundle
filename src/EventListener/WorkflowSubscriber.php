@@ -9,7 +9,7 @@ use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowSubscriber implements EventSubscriberInterface
@@ -52,7 +52,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
                 $annotation = $this->reader->getMethodAnnotation($reflectionMethod, Transition::class);
                 if ($annotation instanceof Transition && $annotation->getName() === $event->getTransition()->getName()) {
                     $context = $event->getContext();
-                    if (isset($context['data']) && $context['data'] instanceof StepData) {
+                    if (isset($context['data']) && $context['data'] instanceof Data) {
                         $reflectionMethod->invoke($subject, $context['data']);
                     }
                 }

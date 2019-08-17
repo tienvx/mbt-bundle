@@ -40,9 +40,11 @@ class TestBugGenerator extends AbstractGenerator
             throw new Exception(sprintf('No task found for id %d', $bugId));
         }
 
-        $path = $bug->getPath();
+        if ($bug->getTask()->getModel()->getName() !== $workflow->getName()) {
+            throw new Exception(sprintf('The bug with id %d can not be tested with workflow %s', $bugId, $workflow->getName()));
+        }
 
-        foreach ($path->getSteps() as $step) {
+        foreach ($bug->getSteps() as $step) {
             yield $step;
         }
     }

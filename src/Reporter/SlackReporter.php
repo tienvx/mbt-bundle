@@ -101,7 +101,7 @@ class SlackReporter implements ReporterInterface
                     ],
                     [
                         'title' => 'Number of Steps',
-                        'value' => $bug->getPath()->getLength(),
+                        'value' => $bug->getSteps()->getLength(),
                     ],
                 ],
             ])

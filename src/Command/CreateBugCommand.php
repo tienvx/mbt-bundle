@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 class CreateBugCommand extends AbstractCommand
@@ -50,7 +50,7 @@ class CreateBugCommand extends AbstractCommand
             ->setDescription('Create a bug.')
             ->setHelp('Create a bug.')
             ->addArgument('title', InputArgument::REQUIRED, 'Bug title.')
-            ->addArgument('path', InputArgument::REQUIRED, 'Bug path.')
+            ->addArgument('steps', InputArgument::REQUIRED, 'Bug steps.')
             ->addArgument('message', InputArgument::REQUIRED, 'Bug message.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'Task id.')
             ->addArgument('status', InputArgument::REQUIRED, 'Bug status.');
@@ -65,7 +65,7 @@ class CreateBugCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $title = $input->getArgument('title');
-        $path = $input->getArgument('path');
+        $steps = $input->getArgument('steps');
         $message = $input->getArgument('message');
         $taskId = $input->getArgument('task-id');
         $status = $input->getArgument('status');
@@ -83,7 +83,7 @@ class CreateBugCommand extends AbstractCommand
 
         $bug = new Bug();
         $bug->setTitle($title);
-        $bug->setPath(Path::deserialize($path));
+        $bug->setSteps(Steps::deserialize($steps));
         $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setBugMessage($message);
         $bug->setTask($task);

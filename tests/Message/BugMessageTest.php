@@ -10,7 +10,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
@@ -33,8 +33,8 @@ class BugMessageTest extends MessageTestCase
         $workflowRegistry = self::$container->get(Registry::class);
         $workflow = WorkflowHelper::get($workflowRegistry, $model);
 
-        $path = Path::denormalize($steps);
-        $expectedPath = Path::denormalize($expectedSteps);
+        $steps = Steps::denormalize($steps);
+        $expectedSteps = Steps::denormalize($expectedSteps);
         switch ($model) {
             case 'shopping_cart':
                 $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
@@ -71,7 +71,7 @@ class BugMessageTest extends MessageTestCase
 
         $bug = new Bug();
         $bug->setTitle('Test bug title');
-        $bug->setPath($path);
+        $bug->setSteps($steps);
         $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
@@ -89,10 +89,10 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals(1, count($bugs));
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ('random' !== $reducer) {
-            $this->assertEquals($expectedPath->serialize(), $bugs[0]->getPath()->serialize());
-            $this->assertEquals($expectedPath->getLength(), $bugs[0]->getPath()->getLength());
+            $this->assertEquals($expectedSteps->serialize(), $bugs[0]->getSteps()->serialize());
+            $this->assertEquals($expectedSteps->getLength(), $bugs[0]->getSteps()->getLength());
         } else {
-            $this->assertLessThanOrEqual($expectedPath->getLength(), $bugs[0]->getPath()->getLength());
+            $this->assertLessThanOrEqual($expectedSteps->getLength(), $bugs[0]->getSteps()->getLength());
         }
 
         $this->assertTrue($this->hasReport($bugs[0]));

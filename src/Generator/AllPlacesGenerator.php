@@ -10,7 +10,7 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -43,7 +43,7 @@ class AllPlacesGenerator extends AbstractGenerator
                 $edge = array_shift($edges);
                 $transitionName = $edge->getAttribute('name');
                 if ($workflow->can($subject, $transitionName)) {
-                    yield new Step($transitionName, new StepData());
+                    yield new Step($transitionName, new Data());
                 } else {
                     break;
                 }

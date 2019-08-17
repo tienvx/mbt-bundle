@@ -13,10 +13,10 @@
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Generator\GeneratorManager" alias="mbt.generator_manager" />
 
-        <service id="mbt.path_reducer_manager" class="Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager" public="false" autowire="true">
+        <service id="mbt.reducer_manager" class="Tienvx\Bundle\MbtBundle\Reducer\ReducerManager" public="false" autowire="true">
             <argument type="collection" />
         </service>
-        <service id="Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager" alias="mbt.path_reducer_manager" />
+        <service id="Tienvx\Bundle\MbtBundle\Reducer\ReducerManager" alias="mbt.reducer_manager" />
 
         <service id="mbt.reporter_manager" class="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager" public="false" autowire="true">
             <argument type="collection" />

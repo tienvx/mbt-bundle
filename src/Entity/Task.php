@@ -205,16 +205,6 @@ class Task
         $this->reporters = json_encode($values);
     }
 
-    public function getProgress(): int
-    {
-        return $this->progress;
-    }
-
-    public function setProgress(int $progress)
-    {
-        $this->progress = $progress;
-    }
-
     public function getStatus(): string
     {
         return $this->status;

@@ -5,15 +5,15 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 class CreateBugMessage
 {
     protected $title;
-    protected $path;
+    protected $steps;
     protected $message;
     protected $taskId;
     protected $status;
 
-    public function __construct(string $title, string $path, string $message, int $taskId, string $status)
+    public function __construct(string $title, string $steps, string $message, int $taskId, string $status)
     {
         $this->title = $title;
-        $this->path = $path;
+        $this->steps = $steps;
         $this->message = $message;
         $this->taskId = $taskId;
         $this->status = $status;
@@ -24,9 +24,9 @@ class CreateBugMessage
         return $this->title;
     }
 
-    public function getPath()
+    public function getSteps()
     {
-        return $this->path;
+        return $this->steps;
     }
 
     public function getMessage()

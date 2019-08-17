@@ -13,14 +13,14 @@ use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
 class ReduceBugCommand extends AbstractCommand
 {
     /**
-     * @var PathReducerManager
+     * @var ReducerManager
      */
-    private $pathReducerManager;
+    private $reducerManager;
 
     /**
      * @var EntityManagerInterface
@@ -38,12 +38,12 @@ class ReduceBugCommand extends AbstractCommand
     protected $workflowRegistry;
 
     public function __construct(
-        PathReducerManager $pathReducerManager,
+        ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         Registry $workflowRegistry
     ) {
-        $this->pathReducerManager = $pathReducerManager;
+        $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
         $this->workflowRegistry = $workflowRegistry;
@@ -84,8 +84,8 @@ class ReduceBugCommand extends AbstractCommand
             return;
         }
 
-        $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $messagesCount = $pathReducer->dispatch($bug);
+        $reducer = $this->reducerManager->getReducer($reducer);
+        $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
             $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
         } else {

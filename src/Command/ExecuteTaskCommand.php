@@ -11,10 +11,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
@@ -108,12 +108,12 @@ class ExecuteTaskCommand extends AbstractCommand
 
         $this->setAnonymousToken();
 
-        $path = new Path();
-        $path->addStep(new Step(null, new StepData(), $workflow->getDefinition()->getInitialPlaces()));
+        $steps = new Steps();
+        $steps->addStep(new Step(null, new Data(), $workflow->getDefinition()->getInitialPlaces()));
 
         try {
             foreach ($generator->generate($workflow, $subject, $task->getGeneratorOptions()) as $step) {
-                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof StepData) {
+                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
                     try {
                         $workflow->apply($subject, $step->getTransition(), [
                             'data' => $step->getData(),
@@ -123,12 +123,12 @@ class ExecuteTaskCommand extends AbstractCommand
                     } finally {
                         $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
                         $step->setPlaces($places);
-                        $path->addStep($step);
+                        $steps->addStep($step);
                     }
                 }
             }
         } catch (Throwable $throwable) {
-            $this->createBug($path, $throwable->getMessage(), $taskId);
+            $this->createBug($steps, $throwable->getMessage(), $taskId);
         } finally {
             $subject->tearDown();
 
@@ -136,11 +136,11 @@ class ExecuteTaskCommand extends AbstractCommand
         }
     }
 
-    private function createBug(Path $path, string $bugMessage, int $taskId)
+    private function createBug(Steps $steps, string $bugMessage, int $taskId)
     {
         $message = new CreateBugMessage(
             $this->defaultBugTitle,
-            $path->serialize(),
+            $steps->serialize(),
             $bugMessage,
             $taskId,
             BugWorkflow::NEW

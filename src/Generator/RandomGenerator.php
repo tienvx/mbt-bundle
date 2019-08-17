@@ -7,7 +7,7 @@ use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class RandomGenerator extends AbstractGenerator
@@ -15,7 +15,7 @@ class RandomGenerator extends AbstractGenerator
     /**
      * @var int
      */
-    protected $maxPathLength = 300;
+    protected $maxSteps = 300;
 
     /**
      * @var float
@@ -27,9 +27,9 @@ class RandomGenerator extends AbstractGenerator
      */
     protected $placeCoverage = 100;
 
-    public function setMaxPathLength(int $maxPathLength)
+    public function setMaxSteps(int $maxSteps)
     {
-        $this->maxPathLength = $maxPathLength;
+        $this->maxSteps = $maxSteps;
     }
 
     public function setTransitionCoverage(float $transitionCoverage)
@@ -47,13 +47,13 @@ class RandomGenerator extends AbstractGenerator
      */
     public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
-        // Number of steps in path, include the first step (transition = null, places = initial places)
-        $pathLength = 1;
+        // Number of steps, include the first step (transition = null, places = initial places)
+        $stepsCount = 1;
         $visitedTransitions = [];
         $visitedPlaces = $workflow->getDefinition()->getInitialPlaces();
         $transitionCoverage = $generatorOptions->getTransitionCoverage() ?? $this->transitionCoverage;
         $placeCoverage = $generatorOptions->getPlaceCoverage() ?? $this->placeCoverage;
-        $maxPathLength = $generatorOptions->getMaxPathLength() ?? $this->maxPathLength;
+        $maxSteps = $generatorOptions->getMaxSteps() ?? $this->maxSteps;
 
         while (true) {
             /** @var Transition[] $transitions */
@@ -62,7 +62,7 @@ class RandomGenerator extends AbstractGenerator
                 $index = array_rand($transitions);
                 $transitionName = $transitions[$index]->getName();
 
-                yield new Step($transitionName, new StepData());
+                yield new Step($transitionName, new Data());
 
                 // Update visited places and transitions.
                 foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {
@@ -77,11 +77,11 @@ class RandomGenerator extends AbstractGenerator
                 // Update current state.
                 $currentTransitionCoverage = count($visitedTransitions) / count($workflow->getDefinition()->getTransitions()) * 100;
                 $currentPlaceCoverage = count($visitedPlaces) / count($workflow->getDefinition()->getPlaces()) * 100;
-                ++$pathLength;
+                ++$stepsCount;
 
                 if (($currentTransitionCoverage >= $transitionCoverage && $currentPlaceCoverage >= $placeCoverage)) {
                     break;
-                } elseif ($pathLength >= $maxPathLength) {
+                } elseif ($stepsCount >= $maxSteps) {
                     break;
                 }
             } else {

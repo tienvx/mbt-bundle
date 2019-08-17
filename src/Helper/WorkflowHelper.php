@@ -56,6 +56,7 @@ class WorkflowHelper
             }, $definition->getTransitions()),
             'initialPlaces' => $definition->getInitialPlaces(),
         ];
+
         return md5(json_encode($content));
     }
 
