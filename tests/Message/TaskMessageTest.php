@@ -86,7 +86,7 @@ class TaskMessageTest extends MessageTestCase
 
             $bugId = $bugs[0]->getId();
             if ($takeScreenshots) {
-                $this->assertEquals($bugs[0]->getLength() - 1, $this->countScreenshots($bugId));
+                $this->assertEquals($bugs[0]->getPath()->getLength(), $this->countScreenshots($bugId));
             } else {
                 $this->assertEquals(0, $this->countScreenshots($bugId));
             }

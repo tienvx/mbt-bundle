@@ -122,7 +122,7 @@ class PathBuilder
 
             $find = array_values(array_diff($toPlaces, $fromPlaces))[0];
             $replace = array_values(array_diff($fromPlaces, $toPlaces))[0];
-            for ($i = $to; $i < $path->countPlaces(); ++$i) {
+            for ($i = $to; $i < $path->getLength(); ++$i) {
                 $places = $path->getPlacesAt($i);
                 $key = array_search($find, $places);
                 $newPlaces = array_replace($places, [$key => $replace]);

@@ -20,10 +20,10 @@ class SplitPathReducer extends AbstractPathReducer
         $path = $bug->getPath();
         $messagesCount = 0;
 
-        if ($path->countPlaces() > 2) {
+        if ($path->getLength() > 2) {
             $divisor = 2;
-            $quotient = floor($path->countPlaces() / $divisor);
-            $remainder = $path->countPlaces() % $divisor;
+            $quotient = floor($path->getLength() / $divisor);
+            $remainder = $path->getLength() % $divisor;
             while ($quotient > 1) {
                 for ($k = 0; $k < $divisor; ++$k) {
                     $i = $quotient * $k;
@@ -32,17 +32,17 @@ class SplitPathReducer extends AbstractPathReducer
                     } else {
                         $j = $quotient * ($k + 1) - 1;
                     }
-                    $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
+                    $message = new ReducePathMessage($bug->getId(), static::getName(), $path->getLength(), $i, $j);
                     $this->messageBus->dispatch($message);
                     ++$messagesCount;
-                    if ($messagesCount >= floor(sqrt($path->countPlaces()))) {
+                    if ($messagesCount >= floor(sqrt($path->getLength()))) {
                         break 2;
                     }
                 }
 
                 ++$divisor;
-                $quotient = floor($path->countPlaces() / $divisor);
-                $remainder = $path->countPlaces() % $divisor;
+                $quotient = floor($path->getLength() / $divisor);
+                $remainder = $path->getLength() % $divisor;
             }
         }
 

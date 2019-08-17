@@ -41,10 +41,10 @@ class Bug
     private $path;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    private $length;
+    private $modelHash;
 
     /**
      * @ORM\ManyToOne(targetEntity="Task")
@@ -117,14 +117,14 @@ class Bug
         $this->path = $path->serialize();
     }
 
-    public function getLength(): int
+    public function getModelHash(): string
     {
-        return $this->length;
+        return $this->modelHash;
     }
 
-    public function setLength(int $length)
+    public function setModelHash(string $modelHash)
     {
-        $this->length = $length;
+        $this->modelHash = $modelHash;
     }
 
     public function getTask(): Task

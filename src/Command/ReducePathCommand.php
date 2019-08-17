@@ -8,7 +8,9 @@ use Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
 class ReducePathCommand extends AbstractCommand
@@ -23,12 +25,19 @@ class ReducePathCommand extends AbstractCommand
      */
     protected $entityManager;
 
+    /**
+     * @var Registry
+     */
+    protected $workflowRegistry;
+
     public function __construct(
         PathReducerManager $pathReducerManager,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        Registry $workflowRegistry
     ) {
         $this->pathReducerManager = $pathReducerManager;
         $this->entityManager = $entityManager;
+        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
     }
@@ -65,9 +74,14 @@ class ReducePathCommand extends AbstractCommand
             return;
         }
 
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+            return;
+        }
+
         $this->setAnonymousToken();
 
         $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $pathReducer->handle($bug, $length, $from, $to);
+        $pathReducer->handle($bug, $workflow, $length, $from, $to);
     }
 }

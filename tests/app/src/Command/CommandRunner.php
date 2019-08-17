@@ -20,7 +20,7 @@ class CommandRunner extends BaseCommandRunner
         $application->setAutoExit(false);
         $map = [
             'mbt:bug:capture-screenshots' => ['command', 'bug-id'],
-            'mbt:bug:create' => ['command', 'title', 'path', 'length', 'message', 'task-id', 'status'],
+            'mbt:bug:create' => ['command', 'title', 'path', 'message', 'task-id', 'status'],
             'mbt:task:execute' => ['command', 'task-id'],
             'mbt:bug:reduce' => ['command', 'bug-id', 'reducer'],
             'mbt:path:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],

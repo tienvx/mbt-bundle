@@ -3,37 +3,37 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Exception;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReducePathMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
 class LoopPathReducer extends AbstractPathReducer
 {
     /**
-     * @param Bug $bug
-     * @param int $length
-     * @param int $from
-     * @param int $to
+     * @param Bug      $bug
+     * @param Workflow $workflow
+     * @param int      $length
+     * @param int      $from
+     * @param int      $to
      *
      * @throws Exception
      * @throws Throwable
      */
-    public function handle(Bug $bug, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
     {
         $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
-        if ($bug->getLength() >= $length) {
+        if ($path->getLength() === $length) {
             // The reproduce path has not been reduced.
-            if ($to <= $path->countPlaces() && !array_diff($path->getPlacesAt($from), $path->getPlacesAt($to))) {
+            if ($from < $path->getLength() && $to < $path->getLength() && !array_diff($path->getPlacesAt($from), $path->getPlacesAt($to))) {
                 $newPath = PathBuilder::createWithoutLoop($path, $from, $to);
                 // Make sure new path shorter than old path.
-                if ($newPath->countPlaces() < $path->countPlaces()) {
+                if ($newPath->getLength() < $path->getLength()) {
                     try {
                         $subject = $this->subjectManager->createSubject($model);
                         PathRunner::run($newPath, $workflow, $subject);
@@ -61,15 +61,16 @@ class LoopPathReducer extends AbstractPathReducer
         $path = $bug->getPath();
         $messagesCount = 0;
 
-        $distance = $path->countPlaces();
+        $distance = $path->getLength();
         while ($distance > 0) {
-            for ($i = 0; $i < $path->countPlaces(); ++$i) {
+            for ($i = 0; $i < $path->getLength(); ++$i) {
                 $j = $i + $distance;
-                if ($j < $path->countPlaces() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
-                    $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $j);
+                if ($j < $path->getLength() && !array_diff($path->getPlacesAt($i), $path->getPlacesAt($j))) {
+                    $message = new ReducePathMessage($bug->getId(), static::getName(), $path->getLength(), $i, $j);
                     $this->messageBus->dispatch($message);
                     ++$messagesCount;
-                    if ($messagesCount >= $path->countPlaces()) {
+                    if ($messagesCount >= $path->getLength()) {
+                        // Prevent too many messages.
                         break 2;
                     }
                 }

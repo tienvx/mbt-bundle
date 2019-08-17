@@ -61,11 +61,11 @@ class TestModelCommandTest extends CommandTestCase
         if ($path instanceof Path) {
             $uniquePlaces = $path->countUniquePlaces();
             $uniqueTransitions = $path->countUniqueTransitions();
-            if ('all-transitions' === $generator && array_diff($path->getPlacesAt($path->countPlaces() - 1), ['home'])) {
+            if ('all-transitions' === $generator && array_diff($path->getPlacesAt($path->getLength() - 1), ['home'])) {
                 // Sometime, we can't get the path through all transitions, so ignore it.
             } elseif ('all-places' === $generator && 1 === $uniqueTransitions) {
                 // Sometime, we can't get the path through all places, so ignore it.
-            } elseif ('random' === $generator && 300 === $path->countTransitions()) {
+            } elseif ('random' === $generator && 300 === $path->getLength()) {
                 // Sometime we reach the path length limit, so ignore it.
                 $this->assertGreaterThanOrEqual(1, $uniqueTransitions);
                 $this->assertGreaterThanOrEqual(1, $uniquePlaces);

@@ -9,7 +9,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 
@@ -30,14 +32,21 @@ class ReduceBugCommand extends AbstractCommand
      */
     private $messageBus;
 
+    /**
+     * @var Registry
+     */
+    protected $workflowRegistry;
+
     public function __construct(
         PathReducerManager $pathReducerManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        Registry $workflowRegistry
     ) {
         $this->pathReducerManager = $pathReducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
+        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
     }
@@ -67,6 +76,11 @@ class ReduceBugCommand extends AbstractCommand
         if (!$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
 
+            return;
+        }
+
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             return;
         }
 

@@ -8,6 +8,7 @@ use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
@@ -66,28 +67,27 @@ abstract class AbstractPathReducer implements PathReducerInterface
     }
 
     /**
-     * @param Bug $bug
-     * @param int $length
-     * @param int $from
-     * @param int $to
+     * @param Bug      $bug
+     * @param Workflow $workflow
+     * @param int      $length
+     * @param int      $from
+     * @param int      $to
      *
      * @throws Exception
      * @throws Throwable
      * @throws InvalidArgumentException
      */
-    public function handle(Bug $bug, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
     {
         $model = $bug->getTask()->getModel()->getName();
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
-
         $graph = $this->graphBuilder->build($workflow);
         $path = $bug->getPath();
 
-        if ($bug->getLength() >= $length) {
+        if ($path->getLength() === $length) {
             // The reproduce path has not been reduced.
             $newPath = PathBuilder::createWithShortestPath($graph, $path, $from, $to);
             // Make sure new path shorter than old path.
-            if ($newPath->countPlaces() < $path->countPlaces()) {
+            if ($newPath->getLength() < $path->getLength()) {
                 try {
                     $subject = $this->subjectManager->createSubject($model);
                     PathRunner::run($newPath, $workflow, $subject);
@@ -114,7 +114,6 @@ abstract class AbstractPathReducer implements PathReducerInterface
             $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
 
             $bug->setPath($newPath);
-            $bug->setLength($newPath->countPlaces());
         };
 
         $this->entityManager->transactional($callback);

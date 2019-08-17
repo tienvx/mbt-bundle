@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 use Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
@@ -12,6 +13,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class TestBugTest extends MessageTestCase
@@ -29,6 +31,9 @@ class TestBugTest extends MessageTestCase
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        /** @var Registry $workflowRegistry */
+        $workflowRegistry = self::$container->get(Registry::class);
+        $workflow = WorkflowHelper::get($workflowRegistry, $model);
 
         if ($regression) {
             $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
@@ -59,7 +64,7 @@ class TestBugTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test regression bug');
         $bug->setPath($path);
-        $bug->setLength($path->countPlaces());
+        $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);

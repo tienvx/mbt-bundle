@@ -20,6 +20,7 @@ use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class ExecuteTaskCommand extends AbstractCommand
@@ -140,10 +141,9 @@ class ExecuteTaskCommand extends AbstractCommand
         $message = new CreateBugMessage(
             $this->defaultBugTitle,
             $path->serialize(),
-            $path->countPlaces(),
             $bugMessage,
             $taskId,
-            'new'
+            BugWorkflow::NEW
         );
         $this->messageBus->dispatch($message);
     }

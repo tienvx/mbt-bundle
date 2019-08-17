@@ -24,12 +24,7 @@ class Path
         $this->steps[] = $step;
     }
 
-    public function countTransitions(): int
-    {
-        return count($this->steps) - 1;
-    }
-
-    public function countPlaces(): int
+    public function getLength(): int
     {
         return count($this->steps);
     }
@@ -56,33 +51,9 @@ class Path
         return count(array_unique($places));
     }
 
-    public function getTransitionAt(int $index): ?string
-    {
-        return isset($this->steps[$index]) ? $this->steps[$index]->getTransition() : null;
-    }
-
-    public function getDataAt(int $index): ?StepData
-    {
-        return isset($this->steps[$index]) ? $this->steps[$index]->getData() : null;
-    }
-
     public function getPlacesAt(int $index): ?array
     {
         return isset($this->steps[$index]) ? $this->steps[$index]->getPlaces() : null;
-    }
-
-    public function setTransitionAt(int $index, string $transition)
-    {
-        if (isset($this->steps[$index])) {
-            $this->steps[$index]->setTransition($transition);
-        }
-    }
-
-    public function setDataAt(int $index, StepData $data)
-    {
-        if (isset($this->steps[$index])) {
-            $this->steps[$index]->setData($data);
-        }
     }
 
     public function setPlacesAt(int $index, array $places)

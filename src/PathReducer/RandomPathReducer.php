@@ -21,10 +21,10 @@ class RandomPathReducer extends AbstractPathReducer
         $path = $bug->getPath();
         $messagesCount = 0;
 
-        if ($path->countPlaces() > 2) {
-            $pairs = Randomizer::randomPairs($path->countPlaces(), floor(sqrt($path->countPlaces())));
+        if ($path->getLength() > 2) {
+            $pairs = Randomizer::randomPairs($path->getLength(), floor(sqrt($path->getLength())));
             foreach ($pairs as $pair) {
-                $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $pair[0], $pair[1]);
+                $message = new ReducePathMessage($bug->getId(), static::getName(), $path->getLength(), $pair[0], $pair[1]);
                 $this->messageBus->dispatch($message);
                 ++$messagesCount;
             }

@@ -94,7 +94,7 @@ class EmailReporter implements ReporterInterface
         $steps = [];
         foreach ($path->getSteps() as $index => $step) {
             $steps[] = [
-                $index + 1,
+                $index,
                 $step->getTransition(),
                 $step->getData()->serialize(),
                 implode(',', $step->getPlaces()),

@@ -6,16 +6,14 @@ class CreateBugMessage
 {
     protected $title;
     protected $path;
-    protected $length;
     protected $message;
     protected $taskId;
     protected $status;
 
-    public function __construct(string $title, string $path, int $length, string $message, int $taskId, string $status)
+    public function __construct(string $title, string $path, string $message, int $taskId, string $status)
     {
         $this->title = $title;
         $this->path = $path;
-        $this->length = $length;
         $this->message = $message;
         $this->taskId = $taskId;
         $this->status = $status;
@@ -29,11 +27,6 @@ class CreateBugMessage
     public function getPath()
     {
         return $this->path;
-    }
-
-    public function getLength()
-    {
-        return $this->length;
     }
 
     public function getMessage()

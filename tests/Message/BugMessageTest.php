@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
@@ -10,6 +11,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class BugMessageTest extends MessageTestCase
@@ -27,6 +29,10 @@ class BugMessageTest extends MessageTestCase
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        /** @var Registry $workflowRegistry */
+        $workflowRegistry = self::$container->get(Registry::class);
+        $workflow = WorkflowHelper::get($workflowRegistry, $model);
+
         $path = Path::denormalize($steps);
         $expectedPath = Path::denormalize($expectedSteps);
         switch ($model) {
@@ -66,7 +72,7 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setPath($path);
-        $bug->setLength($path->countPlaces());
+        $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
@@ -84,9 +90,9 @@ class BugMessageTest extends MessageTestCase
         $this->assertEquals($bugMessage, $bugs[0]->getBugMessage());
         if ('random' !== $reducer) {
             $this->assertEquals($expectedPath->serialize(), $bugs[0]->getPath()->serialize());
-            $this->assertEquals($expectedPath->countPlaces(), $bugs[0]->getLength());
+            $this->assertEquals($expectedPath->getLength(), $bugs[0]->getPath()->getLength());
         } else {
-            $this->assertLessThanOrEqual($expectedPath->countPlaces(), $bugs[0]->getLength());
+            $this->assertLessThanOrEqual($expectedPath->getLength(), $bugs[0]->getPath()->getLength());
         }
 
         $this->assertTrue($this->hasReport($bugs[0]));

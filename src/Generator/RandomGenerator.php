@@ -47,7 +47,8 @@ class RandomGenerator extends AbstractGenerator
      */
     public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
-        $pathLength = 0;
+        // Number of steps in path, include the first step (transition = null, places = initial places)
+        $pathLength = 1;
         $visitedTransitions = [];
         $visitedPlaces = $workflow->getDefinition()->getInitialPlaces();
         $transitionCoverage = $generatorOptions->getTransitionCoverage() ?? $this->transitionCoverage;

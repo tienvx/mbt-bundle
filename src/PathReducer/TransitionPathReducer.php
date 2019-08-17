@@ -3,32 +3,32 @@
 namespace Tienvx\Bundle\MbtBundle\PathReducer;
 
 use Exception;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\PathBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\PathRunner;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReducePathMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReducePathMessage;
 
 class TransitionPathReducer extends AbstractPathReducer
 {
     /**
-     * @param Bug $bug
-     * @param int $length
-     * @param int $from
-     * @param int $to
+     * @param Bug      $bug
+     * @param Workflow $workflow
+     * @param int      $length
+     * @param int      $from
+     * @param int      $to
      *
      * @throws Exception
      * @throws Throwable
      */
-    public function handle(Bug $bug, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
     {
         $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
-        if ($bug->getLength() >= $length) {
+        if ($path->getLength() === $length) {
             // The reproduce path has not been reduced.
             $fromPlaces = $path->getPlacesAt($from);
             $toPlaces = $path->getPlacesAt($to);
@@ -36,7 +36,7 @@ class TransitionPathReducer extends AbstractPathReducer
                 1 === count(array_diff($toPlaces, $fromPlaces))) {
                 $newPath = PathBuilder::createWithoutTransition($path, $from, $to);
                 // Make sure new path shorter than old path.
-                if ($newPath->countPlaces() < $path->countPlaces()) {
+                if ($newPath->getLength() < $path->getLength()) {
                     try {
                         $subject = $this->subjectManager->createSubject($model);
                         PathRunner::run($newPath, $workflow, $subject);
@@ -64,15 +64,16 @@ class TransitionPathReducer extends AbstractPathReducer
         $path = $bug->getPath();
         $messagesCount = 0;
 
-        for ($i = 0; $i < $path->countPlaces() - 1; ++$i) {
+        for ($i = 0; $i < $path->getLength() - 1; ++$i) {
+            $j = $i + 1;
             $fromPlaces = $path->getPlacesAt($i);
-            $toPlaces = $path->getPlacesAt($i + 1);
+            $toPlaces = $path->getPlacesAt($j);
             if (count($fromPlaces) > 1 && count($toPlaces) > 1 && 1 === count(array_diff($fromPlaces, $toPlaces)) &&
                 1 === count(array_diff($toPlaces, $fromPlaces))) {
-                $message = new ReducePathMessage($bug->getId(), static::getName(), $path->countPlaces(), $i, $i + 1);
+                $message = new ReducePathMessage($bug->getId(), static::getName(), $path->getLength(), $i, $j);
                 $this->messageBus->dispatch($message);
                 ++$messagesCount;
-                if ($messagesCount >= $path->countPlaces()) {
+                if ($messagesCount >= $path->getLength()) {
                     break;
                 }
             }

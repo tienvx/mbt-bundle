@@ -79,8 +79,12 @@ class CaptureScreenshotsCommand extends AbstractCommand
             return;
         }
 
-        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
         $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+            return;
+        }
+
+        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
         $path = $bug->getPath();
 
         $this->setAnonymousToken();
@@ -96,6 +100,8 @@ class CaptureScreenshotsCommand extends AbstractCommand
                     } finally {
                         $subject->captureScreenshot($bugId, $index);
                     }
+                } elseif (0 === $index) {
+                    $subject->captureScreenshot($bugId, $index);
                 }
             }
         } finally {

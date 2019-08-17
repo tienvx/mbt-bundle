@@ -8,9 +8,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 class CreateBugCommand extends AbstractCommand
 {
@@ -24,10 +26,19 @@ class CreateBugCommand extends AbstractCommand
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
+    /**
+     * @var Registry
+     */
+    protected $workflowRegistry;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        Registry $workflowRegistry
+    ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
     }
@@ -40,7 +51,6 @@ class CreateBugCommand extends AbstractCommand
             ->setHelp('Create a bug.')
             ->addArgument('title', InputArgument::REQUIRED, 'Bug title.')
             ->addArgument('path', InputArgument::REQUIRED, 'Bug path.')
-            ->addArgument('length', InputArgument::REQUIRED, 'Bug length.')
             ->addArgument('message', InputArgument::REQUIRED, 'Bug message.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'Task id.')
             ->addArgument('status', InputArgument::REQUIRED, 'Bug status.');
@@ -56,7 +66,6 @@ class CreateBugCommand extends AbstractCommand
     {
         $title = $input->getArgument('title');
         $path = $input->getArgument('path');
-        $length = $input->getArgument('length');
         $message = $input->getArgument('message');
         $taskId = $input->getArgument('task-id');
         $status = $input->getArgument('status');
@@ -69,10 +78,13 @@ class CreateBugCommand extends AbstractCommand
             return;
         }
 
+        $model = $task->getModel()->getName();
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+
         $bug = new Bug();
         $bug->setTitle($title);
         $bug->setPath(Path::deserialize($path));
-        $bug->setLength($length);
+        $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setBugMessage($message);
         $bug->setTask($task);
         $bug->setStatus($status);
