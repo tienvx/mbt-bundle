@@ -27,11 +27,10 @@ class CreateBugMessageHandler implements MessageHandlerInterface
     public function __invoke(CreateBugMessage $message)
     {
         $title = $message->getTitle();
-        $path = $message->getPath();
-        $length = $message->getLength();
+        $steps = $message->getSteps();
         $bugMessage = $message->getMessage();
         $taskId = $message->getTaskId();
         $status = $message->getStatus();
-        $this->commandRunner->run(['mbt:bug:create', $title, $path, $length, $bugMessage, $taskId, $status]);
+        $this->commandRunner->run(['mbt:bug:create', $title, $steps, $bugMessage, $taskId, $status]);
     }
 }

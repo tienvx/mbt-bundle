@@ -17,7 +17,7 @@ framework:
 doctrine:
     dbal:
         driver: pdo_sqlite
-        path:   :memory:
+        path:   ":memory:"
         memory: true
     orm:
         auto_mapping: true

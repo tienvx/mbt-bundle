@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -14,7 +15,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->integerNode('max_path_length')->defaultValue(300)->end()
+                ->integerNode('max_steps')->defaultValue(300)->end()
                 ->floatNode('transition_coverage')->defaultValue(100)->min(0)->max(100)->end()
                 ->floatNode('place_coverage')->defaultValue(100)->min(0)->max(100)->end()
                 ->scalarNode('default_bug_title')->defaultValue('New bug found')->end()
@@ -31,6 +32,45 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
 
+        $this->addPredefinedCaseSection($rootNode);
+
         return $treeBuilder;
+    }
+
+    private function addPredefinedCaseSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->fixXmlConfig('predefined_case')
+            ->children()
+                ->arrayNode('predefined_cases')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('title')
+                                ->defaultValue('')
+                            ->end()
+                            ->scalarNode('model')
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->arrayNode('steps')
+                                ->arrayPrototype()
+                                    ->children()
+                                        ->scalarNode('transition')->end()
+                                        ->arrayNode('data')
+                                            ->arrayPrototype()
+                                                ->children()
+                                                    ->scalarNode('key')->end()
+                                                    ->scalarNode('value')->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 }

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -79,15 +79,18 @@ class CaptureScreenshotsCommand extends AbstractCommand
             return;
         }
 
-        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
         $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
-        $path = $bug->getPath();
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+            return;
+        }
+
+        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
 
         $this->setAnonymousToken();
 
         try {
-            foreach ($path->getSteps() as $index => $step) {
-                if ($step->getTransition() && $step->getData() instanceof StepData) {
+            foreach ($bug->getSteps() as $index => $step) {
+                if ($step->getTransition() && $step->getData() instanceof Data) {
                     try {
                         $workflow->apply($subject, $step->getTransition(), [
                             'data' => $step->getData(),
@@ -96,6 +99,8 @@ class CaptureScreenshotsCommand extends AbstractCommand
                     } finally {
                         $subject->captureScreenshot($bugId, $index);
                     }
+                } elseif (0 === $index) {
+                    $subject->captureScreenshot($bugId, $index);
                 }
             }
         } finally {

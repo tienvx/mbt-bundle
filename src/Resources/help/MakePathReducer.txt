@@ -1,5 +1,0 @@
-The <info>%command.name%</info> command generates a new path reducer class.
-
-<info>php %command.full_name% reducer-name CoolStuffPathReducer</info>
-
-If the argument is missing, the command will ask for the path reducer name and path reducer class name interactively.

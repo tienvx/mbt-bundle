@@ -29,7 +29,7 @@ class GeneratorOptions
      * @var int|null
      * @Assert\Positive
      */
-    private $maxPathLength;
+    private $maxSteps;
 
     /**
      * @var int|null
@@ -38,25 +38,25 @@ class GeneratorOptions
     private $bugId;
 
     /**
-     * @var int|null
-     * @MbtAssert\StaticCaseId
+     * @var string|null
+     * @MbtAssert\PredefinedCase
      */
-    private $staticCaseId;
+    private $predefinedCase;
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getStaticCaseId(): ?int
+    public function getPredefinedCase(): ?string
     {
-        return $this->staticCaseId;
+        return $this->predefinedCase;
     }
 
     /**
-     * @param int|null $staticCaseId
+     * @param string|null $predefinedCase
      */
-    public function setStaticCaseId(?int $staticCaseId): void
+    public function setPredefinedCase(?string $predefinedCase): void
     {
-        $this->staticCaseId = $staticCaseId;
+        $this->predefinedCase = $predefinedCase;
     }
 
     /**
@@ -78,17 +78,17 @@ class GeneratorOptions
     /**
      * @return int|null
      */
-    public function getMaxPathLength(): ?int
+    public function getMaxSteps(): ?int
     {
-        return $this->maxPathLength;
+        return $this->maxSteps;
     }
 
     /**
-     * @param int|null $maxPathLength
+     * @param int|null $maxSteps
      */
-    public function setMaxPathLength(?int $maxPathLength): void
+    public function setMaxSteps(?int $maxSteps): void
     {
-        $this->maxPathLength = $maxPathLength;
+        $this->maxSteps = $maxSteps;
     }
 
     /**
@@ -131,9 +131,9 @@ class GeneratorOptions
         $values = [
             'transitionCoverage' => $this->getTransitionCoverage(),
             'placeCoverage' => $this->getPlaceCoverage(),
-            'maxPathLength' => $this->getMaxPathLength(),
+            'maxSteps' => $this->getMaxSteps(),
             'bugId' => $this->getBugId(),
-            'staticCaseId' => $this->getStaticCaseId(),
+            'predefinedCase' => $this->getPredefinedCase(),
         ];
 
         return array_filter($values);
@@ -160,9 +160,9 @@ class GeneratorOptions
         $generatorOptions = new GeneratorOptions();
         $generatorOptions->setTransitionCoverage($data['transitionCoverage'] ?? null);
         $generatorOptions->setPlaceCoverage($data['placeCoverage'] ?? null);
-        $generatorOptions->setMaxPathLength($data['maxPathLength'] ?? null);
+        $generatorOptions->setMaxSteps($data['maxSteps'] ?? null);
         $generatorOptions->setBugId($data['bugId'] ?? null);
-        $generatorOptions->setStaticCaseId($data['staticCaseId'] ?? null);
+        $generatorOptions->setPredefinedCase($data['predefinedCase'] ?? null);
 
         return $generatorOptions;
     }

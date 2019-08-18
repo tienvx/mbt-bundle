@@ -1,0 +1,5 @@
+The <info>%command.name%</info> command generates a new reducer class.
+
+<info>php %command.full_name% reducer-name CoolStuffReducer</info>
+
+If the argument is missing, the command will ask for the reducer name and reducer class name interactively.

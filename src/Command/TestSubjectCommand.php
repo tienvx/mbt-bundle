@@ -11,7 +11,7 @@ use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
@@ -75,7 +75,7 @@ class TestSubjectCommand extends AbstractCommand
 
         try {
             foreach ($generator->generate($workflow, $subject, $generatorOptions) as $step) {
-                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof StepData) {
+                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
                     $workflow->apply($subject, $step->getTransition(), [
                         'data' => $step->getData(),
                     ]);

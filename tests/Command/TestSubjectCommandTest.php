@@ -18,7 +18,7 @@ class TestSubjectCommandTest extends CommandTestCase
             'model' => 'checkout',
             '--generator' => 'random',
             '--generator-options' => [
-                'maxPathLength' => 300,
+                'maxSteps' => 300,
                 'transitionCoverage' => 100,
                 'placeCoverage' => 100,
             ],

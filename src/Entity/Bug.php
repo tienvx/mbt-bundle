@@ -38,13 +38,13 @@ class Bug
      * @ORM\Column(type="text")
      * @Assert\NotNull
      */
-    private $path;
+    private $steps;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    private $length;
+    private $modelHash;
 
     /**
      * @ORM\ManyToOne(targetEntity="Task")
@@ -103,28 +103,28 @@ class Bug
     }
 
     /**
-     * @return Path
+     * @return Steps
      *
      * @throws Exception
      */
-    public function getPath(): Path
+    public function getSteps(): Steps
     {
-        return Path::deserialize($this->path);
+        return Steps::deserialize($this->steps);
     }
 
-    public function setPath(Path $path)
+    public function setSteps(Steps $steps)
     {
-        $this->path = $path->serialize();
+        $this->steps = $steps->serialize();
     }
 
-    public function getLength(): int
+    public function getModelHash(): string
     {
-        return $this->length;
+        return $this->modelHash;
     }
 
-    public function setLength(int $length)
+    public function setModelHash(string $modelHash)
     {
-        $this->length = $length;
+        $this->modelHash = $modelHash;
     }
 
     public function getTask(): Task

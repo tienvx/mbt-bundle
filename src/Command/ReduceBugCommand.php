@@ -9,16 +9,18 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
 class ReduceBugCommand extends AbstractCommand
 {
     /**
-     * @var PathReducerManager
+     * @var ReducerManager
      */
-    private $pathReducerManager;
+    private $reducerManager;
 
     /**
      * @var EntityManagerInterface
@@ -30,14 +32,21 @@ class ReduceBugCommand extends AbstractCommand
      */
     private $messageBus;
 
+    /**
+     * @var Registry
+     */
+    protected $workflowRegistry;
+
     public function __construct(
-        PathReducerManager $pathReducerManager,
+        ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        Registry $workflowRegistry
     ) {
-        $this->pathReducerManager = $pathReducerManager;
+        $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
+        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
     }
@@ -70,8 +79,13 @@ class ReduceBugCommand extends AbstractCommand
             return;
         }
 
-        $pathReducer = $this->pathReducerManager->getPathReducer($reducer);
-        $messagesCount = $pathReducer->dispatch($bug);
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+            return;
+        }
+
+        $reducer = $this->reducerManager->getReducer($reducer);
+        $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
             $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
         } else {

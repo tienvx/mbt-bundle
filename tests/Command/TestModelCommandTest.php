@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tienvx\Bundle\MbtBundle\Entity\Path;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 
 class TestModelCommandTest extends CommandTestCase
 {
@@ -44,7 +44,7 @@ class TestModelCommandTest extends CommandTestCase
         ];
         if ('random' === $generator) {
             $input['--generator-options'] = [
-                'maxPathLength' => 300,
+                'maxSteps' => 300,
                 'transitionCoverage' => $transitionCoverage,
                 'placeCoverage' => $placeCoverage,
             ];
@@ -55,17 +55,17 @@ class TestModelCommandTest extends CommandTestCase
         $commandTester->execute($input);
 
         $output = $commandTester->getDisplay();
-        $path = Path::deserialize($output);
-        $this->assertInstanceOf(Path::class, $path);
+        $steps = Steps::deserialize($output);
+        $this->assertInstanceOf(Steps::class, $steps);
 
-        if ($path instanceof Path) {
-            $uniquePlaces = $path->countUniquePlaces();
-            $uniqueTransitions = $path->countUniqueTransitions();
-            if ('all-transitions' === $generator && array_diff($path->getPlacesAt($path->countPlaces() - 1), ['home'])) {
+        if ($steps instanceof Steps) {
+            $uniquePlaces = $steps->countUniquePlaces();
+            $uniqueTransitions = $steps->countUniqueTransitions();
+            if ('all-transitions' === $generator && array_diff($steps->getPlacesAt($steps->getLength() - 1), ['home'])) {
                 // Sometime, we can't get the path through all transitions, so ignore it.
             } elseif ('all-places' === $generator && 1 === $uniqueTransitions) {
                 // Sometime, we can't get the path through all places, so ignore it.
-            } elseif ('random' === $generator && 300 === $path->countTransitions()) {
+            } elseif ('random' === $generator && 300 === $steps->getLength()) {
                 // Sometime we reach the path length limit, so ignore it.
                 $this->assertGreaterThanOrEqual(1, $uniqueTransitions);
                 $this->assertGreaterThanOrEqual(1, $uniquePlaces);

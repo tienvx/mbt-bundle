@@ -12,7 +12,7 @@ class Step
     protected $transition;
 
     /**
-     * @var StepData
+     * @var Data
      */
     protected $data;
 
@@ -21,7 +21,7 @@ class Step
      */
     protected $places;
 
-    public function __construct(?string $transition, StepData $data, array $places = [])
+    public function __construct(?string $transition, Data $data, array $places = [])
     {
         $this->transition = $transition;
         $this->data = $data;
@@ -33,7 +33,7 @@ class Step
         return $this->transition;
     }
 
-    public function getData(): StepData
+    public function getData(): Data
     {
         return $this->data;
     }
@@ -48,7 +48,7 @@ class Step
         $this->transition = $transition;
     }
 
-    public function setData(StepData $data)
+    public function setData(Data $data)
     {
         $this->data = $data;
     }
@@ -89,8 +89,8 @@ class Step
     {
         return new Step(
             $step['transition'],
-            StepData::denormalize($step['data']),
-            is_array($step['places']) ? $step['places'] : []
+            Data::denormalize($step['data']),
+            !empty($step['places']) && is_array($step['places']) ? $step['places'] : []
         );
     }
 

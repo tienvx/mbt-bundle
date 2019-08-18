@@ -5,7 +5,9 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 use Exception;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowHelper
@@ -39,6 +41,46 @@ class WorkflowHelper
         $subject = static::fakeSubject();
 
         return $registry->all($subject);
+    }
+
+    public static function checksum(Workflow $workflow)
+    {
+        $definition = $workflow->getDefinition();
+        $content = [
+            'places' => $definition->getPlaces(),
+            'transitions' => array_map(function (Transition $transition) {
+                return [
+                    'name' => $transition->getName(),
+                    'froms' => $transition->getFroms(),
+                    'tos' => $transition->getTos(),
+                ];
+            }, $definition->getTransitions()),
+            'initialPlaces' => $definition->getInitialPlaces(),
+        ];
+
+        return md5(json_encode($content));
+    }
+
+    /**
+     * @param Steps    $steps
+     * @param Workflow $workflow
+     *
+     * @return bool
+     */
+    public static function validate(Steps $steps, Workflow $workflow): bool
+    {
+        $definition = $workflow->getDefinition();
+        $transitions = array_map(function (Transition $transition) {
+            return $transition->getName();
+        }, $definition->getTransitions());
+
+        foreach ($steps as $step) {
+            if (null !== $step->getTransition() && !in_array($step->getTransition(), $transitions)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function fakeSubject()

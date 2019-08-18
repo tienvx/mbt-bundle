@@ -87,14 +87,13 @@ class EmailReporter implements ReporterInterface
             return;
         }
 
-        $path = $bug->getPath();
         $model = $bug->getTask()->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
 
         $steps = [];
-        foreach ($path->getSteps() as $index => $step) {
+        foreach ($bug->getSteps() as $index => $step) {
             $steps[] = [
-                $index + 1,
+                $index,
                 $step->getTransition(),
                 $step->getData()->serialize(),
                 implode(',', $step->getPlaces()),

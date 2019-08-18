@@ -7,7 +7,7 @@ use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -16,11 +16,11 @@ class ProbabilityGenerator extends AbstractGenerator
     /**
      * @var int
      */
-    protected $maxPathLength = 300;
+    protected $maxSteps = 300;
 
-    public function setMaxPathLength(int $maxPathLength)
+    public function setMaxSteps(int $maxSteps)
     {
-        $this->maxPathLength = $maxPathLength;
+        $this->maxSteps = $maxSteps;
     }
 
     /**
@@ -28,8 +28,9 @@ class ProbabilityGenerator extends AbstractGenerator
      */
     public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
     {
-        $pathLength = 0;
-        $maxPathLength = $generatorOptions->getMaxPathLength() ?? $this->maxPathLength;
+        // Number of steps, include the first step (transition = null, places = initial places)
+        $stepsCount = 1;
+        $maxSteps = $generatorOptions->getMaxSteps() ?? $this->maxSteps;
 
         while (true) {
             /** @var Transition[] $transitions */
@@ -42,12 +43,12 @@ class ProbabilityGenerator extends AbstractGenerator
                 }
                 $transitionName = Randomizer::randomByWeight($transitionsWithProbability);
 
-                yield new Step($transitionName, new StepData());
+                yield new Step($transitionName, new Data());
 
                 // Update current state.
-                ++$pathLength;
+                ++$stepsCount;
 
-                if ($pathLength >= $maxPathLength) {
+                if ($stepsCount >= $maxSteps) {
                     break;
                 }
             } else {

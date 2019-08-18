@@ -5,7 +5,7 @@ namespace App\Subject;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
-use Tienvx\Bundle\MbtBundle\Entity\StepData;
+use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ShoppingCart extends AbstractSubject
@@ -137,11 +137,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewAnyCategoryFromHome")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewAnyCategoryFromHome(StepData $data)
+    public function viewAnyCategoryFromHome(Data $data)
     {
         if ($data->has('category')) {
             $category = $data->get('category');
@@ -159,11 +159,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewOtherCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewOtherCategory(StepData $data)
+    public function viewOtherCategory(Data $data)
     {
         if ($data->has('category')) {
             $category = $data->get('category');
@@ -181,11 +181,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewAnyCategoryFromProduct")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewAnyCategoryFromProduct(StepData $data)
+    public function viewAnyCategoryFromProduct(Data $data)
     {
         if ($data->has('category')) {
             $category = $data->get('category');
@@ -203,11 +203,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewAnyCategoryFromCart")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewAnyCategoryFromCart(StepData $data)
+    public function viewAnyCategoryFromCart(Data $data)
     {
         if ($data->has('category')) {
             $category = $data->get('category');
@@ -225,11 +225,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewProductFromHome")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewProductFromHome(StepData $data)
+    public function viewProductFromHome(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -247,11 +247,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewProductFromCart")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewProductFromCart(StepData $data)
+    public function viewProductFromCart(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -270,11 +270,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewProductFromCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function viewProductFromCategory(StepData $data)
+    public function viewProductFromCategory(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -294,9 +294,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewCartFromHome")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function viewCartFromHome(StepData $data)
+    public function viewCartFromHome(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -305,9 +305,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewCartFromCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function viewCartFromCategory(StepData $data)
+    public function viewCartFromCategory(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -316,9 +316,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewCartFromProduct")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function viewCartFromProduct(StepData $data)
+    public function viewCartFromProduct(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -327,9 +327,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewCartFromCheckout")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function viewCartFromCheckout(StepData $data)
+    public function viewCartFromCheckout(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -338,9 +338,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("checkoutFromHome")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function checkoutFromHome(StepData $data)
+    public function checkoutFromHome(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -349,9 +349,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("checkoutFromCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function checkoutFromCategory(StepData $data)
+    public function checkoutFromCategory(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -360,9 +360,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("checkoutFromProduct")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function checkoutFromProduct(StepData $data)
+    public function checkoutFromProduct(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -371,9 +371,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("checkoutFromCart")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function checkoutFromCart(StepData $data)
+    public function checkoutFromCart(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -382,9 +382,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("backToHomeFromCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function backToHomeFromCategory(StepData $data)
+    public function backToHomeFromCategory(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -393,9 +393,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("backToHomeFromProduct")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function backToHomeFromProduct(StepData $data)
+    public function backToHomeFromProduct(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -404,9 +404,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("backToHomeFromCart")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function backToHomeFromCart(StepData $data)
+    public function backToHomeFromCart(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -415,9 +415,9 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("backToHomeFromCheckout")
      *
-     * @param StepData $data
+     * @param Data $data
      */
-    public function backToHomeFromCheckout(StepData $data)
+    public function backToHomeFromCheckout(Data $data)
     {
         $this->category = null;
         $this->product = null;
@@ -426,11 +426,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("addFromHome")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function addFromHome(StepData $data)
+    public function addFromHome(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -456,11 +456,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("addFromCategory")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function addFromCategory(StepData $data)
+    public function addFromCategory(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -488,11 +488,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("addFromProduct")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function addFromProduct(StepData $data)
+    public function addFromProduct(Data $data)
     {
         if (!$this->testingModel) {
             if (in_array($this->product, $this->needOptions)) {
@@ -509,11 +509,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("remove")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function remove(StepData $data)
+    public function remove(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');
@@ -531,11 +531,11 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("update")
      *
-     * @param StepData $data
+     * @param Data $data
      *
      * @throws Exception
      */
-    public function update(StepData $data)
+    public function update(Data $data)
     {
         if ($data->has('product')) {
             $product = $data->get('product');

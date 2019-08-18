@@ -7,7 +7,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer as ReducerEntity;
-use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
 /**
  * @Annotation
@@ -15,13 +15,13 @@ use Tienvx\Bundle\MbtBundle\PathReducer\PathReducerManager;
 class ReducerValidator extends ConstraintValidator
 {
     /**
-     * @var PathReducerManager
+     * @var ReducerManager
      */
-    protected $pathReducerManager;
+    protected $reducerManager;
 
-    public function __construct(PathReducerManager $pathReducerManager)
+    public function __construct(ReducerManager $reducerManager)
     {
-        $this->pathReducerManager = $pathReducerManager;
+        $this->reducerManager = $reducerManager;
     }
 
     public function validate($value, Constraint $constraint)
@@ -34,7 +34,7 @@ class ReducerValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, ReducerEntity::class);
         }
 
-        if (!$this->pathReducerManager->hasPathReducer($value->getName())) {
+        if (!$this->reducerManager->hasReducer($value->getName())) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();

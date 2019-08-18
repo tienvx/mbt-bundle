@@ -59,7 +59,7 @@ class TaskMessageTest extends MessageTestCase
             $this->assertEquals(1, count($bugs));
             if ('shopping_cart' === $model) {
                 $ids = [];
-                foreach ($bugs[0]->getPath()->getSteps() as $step) {
+                foreach ($bugs[0]->getSteps() as $step) {
                     if ($step->getData() && $step->getData()->has('product')) {
                         $ids[] = $step->getData()->get('product');
                     }
@@ -86,7 +86,7 @@ class TaskMessageTest extends MessageTestCase
 
             $bugId = $bugs[0]->getId();
             if ($takeScreenshots) {
-                $this->assertEquals($bugs[0]->getLength() - 1, $this->countScreenshots($bugId));
+                $this->assertEquals($bugs[0]->getSteps()->getLength(), $this->countScreenshots($bugId));
             } else {
                 $this->assertEquals(0, $this->countScreenshots($bugId));
             }
