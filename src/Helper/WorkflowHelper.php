@@ -7,7 +7,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowHelper
@@ -62,21 +62,19 @@ class WorkflowHelper
     }
 
     /**
-     * @param PredefinedCase $predefinedCase
-     * @param Workflow       $workflow
+     * @param Steps    $steps
+     * @param Workflow $workflow
      *
      * @return bool
-     *
-     * @throws Exception
      */
-    public static function validate(PredefinedCase $predefinedCase, Workflow $workflow): bool
+    public static function validate(Steps $steps, Workflow $workflow): bool
     {
         $definition = $workflow->getDefinition();
         $transitions = array_map(function (Transition $transition) {
             return $transition->getName();
         }, $definition->getTransitions());
 
-        foreach ($predefinedCase->getSteps() as $step) {
+        foreach ($steps as $step) {
             if (null !== $step->getTransition() && !in_array($step->getTransition(), $transitions)) {
                 return false;
             }

@@ -44,7 +44,7 @@ class TestPredefinedCaseGenerator extends AbstractGenerator
             throw new Exception(sprintf('The pre-defined case with name %s can not be tested with workflow %s', $name, $workflow->getName()));
         }
 
-        if (!WorkflowHelper::validate($predefinedCase, $workflow)) {
+        if (!WorkflowHelper::validate($predefinedCase->getSteps(), $workflow)) {
             throw new Exception(sprintf('The pre-defined case with name %s is outdated with workflow %s', $name, $workflow->getName()));
         }
 

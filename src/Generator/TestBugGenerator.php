@@ -8,6 +8,7 @@ use Generator;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class TestBugGenerator extends AbstractGenerator
@@ -42,6 +43,10 @@ class TestBugGenerator extends AbstractGenerator
 
         if ($bug->getTask()->getModel()->getName() !== $workflow->getName()) {
             throw new Exception(sprintf('The bug with id %d can not be tested with workflow %s', $bugId, $workflow->getName()));
+        }
+
+        if (!WorkflowHelper::validate($bug->getSteps(), $workflow)) {
+            throw new Exception(sprintf('The bug with id %d is outdated with workflow %s', $bugId, $workflow->getName()));
         }
 
         foreach ($bug->getSteps() as $step) {
