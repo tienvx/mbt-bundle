@@ -7,6 +7,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowHelper
@@ -58,6 +59,30 @@ class WorkflowHelper
         ];
 
         return md5(json_encode($content));
+    }
+
+    /**
+     * @param PredefinedCase $predefinedCase
+     * @param Workflow       $workflow
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public static function validate(PredefinedCase $predefinedCase, Workflow $workflow): bool
+    {
+        $definition = $workflow->getDefinition();
+        $transitions = array_map(function (Transition $transition) {
+            return $transition->getName();
+        }, $definition->getTransitions());
+
+        foreach ($predefinedCase->getSteps() as $step) {
+            if (null !== $step->getTransition() && !in_array($step->getTransition(), $transitions)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function fakeSubject()

@@ -6,6 +6,7 @@ use Exception;
 use Generator;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
@@ -41,6 +42,10 @@ class TestPredefinedCaseGenerator extends AbstractGenerator
         $predefinedCase = $this->predefinedCaseManager->get($name);
         if ($predefinedCase->getModel()->getName() !== $workflow->getName()) {
             throw new Exception(sprintf('The pre-defined case with name %s can not be tested with workflow %s', $name, $workflow->getName()));
+        }
+
+        if (!WorkflowHelper::validate($predefinedCase, $workflow)) {
+            throw new Exception(sprintf('The pre-defined case with name %s is outdated with workflow %s', $name, $workflow->getName()));
         }
 
         foreach ($predefinedCase->getSteps() as $step) {
