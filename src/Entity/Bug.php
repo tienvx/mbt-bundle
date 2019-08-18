@@ -48,7 +48,7 @@ class Bug
 
     /**
      * @ORM\ManyToOne(targetEntity="Task")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      */
     private $task;
 
@@ -127,7 +127,7 @@ class Bug
         $this->modelHash = $modelHash;
     }
 
-    public function getTask(): Task
+    public function getTask(): ?Task
     {
         return $this->task;
     }

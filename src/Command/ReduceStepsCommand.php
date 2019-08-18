@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
@@ -71,10 +72,19 @@ class ReduceStepsCommand extends AbstractCommand
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug || !$bug instanceof Bug) {
+            $output->writeln(sprintf('No bug found for id %d', $bugId));
+
             return;
         }
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        $task = $bug->getTask();
+        if (!$task instanceof Task) {
+            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
+
+            return;
+        }
+
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             return;
         }

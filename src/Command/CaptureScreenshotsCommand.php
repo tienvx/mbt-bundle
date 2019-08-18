@@ -12,6 +12,7 @@ use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -70,21 +71,27 @@ class CaptureScreenshotsCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bugId = $input->getArgument('bug-id');
-        /** @var Bug $bug */
         $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
-        if (!$bug) {
+        if (!$bug || !$bug instanceof Bug) {
             $output->writeln(sprintf('No bug found for id %d', $bugId));
 
             return;
         }
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        $task = $bug->getTask();
+        if (!$task instanceof Task) {
+            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
+
+            return;
+        }
+
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             return;
         }
 
-        $subject = $this->getSubject($bug->getTask()->getModel()->getName(), $bug->getId());
+        $subject = $this->getSubject($task->getModel()->getName(), $bug->getId());
 
         $this->setAnonymousToken();
 

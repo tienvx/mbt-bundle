@@ -38,8 +38,11 @@ class EntitySubscriber implements EventSubscriber
             $this->messageBus->dispatch(new ExecuteTaskMessage($entity->getId()));
         }
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new ApplyBugTransitionMessage($entity->getId(), BugWorkflow::REDUCE));
-            $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $entity->getTask()->getReducer()->getName()));
+            $task = $entity->getTask();
+            if ($task instanceof Task) {
+                $this->messageBus->dispatch(new ApplyBugTransitionMessage($entity->getId(), BugWorkflow::REDUCE));
+                $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $task->getReducer()->getName()));
+            }
         }
     }
 
@@ -53,7 +56,10 @@ class EntitySubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getTask()->getModel()->getName()));
+            $task = $entity->getTask();
+            if ($task instanceof Task) {
+                $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $task->getModel()->getName()));
+            }
         }
     }
 
