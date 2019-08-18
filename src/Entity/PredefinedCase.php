@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 class PredefinedCase
 {
