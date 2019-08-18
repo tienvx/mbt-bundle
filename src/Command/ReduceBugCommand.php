@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
@@ -79,7 +80,14 @@ class ReduceBugCommand extends AbstractCommand
             return;
         }
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getTask()->getModel()->getName());
+        $task = $bug->getTask();
+        if (!$task instanceof Task) {
+            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
+
+            return;
+        }
+
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             return;
         }

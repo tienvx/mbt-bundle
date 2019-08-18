@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
@@ -62,14 +63,21 @@ class FinishReduceBugCommand extends AbstractCommand
             return;
         }
 
+        $task = $bug->getTask();
+        if (!$task instanceof Task) {
+            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
+
+            return;
+        }
+
         $this->messageBus->dispatch(new ApplyBugTransitionMessage($bug->getId(), BugWorkflow::COMPLETE_REDUCE));
 
-        if (!empty($bug->getTask()->getReporters())) {
-            foreach ($bug->getTask()->getReporters() as $reporter) {
+        if (!empty($task->getReporters())) {
+            foreach ($task->getReporters() as $reporter) {
                 $this->messageBus->dispatch(new ReportBugMessage($bug->getId(), $reporter->getName()));
             }
         }
-        if ($bug->getTask()->getTakeScreenshots()) {
+        if ($task->getTakeScreenshots()) {
             $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
         }
     }

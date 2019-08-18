@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Reporter;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 
 class SlackReporter implements ReporterInterface
 {
@@ -77,6 +78,11 @@ class SlackReporter implements ReporterInterface
             return;
         }
 
+        $task = $bug->getTask();
+        if (!$task instanceof Task) {
+            return;
+        }
+
         $client = new \Maknz\Slack\Client($this->slackHookUrl);
 
         $client
@@ -93,7 +99,7 @@ class SlackReporter implements ReporterInterface
                     ],
                     [
                         'title' => 'Task',
-                        'value' => $bug->getTask()->getTitle(),
+                        'value' => $task->getTitle(),
                     ],
                     [
                         'title' => 'Bug Message',
