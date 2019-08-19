@@ -27,6 +27,8 @@ class CommandRunner
     }
 
     /**
+     * Call console command corresponding to the message is being handled.
+     *
      * @param array $parameters
      *
      * @throws Exception
@@ -42,6 +44,9 @@ class CommandRunner
         if ($exitCode) {
             $error = $process->getErrorOutput();
             $this->logger->error($error);
+
+            // Re-sent the message to the transport to be tried again
+            throw new Exception($error);
         }
     }
 }
