@@ -10,7 +10,7 @@ class PredefinedCaseManager
     /**
      * @var PredefinedCase[]
      */
-    private $predefinedCases;
+    private $predefinedCases = [];
 
     public function add(PredefinedCase $predefinedCase)
     {
