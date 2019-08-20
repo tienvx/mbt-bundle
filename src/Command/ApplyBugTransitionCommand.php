@@ -37,7 +37,8 @@ class ApplyBugTransitionCommand extends AbstractCommand
             ->setDescription('Apply transition of a bug.')
             ->setHelp("This command change status of a bug by applying a transition of bug's workflow.")
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to update.')
-            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.');
+            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.')
+            ->setHidden(true);
     }
 
     /**
@@ -52,9 +53,7 @@ class ApplyBugTransitionCommand extends AbstractCommand
         $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
         if (!$bug || !$bug instanceof Bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-
-            return;
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
         $transition = $input->getArgument('transition');

@@ -53,7 +53,8 @@ class CreateBugCommand extends AbstractCommand
             ->addArgument('steps', InputArgument::REQUIRED, 'Bug steps.')
             ->addArgument('message', InputArgument::REQUIRED, 'Bug message.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'Task id.')
-            ->addArgument('status', InputArgument::REQUIRED, 'Bug status.');
+            ->addArgument('status', InputArgument::REQUIRED, 'Bug status.')
+            ->setHidden(true);
     }
 
     /**
@@ -73,9 +74,7 @@ class CreateBugCommand extends AbstractCommand
         $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 
         if (!$task || !$task instanceof Task) {
-            $output->writeln(sprintf('No task found for id %d', $taskId));
-
-            return;
+            throw new Exception(sprintf('No task found for id %d', $taskId));
         }
 
         $model = $task->getModel()->getName();
@@ -92,9 +91,7 @@ class CreateBugCommand extends AbstractCommand
         $errors = $this->validator->validate($bug);
 
         if (count($errors) > 0) {
-            $output->writeln((string) $errors);
-
-            return;
+            throw new Exception(sprintf('Invalid bug. Reason: %s', (string) $errors));
         }
 
         $this->entityManager->persist($bug);

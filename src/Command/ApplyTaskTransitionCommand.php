@@ -37,7 +37,8 @@ class ApplyTaskTransitionCommand extends AbstractCommand
             ->setDescription('Apply transition of a task.')
             ->setHelp("This command update status of a task by applying a transition of task's workflow.")
             ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to update.')
-            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.');
+            ->addArgument('transition', InputArgument::REQUIRED, 'The transition to apply.')
+            ->setHidden(true);
     }
 
     /**
@@ -52,9 +53,7 @@ class ApplyTaskTransitionCommand extends AbstractCommand
         $task = $this->entityManager->getRepository(Task::class)->find($taskId);
 
         if (!$task || !$task instanceof Task) {
-            $output->writeln(sprintf('No task found for id %d', $taskId));
-
-            return;
+            throw new Exception(sprintf('No task found for id %d', $taskId));
         }
 
         $transition = $input->getArgument('transition');

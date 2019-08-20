@@ -42,7 +42,7 @@ class GraphDumpCommand extends Command
                 new InputOption('label', 'l', InputOption::VALUE_REQUIRED, 'Labels a graph'),
                 new InputOption('dump-format', null, InputOption::VALUE_REQUIRED, 'The dump format [dot|puml]', 'dot'),
             ))
-            ->setDescription('Dump a graph')
+            ->setDescription('Dump a graph (of a model)')
             ->setHelp(
                 <<<'EOF'
 The <info>%command.name%</info> command dumps the graphical representation of a
