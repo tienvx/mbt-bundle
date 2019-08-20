@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -24,7 +26,7 @@ class ReduceBugCommand extends AbstractCommand
     private $reducerManager;
 
     /**
-     * @var EntityManagerInterface
+     * @var EntityManager
      */
     private $entityManager;
 
@@ -68,6 +70,7 @@ class ReduceBugCommand extends AbstractCommand
      * @param OutputInterface $output
      *
      * @throws Exception
+     * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -93,11 +96,14 @@ class ReduceBugCommand extends AbstractCommand
         $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
             $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
-        } else {
+        } elseif ($messagesCount > 0) {
             $callback = function () use ($bug, $messagesCount) {
-                $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
+                // Reload the bug for the newest messages count.
+                $bug = $this->entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
 
-                $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
+                if ($bug instanceof Bug) {
+                    $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
+                }
             };
 
             $this->entityManager->transactional($callback);
