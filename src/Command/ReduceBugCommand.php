@@ -59,7 +59,8 @@ class ReduceBugCommand extends AbstractCommand
             ->setDescription('Reduce the reproduce steps of the bug.')
             ->setHelp("Make bug's reproduce steps shorter.")
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to reduce the steps.')
-            ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.');
+            ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.')
+            ->setHidden(true);
     }
 
     /**
@@ -75,21 +76,17 @@ class ReduceBugCommand extends AbstractCommand
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug instanceof Bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-
-            return;
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
         $task = $bug->getTask();
         if (!$task instanceof Task) {
-            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
-
-            return;
+            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
         }
 
         $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
-            return;
+            throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
         $reducer = $this->reducerManager->getReducer($reducer);

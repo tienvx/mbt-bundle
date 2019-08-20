@@ -47,7 +47,8 @@ class RemoveScreenshotsCommand extends Command
             ->setDescription('Remove screenshots of a bug.')
             ->setHelp('Remove screenshots of a bug when the bug is removed.')
             ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
-            ->addArgument('model', InputArgument::REQUIRED, 'The model of the task.');
+            ->addArgument('model', InputArgument::REQUIRED, 'The model of the task.')
+            ->setHidden(true);
     }
 
     /**

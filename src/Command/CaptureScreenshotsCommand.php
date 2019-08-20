@@ -59,7 +59,8 @@ class CaptureScreenshotsCommand extends AbstractCommand
             ->setName('mbt:bug:capture-screenshots')
             ->setDescription('Capture screenshots of a bug.')
             ->setHelp('Capture screenshots of every reproduce steps of a bug.')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id to report.')
+            ->setHidden(true);
     }
 
     /**
@@ -74,21 +75,17 @@ class CaptureScreenshotsCommand extends AbstractCommand
         $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
 
         if (!$bug || !$bug instanceof Bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-
-            return;
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
         $task = $bug->getTask();
         if (!$task instanceof Task) {
-            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
-
-            return;
+            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
         }
 
         $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
-            return;
+            throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
         $subject = $this->getSubject($task->getModel()->getName(), $bug->getId());

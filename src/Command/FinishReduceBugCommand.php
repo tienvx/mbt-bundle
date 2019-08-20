@@ -43,7 +43,8 @@ class FinishReduceBugCommand extends AbstractCommand
             ->setName('mbt:bug:finish-reduce')
             ->setDescription('Finish reduce bug.')
             ->setHelp('Do things after finish reducing bugs: report bug, capture screenshots')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
+            ->setHidden(true);
     }
 
     /**
@@ -58,16 +59,12 @@ class FinishReduceBugCommand extends AbstractCommand
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug instanceof Bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-
-            return;
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
         $task = $bug->getTask();
         if (!$task instanceof Task) {
-            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
-
-            return;
+            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
         }
 
         $this->messageBus->dispatch(new ApplyBugTransitionMessage($bug->getId(), BugWorkflow::COMPLETE_REDUCE));

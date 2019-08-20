@@ -42,7 +42,8 @@ class FinishReduceStepsCommand extends AbstractCommand
             ->setName('mbt:steps:finish-reduce')
             ->setDescription('Finish reduce path')
             ->setHelp('Do things after finish reducing path: reduce messages count, finish reduce bug if needed')
-            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.');
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug id.')
+            ->setHidden(true);
     }
 
     /**
@@ -59,7 +60,11 @@ class FinishReduceStepsCommand extends AbstractCommand
         $callback = function () use ($bugId) {
             $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
-            if ($bug instanceof Bug && $bug->getMessagesCount() > 0) {
+            if (!$bug instanceof Bug) {
+                throw new Exception(sprintf('No bug found for id %d', $bugId));
+            }
+
+            if ($bug->getMessagesCount() > 0) {
                 $bug->setMessagesCount($bug->getMessagesCount() - 1);
             }
 

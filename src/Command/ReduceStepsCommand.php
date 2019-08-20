@@ -53,7 +53,8 @@ class ReduceStepsCommand extends AbstractCommand
             ->addArgument('reducer', InputArgument::REQUIRED, 'The path reducer.')
             ->addArgument('length', InputArgument::REQUIRED, 'The path length.')
             ->addArgument('from', InputArgument::REQUIRED, 'From places.')
-            ->addArgument('to', InputArgument::REQUIRED, 'To places.');
+            ->addArgument('to', InputArgument::REQUIRED, 'To places.')
+            ->setHidden(true);
     }
 
     /**
@@ -72,21 +73,17 @@ class ReduceStepsCommand extends AbstractCommand
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug || !$bug instanceof Bug) {
-            $output->writeln(sprintf('No bug found for id %d', $bugId));
-
-            return;
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
         $task = $bug->getTask();
         if (!$task instanceof Task) {
-            $output->writeln(sprintf('Task of bug with id %d is missing', $bugId));
-
-            return;
+            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
         }
 
         $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
-            return;
+            throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
         $this->setAnonymousToken();
