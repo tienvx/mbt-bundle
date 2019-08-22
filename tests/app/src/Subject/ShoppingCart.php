@@ -6,6 +6,7 @@ use Exception;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
+use Tienvx\Bundle\MbtBundle\Helper\DataHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class ShoppingCart extends AbstractSubject
@@ -143,15 +144,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromHome(Data $data)
     {
-        if ($data->has('category')) {
-            $category = $data->get('category');
-            if (!in_array($category, $this->categories)) {
-                throw new Exception('Selected category is invalid');
-            }
-        } else {
-            $category = $this->categories[array_rand($this->categories)];
-            $data->set('category', $category);
-        }
+        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -165,15 +158,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewOtherCategory(Data $data)
     {
-        if ($data->has('category')) {
-            $category = $data->get('category');
-            if (!in_array($category, $this->categories)) {
-                throw new Exception('Selected category is invalid');
-            }
-        } else {
-            $category = $this->categories[array_rand($this->categories)];
-            $data->set('category', $category);
-        }
+        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -187,15 +172,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromProduct(Data $data)
     {
-        if ($data->has('category')) {
-            $category = $data->get('category');
-            if (!in_array($category, $this->categories)) {
-                throw new Exception('Selected category is invalid');
-            }
-        } else {
-            $category = $this->categories[array_rand($this->categories)];
-            $data->set('category', $category);
-        }
+        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -209,15 +186,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromCart(Data $data)
     {
-        if ($data->has('category')) {
-            $category = $data->get('category');
-            if (!in_array($category, $this->categories)) {
-                throw new Exception('Selected category is invalid');
-            }
-        } else {
-            $category = $this->categories[array_rand($this->categories)];
-            $data->set('category', $category);
-        }
+        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -231,15 +200,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromHome(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (!in_array($product, $this->featuredProducts)) {
-                throw new Exception('Selected product is not in featured products list');
-            }
-        } else {
-            $product = $this->featuredProducts[array_rand($this->featuredProducts)];
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
         $this->product = $product;
         $this->category = null;
     }
@@ -253,16 +214,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCart(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (empty($this->cart[$product])) {
-                throw new Exception('Selected product is not in cart');
-            }
-        } else {
-            // This transition need this guard: subject.cartHasProducts()
-            $product = array_rand($this->cart);
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         $this->product = $product;
         $this->category = null;
     }
@@ -276,17 +228,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCategory(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (!in_array($product, $this->productsInCategory[$this->category])) {
-                throw new Exception('Selected product is not in current category');
-            }
-        } else {
-            // This transition need this guard: subject.categoryHasProducts()
-            $products = $this->productsInCategory[$this->category] ?? [];
-            $product = $products[array_rand($products)];
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
         $this->product = $product;
         $this->category = null;
     }
@@ -432,15 +374,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromHome(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (!in_array($product, $this->featuredProducts)) {
-                throw new Exception('Selected product is not in featured products list');
-            }
-        } else {
-            $product = $this->featuredProducts[array_rand($this->featuredProducts)];
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -462,17 +396,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromCategory(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (!in_array($product, $this->productsInCategory[$this->category])) {
-                throw new Exception('Selected product is not in current category');
-            }
-        } else {
-            // This transition need this guard: subject.categoryHasProducts()
-            $products = $this->productsInCategory[$this->category] ?? [];
-            $product = $products[array_rand($products)];
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
         if (!$this->testingModel) {
             if (in_array($product, $this->needOptions)) {
                 throw new Exception('You need to specify options for this product! Can not add product');
@@ -515,16 +439,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function remove(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (empty($this->cart[$product])) {
-                throw new Exception('Selected product is not in cart');
-            }
-        } else {
-            // This transition need this guard: subject.cartHasProducts()
-            $product = array_rand($this->cart);
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         unset($this->cart[$product]);
     }
 
@@ -537,16 +452,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function update(Data $data)
     {
-        if ($data->has('product')) {
-            $product = $data->get('product');
-            if (empty($this->cart[$product])) {
-                throw new Exception('Selected product is not in cart');
-            }
-        } else {
-            // This transition need this guard: subject.cartHasProducts()
-            $product = array_rand($this->cart);
-            $data->set('product', $product);
-        }
+        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         $this->cart[$product] = rand(1, 99);
     }
 
@@ -640,5 +546,77 @@ class ShoppingCart extends AbstractSubject
     public function getScreenshotUrl($bugId, $index)
     {
         return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
+    }
+
+    public function randomCategory()
+    {
+        return $this->categories[array_rand($this->categories)];
+    }
+
+    /**
+     * @param $category
+     *
+     * @throws Exception
+     */
+    public function validateCategory($category)
+    {
+        if (!in_array($category, $this->categories)) {
+            throw new Exception('Selected category is invalid');
+        }
+    }
+
+    public function randomProductFromHome()
+    {
+        return $this->featuredProducts[array_rand($this->featuredProducts)];
+    }
+
+    /**
+     * @param $product
+     *
+     * @throws Exception
+     */
+    public function validateProductFromHome($product)
+    {
+        if (!in_array($product, $this->featuredProducts)) {
+            throw new Exception('Selected product is not in featured products list');
+        }
+    }
+
+    public function randomProductFromCart()
+    {
+        // This transition need this guard: subject.cartHasProducts()
+        return array_rand($this->cart);
+    }
+
+    /**
+     * @param $product
+     *
+     * @throws Exception
+     */
+    public function validateProductFromCart($product)
+    {
+        if (empty($this->cart[$product])) {
+            throw new Exception('Selected product is not in cart');
+        }
+    }
+
+    public function randomProductFromCategory()
+    {
+        // This transition need this guard: subject.categoryHasProducts()
+        $products = $this->productsInCategory[$this->category] ?? [];
+
+        return $products[array_rand($products)];
+    }
+
+    /**
+     * @param $product
+     *
+     * @throws Exception
+     */
+    public function validateProductFromCategory($product)
+    {
+        if (!in_array($product, $this->productsInCategory[$this->category])) {
+            throw new Exception('Selected product is not in current category');
+        }
     }
 }
