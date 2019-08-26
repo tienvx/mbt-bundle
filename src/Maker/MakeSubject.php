@@ -78,21 +78,24 @@ final class MakeSubject extends AbstractMaker
             'Subject\\'
         );
 
-        $methods = [];
+        $places = [];
         foreach ($workflow->getDefinition()->getPlaces() as $place => $status) {
             if ($status) {
-                $methods[] = $place;
+                $places[$place] = $this->camelCase($place);
             }
         }
+
+        $transitions = [];
         foreach ($workflow->getDefinition()->getTransitions() as $transition) {
-            $methods[] = $transition->getName();
+            $transitions[$transition->getName()] = $this->camelCase($transition->getName());
         }
 
         $generator->generateClass(
             $subjectClassNameDetails->getFullName(),
             __DIR__.'/../Resources/skeleton/subject/Subject.php.tpl',
             [
-                'methods' => array_unique($methods),
+                'places' => $places,
+                'transitions' => $transitions,
                 'model' => $model,
             ]
         );
@@ -103,6 +106,26 @@ final class MakeSubject extends AbstractMaker
         $io->text([
             'Next: Open the new generated subject class and implement places and transitions!',
         ]);
+    }
+
+    /**
+     * @see http://www.mendoweb.be/blog/php-convert-string-to-camelcase-string/
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+    private function camelCase(string $str): string
+    {
+        // non-alpha and non-numeric characters become spaces
+        $str = preg_replace('/[^a-z0-9]+/i', ' ', $str);
+        $str = trim($str);
+        // uppercase the first character of each word
+        $str = ucwords($str);
+        $str = str_replace(' ', '', $str);
+        $str = lcfirst($str);
+
+        return $str;
     }
 
     public function configureDependencies(DependencyBuilder $dependencies)
