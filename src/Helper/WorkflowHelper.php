@@ -7,7 +7,6 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 class WorkflowHelper
@@ -61,29 +60,7 @@ class WorkflowHelper
         return md5(json_encode($content));
     }
 
-    /**
-     * @param Steps    $steps
-     * @param Workflow $workflow
-     *
-     * @return bool
-     */
-    public static function validate(Steps $steps, Workflow $workflow): bool
-    {
-        $definition = $workflow->getDefinition();
-        $transitions = array_map(function (Transition $transition) {
-            return $transition->getName();
-        }, $definition->getTransitions());
-
-        foreach ($steps as $step) {
-            if (null !== $step->getTransition() && !in_array($step->getTransition(), $transitions)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static function fakeSubject()
+    public static function fakeSubject(): AbstractSubject
     {
         return new class() extends AbstractSubject {
             public static function support(): bool
@@ -94,6 +71,12 @@ class WorkflowHelper
             public static function getName(): string
             {
                 return '';
+            }
+
+            public function __call($name, $arguments)
+            {
+                // This method handle all calls from guard.
+                return true;
             }
         };
     }

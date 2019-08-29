@@ -14,18 +14,13 @@ class BugWorkflow
     const NEW = 'new';
     const REDUCING = 'reducing';
     const REDUCED = 'reduced';
-    //const REPORTING = 'reporting';
-    //const REPORTED = 'reported';
-    //const CAPTURING = 'capturing';
-    //const CAPTURED = 'reported';
+    const CLOSED = 'closed';
 
     // Transitions
     const REDUCE = 'reduce';
     const COMPLETE_REDUCE = 'complete_reduce';
-    //const REPORT = 'report';
-    //const COMPLETE_REPORT = 'complete_report';
-    //const CAPTURE = 'report';
-    //const COMPLETE_CAPTURE = 'complete_report';
+    const CLOSE = 'close';
+    const REOPEN = 'reopen';
 
     /**
      * @var Workflow
@@ -35,13 +30,11 @@ class BugWorkflow
     public function __construct()
     {
         $definitionBuilder = new DefinitionBuilder();
-        $definition = $definitionBuilder->addPlaces([self::NEW, self::REDUCING, self::REDUCED/*, self::REPORTING, self::REPORTED, self::CAPTURING, self::CAPTURED*/])
+        $definition = $definitionBuilder->addPlaces([self::NEW, self::REDUCING, self::REDUCED, self::CLOSED])
             ->addTransition(new Transition(self::REDUCE, self::NEW, self::REDUCING))
             ->addTransition(new Transition(self::COMPLETE_REDUCE, self::REDUCING, self::REDUCED))
-            //->addTransition(new Transition(self::REPORT, self::REDUCED, self::REPORTING))
-            //->addTransition(new Transition(self::COMPLETE_REPORT, self::REPORTING, self::REPORTED))
-            //->addTransition(new Transition(self::CAPTURE, self::REPORTED, self::CAPTURING))
-            //->addTransition(new Transition(self::COMPLETE_CAPTURE, self::CAPTURING, self::CAPTURED))
+            ->addTransition(new Transition(self::CLOSE, self::REDUCED, self::CLOSED))
+            ->addTransition(new Transition(self::REOPEN, self::CLOSED, self::REDUCED))
             ->build()
         ;
 

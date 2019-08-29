@@ -8,9 +8,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReduceBugCommand;
 use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestSubjectCommand;
 
 class SecurityTokenPass implements CompilerPassInterface
@@ -38,9 +39,10 @@ class SecurityTokenPass implements CompilerPassInterface
             ExecuteTaskCommand::class,
             ReduceStepsCommand::class,
             TestModelCommand::class,
-            ReduceBugCommand::class,
             CaptureScreenshotsCommand::class,
             TestSubjectCommand::class,
+            TestBugCommand::class,
+            TestPredefinedCaseCommand::class,
         ];
         foreach ($commands as $command) {
             $commandDefinition = $container->getDefinition($command);

@@ -13,19 +13,9 @@ abstract class AbstractSubject implements SubjectInterface
     private $marking;
 
     /**
-     * @var mixed Required by workflow component
+     * @var array Required by workflow component
      */
     private $context;
-
-    /**
-     * @var bool
-     */
-    protected $testingModel = false;
-
-    /**
-     * @var bool
-     */
-    protected $testingSubject = false;
 
     /**
      * @var FilesystemInterface
@@ -57,22 +47,6 @@ abstract class AbstractSubject implements SubjectInterface
     public static function support(): bool
     {
         return true;
-    }
-
-    /**
-     * @param bool $testingModel
-     */
-    public function setTestingModel(bool $testingModel = false)
-    {
-        $this->testingModel = $testingModel;
-    }
-
-    /**
-     * @param bool $testingSubject
-     */
-    public function setTestingSubject(bool $testingSubject = false)
-    {
-        $this->testingSubject = $testingSubject;
     }
 
     /**
@@ -122,7 +96,7 @@ abstract class AbstractSubject implements SubjectInterface
         return '';
     }
 
-    public function setUp()
+    public function setUp(bool $testing = false)
     {
         // Init system-under-test connection e.g.
         // $this->client = Client::createChromeClient();

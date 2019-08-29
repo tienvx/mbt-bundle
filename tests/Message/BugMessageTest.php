@@ -72,6 +72,7 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setSteps($steps);
+        $bug->setModel(new Model($model));
         $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);

@@ -89,9 +89,7 @@ class Checkout extends AbstractSubject
     {
         $this->registerAccount = false;
         $this->loggedIn = true;
-        if (!$this->testingModel) {
-            throw new Exception('Still able to do register account, guest checkout or login when logged in!');
-        }
+        throw new Exception('Still able to do register account, guest checkout or login when logged in!');
     }
 
     public function hasExistingBillingAddress(): bool

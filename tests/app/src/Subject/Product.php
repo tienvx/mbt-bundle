@@ -20,9 +20,7 @@ class Product extends AbstractSubject
      */
     public function selectFile()
     {
-        if (!$this->testingModel) {
-            throw new Exception('Can not upload file!');
-        }
+        throw new Exception('Can not upload file!');
     }
 
     public function getScreenshotUrl($bugId, $index)

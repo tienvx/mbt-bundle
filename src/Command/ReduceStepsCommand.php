@@ -5,17 +5,19 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
-class ReduceStepsCommand extends AbstractCommand
+class ReduceStepsCommand extends Command
 {
+    use TokenTrait;
+
     /**
      * @var ReducerManager
      */
@@ -76,12 +78,7 @@ class ReduceStepsCommand extends AbstractCommand
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
-        }
-
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }

@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -11,15 +12,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
-use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
-class ExecuteTaskCommand extends Command
+class TestBugCommand extends Command
 {
     use TokenTrait;
     use SubjectTrait;
@@ -36,7 +38,7 @@ class ExecuteTaskCommand extends Command
     private $generatorManager;
 
     /**
-     * @var EntityManagerInterface
+     * @var EntityManager
      */
     private $entityManager;
 
@@ -64,10 +66,10 @@ class ExecuteTaskCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:task:execute')
-            ->setDescription('Execute a task.')
-            ->setHelp('This command execute a task, then create a bug if found.')
-            ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
+            ->setName('mbt:bug:test')
+            ->setDescription('Test a bug to see if it is still replicable or not.')
+            ->setHelp('Test a bug, update the bug, or create a new bug if needed.')
+            ->addArgument('bug-id', InputArgument::REQUIRED, 'The bug to test.');
     }
 
     public function setDefaultBugTitle(string $defaultBugTitle)
@@ -79,35 +81,45 @@ class ExecuteTaskCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @throws Exception
+     * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $taskId = $input->getArgument('task-id');
-        $task = $this->entityManager->find(Task::class, $taskId);
+        $bugId = $input->getArgument('bug-id');
+        $bug = $this->entityManager->find(Bug::class, $bugId);
 
-        if (!$task instanceof Task) {
-            $output->writeln(sprintf('No task found for id %d', $taskId));
-
-            return;
+        if (!$bug instanceof Bug) {
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $subject = $this->getSubject($task->getModel()->getName());
-        $generator = $this->generatorManager->getGenerator($task->getGenerator()->getName());
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
+        if (BugWorkflow::CLOSED !== $bug->getStatus()) {
+            throw new Exception(sprintf('Can not test bug with id %d, only closed bug can be tested again', $bugId));
+        }
 
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getModel()->getName());
+        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+            throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
+        }
+
+        $subject = $this->getSubject($bug->getModel()->getName());
         $this->setAnonymousToken();
 
         $recorded = new Steps();
         try {
-            $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
-            StepsRunner::record($steps, $workflow, $subject, $recorded);
+            StepsRunner::record($bug->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->createBug($this->defaultBugTitle, $recorded, $throwable->getMessage(), $taskId, $task->getModel()->getName());
+            if ($throwable->getMessage() === $bug->getBugMessage()) {
+                if ($recorded->getLength() < $bug->getSteps()->getLength()) {
+                    BugHelper::updateSteps($this->entityManager, $bug, $recorded);
+                }
+                $this->applyBugTransition($bugId, BugWorkflow::REOPEN);
+            } else {
+                $this->createBug($this->defaultBugTitle, $recorded, $throwable->getMessage(), null, $bug->getModel()->getName());
+            }
         } finally {
             $subject->tearDown();
-
-            $this->applyTaskTransition($taskId, TaskWorkflow::COMPLETE);
         }
+
+        $output->writeln('Testing bug is finished!');
     }
 }

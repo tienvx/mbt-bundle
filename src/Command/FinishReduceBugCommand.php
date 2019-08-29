@@ -4,28 +4,23 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
-use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
-class FinishReduceBugCommand extends AbstractCommand
+class FinishReduceBugCommand extends Command
 {
+    use MessageTrait;
+
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -62,20 +57,18 @@ class FinishReduceBugCommand extends AbstractCommand
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
+        $this->applyBugTransition($bug->getId(), BugWorkflow::COMPLETE_REDUCE);
+
         $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
-        }
-
-        $this->messageBus->dispatch(new ApplyBugTransitionMessage($bug->getId(), BugWorkflow::COMPLETE_REDUCE));
-
-        if (!empty($task->getReporters())) {
-            foreach ($task->getReporters() as $reporter) {
-                $this->messageBus->dispatch(new ReportBugMessage($bug->getId(), $reporter->getName()));
+        if ($task instanceof Task) {
+            if (!empty($task->getReporters())) {
+                foreach ($task->getReporters() as $reporter) {
+                    $this->reportBug($bug->getId(), $reporter->getName());
+                }
             }
-        }
-        if ($task->getTakeScreenshots()) {
-            $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
+            if ($task->getTakeScreenshots()) {
+                $this->captureScreenshots($bug->getId());
+            }
         }
     }
 }
