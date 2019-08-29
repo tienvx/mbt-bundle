@@ -13,6 +13,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class TestBugTest extends MessageTestCase
@@ -57,7 +58,7 @@ class TestBugTest extends MessageTestCase
         $this->clearReport();
         $this->removeScreenshots();
 
-        $this->runCommand(sprintf('mbt:bug:test %d', $bug->getId()));
+        $this->sendMessage(new TestBugMessage($bug->getId()));
         $this->consumeMessages();
 
         /** @var EntityRepository $entityRepository */

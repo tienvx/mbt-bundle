@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Message\TestPredefinedCaseMessage;
 
 class TestPredefinedCaseTest extends MessageTestCase
 {
@@ -17,7 +18,7 @@ class TestPredefinedCaseTest extends MessageTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $this->runCommand('mbt:predefined-case:test checkout_out_of_stock');
+        $this->sendMessage(new TestPredefinedCaseMessage('checkout_out_of_stock'));
         $this->consumeMessages();
 
         /** @var EntityRepository $entityRepository */

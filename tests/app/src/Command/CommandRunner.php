@@ -30,6 +30,8 @@ class CommandRunner extends BaseCommandRunner
             'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
             'mbt:bug:finish-reduce' => ['command', 'bug-id'],
             'mbt:steps:finish-reduce' => ['command', 'bug-id'],
+            'mbt:bug:test' => ['command', 'bug-id'],
+            'mbt:predefined-case:test' => ['command', 'name'],
         ];
         $command = $parameters[0];
         $application->run(new ArrayInput(array_combine($map[$command], $parameters)));
