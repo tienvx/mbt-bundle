@@ -14,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\RemoveScreenshotsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Reducer\TransitionReducer;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
@@ -38,10 +39,12 @@ class EntitySubscriber implements EventSubscriber
             $this->messageBus->dispatch(new ExecuteTaskMessage($entity->getId()));
         }
         if ($entity instanceof Bug) {
+            $this->messageBus->dispatch(new ApplyBugTransitionMessage($entity->getId(), BugWorkflow::REDUCE));
             $task = $entity->getTask();
             if ($task instanceof Task) {
-                $this->messageBus->dispatch(new ApplyBugTransitionMessage($entity->getId(), BugWorkflow::REDUCE));
                 $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), $task->getReducer()->getName()));
+            } else {
+                $this->messageBus->dispatch(new ReduceBugMessage($entity->getId(), TransitionReducer::getName()));
             }
         }
     }
@@ -56,10 +59,7 @@ class EntitySubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         if ($entity instanceof Bug) {
-            $task = $entity->getTask();
-            if ($task instanceof Task) {
-                $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $task->getModel()->getName()));
-            }
+            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getModel()->getName()));
         }
     }
 

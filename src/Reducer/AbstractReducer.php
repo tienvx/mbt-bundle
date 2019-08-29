@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -12,7 +11,7 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
+use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
@@ -45,7 +44,7 @@ abstract class AbstractReducer implements ReducerInterface
     /**
      * @var EntityManager
      */
-    private $entityManager;
+    protected $entityManager;
 
     public function __construct(
         Registry $workflowRegistry,
@@ -79,7 +78,7 @@ abstract class AbstractReducer implements ReducerInterface
      */
     public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
     {
-        $model = $bug->getTask()->getModel()->getName();
+        $model = $bug->getModel()->getName();
         $graph = $this->graphBuilder->build($workflow);
         $steps = $bug->getSteps();
 
@@ -93,35 +92,13 @@ abstract class AbstractReducer implements ReducerInterface
                     StepsRunner::run($newSteps, $workflow, $subject);
                 } catch (Throwable $newThrowable) {
                     if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                        $this->updateSteps($bug, $newSteps);
+                        BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
+                        $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
                     }
                 }
             }
         }
 
         $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
-    }
-
-    /**
-     * @param Bug   $bug
-     * @param Steps $newSteps
-     *
-     * @throws Throwable
-     */
-    protected function updateSteps(Bug $bug, Steps $newSteps)
-    {
-        $length = $bug->getSteps()->getLength();
-        $callback = function () use ($bug, $newSteps, $length) {
-            // Reload the bug for the newest messages length.
-            $bug = $this->entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
-
-            if ($bug instanceof Bug && $length === $bug->getSteps()->getLength()) {
-                $bug->setSteps($newSteps);
-            }
-        };
-
-        $this->entityManager->transactional($callback);
-
-        $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
     }
 }

@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Exception;
 use Fhaculty\Graph\Exception as GraphException;
-use Generator;
 use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
@@ -32,7 +31,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         $graph = $this->graphBuilder->build($workflow);
         $algorithm = new Bruteforce($graph);

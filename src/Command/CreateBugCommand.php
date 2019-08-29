@@ -4,17 +4,19 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
-class CreateBugCommand extends AbstractCommand
+class CreateBugCommand extends Command
 {
     /**
      * @var ValidatorInterface
@@ -54,6 +56,7 @@ class CreateBugCommand extends AbstractCommand
             ->addArgument('message', InputArgument::REQUIRED, 'Bug message.')
             ->addArgument('task-id', InputArgument::REQUIRED, 'Task id.')
             ->addArgument('status', InputArgument::REQUIRED, 'Bug status.')
+            ->addArgument('model', InputArgument::REQUIRED, 'Model name.')
             ->setHidden(true);
     }
 
@@ -70,23 +73,24 @@ class CreateBugCommand extends AbstractCommand
         $message = $input->getArgument('message');
         $taskId = $input->getArgument('task-id');
         $status = $input->getArgument('status');
+        $model = $input->getArgument('model');
 
-        $task = $this->entityManager->getRepository(Task::class)->find($taskId);
-
-        if (!$task || !$task instanceof Task) {
-            throw new Exception(sprintf('No task found for id %d', $taskId));
-        }
-
-        $model = $task->getModel()->getName();
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
 
         $bug = new Bug();
         $bug->setTitle($title);
         $bug->setSteps(Steps::deserialize($steps));
+        $bug->setModel(new Model($model));
         $bug->setModelHash(WorkflowHelper::checksum($workflow));
         $bug->setBugMessage($message);
-        $bug->setTask($task);
         $bug->setStatus($status);
+
+        if ($taskId) {
+            $task = $this->entityManager->getRepository(Task::class)->find($taskId);
+            if ($task instanceof Task) {
+                $bug->setTask($task);
+            }
+        }
 
         $errors = $this->validator->validate($bug);
 

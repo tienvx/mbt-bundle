@@ -20,7 +20,7 @@ class CommandRunner extends BaseCommandRunner
         $application->setAutoExit(false);
         $map = [
             'mbt:bug:capture-screenshots' => ['command', 'bug-id'],
-            'mbt:bug:create' => ['command', 'title', 'steps', 'message', 'task-id', 'status'],
+            'mbt:bug:create' => ['command', 'title', 'steps', 'message', 'task-id', 'status', 'model'],
             'mbt:task:execute' => ['command', 'task-id'],
             'mbt:bug:reduce' => ['command', 'bug-id', 'reducer'],
             'mbt:steps:reduce' => ['command', 'bug-id', 'reducer', 'length', 'from', 'to'],
@@ -30,6 +30,8 @@ class CommandRunner extends BaseCommandRunner
             'mbt:bug:remove-screenshots' => ['command', 'bug-id', 'model'],
             'mbt:bug:finish-reduce' => ['command', 'bug-id'],
             'mbt:steps:finish-reduce' => ['command', 'bug-id'],
+            'mbt:bug:test' => ['command', 'bug-id'],
+            'mbt:predefined-case:test' => ['command', 'name'],
         ];
         $command = $parameters[0];
         $application->run(new ArrayInput(array_combine($map[$command], $parameters)));

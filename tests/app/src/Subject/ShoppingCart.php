@@ -375,10 +375,8 @@ class ShoppingCart extends AbstractSubject
     public function addFromHome(Data $data)
     {
         $product = DataHelper::get($data, 'product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
-        if (!$this->testingModel) {
-            if (in_array($product, $this->needOptions)) {
-                throw new Exception('You need to specify options for this product! Can not add product');
-            }
+        if (in_array($product, $this->needOptions)) {
+            throw new Exception('You need to specify options for this product! Can not add product');
         }
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
@@ -397,10 +395,8 @@ class ShoppingCart extends AbstractSubject
     public function addFromCategory(Data $data)
     {
         $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
-        if (!$this->testingModel) {
-            if (in_array($product, $this->needOptions)) {
-                throw new Exception('You need to specify options for this product! Can not add product');
-            }
+        if (in_array($product, $this->needOptions)) {
+            throw new Exception('You need to specify options for this product! Can not add product');
         }
         if (!isset($this->cart[$product])) {
             $this->cart[$product] = 1;
@@ -418,10 +414,8 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromProduct(Data $data)
     {
-        if (!$this->testingModel) {
-            if (in_array($this->product, $this->needOptions)) {
-                throw new Exception('You need to specify options for this product! Can not add product');
-            }
+        if (in_array($this->product, $this->needOptions)) {
+            throw new Exception('You need to specify options for this product! Can not add product');
         }
         if (!isset($this->cart[$this->product])) {
             $this->cart[$this->product] = 1;
@@ -512,11 +506,9 @@ class ShoppingCart extends AbstractSubject
      */
     public function checkout()
     {
-        if (!$this->testingModel) {
-            foreach ($this->cart as $product => $quantity) {
-                if (in_array($product, $this->outOfStock)) {
-                    throw new Exception('You added an out-of-stock product into cart! Can not checkout');
-                }
+        foreach ($this->cart as $product => $quantity) {
+            if (in_array($product, $this->outOfStock)) {
+                throw new Exception('You added an out-of-stock product into cart! Can not checkout');
             }
         }
     }

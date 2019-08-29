@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Exception;
-use Generator;
 use Graphp\Algorithms\ConnectedComponents;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
@@ -33,7 +32,7 @@ class AllTransitionsGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         $graph = $this->graphBuilder->build($workflow);
         $components = new ConnectedComponents($graph);

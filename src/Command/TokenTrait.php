@@ -2,11 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
-abstract class AbstractCommand extends Command
+trait TokenTrait
 {
     /**
      * @var TokenStorage|null

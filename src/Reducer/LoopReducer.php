@@ -6,9 +6,11 @@ use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 
 class LoopReducer extends AbstractReducer
@@ -26,7 +28,7 @@ class LoopReducer extends AbstractReducer
     public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
     {
         $steps = $bug->getSteps();
-        $model = $bug->getTask()->getModel()->getName();
+        $model = $bug->getModel()->getName();
 
         if ($steps->getLength() === $length) {
             // The reproduce path has not been reduced.
@@ -39,7 +41,8 @@ class LoopReducer extends AbstractReducer
                         StepsRunner::run($newSteps, $workflow, $subject);
                     } catch (Throwable $newThrowable) {
                         if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                            $this->updateSteps($bug, $newSteps);
+                            BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
+                            $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
                         }
                     }
                 }

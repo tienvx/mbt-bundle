@@ -6,7 +6,6 @@ use Exception;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class EmailReporter implements ReporterInterface
@@ -88,12 +87,7 @@ class EmailReporter implements ReporterInterface
             return;
         }
 
-        $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            return;
-        }
-
-        $model = $task->getModel()->getName();
+        $model = $bug->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
 
         $steps = [];
@@ -114,7 +108,6 @@ class EmailReporter implements ReporterInterface
             ->htmlTemplate('@TienvxMbt/reporters/email/report.html.twig')
             ->context([
                 'id' => $bug->getId(),
-                'task' => $task->getTitle(),
                 'title' => $bug->getTitle(),
                 'bugMessage' => $bug->getBugMessage(),
                 'steps' => $steps,

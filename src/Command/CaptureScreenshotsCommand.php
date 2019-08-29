@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\Flysystem\FilesystemInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,22 +13,18 @@ use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class CaptureScreenshotsCommand extends AbstractCommand
+class CaptureScreenshotsCommand extends Command
 {
+    use TokenTrait;
+    use SubjectTrait;
+
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
-
-    /**
-     * @var SubjectManager
-     */
-    protected $subjectManager;
 
     /**
      * @var Registry
@@ -78,17 +75,14 @@ class CaptureScreenshotsCommand extends AbstractCommand
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
-        }
-
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
-        $subject = $this->getSubject($task->getModel()->getName(), $bug->getId());
+        $subject = $this->getSubject($bug->getModel()->getName());
+        $subject->setFilesystem($this->mbtStorage);
+        $subject->removeScreenshots($bug->getId());
 
         $this->setAnonymousToken();
 
@@ -110,24 +104,5 @@ class CaptureScreenshotsCommand extends AbstractCommand
         } finally {
             $subject->tearDown();
         }
-    }
-
-    /**
-     * @param string $model
-     * @param int    $bugId
-     *
-     * @return AbstractSubject
-     *
-     * @throws Exception
-     */
-    private function getSubject(string $model, int $bugId): AbstractSubject
-    {
-        $subject = $this->subjectManager->createSubject($model);
-
-        $subject->setUp();
-        $subject->setFilesystem($this->mbtStorage);
-        $subject->removeScreenshots($bugId);
-
-        return $subject;
     }
 }

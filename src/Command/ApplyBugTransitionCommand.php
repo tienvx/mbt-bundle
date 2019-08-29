@@ -4,13 +4,14 @@ namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
-class ApplyBugTransitionCommand extends AbstractCommand
+class ApplyBugTransitionCommand extends Command
 {
     /**
      * @var BugWorkflow

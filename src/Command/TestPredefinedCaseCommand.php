@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -12,14 +13,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
-use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
-class ExecuteTaskCommand extends Command
+class TestPredefinedCaseCommand extends Command
 {
     use TokenTrait;
     use SubjectTrait;
@@ -36,7 +36,7 @@ class ExecuteTaskCommand extends Command
     private $generatorManager;
 
     /**
-     * @var EntityManagerInterface
+     * @var EntityManager
      */
     private $entityManager;
 
@@ -45,18 +45,25 @@ class ExecuteTaskCommand extends Command
      */
     private $defaultBugTitle;
 
+    /**
+     * @var PredefinedCaseManager
+     */
+    private $predefinedCaseManager;
+
     public function __construct(
         Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        PredefinedCaseManager $predefinedCaseManager
     ) {
         $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
+        $this->predefinedCaseManager = $predefinedCaseManager;
 
         parent::__construct();
     }
@@ -64,10 +71,10 @@ class ExecuteTaskCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('mbt:task:execute')
-            ->setDescription('Execute a task.')
-            ->setHelp('This command execute a task, then create a bug if found.')
-            ->addArgument('task-id', InputArgument::REQUIRED, 'The task id to execute.');
+            ->setName('mbt:predefined-case:test')
+            ->setDescription('Test a predefined case to see if it has a bug or not.')
+            ->setHelp('Test a predefined case, create a new bug if needed.')
+            ->addArgument('name', InputArgument::REQUIRED, 'The predefined case name.');
     }
 
     public function setDefaultBugTitle(string $defaultBugTitle)
@@ -83,31 +90,28 @@ class ExecuteTaskCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $taskId = $input->getArgument('task-id');
-        $task = $this->entityManager->find(Task::class, $taskId);
+        $name = $input->getArgument('name');
 
-        if (!$task instanceof Task) {
-            $output->writeln(sprintf('No task found for id %d', $taskId));
-
-            return;
+        if (!$this->predefinedCaseManager->has($name)) {
+            throw new Exception(sprintf('No pre-defined case found for name %s', $name));
         }
 
-        $subject = $this->getSubject($task->getModel()->getName());
-        $generator = $this->generatorManager->getGenerator($task->getGenerator()->getName());
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
+        $predefinedCase = $this->predefinedCaseManager->get($name);
+        $model = $predefinedCase->getModel()->getName();
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+        $subject = $this->getSubject($model);
 
         $this->setAnonymousToken();
 
         $recorded = new Steps();
         try {
-            $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
-            StepsRunner::record($steps, $workflow, $subject, $recorded);
+            StepsRunner::record($predefinedCase->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->createBug($this->defaultBugTitle, $recorded, $throwable->getMessage(), $taskId, $task->getModel()->getName());
+            $this->createBug($this->defaultBugTitle, $recorded, $throwable->getMessage(), null, $model);
         } finally {
             $subject->tearDown();
-
-            $this->applyTaskTransition($taskId, TaskWorkflow::COMPLETE);
         }
+
+        $output->writeln('Testing predefined case is finished!');
     }
 }

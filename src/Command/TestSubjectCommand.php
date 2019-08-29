@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -10,15 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
-class TestSubjectCommand extends AbstractCommand
+class TestSubjectCommand extends Command
 {
+    use TokenTrait;
+    use SubjectTrait;
+
     /**
      * @var Registry
      */
@@ -74,38 +77,26 @@ class TestSubjectCommand extends AbstractCommand
         $this->setAnonymousToken();
 
         try {
-            foreach ($generator->generate($workflow, $subject, $generatorOptions) as $step) {
-                if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
-                    $workflow->apply($subject, $step->getTransition(), [
-                        'data' => $step->getData(),
-                    ]);
-                }
-            }
+            $steps = $generator->generate($workflow, $subject, $generatorOptions);
+            StepsRunner::run($steps, $workflow, $subject);
         } catch (Throwable $throwable) {
             $subjectClass = $this->subjectManager->getSubject($model);
             $output->writeln([
                 sprintf("There is an issue while testing subject '%s':", $subjectClass),
                 $throwable->getMessage(),
             ]);
-        } finally {
-            $subject->tearDown();
         }
 
         $output->writeln('Testing subject is finished!');
     }
 
     /**
-     * @param string $model
-     *
-     * @return AbstractSubject
-     *
-     * @throws Exception
+     * {@inheritdoc}
      */
-    private function getSubject(string $model): AbstractSubject
+    protected function getSubject(string $model): AbstractSubject
     {
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setTestingSubject(true);
-        $subject->setUp();
+        $subject->setUp(true);
 
         return $subject;
     }

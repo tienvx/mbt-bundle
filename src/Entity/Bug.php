@@ -44,6 +44,12 @@ class Bug
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
+    private $model;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
     private $modelHash;
 
     /**
@@ -115,6 +121,21 @@ class Bug
     public function setSteps(Steps $steps)
     {
         $this->steps = $steps->serialize();
+    }
+
+    /**
+     * @MbtAssert\Model
+     *
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return new Model($this->model);
+    }
+
+    public function setModel(Model $model)
+    {
+        $this->model = $model->getName();
     }
 
     public function getModelHash(): string

@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 class GeneratorOptions
 {
@@ -30,50 +29,6 @@ class GeneratorOptions
      * @Assert\Positive
      */
     private $maxSteps;
-
-    /**
-     * @var int|null
-     * @MbtAssert\BugId
-     */
-    private $bugId;
-
-    /**
-     * @var string|null
-     * @MbtAssert\PredefinedCase
-     */
-    private $predefinedCase;
-
-    /**
-     * @return string|null
-     */
-    public function getPredefinedCase(): ?string
-    {
-        return $this->predefinedCase;
-    }
-
-    /**
-     * @param string|null $predefinedCase
-     */
-    public function setPredefinedCase(?string $predefinedCase): void
-    {
-        $this->predefinedCase = $predefinedCase;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getBugId(): ?int
-    {
-        return $this->bugId;
-    }
-
-    /**
-     * @param int|null $bugId
-     */
-    public function setBugId(?int $bugId): void
-    {
-        $this->bugId = $bugId;
-    }
 
     /**
      * @return int|null
@@ -132,8 +87,6 @@ class GeneratorOptions
             'transitionCoverage' => $this->getTransitionCoverage(),
             'placeCoverage' => $this->getPlaceCoverage(),
             'maxSteps' => $this->getMaxSteps(),
-            'bugId' => $this->getBugId(),
-            'predefinedCase' => $this->getPredefinedCase(),
         ];
 
         return array_filter($values);
@@ -161,8 +114,6 @@ class GeneratorOptions
         $generatorOptions->setTransitionCoverage($data['transitionCoverage'] ?? null);
         $generatorOptions->setPlaceCoverage($data['placeCoverage'] ?? null);
         $generatorOptions->setMaxSteps($data['maxSteps'] ?? null);
-        $generatorOptions->setBugId($data['bugId'] ?? null);
-        $generatorOptions->setPredefinedCase($data['predefinedCase'] ?? null);
 
         return $generatorOptions;
     }

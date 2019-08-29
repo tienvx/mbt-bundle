@@ -6,6 +6,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,13 +14,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
-use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
-class ReduceBugCommand extends AbstractCommand
+class ReduceBugCommand extends Command
 {
+    use MessageTrait;
+
     /**
      * @var ReducerManager
      */
@@ -29,11 +30,6 @@ class ReduceBugCommand extends AbstractCommand
      * @var EntityManager
      */
     private $entityManager;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
 
     /**
      * @var Registry
@@ -82,12 +78,7 @@ class ReduceBugCommand extends AbstractCommand
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            throw new Exception(sprintf('Task of bug with id %d is missing', $bugId));
-        }
-
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $task->getModel()->getName());
+        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getModel()->getName());
         if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
@@ -95,7 +86,7 @@ class ReduceBugCommand extends AbstractCommand
         $reducer = $this->reducerManager->getReducer($reducer);
         $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
-            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
+            $this->finishReduceBug($bug->getId());
         } elseif ($messagesCount > 0) {
             $callback = function () use ($bug, $messagesCount) {
                 // Reload the bug for the newest messages count.

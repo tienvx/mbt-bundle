@@ -10,6 +10,8 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
@@ -62,8 +64,15 @@ class TienvxMbtExtension extends Extension
 
     private function registerCommandConfiguration(array $config, ContainerBuilder $container)
     {
-        $executeTaskCommandDefinition = $container->getDefinition(ExecuteTaskCommand::class);
-        $executeTaskCommandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
+        $commands = [
+            ExecuteTaskCommand::class,
+            TestBugCommand::class,
+            TestPredefinedCaseCommand::class,
+        ];
+        foreach ($commands as $command) {
+            $commandDefinition = $container->getDefinition($command);
+            $commandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
+        }
     }
 
     private function registerGeneratorConfiguration(array $config, ContainerBuilder $container)

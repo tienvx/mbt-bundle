@@ -6,25 +6,22 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
-class FinishReduceStepsCommand extends AbstractCommand
+class FinishReduceStepsCommand extends Command
 {
+    use MessageTrait;
+
     /**
      * @var EntityManager
      */
     private $entityManager;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -73,7 +70,7 @@ class FinishReduceStepsCommand extends AbstractCommand
 
         $bug = $this->entityManager->transactional($callback);
         if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
-            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
+            $this->finishReduceBug($bug->getId());
         }
     }
 }

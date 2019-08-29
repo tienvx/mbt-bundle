@@ -4,7 +4,6 @@ namespace App\Reporter;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -47,12 +46,7 @@ class InMemoryReporter implements ReporterInterface
      */
     public function report(Bug $bug)
     {
-        $task = $bug->getTask();
-        if (!$task instanceof Task) {
-            return;
-        }
-
-        $model = $task->getModel()->getName();
+        $model = $bug->getModel()->getName();
         $subject = $this->subjectManager->createSubject($model);
         $this->reports[$bug->getId()] = [
             'status' => true,

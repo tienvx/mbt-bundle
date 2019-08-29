@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
@@ -45,7 +44,7 @@ class RandomGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         // Number of steps, include the first step (transition = null, places = initial places)
         $stepsCount = 1;

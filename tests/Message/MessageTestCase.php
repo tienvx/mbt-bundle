@@ -8,6 +8,7 @@ use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
@@ -35,6 +36,11 @@ abstract class MessageTestCase extends TestCase
     protected $report;
 
     /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
+    /**
      * @throws Exception
      */
     protected function setUp()
@@ -56,6 +62,8 @@ abstract class MessageTestCase extends TestCase
 
         $reporterManager = self::$container->get('mbt.reporter_manager');
         $this->report = $reporterManager->getReporter('in-memory');
+
+        $this->messageBus = self::$container->get(MessageBusInterface::class);
     }
 
     /**
@@ -63,12 +71,8 @@ abstract class MessageTestCase extends TestCase
      */
     protected function consumeMessages()
     {
-        while (true) {
+        while ($this->hasMessages()) {
             $this->runCommand('messenger:consume memory --limit=1');
-
-            if (!$this->hasMessages()) {
-                break;
-            }
         }
     }
 
@@ -111,5 +115,10 @@ abstract class MessageTestCase extends TestCase
     protected function countScreenshots(int $bugId)
     {
         return count($this->filesystem->listContents("$bugId/", false));
+    }
+
+    protected function sendMessage($message)
+    {
+        $this->messageBus->dispatch($message);
     }
 }

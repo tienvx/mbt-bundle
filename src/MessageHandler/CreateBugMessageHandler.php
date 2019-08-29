@@ -31,6 +31,7 @@ class CreateBugMessageHandler implements MessageHandlerInterface
         $bugMessage = $message->getMessage();
         $taskId = $message->getTaskId();
         $status = $message->getStatus();
-        $this->commandRunner->run(['mbt:bug:create', $title, $steps, $bugMessage, $taskId, $status]);
+        $model = $message->getModel();
+        $this->commandRunner->run(['mbt:bug:create', $title, $steps, $bugMessage, $taskId, $status, $model]);
     }
 }
