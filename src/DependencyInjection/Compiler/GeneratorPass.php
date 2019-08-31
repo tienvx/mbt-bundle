@@ -9,13 +9,15 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 class GeneratorPass implements CompilerPassInterface
 {
-    use TaggedServiceTrait;
+    use PluginTrait;
 
     private $generatorService;
     private $generatorTag;
 
-    public function __construct(string $generatorService = 'mbt.generator_manager', string $generatorTag = 'mbt.generator')
-    {
+    public function __construct(
+        string $generatorService = 'mbt.generator_manager',
+        string $generatorTag = 'mbt.generator'
+    ) {
         $this->generatorService = $generatorService;
         $this->generatorTag = $generatorTag;
     }
@@ -31,7 +33,7 @@ class GeneratorPass implements CompilerPassInterface
             return;
         }
 
-        if (!$generators = $this->findTaggedServices($container, $this->generatorTag)) {
+        if (!$generators = $this->findPlugins($container, $this->generatorTag)) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->generatorTag, $this->generatorService));
         }
 

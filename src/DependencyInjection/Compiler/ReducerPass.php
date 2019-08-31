@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 class ReducerPass implements CompilerPassInterface
 {
-    use TaggedServiceTrait;
+    use PluginTrait;
 
     private $reducerService;
     private $reducerTag;
@@ -33,7 +33,7 @@ class ReducerPass implements CompilerPassInterface
             return;
         }
 
-        if (!$reducers = $this->findTaggedServices($container, $this->reducerTag)) {
+        if (!$reducers = $this->findPlugins($container, $this->reducerTag)) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->reducerTag, $this->reducerService));
         }
 

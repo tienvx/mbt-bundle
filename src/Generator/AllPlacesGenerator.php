@@ -11,7 +11,7 @@ use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class AllPlacesGenerator extends AbstractGenerator
 {
@@ -31,7 +31,7 @@ class AllPlacesGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
+    public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         $graph = $this->graphBuilder->build($workflow);
         $algorithm = new Bruteforce($graph);

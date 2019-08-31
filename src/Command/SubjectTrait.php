@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 trait SubjectTrait
@@ -16,11 +16,11 @@ trait SubjectTrait
     /**
      * @param string $model
      *
-     * @return AbstractSubject
+     * @return SubjectInterface
      *
      * @throws Exception
      */
-    protected function getSubject(string $model): AbstractSubject
+    protected function getSubject(string $model): SubjectInterface
     {
         $subject = $this->subjectManager->createSubject($model);
         $subject->setUp();

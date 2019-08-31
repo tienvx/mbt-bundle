@@ -8,13 +8,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ReporterPass implements CompilerPassInterface
 {
-    use TaggedServiceTrait;
+    use PluginTrait;
 
     private $reporterService;
     private $reporterTag;
 
-    public function __construct(string $reporterService = 'mbt.reporter_manager', string $reporterTag = 'mbt.reporter')
-    {
+    public function __construct(
+        string $reporterService = 'mbt.reporter_manager',
+        string $reporterTag = 'mbt.reporter'
+    ) {
         $this->reporterService = $reporterService;
         $this->reporterTag = $reporterTag;
     }
@@ -30,7 +32,7 @@ class ReporterPass implements CompilerPassInterface
             return;
         }
 
-        $reporters = $this->findTaggedServices($container, $this->reporterTag);
+        $reporters = $this->findPlugins($container, $this->reporterTag);
 
         $reporterDefinition = $container->getDefinition($this->reporterService);
         $reporterDefinition->replaceArgument(0, $reporters);

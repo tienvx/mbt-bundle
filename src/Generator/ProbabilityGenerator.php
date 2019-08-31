@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class ProbabilityGenerator extends AbstractGenerator
 {
@@ -25,7 +25,7 @@ class ProbabilityGenerator extends AbstractGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
+    public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         // Number of steps, include the first step (transition = null, places = initial places)
         $stepsCount = 1;

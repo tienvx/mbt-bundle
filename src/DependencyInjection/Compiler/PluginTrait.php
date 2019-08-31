@@ -7,18 +7,17 @@ use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-trait TaggedServiceTrait
+trait PluginTrait
 {
     /**
      * @param ContainerBuilder $container
      * @param string           $tagName
-     * @param bool             $reference
      *
      * @return array
      *
      * @throws Exception
      */
-    private function findTaggedServices(ContainerBuilder $container, string $tagName, bool $reference = true)
+    private function findPlugins(ContainerBuilder $container, string $tagName)
     {
         $services = [];
         foreach ($container->findTaggedServiceIds($tagName, true) as $serviceId => $attributes) {
@@ -38,7 +37,7 @@ trait TaggedServiceTrait
             $support = call_user_func([$class, 'support']);
             if ($support) {
                 $serviceName = call_user_func([$class, 'getName']);
-                $services[$serviceName] = $reference ? (new Reference($serviceId)) : $class;
+                $services[$serviceName] = new Reference($serviceId);
             }
         }
 

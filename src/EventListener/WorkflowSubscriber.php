@@ -10,11 +10,13 @@ use Symfony\Component\Workflow\Event\TransitionEvent;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class WorkflowSubscriber implements EventSubscriberInterface
 {
-    /** @var Reader $reader */
+    /**
+     * @var Reader
+     */
     protected $reader;
 
     public function __construct(Reader $reader)
@@ -26,7 +28,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
     {
         $subject = $event->getSubject();
 
-        if ($subject instanceof AbstractSubject) {
+        if ($subject instanceof SubjectInterface) {
             $places = array_keys(array_filter($event->getMarking()->getPlaces()));
             foreach ($places as $place) {
                 $reflectionObject = new ReflectionObject($subject);
@@ -45,7 +47,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
     {
         $subject = $event->getSubject();
 
-        if ($subject instanceof AbstractSubject) {
+        if ($subject instanceof SubjectInterface) {
             $reflectionObject = new ReflectionObject($subject);
 
             foreach ($reflectionObject->getMethods() as $reflectionMethod) {

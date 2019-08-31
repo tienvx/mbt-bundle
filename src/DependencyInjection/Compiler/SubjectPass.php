@@ -8,13 +8,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class SubjectPass implements CompilerPassInterface
 {
-    use TaggedServiceTrait;
-
     private $subjectService;
     private $subjectTag;
 
-    public function __construct(string $subjectService = 'mbt.subject_manager', string $subjectTag = 'mbt.subject')
-    {
+    public function __construct(
+        string $subjectService = 'mbt.subject_manager',
+        string $subjectTag = 'mbt.subject'
+    ) {
         $this->subjectService = $subjectService;
         $this->subjectTag = $subjectTag;
     }
@@ -30,9 +30,13 @@ class SubjectPass implements CompilerPassInterface
             return;
         }
 
-        $subjects = $this->findTaggedServices($container, $this->subjectTag, false);
+        $services = [];
+        foreach ($container->findTaggedServiceIds($this->subjectTag, true) as $serviceId => $attributes) {
+            $def = $container->getDefinition($serviceId);
+            $services[] = $def->getClass();
+        }
 
         $subjectDefinition = $container->getDefinition($this->subjectService);
-        $subjectDefinition->replaceArgument(0, $subjects);
+        $subjectDefinition->addMethodCall('setSubjects', [$services]);
     }
 }

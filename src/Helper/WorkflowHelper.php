@@ -8,6 +8,7 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class WorkflowHelper
 {
@@ -60,24 +61,9 @@ class WorkflowHelper
         return md5(json_encode($content));
     }
 
-    public static function fakeSubject(): AbstractSubject
+    private static function fakeSubject(): SubjectInterface
     {
         return new class() extends AbstractSubject {
-            public static function support(): bool
-            {
-                return true;
-            }
-
-            public static function getName(): string
-            {
-                return '';
-            }
-
-            public function __call($name, $arguments)
-            {
-                // This method handle all calls from guard.
-                return true;
-            }
         };
     }
 }

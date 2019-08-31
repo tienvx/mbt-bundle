@@ -2,50 +2,49 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
+use Doctrine\Common\Annotations\Reader;
 use Exception;
+use ReflectionClass;
+use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 
 class SubjectManager
 {
     /**
-     * @var string[]
+     * @var string[] Subject classes
      */
     protected $subjects;
 
-    public function __construct(array $subjects = [])
+    /**
+     * @var Reader
+     */
+    protected $reader;
+
+    public function __construct(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
+
+    public function setSubjects(array $subjects)
     {
         $this->subjects = $subjects;
-    }
-
-    public function hasSubject(string $model)
-    {
-        return isset($this->subjects[$model]);
-    }
-
-    public function getSubject(string $model)
-    {
-        return $this->subjects[$model];
     }
 
     /**
      * @param string $model
      *
-     * @return AbstractSubject
+     * @return SubjectInterface
      *
      * @throws Exception
      */
-    public function createSubject(string $model): AbstractSubject
+    public function createSubject(string $model): SubjectInterface
     {
-        if (!isset($this->subjects[$model])) {
-            throw new Exception(sprintf('Subject for model "%s" is not specified.', $model));
-        } elseif (!class_exists($this->subjects[$model])) {
-            throw new Exception(sprintf('Subject class for model "%s" does not exist.', $model));
+        foreach ($this->subjects as $subject) {
+            $reflectionClass = new ReflectionClass($subject);
+            $annotation = $this->reader->getClassAnnotation($reflectionClass, Subject::class);
+            if ($annotation instanceof Subject && $annotation->getName() === $model) {
+                return new $subject();
+            }
         }
-
-        $subject = new $this->subjects[$model]();
-        if (!$subject instanceof AbstractSubject) {
-            throw new Exception(sprintf('Subject for model "%s" is not instance of "%s".', $model, AbstractSubject::class));
-        }
-
-        return $subject;
+        throw new Exception(sprintf('Subject for model %s not found', $model));
     }
 }

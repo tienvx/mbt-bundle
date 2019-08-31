@@ -9,10 +9,8 @@ use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestSubjectCommand;
 
 class SecurityTokenPass implements CompilerPassInterface
 {
@@ -38,9 +36,7 @@ class SecurityTokenPass implements CompilerPassInterface
         $commands = [
             ExecuteTaskCommand::class,
             ReduceStepsCommand::class,
-            TestModelCommand::class,
             CaptureScreenshotsCommand::class,
-            TestSubjectCommand::class,
             TestBugCommand::class,
             TestPredefinedCaseCommand::class,
         ];

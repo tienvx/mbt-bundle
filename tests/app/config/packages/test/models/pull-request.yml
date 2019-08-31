@@ -4,7 +4,7 @@ framework:
             marking_store:
                 type: "method"
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
+                - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             initial_marking: start
             metadata:
                 title: workflow title

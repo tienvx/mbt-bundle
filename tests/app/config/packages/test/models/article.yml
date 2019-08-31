@@ -5,7 +5,7 @@ framework:
             marking_store:
                 type: "method"
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
+                - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             initial_marking: draft
             places:
                 # simple format
