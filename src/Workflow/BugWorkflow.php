@@ -19,6 +19,7 @@ class BugWorkflow
     // Transitions
     const REDUCE = 'reduce';
     const COMPLETE_REDUCE = 'complete_reduce';
+    const REDUCE_AGAIN = 'reduce_again';
     const CLOSE = 'close';
     const REOPEN = 'reopen';
 
@@ -35,6 +36,7 @@ class BugWorkflow
             ->addTransition(new Transition(self::COMPLETE_REDUCE, self::REDUCING, self::REDUCED))
             ->addTransition(new Transition(self::CLOSE, self::REDUCED, self::CLOSED))
             ->addTransition(new Transition(self::REOPEN, self::CLOSED, self::REDUCED))
+            ->addTransition(new Transition(self::REDUCE_AGAIN, self::REDUCED, self::REDUCING))
             ->build()
         ;
 
