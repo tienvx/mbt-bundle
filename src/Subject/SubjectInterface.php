@@ -6,7 +6,7 @@ use League\Flysystem\FilesystemInterface;
 
 interface SubjectInterface
 {
-    public function setUp();
+    public function setUp(bool $testing = false);
 
     public function tearDown();
 
