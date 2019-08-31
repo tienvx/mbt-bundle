@@ -8,18 +8,18 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class StepsRunner
 {
     /**
-     * @param iterable        $steps
-     * @param Workflow        $workflow
-     * @param AbstractSubject $subject
+     * @param iterable         $steps
+     * @param Workflow         $workflow
+     * @param SubjectInterface $subject
      *
      * @throws Exception
      */
-    public static function run(iterable $steps, Workflow $workflow, AbstractSubject $subject)
+    public static function run(iterable $steps, Workflow $workflow, SubjectInterface $subject)
     {
         $subject->setUp();
 
@@ -37,15 +37,15 @@ class StepsRunner
     }
 
     /**
-     * @param iterable        $steps
-     * @param Workflow        $workflow
-     * @param AbstractSubject $subject
-     * @param Steps           $recorded
+     * @param iterable         $steps
+     * @param Workflow         $workflow
+     * @param SubjectInterface $subject
+     * @param Steps            $recorded
      *
      * @throws Exception
      * @throws Throwable
      */
-    public static function record(iterable $steps, Workflow $workflow, AbstractSubject $subject, Steps $recorded)
+    public static function record(iterable $steps, Workflow $workflow, SubjectInterface $subject, Steps $recorded)
     {
         $recorded->addStep(new Step(null, new Data(), $workflow->getDefinition()->getInitialPlaces()));
 

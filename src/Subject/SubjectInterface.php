@@ -2,11 +2,25 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
-use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
+use League\Flysystem\FilesystemInterface;
 
-interface SubjectInterface extends PluginInterface
+interface SubjectInterface
 {
-    public function setUp(bool $testing = false);
+    public function setUp();
 
     public function tearDown();
+
+    public function getScreenshotUrl($bugId, $index);
+
+    public function setFilesystem(FilesystemInterface $filesystem);
+
+    public function removeScreenshots($bugId);
+
+    public function captureScreenshot($bugId, $index);
+
+    public function getScreenshot($bugId, $index);
+
+    public function isImageScreenshot();
+
+    public function hasScreenshot($bugId, $index);
 }

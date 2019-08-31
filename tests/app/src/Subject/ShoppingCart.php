@@ -3,12 +3,16 @@
 namespace App\Subject;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Helper\DataHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
+/**
+ * @Subject("shopping_cart")
+ */
 class ShoppingCart extends AbstractSubject
 {
     /**
@@ -128,11 +132,6 @@ class ShoppingCart extends AbstractSubject
         $this->cart = [];
         $this->category = null;
         $this->product = null;
-    }
-
-    public static function getName(): string
-    {
-        return 'shopping_cart';
     }
 
     /**

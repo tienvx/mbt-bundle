@@ -24,7 +24,6 @@
         <service id="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager" alias="mbt.reporter_manager" />
 
         <service id="mbt.subject_manager" class="Tienvx\Bundle\MbtBundle\Subject\SubjectManager" public="false" autowire="true">
-            <argument type="collection" />
         </service>
         <service id="Tienvx\Bundle\MbtBundle\Subject\SubjectManager" alias="mbt.subject_manager" />
 

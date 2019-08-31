@@ -6,7 +6,7 @@ framework:
             marking_store:
                 type: "method"
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
+                - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             metadata:
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "state-machine", "testing", "model-based-testing"]

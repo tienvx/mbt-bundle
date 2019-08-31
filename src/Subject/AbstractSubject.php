@@ -44,11 +44,6 @@ abstract class AbstractSubject implements SubjectInterface
         return $this->context;
     }
 
-    public static function support(): bool
-    {
-        return true;
-    }
-
     /**
      * @param FilesystemInterface $filesystem
      */
@@ -96,7 +91,7 @@ abstract class AbstractSubject implements SubjectInterface
         return '';
     }
 
-    public function setUp(bool $testing = false)
+    public function setUp()
     {
         // Init system-under-test connection e.g.
         // $this->client = Client::createChromeClient();

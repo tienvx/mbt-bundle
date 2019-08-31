@@ -7,7 +7,7 @@ use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\AbstractGenerator;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class <?= $class_name; ?> extends AbstractGenerator
 {
@@ -23,12 +23,12 @@ class <?= $class_name; ?> extends AbstractGenerator
 
     /**
      * @param Workflow         $workflow
-     * @param AbstractSubject  $subject
+     * @param SubjectInterface $subject
      * @param GeneratorOptions $generatorOptions
      *
      * @return Generator
      */
-    public function getAvailableTransitions(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): Generator
+    public function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): Generator
     {
         while (true) {
             /** @var Transition[] $transitions */

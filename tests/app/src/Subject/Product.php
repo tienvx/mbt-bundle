@@ -3,16 +3,15 @@
 namespace App\Subject;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
+/**
+ * @Subject("product")
+ */
 class Product extends AbstractSubject
 {
-    public static function getName(): string
-    {
-        return 'product';
-    }
-
     /**
      * @Transition("selectFile")
      *

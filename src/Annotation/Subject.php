@@ -7,8 +7,8 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
- * @Target({"METHOD"})
+ * @Target({"CLASS"})
  */
-class Transition extends AbstractAnnotation
+class Subject extends AbstractAnnotation
 {
 }

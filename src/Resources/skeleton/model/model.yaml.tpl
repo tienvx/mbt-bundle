@@ -3,7 +3,7 @@ framework:
         '<?= $name; ?>':
             type: workflow
             supports:
-                - Tienvx\Bundle\MbtBundle\Subject\AbstractSubject
+                - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             initial_marking: place1
             places:
                 - place1

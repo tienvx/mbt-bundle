@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 final class MakeSubject extends AbstractMaker
 {
@@ -24,15 +23,9 @@ final class MakeSubject extends AbstractMaker
      */
     private $workflowRegistry;
 
-    /**
-     * @var SubjectManager
-     */
-    private $subjectManager;
-
-    public function __construct(Registry $workflowRegistry, SubjectManager $subjectManager)
+    public function __construct(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
-        $this->subjectManager = $subjectManager;
     }
 
     public static function getCommandName(): string
@@ -61,17 +54,7 @@ final class MakeSubject extends AbstractMaker
     {
         $model = $input->getArgument('model');
         $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
-
-        if ($this->subjectManager->hasSubject($model)) {
-            $subject = $this->subjectManager->getSubject($model);
-            if (class_exists($subject)) {
-                $io->text(sprintf('The subject for model %s has been already defined: %s!', $model, $subject));
-
-                return;
-            }
-        } else {
-            $subject = $input->getArgument('subject-class');
-        }
+        $subject = $input->getArgument('subject-class');
 
         $subjectClassNameDetails = $generator->createClassNameDetails(
             $subject,

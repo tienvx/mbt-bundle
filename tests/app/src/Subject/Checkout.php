@@ -3,9 +3,13 @@
 namespace App\Subject;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
+/**
+ * @Subject("checkout")
+ */
 class Checkout extends AbstractSubject
 {
     /**
@@ -28,22 +32,17 @@ class Checkout extends AbstractSubject
      */
     protected $registerAccount = false;
 
-    public static function getName(): string
-    {
-        return 'checkout';
-    }
-
-    public function loggedIn()
+    public function loggedIn(): bool
     {
         return $this->loggedIn;
     }
 
-    public function doingGuestCheckout()
+    public function doingGuestCheckout(): bool
     {
         return $this->guestCheckout;
     }
 
-    public function doingRegisterAccount()
+    public function doingRegisterAccount(): bool
     {
         return $this->registerAccount;
     }

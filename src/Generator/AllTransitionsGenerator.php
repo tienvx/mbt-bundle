@@ -12,7 +12,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Data;
 use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
-use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
@@ -32,7 +32,7 @@ class AllTransitionsGenerator extends AbstractGenerator
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function generate(Workflow $workflow, AbstractSubject $subject, GeneratorOptions $generatorOptions = null): iterable
+    public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         $graph = $this->graphBuilder->build($workflow);
         $components = new ConnectedComponents($graph);
