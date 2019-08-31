@@ -91,7 +91,7 @@ abstract class AbstractSubject implements SubjectInterface
         return '';
     }
 
-    public function setUp()
+    public function setUp(bool $testing = false)
     {
         // Init system-under-test connection e.g.
         // $this->client = Client::createChromeClient();

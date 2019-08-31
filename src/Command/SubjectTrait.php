@@ -15,15 +15,16 @@ trait SubjectTrait
 
     /**
      * @param string $model
+     * @param bool   $testing
      *
      * @return SubjectInterface
      *
      * @throws Exception
      */
-    protected function getSubject(string $model): SubjectInterface
+    protected function getSubject(string $model, bool $testing = false): SubjectInterface
     {
         $subject = $this->subjectManager->createSubject($model);
-        $subject->setUp();
+        $subject->setUp($testing);
 
         return $subject;
     }

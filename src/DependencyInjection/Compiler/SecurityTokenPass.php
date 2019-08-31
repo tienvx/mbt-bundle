@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
 use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
 use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
+use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
 
 class SecurityTokenPass implements CompilerPassInterface
@@ -39,6 +40,7 @@ class SecurityTokenPass implements CompilerPassInterface
             CaptureScreenshotsCommand::class,
             TestBugCommand::class,
             TestPredefinedCaseCommand::class,
+            TestModelCommand::class,
         ];
         foreach ($commands as $command) {
             $commandDefinition = $container->getDefinition($command);
