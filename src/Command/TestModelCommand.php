@@ -83,16 +83,15 @@ class TestModelCommand extends Command
             StepsRunner::record($steps, $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
             $output->writeln([
-                sprintf("There is an issue while testing model '%s':", $model),
-                $throwable->getMessage(),
+                sprintf("<comment>There is an issue while testing model '%s':</comment>", $model),
+                "<error>{$throwable->getMessage()}</error>",
             ]);
         } finally {
             $subject->tearDown();
         }
 
         $output->writeln([
-            'Testing model is finished!',
-            'Here are steps:',
+            '<info>Testing model is finished! Here are steps:</info>',
         ]);
 
         $table = new Table($output);
