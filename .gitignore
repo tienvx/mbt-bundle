@@ -1,5 +1,6 @@
 /.idea/
 /nbproject/
+/.vscode/
 /vendor/
 /composer.lock
 /phpunit.xml

@@ -32,9 +32,9 @@ class MakeSubjectCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Success!', $output);
-        $this->assertContains('Next: Open the new generated subject class and implement places and transitions!', $output);
-        $this->assertContains("class $subjectClass extends AbstractSubject", file_get_contents(__DIR__."/../app/src/Subject/$subjectClass.php"));
+        $this->assertStringContainsString('Success!', $output);
+        $this->assertStringContainsString('Next: Open the new generated subject class and implement places and transitions!', $output);
+        $this->assertStringContainsString("class $subjectClass extends AbstractSubject", file_get_contents(__DIR__."/../app/src/Subject/$subjectClass.php"));
         unlink(__DIR__."/../app/src/Subject/$subjectClass.php");
     }
 }

@@ -23,7 +23,7 @@ All you have to do:
 
 ## Requirements
 
-* PHP 7.1 / 7.2 / 7.3
+* PHP 7.2 / 7.3
 * Symfony 4.3
 * See also the `require` section of [composer.json](composer.json)
 
@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "^1.10"
+$ composer require tienvx/mbt-bundle "^1.11"
 ```
 
 ### Step 3: Config file storage
