@@ -18,8 +18,8 @@ class MakeReporterCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Success!', $output);
-        $this->assertContains('class Test implements ReporterInterface', file_get_contents(__DIR__.'/../app/src/Reporter/Test.php'));
+        $this->assertStringContainsString('Success!', $output);
+        $this->assertStringContainsString('class Test implements ReporterInterface', file_get_contents(__DIR__.'/../app/src/Reporter/Test.php'));
         unlink(__DIR__.'/../app/src/Reporter/Test.php');
     }
 }

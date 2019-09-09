@@ -14,7 +14,7 @@ abstract class TestCase extends KernelTestCase
      */
     protected $application;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->application = $this->getApplication();
     }

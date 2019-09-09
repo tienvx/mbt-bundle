@@ -17,8 +17,8 @@ class MakeModelCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Success!', $output);
-        $this->assertContains("'test':", file_get_contents(__DIR__.'/../app/config/packages/models/test.yaml'));
+        $this->assertStringContainsString('Success!', $output);
+        $this->assertStringContainsString("'test':", file_get_contents(__DIR__.'/../app/config/packages/models/test.yaml'));
         unlink(__DIR__.'/../app/config/packages/models/test.yaml');
     }
 }

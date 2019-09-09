@@ -29,6 +29,6 @@ class TestModelCommandTest extends CommandTestCase
         $commandTester->execute($input);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Testing model is finished!', $output);
+        $this->assertStringContainsString('Testing model is finished!', $output);
     }
 }

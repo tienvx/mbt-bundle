@@ -18,8 +18,8 @@ class MakeReducerCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Success!', $output);
-        $this->assertContains('class Test extends AbstractReducer', file_get_contents(__DIR__.'/../app/src/Reducer/Test.php'));
+        $this->assertStringContainsString('Success!', $output);
+        $this->assertStringContainsString('class Test extends AbstractReducer', file_get_contents(__DIR__.'/../app/src/Reducer/Test.php'));
         unlink(__DIR__.'/../app/src/Reducer/Test.php');
     }
 }

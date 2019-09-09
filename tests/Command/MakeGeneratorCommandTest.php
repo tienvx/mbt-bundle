@@ -18,8 +18,8 @@ class MakeGeneratorCommandTest extends CommandTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Success!', $output);
-        $this->assertContains('class Test extends AbstractGenerator', file_get_contents(__DIR__.'/../app/src/Generator/Test.php'));
+        $this->assertStringContainsString('Success!', $output);
+        $this->assertStringContainsString('class Test extends AbstractGenerator', file_get_contents(__DIR__.'/../app/src/Generator/Test.php'));
         unlink(__DIR__.'/../app/src/Generator/Test.php');
     }
 }
