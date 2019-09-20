@@ -1,4 +1,4 @@
-# MBT Bundle [![Build Status][travis_badge]][travis_link] [![Coverage Status][coveralls_badge]][coveralls_link]
+# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][codecov_badge]][codecov_link]
 
 This Bundle provides ability to test your application using Model Based Testing
 techique.
@@ -68,8 +68,8 @@ the way to tell this bundle to interact with your application.
 
 You can run the tests with:
 ```console
+$ php tests/app/bin/console cache:clear # Only if you added new code
 $ phpunit
-$ composer run-script test # if you want to clear the cache
 ```
 
 ## Documentation
@@ -101,11 +101,11 @@ See also the list of [contributors][contributors] who participated in this proje
 
 This package is available under the [MIT license](LICENSE).
 
-[travis_badge]: https://travis-ci.org/tienvx/mbt-bundle.svg?branch=master
-[travis_link]: https://travis-ci.org/tienvx/mbt-bundle
+[actions_badge]: https://github.com/tienvx/mbt-bundle/workflows/main/badge.svg
+[actions_link]: https://github.com/tienvx/mbt-bundle/actions
 
-[coveralls_badge]: https://coveralls.io/repos/tienvx/mbt-bundle/badge.svg?branch=master&service=github
-[coveralls_link]: https://coveralls.io/github/tienvx/mbt-bundle?branch=master
+[codecov_badge]: https://codecov.io/gh/tienvx/mbt-bundle/branch/master/graph/badge.svg
+[codecov_link]: https://codecov.io/gh/tienvx/mbt-bundle
 
 [wiki]: https://github.com/tienvx/mbt-bundle/wiki
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
