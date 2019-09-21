@@ -30,9 +30,6 @@
         "league/flysystem-bundle": "~1.1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~8.3.0",
-        "php-coveralls/php-coveralls": "~2.1.0",
-        "friendsofphp/php-cs-fixer": "~2.15.1",
         "symfony/yaml": "~4.3.1",
         "symfony/expression-language": "~4.3.1",
         "symfony/security-bundle": "~4.3.1",
@@ -50,15 +47,6 @@
             "Tienvx\\Bundle\\MbtBundle\\Tests\\": "tests/",
             "App\\": "tests/app/src/"
         }
-    },
-    "scripts": {
-        "coverage": "php vendor/bin/phpunit --coverage-clover tests/logs/clover.xml --colors=always",
-        "cs-fix": "php vendor/bin/php-cs-fixer fix --dry-run --ansi",
-        "coverall": "php vendor/bin/php-coveralls",
-        "test": [
-            "php tests/app/bin/console cache:clear --env=test --ansi",
-            "php vendor/bin/phpunit --colors=always"
-        ]
     },
     "conflict": {
         "symfony/symfony": "*",

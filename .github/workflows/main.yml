@@ -1,0 +1,64 @@
+name: main
+
+on: [push]
+
+jobs:
+  php-cs-fixer:
+    name: PHP CS Fixer
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: PHP CS Fixer
+      uses: docker://oskarstark/php-cs-fixer-ga
+      with:
+        args: --diff --dry-run
+
+  phpinsights:
+    name: PHP Insights
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: PHP Insights
+      uses: docker://tienvx/phpinsights-action
+      with:
+        args: "-v --min-quality=70 --min-complexity=70 --min-architecture=50 --min-style=80"
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+    name: Test PHP ${{ matrix.php }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php }}
+        # sqlite3 and xml are not installed with PHP 7.4
+        extension-csv: sqlite3, xml, json, pcov
+
+    - name: Install Dependencies
+      run: composer install
+
+    - name: Test & Generate Code Coverage
+      run: |
+        sudo apt-get purge --auto-remove php-xdebug -y && php -v
+        wget -q -O phpunit https://phar.phpunit.de/phpunit-8.phar
+        chmod +x phpunit
+        php -d pcov.enabled=1 ./phpunit --coverage-clover tests/logs/clover.xml
+
+    - name: Submit Code Coverage
+      run: |
+        wget -q -O codecov.sh https://codecov.io/bash
+        chmod +x codecov.sh
+        ./codecov.sh -f tests/logs/clover.xml -t $CODECOV_TOKEN
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      if: matrix.php == '7.3'
