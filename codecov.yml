@@ -1,0 +1,10 @@
+comment:
+  behavior: default
+coverage:
+  status:
+    project:
+      default:
+        threshold: 5%
+    patch:
+      default:
+        threshold: 5%
