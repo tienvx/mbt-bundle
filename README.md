@@ -74,7 +74,7 @@ $ phpunit
 
 ## Documentation
 
-For the usage guide and reference, see [wiki][wiki]
+For the usage guide and reference, see [docs][docs]
 
 ## Built With
 
@@ -107,7 +107,7 @@ This package is available under the [MIT license](LICENSE).
 [codecov_badge]: https://codecov.io/gh/tienvx/mbt-bundle/branch/master/graph/badge.svg
 [codecov_link]: https://codecov.io/gh/tienvx/mbt-bundle
 
-[wiki]: https://github.com/tienvx/mbt-bundle/wiki
+[docs]: https://mbtbundle.gitbook.io/docs/
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls
 [issues]: https://github.com/tienvx/mbt-bundle/issues
