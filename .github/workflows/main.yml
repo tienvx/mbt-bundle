@@ -54,7 +54,7 @@ jobs:
       run: |
         wget -q -O phpunit https://phar.phpunit.de/phpunit-8.phar
         chmod +x phpunit
-        php -d pcov.enabled=1 ./phpunit -d memory_limit=256M --coverage-clover tests/logs/clover.xml
+        ./phpunit -d memory_limit=256M --coverage-clover tests/logs/clover.xml
 
     - name: Submit Code Coverage
       run: |
