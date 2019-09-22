@@ -28,31 +28,33 @@ jobs:
         args: "-v --min-quality=70 --min-complexity=70 --min-architecture=50 --min-style=80"
 
   test:
+    name: Test PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['7.2', '7.3', '7.4']
-    name: Test PHP ${{ matrix.php }}
+        php: ['7.2', '7.3', '7.4.0RC1']
+    container:
+      image: php:${{ matrix.php }}-cli-alpine
     steps:
+    - name: Set Up Container
+      run: |
+        apk add -q --no-cache $PHPIZE_DEPS git bash
+        pecl install pcov > /dev/null
+        docker-php-ext-enable pcov
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+        composer global require hirak/prestissimo > /dev/null
+
     - name: Checkout
       uses: actions/checkout@master
-
-    - name: Install PHP
-      uses: shivammathur/setup-php@master
-      with:
-        php-version: ${{ matrix.php }}
-        # sqlite3 and xml are not installed with PHP 7.4
-        extension-csv: sqlite3, xml, json, pcov
 
     - name: Install Dependencies
       run: composer install
 
     - name: Test & Generate Code Coverage
       run: |
-        sudo apt-get purge --auto-remove php-xdebug -y && php -v
         wget -q -O phpunit https://phar.phpunit.de/phpunit-8.phar
         chmod +x phpunit
-        php -d pcov.enabled=1 ./phpunit --coverage-clover tests/logs/clover.xml
+        php -d pcov.enabled=1 ./phpunit -d memory_limit=256M --coverage-clover tests/logs/clover.xml
 
     - name: Submit Code Coverage
       run: |
