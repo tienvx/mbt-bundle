@@ -11,11 +11,12 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
 use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
-use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
@@ -76,29 +77,62 @@ abstract class AbstractReducer implements ReducerInterface
      * @throws Throwable
      * @throws InvalidArgumentException
      */
-    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
     {
         $model = $bug->getModel()->getName();
         $graph = $this->graphBuilder->build($workflow);
         $steps = $bug->getSteps();
 
-        if ($steps->getLength() === $length) {
-            // The reproduce path has not been reduced.
-            $newSteps = StepsBuilder::createWithShortestPath($graph, $steps, $from, $to);
-            // Make sure new path shorter than old path.
-            if ($newSteps->getLength() < $steps->getLength()) {
-                try {
-                    $subject = $this->subjectManager->createSubject($model);
-                    StepsRunner::run($newSteps, $workflow, $subject);
-                } catch (Throwable $newThrowable) {
-                    if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                        BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
-                        $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
-                    }
-                }
-            }
+        if ($steps->getLength() !== $length) {
+            // The reproduce path has been reduced.
+            return;
         }
 
-        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
+        $newSteps = StepsBuilder::createWithShortestPath($graph, $steps, $from, $to);
+        if ($newSteps->getLength() >= $steps->getLength()) {
+            // New path is longer than or equals old path.
+            return;
+        }
+
+        $this->run($model, $newSteps, $bug, $workflow);
+    }
+
+    protected function run(string $model, Steps $newSteps, Bug $bug, Workflow $workflow): void
+    {
+        try {
+            $subject = $this->subjectManager->createSubject($model);
+            StepsRunner::run($newSteps, $workflow, $subject);
+        } catch (Throwable $newThrowable) {
+            if ($newThrowable->getMessage() === $bug->getBugMessage()) {
+                BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
+                $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
+            }
+        }
+    }
+
+    /**
+     * @param Bug $bug
+     *
+     * @return int
+     *
+     * @throws Exception
+     */
+    public function dispatch(Bug $bug): int
+    {
+        $steps = $bug->getSteps();
+
+        $pairs = $this->getPairs($steps);
+
+        foreach ($pairs as $pair) {
+            $message = new ReduceStepsMessage($bug->getId(), static::getName(), $steps->getLength(), $pair[0], $pair[1]);
+            $this->messageBus->dispatch($message);
+        }
+
+        return count($pairs);
+    }
+
+    protected function getPairs(Steps $steps): array
+    {
+        return [];
     }
 }

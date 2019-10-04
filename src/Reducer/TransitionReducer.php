@@ -6,12 +6,8 @@ use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
-use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
-use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 
 class TransitionReducer extends AbstractReducer
 {
@@ -25,64 +21,52 @@ class TransitionReducer extends AbstractReducer
      * @throws Exception
      * @throws Throwable
      */
-    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
     {
         $steps = $bug->getSteps();
         $model = $bug->getModel()->getName();
 
-        if ($steps->getLength() === $length) {
-            // The reproduce path has not been reduced.
-            $fromPlaces = $steps->getPlacesAt($from);
-            $toPlaces = $steps->getPlacesAt($to);
-            if (count($fromPlaces) > 1 && count($toPlaces) > 1 && 1 === count(array_diff($fromPlaces, $toPlaces)) &&
-                1 === count(array_diff($toPlaces, $fromPlaces))) {
-                $newSteps = StepsBuilder::createWithoutTransition($steps, $from, $to);
-                // Make sure new path shorter than old path.
-                if ($newSteps->getLength() < $steps->getLength()) {
-                    try {
-                        $subject = $this->subjectManager->createSubject($model);
-                        StepsRunner::run($newSteps, $workflow, $subject);
-                    } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                            BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
-                            $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
-                        }
-                    }
-                }
-            }
+        if ($steps->getLength() !== $length) {
+            // The reproduce path has been reduced.
+            return;
         }
 
-        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
+        $fromPlaces = $steps->getPlacesAt($from);
+        $toPlaces = $steps->getPlacesAt($to);
+        if (!($fromPlaces && $toPlaces &&
+            count($fromPlaces) > 1 && count($toPlaces) > 1 &&
+            1 === count(array_diff($fromPlaces, $toPlaces)) &&
+            1 === count(array_diff($toPlaces, $fromPlaces)))) {
+            return;
+        }
+
+        $newSteps = StepsBuilder::createWithoutTransition($steps, $from, $to);
+        if ($newSteps->getLength() >= $steps->getLength()) {
+            // New path is longer than or equals old path.
+            return;
+        }
+
+        $this->run($model, $newSteps, $bug, $workflow);
     }
 
-    /**
-     * @param Bug $bug
-     *
-     * @return int
-     *
-     * @throws Exception
-     */
-    public function dispatch(Bug $bug): int
+    protected function getPairs(Steps $steps): array
     {
-        $steps = $bug->getSteps();
-        $messagesCount = 0;
+        $pairs = [];
 
         for ($i = 0; $i < $steps->getLength() - 1; ++$i) {
             $j = $i + 1;
             $fromPlaces = $steps->getPlacesAt($i);
             $toPlaces = $steps->getPlacesAt($j);
-            if (count($fromPlaces) > 1 && count($toPlaces) > 1 && 1 === count(array_diff($fromPlaces, $toPlaces)) &&
+            // Workflow only, does not work with state machine
+            if ($fromPlaces && $toPlaces &&
+                count($fromPlaces) > 1 && count($toPlaces) > 1 &&
+                1 === count(array_diff($fromPlaces, $toPlaces)) &&
                 1 === count(array_diff($toPlaces, $fromPlaces))) {
-                $message = new ReduceStepsMessage($bug->getId(), static::getName(), $steps->getLength(), $i, $j);
-                $this->messageBus->dispatch($message);
-                ++$messagesCount;
-                if ($messagesCount >= $steps->getLength()) {
-                    break;
-                }
+                $pairs[] = [$i, $j];
             }
         }
 
-        return $messagesCount;
+        return $pairs;
     }
 
     public static function getName(): string

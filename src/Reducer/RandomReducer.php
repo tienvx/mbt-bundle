@@ -4,8 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
-use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 
 class RandomReducer extends AbstractReducer
 {
@@ -19,18 +19,17 @@ class RandomReducer extends AbstractReducer
     public function dispatch(Bug $bug): int
     {
         $steps = $bug->getSteps();
-        $messagesCount = 0;
 
-        if ($steps->getLength() > 2) {
-            $pairs = Randomizer::randomPairs($steps->getLength(), floor(sqrt($steps->getLength())));
-            foreach ($pairs as $pair) {
-                $message = new ReduceStepsMessage($bug->getId(), static::getName(), $steps->getLength(), $pair[0], $pair[1]);
-                $this->messageBus->dispatch($message);
-                ++$messagesCount;
-            }
+        if ($steps->getLength() <= 2) {
+            return 0;
         }
 
-        return $messagesCount;
+        return parent::dispatch($bug);
+    }
+
+    protected function getPairs(Steps $steps): array
+    {
+        return Randomizer::randomPairs($steps->getLength(), floor(sqrt($steps->getLength())));
     }
 
     public static function getName(): string
