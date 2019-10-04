@@ -13,6 +13,9 @@ framework:
                     max_delay: 0
         routing:
             '*': memory
+    validation:
+        auto_mapping:
+            Tienvx\Bundle\MbtBundle\Entity\: []
 
 doctrine:
     dbal:

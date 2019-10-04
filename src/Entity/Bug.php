@@ -24,30 +24,35 @@ class Bug
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $title;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @MbtAssert\BugStatus
      */
     private $status = BugWorkflow::NEW;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Type("string")
      * @Assert\NotNull
      */
     private $steps;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $model;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $modelHash;
@@ -60,26 +65,30 @@ class Bug
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $bugMessage;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Type("integer")
      */
     private $messagesCount = 0;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     * @Assert\DateTime
      */
     private $createdAt;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="updated_at", type="datetime")
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Assert\DateTime
      */
     private $updatedAt;
 

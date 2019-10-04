@@ -26,41 +26,48 @@ class Task
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $title;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $model;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $generator;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Assert\Type("string")
      */
     private $generatorOptions;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @Assert\NotBlank
      */
     private $reducer;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Type("string")
      * @Assert\NotNull
      */
     private $reporters = '[]';
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Type("string")
      * @MbtAssert\TaskStatus
      */
     private $status = TaskWorkflow::NOT_STARTED;
@@ -79,7 +86,7 @@ class Task
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
      * @Assert\DateTime
      */
     private $createdAt;
@@ -87,7 +94,7 @@ class Task
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="updated_at", type="datetime")
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      * @Assert\DateTime
      */
     private $updatedAt;
