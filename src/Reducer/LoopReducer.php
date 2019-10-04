@@ -6,12 +6,8 @@ use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
+use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
-use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
-use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 
 class LoopReducer extends AbstractReducer
 {
@@ -25,63 +21,62 @@ class LoopReducer extends AbstractReducer
      * @throws Exception
      * @throws Throwable
      */
-    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
+    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
     {
         $steps = $bug->getSteps();
         $model = $bug->getModel()->getName();
 
-        if ($steps->getLength() === $length) {
-            // The reproduce path has not been reduced.
-            if ($from < $steps->getLength() && $to < $steps->getLength() && !array_diff($steps->getPlacesAt($from), $steps->getPlacesAt($to))) {
-                $newSteps = StepsBuilder::createWithoutLoop($steps, $from, $to);
-                // Make sure new path shorter than old path.
-                if ($newSteps->getLength() < $steps->getLength()) {
-                    try {
-                        $subject = $this->subjectManager->createSubject($model);
-                        StepsRunner::run($newSteps, $workflow, $subject);
-                    } catch (Throwable $newThrowable) {
-                        if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                            BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
-                            $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
-                        }
-                    }
-                }
-            }
+        if ($steps->getLength() !== $length) {
+            // The reproduce path has been reduced.
+            return;
         }
 
-        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
+        $fromPlaces = $steps->getPlacesAt($from);
+        $toPlaces = $steps->getPlacesAt($to);
+        if (!($fromPlaces && $toPlaces &&
+            !array_diff($fromPlaces, $toPlaces) &&
+            !array_diff($toPlaces, $fromPlaces))) {
+            return;
+        }
+
+        $newSteps = StepsBuilder::createWithoutLoop($steps, $from, $to);
+        if ($newSteps->getLength() >= $steps->getLength()) {
+            // New path is longer than or equals old path.
+            return;
+        }
+
+        $this->run($model, $newSteps, $bug, $workflow);
     }
 
-    /**
-     * @param Bug $bug
-     *
-     * @return int
-     *
-     * @throws Exception
-     */
-    public function dispatch(Bug $bug): int
+    protected function getPairs(Steps $steps): array
     {
-        $steps = $bug->getSteps();
-        $messagesCount = 0;
+        $pairs = [];
 
-        $distance = $steps->getLength();
-        while ($distance > 0) {
-            for ($i = 0; $i < $steps->getLength(); ++$i) {
-                $j = $i + $distance;
-                if ($j < $steps->getLength() && !array_diff($steps->getPlacesAt($i), $steps->getPlacesAt($j))) {
-                    $message = new ReduceStepsMessage($bug->getId(), static::getName(), $steps->getLength(), $i, $j);
-                    $this->messageBus->dispatch($message);
-                    ++$messagesCount;
-                    if ($messagesCount >= $steps->getLength()) {
-                        // Prevent too many messages.
-                        break 2;
-                    }
+        for ($i = 0; $i < $steps->getLength() - 1; ++$i) {
+            for ($j = $i + 1; $j < $steps->getLength(); ++$j) {
+                if (!array_diff($steps->getPlacesAt($i), $steps->getPlacesAt($j)) &&
+                    !array_diff($steps->getPlacesAt($j), $steps->getPlacesAt($i))) {
+                    $distance = $j - $i;
+                    $pairs[] = [$i, $j, $distance];
                 }
             }
-            --$distance;
         }
 
-        return $messagesCount;
+        usort($pairs, function ($a, $b) {
+            // Sort by distance ascending
+            return $a[2] - $b[2];
+        });
+
+        if (count($pairs) - $steps->getLength() * 2 < 0) {
+            // If number of pairs is small enough, we handle all pairs
+            return $pairs;
+        } else {
+            // If number of pairs is large, we handle a bit of easy pairs, and a bit of hard pairs
+            $easy = floor($steps->getLength() / 2);
+            $hard = floor($steps->getLength() / 8);
+
+            return array_merge(array_slice($pairs, -$easy, $easy), array_slice($pairs, 0, $hard));
+        }
     }
 
     public static function getName(): string

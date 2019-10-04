@@ -9,9 +9,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
 class ReduceStepsCommand extends Command
@@ -33,14 +35,21 @@ class ReduceStepsCommand extends Command
      */
     protected $workflowRegistry;
 
+    /**
+     * @var MessageBusInterface
+     */
+    protected $messageBus;
+
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
+        MessageBusInterface $messageBus
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
+        $this->messageBus = $messageBus;
 
         parent::__construct();
     }
@@ -85,7 +94,14 @@ class ReduceStepsCommand extends Command
 
         $this->setAnonymousToken();
 
-        $reducer = $this->reducerManager->getReducer($reducer);
-        $reducer->handle($bug, $workflow, $length, $from, $to);
+        $reducerService = $this->reducerManager->getReducer($reducer);
+        $reducerService->handle($bug, $workflow, $length, $from, $to);
+
+        $this->finish($bug);
+    }
+
+    public function finish(Bug $bug): void
+    {
+        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
     }
 }

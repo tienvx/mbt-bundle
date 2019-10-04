@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "^1.12"
+$ composer require tienvx/mbt-bundle "^1.13"
 ```
 
 ### Step 3: Config file storage
@@ -70,6 +70,12 @@ You can run the tests with:
 ```console
 $ php tests/app/bin/console cache:clear # Only if you added new code
 $ phpunit
+```
+
+## Validate code with coding standards
+
+```console
+$ php-cs-fixer fix --diff --dry-run
 ```
 
 ## Documentation
