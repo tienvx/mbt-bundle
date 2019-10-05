@@ -67,12 +67,13 @@ class LoopReducer extends AbstractReducer
             return $a[2] - $b[2];
         });
 
-        if (count($pairs) - $steps->getLength() * 2 < 0) {
+        if (count($pairs) - $steps->getLength() < 0) {
             // If number of pairs is small enough, we handle all pairs
             return $pairs;
         } else {
             // If number of pairs is large, we handle a bit of easy pairs, and a bit of hard pairs
-            $easy = floor($steps->getLength() / 2);
+            // Hard pairs sit at the beginning of the array, easy at the end.
+            $easy = floor($steps->getLength());
             $hard = floor($steps->getLength() / 8);
 
             return array_merge(array_slice($pairs, -$easy, $easy), array_slice($pairs, 0, $hard));
