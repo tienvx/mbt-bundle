@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['7.2', '7.3', '7.4.0RC1']
+        php: ['7.2', '7.3', '7.4.0RC3']
     container:
       image: php:${{ matrix.php }}-cli-alpine
     steps:
@@ -63,4 +63,4 @@ jobs:
         ./codecov.sh -f tests/logs/clover.xml -t $CODECOV_TOKEN
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.php == '7.3'
+      if: matrix.php == '7.3' && github.event_name == 'push'
