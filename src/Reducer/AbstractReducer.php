@@ -48,17 +48,20 @@ abstract class AbstractReducer implements ReducerInterface
     protected $entityManager;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         MessageBusInterface $messageBus,
         GraphBuilder $graphBuilder,
         EntityManagerInterface $entityManager
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->messageBus = $messageBus;
         $this->graphBuilder = $graphBuilder;
         $this->entityManager = $entityManager;
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     public static function support(): bool

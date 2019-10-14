@@ -22,7 +22,7 @@ class ModelValidator extends ConstraintValidator
      */
     protected $workflowRegistry;
 
-    public function __construct(Registry $workflowRegistry)
+    public function setWorkflowRegistry(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
     }

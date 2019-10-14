@@ -35,14 +35,17 @@ class CreateBugCommand extends Command
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        Registry $workflowRegistry
+        ValidatorInterface $validator
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
-        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

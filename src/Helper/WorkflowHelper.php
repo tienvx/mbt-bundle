@@ -13,15 +13,19 @@ use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 class WorkflowHelper
 {
     /**
-     * @param Registry $registry
-     * @param string   $model
+     * @param Registry|null $registry
+     * @param string        $model
      *
      * @return Workflow
      *
      * @throws Exception
      */
-    public static function get(Registry $registry, string $model): Workflow
+    public static function get(?Registry $registry, string $model): Workflow
     {
+        if (!$registry instanceof Registry) {
+            throw new Exception('No models were defined');
+        }
+
         $subject = static::fakeSubject();
 
         try {

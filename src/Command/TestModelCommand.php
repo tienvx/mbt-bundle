@@ -39,15 +39,18 @@ class TestModelCommand extends Command
     private $generatorManager;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

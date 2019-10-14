@@ -48,19 +48,22 @@ class TestBugCommand extends Command
     private $defaultBugTitle;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()
