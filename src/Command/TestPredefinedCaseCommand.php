@@ -51,14 +51,12 @@ class TestPredefinedCaseCommand extends Command
     private $predefinedCaseManager;
 
     public function __construct(
-        Registry $workflowRegistry,
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         PredefinedCaseManager $predefinedCaseManager
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
@@ -66,6 +64,11 @@ class TestPredefinedCaseCommand extends Command
         $this->predefinedCaseManager = $predefinedCaseManager;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

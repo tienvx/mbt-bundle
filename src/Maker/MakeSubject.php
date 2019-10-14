@@ -23,7 +23,7 @@ final class MakeSubject extends AbstractMaker
      */
     private $workflowRegistry;
 
-    public function __construct(Registry $workflowRegistry)
+    public function setWorkflowRegistry(Registry $workflowRegistry)
     {
         $this->workflowRegistry = $workflowRegistry;
     }

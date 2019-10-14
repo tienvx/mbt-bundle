@@ -39,15 +39,18 @@ class ReduceBugCommand extends Command
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus,
-        Registry $workflowRegistry
+        MessageBusInterface $messageBus
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
-        $this->workflowRegistry = $workflowRegistry;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

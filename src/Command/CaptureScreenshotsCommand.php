@@ -37,17 +37,20 @@ class CaptureScreenshotsCommand extends Command
     protected $mbtStorage;
 
     public function __construct(
-        Registry $workflowRegistry,
         EntityManagerInterface $entityManager,
         SubjectManager $subjectManager,
         FilesystemInterface $mbtStorage
     ) {
-        $this->workflowRegistry = $workflowRegistry;
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
         $this->mbtStorage = $mbtStorage;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

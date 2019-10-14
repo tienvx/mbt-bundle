@@ -43,15 +43,18 @@ class ReduceStepsCommand extends Command
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        Registry $workflowRegistry,
         MessageBusInterface $messageBus
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
-        $this->workflowRegistry = $workflowRegistry;
         $this->messageBus = $messageBus;
 
         parent::__construct();
+    }
+
+    public function setWorkflowRegistry(Registry $workflowRegistry)
+    {
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()
