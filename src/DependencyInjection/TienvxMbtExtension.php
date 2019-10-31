@@ -9,14 +9,14 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestPredefinedCaseMessageHandler;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
@@ -65,9 +65,9 @@ class TienvxMbtExtension extends Extension
     private function registerCommandConfiguration(array $config, ContainerBuilder $container)
     {
         $commands = [
-            ExecuteTaskCommand::class,
-            TestBugCommand::class,
-            TestPredefinedCaseCommand::class,
+            ExecuteTaskMessageHandler::class,
+            TestBugMessageHandler::class,
+            TestPredefinedCaseMessageHandler::class,
         ];
         foreach ($commands as $command) {
             $commandDefinition = $container->getDefinition($command);

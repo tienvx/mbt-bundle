@@ -6,12 +6,12 @@ use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
+use Tienvx\Bundle\MbtBundle\MessageHandler\CaptureScreenshotsMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestPredefinedCaseMessageHandler;
 
 class SecurityTokenPass implements CompilerPassInterface
 {
@@ -35,11 +35,11 @@ class SecurityTokenPass implements CompilerPassInterface
         $tokenStorage = new Reference($this->tokenStorageService);
 
         $commands = [
-            ExecuteTaskCommand::class,
-            ReduceStepsCommand::class,
-            CaptureScreenshotsCommand::class,
-            TestBugCommand::class,
-            TestPredefinedCaseCommand::class,
+            ExecuteTaskMessageHandler::class,
+            ReduceStepsMessageHandler::class,
+            CaptureScreenshotsMessageHandler::class,
+            TestBugMessageHandler::class,
+            TestPredefinedCaseMessageHandler::class,
             TestModelCommand::class,
         ];
         foreach ($commands as $command) {

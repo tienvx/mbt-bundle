@@ -2,21 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var CommandRunner
+     * @var BugWorkflow
      */
-    private $commandRunner;
+    private $bugWorkflow;
 
-    public function __construct(CommandRunner $commandRunner)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager, BugWorkflow $bugWorkflow)
     {
-        $this->commandRunner = $commandRunner;
+        $this->entityManager = $entityManager;
+        $this->bugWorkflow = $bugWorkflow;
     }
 
     /**
@@ -27,7 +35,14 @@ class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
     public function __invoke(ApplyBugTransitionMessage $message)
     {
         $bugId = $message->getId();
-        $status = $message->getTransition();
-        $this->commandRunner->run(['mbt:bug:apply-transition', $bugId, $status]);
+        $transition = $message->getTransition();
+        $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
+
+        if (!$bug || !$bug instanceof Bug) {
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
+        }
+
+        $this->bugWorkflow->apply($bug, $transition);
+        $this->entityManager->flush();
     }
 }

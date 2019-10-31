@@ -2,21 +2,38 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Message\RemoveScreenshotsMessage;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var CommandRunner
+     * @var EntityManagerInterface
      */
-    private $commandRunner;
+    private $entityManager;
 
-    public function __construct(CommandRunner $commandRunner)
-    {
-        $this->commandRunner = $commandRunner;
+    /**
+     * @var SubjectManager
+     */
+    protected $subjectManager;
+
+    /**
+     * @var FilesystemInterface
+     */
+    protected $mbtStorage;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        SubjectManager $subjectManager,
+        FilesystemInterface $mbtStorage
+    ) {
+        $this->entityManager = $entityManager;
+        $this->subjectManager = $subjectManager;
+        $this->mbtStorage = $mbtStorage;
     }
 
     /**
@@ -28,6 +45,9 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
     {
         $bugId = $message->getBugId();
         $model = $message->getModel();
-        $this->commandRunner->run(['mbt:bug:remove-screenshots', $bugId, $model]);
+
+        $subject = $this->subjectManager->createSubject($model);
+        $subject->setFilesystem($this->mbtStorage);
+        $subject->removeScreenshots($bugId);
     }
 }
