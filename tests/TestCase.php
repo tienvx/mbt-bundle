@@ -28,9 +28,7 @@ abstract class TestCase extends KernelTestCase
      */
     protected function runCommand($command)
     {
-        $command = sprintf('%s --quiet', $command);
-
-        return $this->application->run(new StringInput($command));
+        return $this->application->run(new StringInput(sprintf('%s --quiet', $command)));
     }
 
     protected function getApplication()

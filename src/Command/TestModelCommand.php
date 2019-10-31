@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Entity\Steps;
@@ -22,11 +21,7 @@ class TestModelCommand extends Command
 {
     use TokenTrait;
     use SubjectTrait;
-
-    /**
-     * @var Registry
-     */
-    private $workflowRegistry;
+    use WorkflowRegisterTrait;
 
     /**
      * @var SubjectManager
@@ -46,11 +41,6 @@ class TestModelCommand extends Command
         $this->generatorManager = $generatorManager;
 
         parent::__construct();
-    }
-
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
     }
 
     protected function configure()

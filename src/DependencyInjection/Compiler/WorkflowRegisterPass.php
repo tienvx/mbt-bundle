@@ -6,15 +6,15 @@ use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Tienvx\Bundle\MbtBundle\Command\CaptureScreenshotsCommand;
-use Tienvx\Bundle\MbtBundle\Command\CreateBugCommand;
-use Tienvx\Bundle\MbtBundle\Command\ExecuteTaskCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReduceBugCommand;
-use Tienvx\Bundle\MbtBundle\Command\ReduceStepsCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestBugCommand;
 use Tienvx\Bundle\MbtBundle\Command\TestModelCommand;
-use Tienvx\Bundle\MbtBundle\Command\TestPredefinedCaseCommand;
 use Tienvx\Bundle\MbtBundle\Maker\MakeSubject;
+use Tienvx\Bundle\MbtBundle\MessageHandler\CaptureScreenshotsMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\CreateBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\TestPredefinedCaseMessageHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\LoopReducer;
 use Tienvx\Bundle\MbtBundle\Reducer\RandomReducer;
 use Tienvx\Bundle\MbtBundle\Reducer\SplitReducer;
@@ -43,14 +43,14 @@ class WorkflowRegisterPass implements CompilerPassInterface
         $registry = new Reference($this->registryService);
 
         $services = [
-            CaptureScreenshotsCommand::class,
-            CreateBugCommand::class,
-            ExecuteTaskCommand::class,
-            ReduceBugCommand::class,
-            ReduceStepsCommand::class,
-            TestBugCommand::class,
+            CaptureScreenshotsMessageHandler::class,
+            CreateBugMessageHandler::class,
+            ExecuteTaskMessageHandler::class,
+            ReduceBugMessageHandler::class,
+            ReduceStepsMessageHandler::class,
+            TestBugMessageHandler::class,
+            TestPredefinedCaseMessageHandler::class,
             TestModelCommand::class,
-            TestPredefinedCaseCommand::class,
             MakeSubject::class,
             LoopReducer::class,
             RandomReducer::class,

@@ -2,21 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var CommandRunner
+     * @var TaskWorkflow
      */
-    private $commandRunner;
+    private $taskWorkflow;
 
-    public function __construct(CommandRunner $commandRunner)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager, TaskWorkflow $taskWorkflow)
     {
-        $this->commandRunner = $commandRunner;
+        $this->entityManager = $entityManager;
+        $this->taskWorkflow = $taskWorkflow;
     }
 
     /**
@@ -28,6 +36,13 @@ class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
     {
         $taskId = $message->getId();
         $transition = $message->getTransition();
-        $this->commandRunner->run(['mbt:task:apply-transition', $taskId, $transition]);
+        $task = $this->entityManager->getRepository(Task::class)->find($taskId);
+
+        if (!$task || !$task instanceof Task) {
+            throw new Exception(sprintf('No task found for id %d', $taskId));
+        }
+
+        $this->taskWorkflow->apply($task, $transition);
+        $this->entityManager->flush();
     }
 }

@@ -10,5 +10,3 @@ services:
 
     Tienvx\Messenger\MemoryTransport\MemoryTransportFactory:
         tags: ['messenger.transport_factory']
-
-    Tienvx\Bundle\MbtBundle\Command\CommandRunner: '@App\Command\CommandRunner'

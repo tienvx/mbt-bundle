@@ -2,21 +2,31 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterManager;
 
 class ReportBugMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var CommandRunner
+     * @var EntityManagerInterface
      */
-    private $commandRunner;
+    private $entityManager;
 
-    public function __construct(CommandRunner $commandRunner)
-    {
-        $this->commandRunner = $commandRunner;
+    /**
+     * @var ReporterManager
+     */
+    protected $reporterManager;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ReporterManager $reporterManager
+    ) {
+        $this->entityManager = $entityManager;
+        $this->reporterManager = $reporterManager;
     }
 
     /**
@@ -28,6 +38,14 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     {
         $bugId = $message->getBugId();
         $reporter = $message->getReporter();
-        $this->commandRunner->run(['mbt:bug:report', $bugId, $reporter]);
+
+        $bug = $this->entityManager->find(Bug::class, $bugId);
+
+        if (!$bug instanceof Bug) {
+            throw new Exception(sprintf('No bug found for id %d', $bugId));
+        }
+
+        $reporterService = $this->reporterManager->getReporter($reporter);
+        $reporterService->report($bug);
     }
 }
