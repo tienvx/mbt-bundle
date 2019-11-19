@@ -29,10 +29,6 @@ final class MakeModel extends AbstractMaker
     }
 
     /**
-     * @param InputInterface $input
-     * @param ConsoleStyle   $io
-     * @param Generator      $generator
-     *
      * @throws Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)

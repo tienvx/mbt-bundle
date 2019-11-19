@@ -16,9 +16,6 @@ class MakeSubjectCommandTest extends CommandTestCase
 
     /**
      * @dataProvider modelData
-     *
-     * @param string $model
-     * @param string $subjectClass
      */
     public function testExecute(string $model, string $subjectClass)
     {

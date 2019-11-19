@@ -8,18 +8,21 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Tienvx\Bundle\MbtBundle\Command\MessageTrait;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
 
 class FinishReduceStepsMessageHandler implements MessageHandlerInterface
 {
-    use MessageTrait;
-
     /**
      * @var EntityManager
      */
     private $entityManager;
+
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -30,8 +33,6 @@ class FinishReduceStepsMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param FinishReduceStepsMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(FinishReduceStepsMessage $message)
@@ -54,7 +55,7 @@ class FinishReduceStepsMessageHandler implements MessageHandlerInterface
 
         $bug = $this->entityManager->transactional($callback);
         if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
-            $this->finishReduceBug($bug->getId());
+            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
         }
     }
 }

@@ -9,11 +9,11 @@ use Exception;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\RemoveScreenshotsMessage;
-use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
-use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\TransitionReducer;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
@@ -50,8 +50,6 @@ class EntitySubscriber implements EventSubscriber
     }
 
     /**
-     * @param LifecycleEventArgs $args
-     *
      * @throws Exception
      */
     public function preRemove(LifecycleEventArgs $args)

@@ -37,8 +37,6 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param RemoveScreenshotsMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(RemoveScreenshotsMessage $message)
@@ -46,7 +44,7 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
         $bugId = $message->getBugId();
         $model = $message->getModel();
 
-        $subject = $this->subjectManager->createSubject($model);
+        $subject = $this->subjectManager->create($model);
         $subject->setFilesystem($this->mbtStorage);
         $subject->removeScreenshots($bugId);
     }

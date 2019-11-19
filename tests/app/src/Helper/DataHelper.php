@@ -1,18 +1,13 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Helper;
+namespace App\Helper;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
 
 class DataHelper
 {
     /**
-     * @param Data     $data
-     * @param string   $key
-     * @param callable $miss
-     * @param callable $validate
-     *
      * @return mixed
      *
      * @throws Exception

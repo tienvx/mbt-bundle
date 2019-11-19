@@ -8,21 +8,21 @@ use Graphp\Algorithms\TravelingSalesmanProblem\Bruteforce;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Helper\GraphHelper;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class AllPlacesGenerator extends AbstractGenerator
 {
     /**
-     * @var GraphBuilder
+     * @var GraphHelper
      */
-    protected $graphBuilder;
+    protected $graphHelper;
 
-    public function __construct(GraphBuilder $graphBuilder)
+    public function __construct(GraphHelper $graphHelper)
     {
-        $this->graphBuilder = $graphBuilder;
+        $this->graphHelper = $graphHelper;
     }
 
     /**
@@ -33,7 +33,7 @@ class AllPlacesGenerator extends AbstractGenerator
      */
     public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
-        $graph = $this->graphBuilder->build($workflow);
+        $graph = $this->graphHelper->build($workflow);
         $algorithm = new Bruteforce($graph);
         try {
             $edges = $algorithm->getEdges();

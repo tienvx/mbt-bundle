@@ -5,7 +5,7 @@ framework:
     messenger:
         transports:
             memory:
-                dsn: "memory://"
+                dsn: 'in-memory://'
                 retry_strategy:
                     max_retries: 3
                     delay: 1000

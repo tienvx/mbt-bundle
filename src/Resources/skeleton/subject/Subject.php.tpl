@@ -5,7 +5,7 @@ namespace <?= $namespace; ?>;
 use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 /**

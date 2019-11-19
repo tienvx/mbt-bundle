@@ -3,27 +3,28 @@
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Exception;
+use Fhaculty\Graph\Graph;
 use Graphp\Algorithms\ConnectedComponents;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Algorithm\Eulerian;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Helper\VertexHelper;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Graph\Algorithm\Eulerian;
+use Tienvx\Bundle\MbtBundle\Graph\VertexId;
+use Tienvx\Bundle\MbtBundle\Helper\GraphHelper;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class AllTransitionsGenerator extends AbstractGenerator
 {
     /**
-     * @var GraphBuilder
+     * @var GraphHelper
      */
-    protected $graphBuilder;
+    protected $graphHelper;
 
-    public function __construct(GraphBuilder $graphBuilder)
+    public function __construct(GraphHelper $graphHelper)
     {
-        $this->graphBuilder = $graphBuilder;
+        $this->graphHelper = $graphHelper;
     }
 
     /**
@@ -34,12 +35,10 @@ class AllTransitionsGenerator extends AbstractGenerator
      */
     public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
-        $graph = $this->graphBuilder->build($workflow);
-        $components = new ConnectedComponents($graph);
-        $singleComponent = $components->isSingle();
-        if ($singleComponent) {
+        $graph = $this->graphHelper->build($workflow);
+        if ($this->singleComponent($graph)) {
             $algorithm = new Eulerian($graph);
-            $startVertex = $graph->getVertex(VertexHelper::getId($workflow->getDefinition()->getInitialPlaces()));
+            $startVertex = $graph->getVertex(VertexId::fromPlaces($workflow->getDefinition()->getInitialPlaces()));
             $edges = $algorithm->getEdges($startVertex)->getVector();
             while (!empty($edges)) {
                 $edge = array_shift($edges);
@@ -51,6 +50,13 @@ class AllTransitionsGenerator extends AbstractGenerator
                 }
             }
         }
+    }
+
+    protected function singleComponent(Graph $graph): bool
+    {
+        $components = new ConnectedComponents($graph);
+
+        return $components->isSingle();
     }
 
     public static function getName(): string

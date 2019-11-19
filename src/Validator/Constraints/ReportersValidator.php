@@ -43,7 +43,7 @@ class ReportersValidator extends ConstraintValidator
                 throw new UnexpectedValueException($value, ReporterEntity::class);
             }
 
-            if (!$this->reporterManager->hasReporter($value->getName())) {
+            if (!$this->reporterManager->has($value->getName())) {
                 $this->context->buildViolation($constraint->message)
                     ->setParameter('{{ string }}', $value->getName())
                     ->addViolation();

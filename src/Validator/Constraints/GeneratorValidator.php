@@ -34,7 +34,7 @@ class GeneratorValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, GeneratorEntity::class);
         }
 
-        if (!$this->generatorManager->hasGenerator($value->getName())) {
+        if (!$this->generatorManager->has($value->getName())) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();

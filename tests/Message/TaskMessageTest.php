@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
@@ -16,13 +17,7 @@ use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 class TaskMessageTest extends MessageTestCase
 {
     /**
-     * @param string $model
-     * @param string $generator
-     * @param string $reducer
-     * @param bool   $takeScreenshots
-     * @param bool   $reportBug
-     *
-     * @throws \Exception
+     * @throws Exception
      * @dataProvider consumeMessageData
      */
     public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
@@ -49,6 +44,8 @@ class TaskMessageTest extends MessageTestCase
         $entityManager->flush();
 
         $this->consumeMessages();
+
+        $task = $entityManager->getRepository(Task::class)->findOneBy(['id' => $task->getId()]);
 
         /** @var EntityRepository $entityRepository */
         $entityRepository = $entityManager->getRepository(Bug::class);

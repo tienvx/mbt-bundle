@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity;
+namespace Tienvx\Bundle\MbtBundle\Steps;
 
 use Exception;
 
@@ -58,9 +58,6 @@ class Step
         $this->places = $places;
     }
 
-    /**
-     * @return array
-     */
     public function normalize(): array
     {
         return [
@@ -70,19 +67,12 @@ class Step
         ];
     }
 
-    /**
-     * @return string
-     */
     public function serialize(): string
     {
         return json_encode($this->normalize());
     }
 
     /**
-     * @param array $step
-     *
-     * @return Step
-     *
      * @throws Exception
      */
     public static function denormalize(array $step): Step
@@ -95,10 +85,6 @@ class Step
     }
 
     /**
-     * @param string $step
-     *
-     * @return Step
-     *
      * @throws Exception
      */
     public static function deserialize(string $step): Step

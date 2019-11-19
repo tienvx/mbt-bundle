@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity;
+namespace Tienvx\Bundle\MbtBundle\Steps;
 
 use Exception;
 
@@ -22,8 +22,7 @@ class Data
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws Exception
      */
@@ -35,9 +34,6 @@ class Data
         $this->data[$key] = $value;
     }
 
-    /**
-     * @return array
-     */
     public function normalize(): array
     {
         $return = [];
@@ -51,19 +47,12 @@ class Data
         return $return;
     }
 
-    /**
-     * @return string
-     */
     public function serialize(): string
     {
         return json_encode($this->normalize());
     }
 
     /**
-     * @param array $items
-     *
-     * @return Data
-     *
      * @throws Exception
      */
     public static function denormalize(array $items): Data
@@ -83,10 +72,6 @@ class Data
     }
 
     /**
-     * @param string $items
-     *
-     * @return Data
-     *
      * @throws Exception
      */
     public static function deserialize(string $items): Data

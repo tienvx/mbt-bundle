@@ -28,8 +28,6 @@ class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ApplyTaskTransitionMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(ApplyTaskTransitionMessage $message)

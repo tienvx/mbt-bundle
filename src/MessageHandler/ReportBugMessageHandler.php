@@ -30,8 +30,6 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ReportBugMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(ReportBugMessage $message)
@@ -45,7 +43,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $reporterService = $this->reporterManager->getReporter($reporter);
+        $reporterService = $this->reporterManager->get($reporter);
         $reporterService->report($bug);
     }
 }

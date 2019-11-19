@@ -1,11 +1,11 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Command;
+namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
-trait TokenTrait
+class TokenHelper
 {
     /**
      * @var TokenStorage|null
@@ -17,7 +17,7 @@ trait TokenTrait
         $this->tokenStorage = $tokenStorage;
     }
 
-    protected function setAnonymousToken()
+    public function setAnonymousToken()
     {
         if ($this->tokenStorage) {
             $token = new AnonymousToken('default', 'anon.');

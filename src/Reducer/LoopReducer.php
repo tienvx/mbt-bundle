@@ -6,18 +6,13 @@ use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
-use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
+use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\RemoveLoopStrategy;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Steps\StepsBuilder;
 
 class LoopReducer extends AbstractReducer
 {
     /**
-     * @param Bug      $bug
-     * @param Workflow $workflow
-     * @param int      $length
-     * @param int      $from
-     * @param int      $to
-     *
      * @throws Exception
      * @throws Throwable
      */
@@ -39,7 +34,9 @@ class LoopReducer extends AbstractReducer
             return;
         }
 
-        $newSteps = StepsBuilder::createWithoutLoop($steps, $from, $to);
+        $stepsBuilder = new StepsBuilder();
+        $stepsBuilder->setStrategy(new RemoveLoopStrategy());
+        $newSteps = $stepsBuilder->create($steps, $from, $to);
         if ($newSteps->getLength() >= $steps->getLength()) {
             // New path is longer than or equals old path.
             return;
@@ -73,11 +70,31 @@ class LoopReducer extends AbstractReducer
         } else {
             // If number of pairs is large, we handle a bit of easy pairs, and a bit of hard pairs
             // Hard pairs sit at the beginning of the array, easy at the end.
-            $easy = floor($steps->getLength());
-            $hard = floor($steps->getLength() / 8);
+            $total = count($pairs);
+            $limitEasy = $steps->getLength();
+            $easy = array_slice($pairs, -$limitEasy, $limitEasy);
+            $hard = array_slice($pairs, -$total, $total - $limitEasy);
+            $limitHard = floor(sqrt($steps->getLength()));
 
-            return array_merge(array_slice($pairs, -$easy, $easy), array_slice($pairs, 0, $hard));
+            return array_merge($easy, $this->randomPairs($hard, $limitHard));
         }
+    }
+
+    protected function randomPairs(array $pairs, int $limit): array
+    {
+        $randomPairs = [];
+        while (count($randomPairs) < $limit && count($pairs) > 0) {
+            $key = array_rand($pairs);
+            $pair = $pairs[$key];
+            list($i, $j) = $pair;
+            // $pair will be removed from $pairs too
+            $pairs = array_filter($pairs, function (array $pair) use ($i, $j) {
+                return $pair[1] <= $i || $pair[0] >= $j;
+            });
+            $randomPairs[] = $pair;
+        }
+
+        return $randomPairs;
     }
 
     public static function getName(): string

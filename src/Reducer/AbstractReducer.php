@@ -2,31 +2,24 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
-use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
-use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
+use Tienvx\Bundle\MbtBundle\Helper\GraphHelper;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
-use Tienvx\Bundle\MbtBundle\Service\GraphBuilder;
+use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\ShortestPathStrategy;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Steps\StepsBuilder;
+use Tienvx\Bundle\MbtBundle\Steps\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 abstract class AbstractReducer implements ReducerInterface
 {
-    /**
-     * @var Registry
-     */
-    protected $workflowRegistry;
-
     /**
      * @var SubjectManager
      */
@@ -38,30 +31,25 @@ abstract class AbstractReducer implements ReducerInterface
     protected $messageBus;
 
     /**
-     * @var GraphBuilder
+     * @var GraphHelper
      */
-    protected $graphBuilder;
+    protected $graphHelper;
 
     /**
-     * @var EntityManager
+     * @var BugHelper
      */
-    protected $entityManager;
+    private $bugHelper;
 
     public function __construct(
         SubjectManager $subjectManager,
         MessageBusInterface $messageBus,
-        GraphBuilder $graphBuilder,
-        EntityManagerInterface $entityManager
+        GraphHelper $graphHelper,
+        BugHelper $bugHelper
     ) {
         $this->subjectManager = $subjectManager;
         $this->messageBus = $messageBus;
-        $this->graphBuilder = $graphBuilder;
-        $this->entityManager = $entityManager;
-    }
-
-    public function setWorkflowRegistry(Registry $workflowRegistry)
-    {
-        $this->workflowRegistry = $workflowRegistry;
+        $this->graphHelper = $graphHelper;
+        $this->bugHelper = $bugHelper;
     }
 
     public static function support(): bool
@@ -70,12 +58,6 @@ abstract class AbstractReducer implements ReducerInterface
     }
 
     /**
-     * @param Bug      $bug
-     * @param Workflow $workflow
-     * @param int      $length
-     * @param int      $from
-     * @param int      $to
-     *
      * @throws Exception
      * @throws Throwable
      * @throws InvalidArgumentException
@@ -83,7 +65,7 @@ abstract class AbstractReducer implements ReducerInterface
     public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
     {
         $model = $bug->getModel()->getName();
-        $graph = $this->graphBuilder->build($workflow);
+        $graph = $this->graphHelper->build($workflow);
         $steps = $bug->getSteps();
 
         if ($steps->getLength() !== $length) {
@@ -91,7 +73,9 @@ abstract class AbstractReducer implements ReducerInterface
             return;
         }
 
-        $newSteps = StepsBuilder::createWithShortestPath($graph, $steps, $from, $to);
+        $stepsBuilder = new StepsBuilder();
+        $stepsBuilder->setStrategy(new ShortestPathStrategy($graph));
+        $newSteps = $stepsBuilder->create($steps, $from, $to);
         if ($newSteps->getLength() >= $steps->getLength()) {
             // New path is longer than or equals old path.
             return;
@@ -103,21 +87,17 @@ abstract class AbstractReducer implements ReducerInterface
     protected function run(string $model, Steps $newSteps, Bug $bug, Workflow $workflow): void
     {
         try {
-            $subject = $this->subjectManager->createSubject($model);
+            $subject = $this->subjectManager->create($model);
             StepsRunner::run($newSteps, $workflow, $subject);
         } catch (Throwable $newThrowable) {
             if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                BugHelper::updateSteps($this->entityManager, $bug, $newSteps);
+                $this->bugHelper->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getName()));
             }
         }
     }
 
     /**
-     * @param Bug $bug
-     *
-     * @return int
-     *
      * @throws Exception
      */
     public function dispatch(Bug $bug): int

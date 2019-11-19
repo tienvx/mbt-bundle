@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
@@ -118,8 +119,6 @@ class Bug
     }
 
     /**
-     * @return Steps
-     *
      * @throws Exception
      */
     public function getSteps(): Steps
@@ -134,8 +133,6 @@ class Bug
 
     /**
      * @MbtAssert\Model
-     *
-     * @return Model
      */
     public function getModel(): Model
     {

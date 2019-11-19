@@ -10,9 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
 trait PluginTrait
 {
     /**
-     * @param ContainerBuilder $container
-     * @param string           $tagName
-     *
      * @return array
      *
      * @throws Exception

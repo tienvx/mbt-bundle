@@ -28,8 +28,6 @@ class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param ApplyBugTransitionMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(ApplyBugTransitionMessage $message)

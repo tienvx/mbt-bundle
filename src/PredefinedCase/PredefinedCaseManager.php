@@ -20,10 +20,6 @@ class PredefinedCaseManager
     /**
      * Returns one predefined case by name.
      *
-     * @param string $name
-     *
-     * @return PredefinedCase
-     *
      * @throws Exception
      */
     public function get(string $name): PredefinedCase
@@ -37,10 +33,6 @@ class PredefinedCaseManager
 
     /**
      * Check if there is a predefined case by name.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
     public function has(string $name): bool
     {

@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 class PredefinedCase
@@ -40,25 +41,16 @@ class PredefinedCase
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = $title;
@@ -66,8 +58,6 @@ class PredefinedCase
 
     /**
      * @MbtAssert\Model
-     *
-     * @return Model
      */
     public function getModel(): Model
     {
@@ -80,8 +70,6 @@ class PredefinedCase
     }
 
     /**
-     * @return Steps
-     *
      * @throws Exception
      */
     public function getSteps(): Steps

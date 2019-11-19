@@ -5,8 +5,8 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class RandomGenerator extends AbstractGenerator

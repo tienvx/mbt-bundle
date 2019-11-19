@@ -133,8 +133,6 @@ class Task
 
     /**
      * @MbtAssert\Model
-     *
-     * @return Model
      */
     public function getModel(): Model
     {
@@ -148,8 +146,6 @@ class Task
 
     /**
      * @MbtAssert\Generator
-     *
-     * @return Generator
      */
     public function getGenerator(): Generator
     {
@@ -173,8 +169,6 @@ class Task
 
     /**
      * @MbtAssert\Reducer
-     *
-     * @return Reducer
      */
     public function getReducer(): Reducer
     {

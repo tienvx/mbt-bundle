@@ -5,9 +5,8 @@ namespace Tienvx\Bundle\MbtBundle\Generator;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Entity\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class ProbabilityGenerator extends AbstractGenerator
@@ -40,7 +39,7 @@ class ProbabilityGenerator extends AbstractGenerator
                     $transitionMetadata = $workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
                     $transitionsWithProbability[$transition->getName()] = $transitionMetadata['probability'] ?? 1;
                 }
-                $transitionName = Randomizer::randomByWeight($transitionsWithProbability);
+                $transitionName = $this->randomByWeight($transitionsWithProbability);
 
                 yield new Step($transitionName, new Data());
 
@@ -53,6 +52,33 @@ class ProbabilityGenerator extends AbstractGenerator
             } else {
                 break;
             }
+        }
+    }
+
+    /**
+     * https://stackoverflow.com/a/11872928.
+     *
+     * @param array $values [key => weight]
+     *
+     * @return mixed random key from weighted array
+     */
+    protected function randomByWeight(array $values)
+    {
+        $maxRand = (int) array_sum($values);
+        if (0 === $maxRand) {
+            $rand = mt_rand(0, count($values) - 1);
+
+            return array_keys($values)[$rand];
+        } else {
+            $rand = mt_rand(1, $maxRand);
+            foreach ($values as $key => $value) {
+                $rand -= $value;
+                if ($rand <= 0) {
+                    return $key;
+                }
+            }
+            // Make PHP happy by return the first key.
+            return array_keys($values)[0];
         }
     }
 

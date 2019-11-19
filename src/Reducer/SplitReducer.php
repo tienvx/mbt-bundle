@@ -4,16 +4,12 @@ namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class SplitReducer extends AbstractReducer
 {
     /**
-     * @param Bug $bug
-     *
-     * @return int
-     *
      * @throws Exception
      */
     public function dispatch(Bug $bug): int

@@ -63,8 +63,6 @@ class SlackReporter implements ReporterInterface
     }
 
     /**
-     * @param Bug $bug
-     *
      * @throws Exception
      */
     public function report(Bug $bug)

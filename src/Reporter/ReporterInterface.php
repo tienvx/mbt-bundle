@@ -7,9 +7,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 interface ReporterInterface extends PluginInterface
 {
-    /**
-     * @param Bug $bug
-     */
     public function report(Bug $bug);
 
     public function getLabel(): string;

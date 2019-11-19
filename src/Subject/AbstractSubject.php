@@ -44,9 +44,6 @@ abstract class AbstractSubject implements SubjectInterface
         return $this->context;
     }
 
-    /**
-     * @param FilesystemInterface $filesystem
-     */
     public function setFilesystem(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;

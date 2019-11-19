@@ -73,8 +73,6 @@ class EmailReporter implements ReporterInterface
     }
 
     /**
-     * @param Bug $bug
-     *
      * @throws Exception
      */
     public function report(Bug $bug)
@@ -88,7 +86,7 @@ class EmailReporter implements ReporterInterface
         }
 
         $model = $bug->getModel()->getName();
-        $subject = $this->subjectManager->createSubject($model);
+        $subject = $this->subjectManager->create($model);
 
         $steps = [];
         foreach ($bug->getSteps() as $index => $step) {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Algorithm;
+namespace Tienvx\Bundle\MbtBundle\Graph\Algorithm;
 
+use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Exception\UnderflowException;
-use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
@@ -16,12 +16,8 @@ class Eulerian extends BaseEulerian
 {
     /**
      * Get best path (list of edges) connecting all edges.
-     *
-     * @param Vertex $startVertex
-     *
-     * @return Edges
      */
-    public function getEdges(Vertex $startVertex)
+    public function getEdges(Vertex $startVertex): Edges
     {
         $edges = [];
         $components = new ConnectedComponents($this->graph);
@@ -43,25 +39,43 @@ class Eulerian extends BaseEulerian
 
     protected function getResultGraph(): Graph
     {
-        // Get balance info.
-        $balanceMap = [];
         $resultGraph = $this->graph->createGraphClone();
+        $balanceMap = $this->getBalanceInfo($resultGraph);
+
+        $this->balanceGraph($resultGraph, $balanceMap);
+
+        return $resultGraph;
+    }
+
+    protected function getBalanceInfo(Graph $resultGraph): array
+    {
+        $balanceMap = [];
         foreach ($resultGraph->getVertices() as $vertex) {
-            $balance = 0;
-            /** @var Directed $edge */
-            foreach ($vertex->getEdges() as $edge) {
-                if ($edge->hasVertexTarget($vertex)) {
-                    ++$balance;
-                }
-                if ($edge->hasVertexStart($vertex)) {
-                    --$balance;
-                }
-            }
-            $balanceMap[$vertex->getId()] = $balance;
+            $balanceMap[$vertex->getId()] = $this->getBalance($vertex);
         }
         asort($balanceMap);
 
-        // Balance the graph.
+        return $balanceMap;
+    }
+
+    protected function getBalance(Vertex $vertex): int
+    {
+        $balance = 0;
+        /** @var Directed $edge */
+        foreach ($vertex->getEdges() as $edge) {
+            if ($edge->hasVertexTarget($vertex)) {
+                ++$balance;
+            }
+            if ($edge->hasVertexStart($vertex)) {
+                --$balance;
+            }
+        }
+
+        return $balance;
+    }
+
+    protected function balanceGraph(Graph $resultGraph, array $balanceMap)
+    {
         while (reset($balanceMap) < 0 && end($balanceMap) > 0) {
             reset($balanceMap);
             $first = key($balanceMap);
@@ -82,8 +96,6 @@ class Eulerian extends BaseEulerian
             --$balanceMap[$last];
             asort($balanceMap);
         }
-
-        return $resultGraph;
     }
 
     protected function getUnvisitedEdge(Vertex $vertex): ?Edge

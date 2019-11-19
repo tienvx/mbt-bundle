@@ -6,18 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Tienvx\Bundle\MbtBundle\Command\WorkflowRegisterTrait;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class CreateBugMessageHandler implements MessageHandlerInterface
 {
-    use WorkflowRegisterTrait;
-
     /**
      * @var ValidatorInterface
      */
@@ -28,15 +25,22 @@ class CreateBugMessageHandler implements MessageHandlerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
+    /**
+     * @var WorkflowHelper
+     */
+    protected $workflowHelper;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        WorkflowHelper $workflowHelper
+    ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->workflowHelper = $workflowHelper;
     }
 
     /**
-     * @param CreateBugMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(CreateBugMessage $message)
@@ -48,13 +52,13 @@ class CreateBugMessageHandler implements MessageHandlerInterface
         $status = $message->getStatus();
         $model = $message->getModel();
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+        $workflow = $this->workflowHelper->get($model);
 
         $bug = new Bug();
         $bug->setTitle($title);
         $bug->setSteps(Steps::deserialize($steps));
         $bug->setModel(new Model($model));
-        $bug->setModelHash(WorkflowHelper::checksum($workflow));
+        $bug->setModelHash($this->workflowHelper->checksum($workflow));
         $bug->setBugMessage($bugMessage);
         $bug->setStatus($status);
 

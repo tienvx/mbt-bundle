@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Maker;
 
-use Exception;
 use Doctrine\Common\Annotations\Annotation;
+use Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -13,19 +13,18 @@ use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 final class MakeSubject extends AbstractMaker
 {
     /**
-     * @var Registry
+     * @var WorkflowHelper
      */
-    private $workflowRegistry;
+    private $workflowHelper;
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
+    public function __construct(WorkflowHelper $workflowHelper)
     {
-        $this->workflowRegistry = $workflowRegistry;
+        $this->workflowHelper = $workflowHelper;
     }
 
     public static function getCommandName(): string
@@ -44,16 +43,12 @@ final class MakeSubject extends AbstractMaker
     }
 
     /**
-     * @param InputInterface $input
-     * @param ConsoleStyle   $io
-     * @param Generator      $generator
-     *
      * @throws Exception
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
     {
         $model = $input->getArgument('model');
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+        $workflow = $this->workflowHelper->get($model);
         $subject = $input->getArgument('subject-class');
 
         $subjectClassNameDetails = $generator->createClassNameDetails(
@@ -93,10 +88,6 @@ final class MakeSubject extends AbstractMaker
 
     /**
      * @see http://www.mendoweb.be/blog/php-convert-string-to-camelcase-string/
-     *
-     * @param string $str
-     *
-     * @return string
      */
     private function camelCase(string $str): string
     {

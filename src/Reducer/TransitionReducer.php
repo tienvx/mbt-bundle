@@ -6,18 +6,13 @@ use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
-use Tienvx\Bundle\MbtBundle\Helper\StepsBuilder;
+use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\RemoveTransitionStrategy;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Steps\StepsBuilder;
 
 class TransitionReducer extends AbstractReducer
 {
     /**
-     * @param Bug      $bug
-     * @param Workflow $workflow
-     * @param int      $length
-     * @param int      $from
-     * @param int      $to
-     *
      * @throws Exception
      * @throws Throwable
      */
@@ -40,7 +35,9 @@ class TransitionReducer extends AbstractReducer
             return;
         }
 
-        $newSteps = StepsBuilder::createWithoutTransition($steps, $from, $to);
+        $stepsBuilder = new StepsBuilder();
+        $stepsBuilder->setStrategy(new RemoveTransitionStrategy());
+        $newSteps = $stepsBuilder->create($steps, $from, $to);
         if ($newSteps->getLength() >= $steps->getLength()) {
             // New path is longer than or equals old path.
             return;

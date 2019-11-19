@@ -40,14 +40,12 @@ class InMemoryReporter implements ReporterInterface
     }
 
     /**
-     * @param Bug $bug
-     *
      * @throws Exception
      */
     public function report(Bug $bug)
     {
         $model = $bug->getModel()->getName();
-        $subject = $this->subjectManager->createSubject($model);
+        $subject = $this->subjectManager->create($model);
         $this->reports[$bug->getId()] = [
             'status' => true,
             'screenshot' => $subject->getScreenshotUrl($bug->getId(), 0),

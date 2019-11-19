@@ -6,20 +6,25 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Tienvx\Bundle\MbtBundle\Command\MessageTrait;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
+use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
+use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class FinishReduceBugMessageHandler implements MessageHandlerInterface
 {
-    use MessageTrait;
-
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
+
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
 
     public function __construct(EntityManagerInterface $entityManager, MessageBusInterface $messageBus)
     {
@@ -28,8 +33,6 @@ class FinishReduceBugMessageHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param FinishReduceBugMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(FinishReduceBugMessage $message)
@@ -41,17 +44,17 @@ class FinishReduceBugMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $this->applyBugTransition($bug->getId(), BugWorkflow::COMPLETE_REDUCE);
+        $this->messageBus->dispatch(new ApplyBugTransitionMessage($bug->getId(), BugWorkflow::COMPLETE_REDUCE));
 
         $task = $bug->getTask();
         if ($task instanceof Task) {
             if (!empty($task->getReporters())) {
                 foreach ($task->getReporters() as $reporter) {
-                    $this->reportBug($bug->getId(), $reporter->getName());
+                    $this->messageBus->dispatch(new ReportBugMessage($bug->getId(), $reporter->getName()));
                 }
             }
             if ($task->getTakeScreenshots()) {
-                $this->captureScreenshots($bug->getId());
+                $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
             }
         }
     }

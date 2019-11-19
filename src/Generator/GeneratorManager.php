@@ -19,13 +19,9 @@ class GeneratorManager
     /**
      * Returns one generator by name.
      *
-     * @param $name
-     *
-     * @return GeneratorInterface
-     *
      * @throws Exception
      */
-    public function getGenerator($name): GeneratorInterface
+    public function get(string $name): GeneratorInterface
     {
         if (isset($this->generators[$name])) {
             return $this->generators[$name];
@@ -36,12 +32,8 @@ class GeneratorManager
 
     /**
      * Check if there is a generator by name.
-     *
-     * @param $name
-     *
-     * @return bool
      */
-    public function hasGenerator($name): bool
+    public function has(string $name): bool
     {
         return isset($this->generators[$name]);
     }
@@ -49,7 +41,7 @@ class GeneratorManager
     /**
      * @return GeneratorInterface[]
      */
-    public function getAllGenerators(): array
+    public function all(): array
     {
         return $this->generators;
     }

@@ -19,13 +19,9 @@ class ReporterManager
     /**
      * Returns one reporter by name.
      *
-     * @param $name
-     *
-     * @return ReporterInterface
-     *
      * @throws Exception
      */
-    public function getReporter($name): ReporterInterface
+    public function get(string $name): ReporterInterface
     {
         if (isset($this->reporters[$name])) {
             return $this->reporters[$name];
@@ -36,12 +32,8 @@ class ReporterManager
 
     /**
      * Check if there is a reporter by name.
-     *
-     * @param $name
-     *
-     * @return bool
      */
-    public function hasReporter($name): bool
+    public function has(string $name): bool
     {
         return isset($this->reporters[$name]);
     }
@@ -49,7 +41,7 @@ class ReporterManager
     /**
      * @return ReporterInterface[]
      */
-    public function getAllReporters(): array
+    public function all(): array
     {
         return $this->reporters;
     }

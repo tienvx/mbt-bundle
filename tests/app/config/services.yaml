@@ -6,7 +6,4 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{AppKernel.php}'
-
-    Tienvx\Messenger\MemoryTransport\MemoryTransportFactory:
-        tags: ['messenger.transport_factory']
+        exclude: '../src/{AppKernel.php,Helper}'

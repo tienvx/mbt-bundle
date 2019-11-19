@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Message,Algorithm,Helper}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Message,Graph,Steps}" />
 
         <service id="mbt.generator_manager" class="Tienvx\Bundle\MbtBundle\Generator\GeneratorManager" public="false" autowire="true">
             <argument type="collection" />

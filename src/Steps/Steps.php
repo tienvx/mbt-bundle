@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity;
+namespace Tienvx\Bundle\MbtBundle\Steps;
 
 use Exception;
 use Iterator;
@@ -69,9 +69,6 @@ class Steps implements Iterator
         }
     }
 
-    /**
-     * @return array
-     */
     public function normalize(): array
     {
         $return = [];
@@ -82,21 +79,12 @@ class Steps implements Iterator
         return $return;
     }
 
-    /**
-     * @param $options
-     *
-     * @return string
-     */
-    public function serialize($options = 0): string
+    public function serialize(int $options = 0): string
     {
         return json_encode($this->normalize(), $options);
     }
 
     /**
-     * @param array $steps
-     *
-     * @return Steps
-     *
      * @throws Exception
      */
     public static function denormalize(array $steps): Steps
@@ -110,10 +98,6 @@ class Steps implements Iterator
     }
 
     /**
-     * @param string $steps
-     *
-     * @return Steps
-     *
      * @throws Exception
      */
     public static function deserialize(string $steps): Steps

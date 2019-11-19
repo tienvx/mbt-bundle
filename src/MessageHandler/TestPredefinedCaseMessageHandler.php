@@ -6,28 +6,23 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Command\DefaultBugTitleTrait;
-use Tienvx\Bundle\MbtBundle\Command\MessageTrait;
-use Tienvx\Bundle\MbtBundle\Command\SubjectTrait;
-use Tienvx\Bundle\MbtBundle\Command\TokenTrait;
-use Tienvx\Bundle\MbtBundle\Command\WorkflowRegisterTrait;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Helper\StepsRunner;
+use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
+use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\TestPredefinedCaseMessage;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Steps\StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
 {
-    use TokenTrait;
-    use SubjectTrait;
-    use MessageTrait;
-    use WorkflowRegisterTrait;
-    use DefaultBugTitleTrait;
+    /**
+     * @var SubjectManager
+     */
+    private $subjectManager;
 
     /**
      * @var GeneratorManager
@@ -44,23 +39,40 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
      */
     private $predefinedCaseManager;
 
+    /**
+     * @var MessageHelper
+     */
+    private $messageHelper;
+
+    /**
+     * @var TokenHelper
+     */
+    private $tokenHelper;
+
+    /**
+     * @var WorkflowHelper
+     */
+    protected $workflowHelper;
+
     public function __construct(
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus,
-        PredefinedCaseManager $predefinedCaseManager
+        PredefinedCaseManager $predefinedCaseManager,
+        MessageHelper $messageHelper,
+        TokenHelper $tokenHelper,
+        WorkflowHelper $workflowHelper
     ) {
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
-        $this->messageBus = $messageBus;
         $this->predefinedCaseManager = $predefinedCaseManager;
+        $this->messageHelper = $messageHelper;
+        $this->tokenHelper = $tokenHelper;
+        $this->workflowHelper = $workflowHelper;
     }
 
     /**
-     * @param TestPredefinedCaseMessage $message
-     *
      * @throws Exception
      */
     public function __invoke(TestPredefinedCaseMessage $message)
@@ -73,16 +85,16 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
 
         $predefinedCase = $this->predefinedCaseManager->get($name);
         $model = $predefinedCase->getModel()->getName();
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
-        $subject = $this->getSubject($model);
+        $workflow = $this->workflowHelper->get($model);
+        $subject = $this->subjectManager->createAndSetUp($model);
 
-        $this->setAnonymousToken();
+        $this->tokenHelper->setAnonymousToken();
 
         $recorded = new Steps();
         try {
-            StepsRunner::record($predefinedCase->getSteps(), $workflow, $subject, $recorded);
+            StepsRecorder::record($predefinedCase->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->createBug($this->defaultBugTitle, $recorded, $throwable->getMessage(), null, $model);
+            $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $model);
         } finally {
             $subject->tearDown();
         }

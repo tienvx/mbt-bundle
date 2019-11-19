@@ -10,18 +10,16 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
-use Tienvx\Bundle\MbtBundle\MessageHandler\TestBugMessageHandler;
-use Tienvx\Bundle\MbtBundle\MessageHandler\TestPredefinedCaseMessageHandler;
+use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 /**
@@ -44,7 +42,7 @@ class TienvxMbtExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $this->registerCommandConfiguration($config, $container);
+        $this->registerHelperConfiguration($config, $container);
         $this->registerGeneratorConfiguration($config, $container);
         $this->registerPredefinedCasesConfiguration($config, $container, $loader);
 
@@ -62,17 +60,10 @@ class TienvxMbtExtension extends Extension
             ->addTag('mbt.reporter');
     }
 
-    private function registerCommandConfiguration(array $config, ContainerBuilder $container)
+    private function registerHelperConfiguration(array $config, ContainerBuilder $container)
     {
-        $commands = [
-            ExecuteTaskMessageHandler::class,
-            TestBugMessageHandler::class,
-            TestPredefinedCaseMessageHandler::class,
-        ];
-        foreach ($commands as $command) {
-            $commandDefinition = $container->getDefinition($command);
-            $commandDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
-        }
+        $helperDefinition = $container->getDefinition(BugHelper::class);
+        $helperDefinition->addMethodCall('setDefaultBugTitle', [$config['default_bug_title']]);
     }
 
     private function registerGeneratorConfiguration(array $config, ContainerBuilder $container)
@@ -98,10 +89,6 @@ class TienvxMbtExtension extends Extension
     }
 
     /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     *
      * @throws Exception
      */
     private function registerPredefinedCasesConfiguration(array $config, ContainerBuilder $container, XmlFileLoader $loader)

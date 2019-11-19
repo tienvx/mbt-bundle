@@ -4,16 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
-use Tienvx\Bundle\MbtBundle\Helper\Randomizer;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class RandomReducer extends AbstractReducer
 {
     /**
-     * @param Bug $bug
-     *
-     * @return int
-     *
      * @throws Exception
      */
     public function dispatch(Bug $bug): int
@@ -29,7 +24,20 @@ class RandomReducer extends AbstractReducer
 
     protected function getPairs(Steps $steps): array
     {
-        return Randomizer::randomPairs($steps->getLength(), floor(sqrt($steps->getLength())));
+        return $this->randomPairs($steps->getLength(), floor(sqrt($steps->getLength())));
+    }
+
+    protected function randomPairs(int $max, int $count)
+    {
+        $pairs = [];
+        while (count($pairs) < $count) {
+            $pair = array_rand(range(0, $max - 1), 2);
+            if (!in_array($pair, $pairs)) {
+                $pairs[] = $pair;
+            }
+        }
+
+        return $pairs;
     }
 
     public static function getName(): string

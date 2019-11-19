@@ -9,13 +9,6 @@ use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 interface GeneratorInterface extends PluginInterface
 {
-    /**
-     * @param Workflow         $workflow
-     * @param SubjectInterface $subject
-     * @param GeneratorOptions $generatorOptions
-     *
-     * @return iterable
-     */
     public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable;
 
     public function getLabel(): string;

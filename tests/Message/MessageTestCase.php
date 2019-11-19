@@ -6,7 +6,6 @@ use App\Reporter\InMemoryReporter;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -56,12 +55,10 @@ abstract class MessageTestCase extends TestCase
 
         $this->filesystem = self::$container->get('mbt.storage');
 
-        /** @var ContainerInterface $receiverLocator */
-        $receiverLocator = self::$container->get('messenger.receiver_locator');
-        $this->transport = $receiverLocator->get('memory');
+        $this->transport = self::$container->get('messenger.transport.memory');
 
         $reporterManager = self::$container->get('mbt.reporter_manager');
-        $this->report = $reporterManager->getReporter('in-memory');
+        $this->report = $reporterManager->get('in-memory');
 
         $this->messageBus = self::$container->get(MessageBusInterface::class);
     }
