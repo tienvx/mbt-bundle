@@ -42,22 +42,22 @@ class SlackReporter implements ReporterInterface
         return class_exists('Maknz\Slack\Client');
     }
 
-    public function setSlackHookUrl(string $slackHookUrl)
+    public function setSlackHookUrl(string $slackHookUrl): void
     {
         $this->slackHookUrl = $slackHookUrl;
     }
 
-    public function setSlackFrom(string $slackFrom)
+    public function setSlackFrom(string $slackFrom): void
     {
         $this->slackFrom = $slackFrom;
     }
 
-    public function setSlackTo(string $slackTo)
+    public function setSlackTo(string $slackTo): void
     {
         $this->slackTo = $slackTo;
     }
 
-    public function setSlackMessage(string $slackMessage)
+    public function setSlackMessage(string $slackMessage): void
     {
         $this->slackMessage = $slackMessage;
     }
@@ -65,40 +65,50 @@ class SlackReporter implements ReporterInterface
     /**
      * @throws Exception
      */
-    public function report(Bug $bug)
+    public function report(Bug $bug): void
     {
         if (!class_exists('Maknz\Slack\Client')) {
             return;
         }
 
-        if (empty($this->slackTo) || empty($this->slackHookUrl)) {
+        if ('' === $this->slackTo || '' === $this->slackHookUrl) {
             return;
         }
 
+        $this->sendMessage($bug);
+    }
+
+    protected function sendMessage(Bug $bug): void
+    {
         $client = new \Maknz\Slack\Client($this->slackHookUrl);
 
         $client
             ->from($this->slackFrom)
             ->to($this->slackTo)
-            ->attach([
-                'fallback' => $bug->getBugMessage(),
-                'text' => $bug->getTitle(),
-                'color' => 'danger',
-                'fields' => [
-                    [
-                        'title' => 'ID',
-                        'value' => $bug->getId(),
-                    ],
-                    [
-                        'title' => 'Bug Message',
-                        'value' => $bug->getBugMessage(),
-                    ],
-                    [
-                        'title' => 'Number of Steps',
-                        'value' => $bug->getSteps()->getLength(),
-                    ],
-                ],
-            ])
+            ->attach($this->getAttachment($bug))
             ->send($this->slackMessage);
+    }
+
+    protected function getAttachment(Bug $bug): array
+    {
+        return [
+            'fallback' => $bug->getBugMessage(),
+            'text' => $bug->getTitle(),
+            'color' => 'danger',
+            'fields' => [
+                [
+                    'title' => 'ID',
+                    'value' => $bug->getId(),
+                ],
+                [
+                    'title' => 'Bug Message',
+                    'value' => $bug->getBugMessage(),
+                ],
+                [
+                    'title' => 'Number of Steps',
+                    'value' => $bug->getSteps()->getLength(),
+                ],
+            ],
+        ];
     }
 }

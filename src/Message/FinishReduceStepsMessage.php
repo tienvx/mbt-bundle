@@ -4,6 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class FinishReduceStepsMessage
 {
+    /**
+     * @var int
+     */
     protected $bugId;
 
     public function __construct(int $bugId)

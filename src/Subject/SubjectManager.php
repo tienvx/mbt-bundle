@@ -24,7 +24,7 @@ class SubjectManager
         $this->reader = $reader;
     }
 
-    public function setSubjects(array $subjects)
+    public function setSubjects(array $subjects): void
     {
         $this->subjects = $subjects;
     }

@@ -31,20 +31,35 @@ class ReplaceStrategy implements StrategyInterface
         }
 
         $newSteps = new Steps();
+        $this->addBeginSteps($original, $newSteps, $from);
+        $this->addMiddleSteps($newSteps);
+        $this->addEndSteps($original, $newSteps, $to);
+
+        return $newSteps;
+    }
+
+    protected function addBeginSteps(Steps $original, Steps $newSteps, int $from): void
+    {
         foreach ($original as $index => $step) {
             if ($index <= $from) {
                 $newSteps->addStep($step);
             }
         }
+    }
+
+    protected function addMiddleSteps(Steps $newSteps): void
+    {
         foreach ($this->middleSteps as $step) {
             $newSteps->addStep($step);
         }
+    }
+
+    protected function addEndSteps(Steps $original, Steps $newSteps, int $to): void
+    {
         foreach ($original as $index => $step) {
             if ($index > $to) {
                 $newSteps->addStep($step);
             }
         }
-
-        return $newSteps;
     }
 }

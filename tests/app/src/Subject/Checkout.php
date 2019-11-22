@@ -101,7 +101,7 @@ class Checkout extends AbstractSubject
         return true;
     }
 
-    public function getScreenshotUrl($bugId, $index)
+    public function getScreenshotUrl($bugId, $index): string
     {
         return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
     }

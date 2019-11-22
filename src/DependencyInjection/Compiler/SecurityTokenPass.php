@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
-use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -10,6 +9,9 @@ use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 
 class SecurityTokenPass implements CompilerPassInterface
 {
+    /**
+     * @var string
+     */
     private $tokenStorageService;
 
     public function __construct(string $tokenStorageService = 'security.token_storage')
@@ -17,10 +19,7 @@ class SecurityTokenPass implements CompilerPassInterface
         $this->tokenStorageService = $tokenStorageService;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->has($this->tokenStorageService)) {
             return;

@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class Generator extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid or supported generator.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid or supported generator.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

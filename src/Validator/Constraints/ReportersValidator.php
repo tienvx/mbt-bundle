@@ -24,7 +24,7 @@ class ReportersValidator extends ConstraintValidator
         $this->reporterManager = $reporterManager;
     }
 
-    public function validate($values, Constraint $constraint)
+    public function validate($values, Constraint $constraint): void
     {
         if (!$constraint instanceof Reporters) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Reporters');
@@ -34,7 +34,7 @@ class ReportersValidator extends ConstraintValidator
             throw new UnexpectedValueException($values, 'array');
         }
 
-        if (empty($values)) {
+        if (0 === count($values)) {
             return;
         }
 
@@ -44,7 +44,7 @@ class ReportersValidator extends ConstraintValidator
             }
 
             if (!$this->reporterManager->has($value->getName())) {
-                $this->context->buildViolation($constraint->message)
+                $this->context->buildViolation($constraint->getMessage())
                     ->setParameter('{{ string }}', $value->getName())
                     ->addViolation();
             }

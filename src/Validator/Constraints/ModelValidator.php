@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 
-use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -26,12 +25,7 @@ class ModelValidator extends ConstraintValidator
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @throws Exception
-     */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Model) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Model');
@@ -44,7 +38,7 @@ class ModelValidator extends ConstraintValidator
         try {
             $this->workflowHelper->get($value->getName());
         } catch (InvalidArgumentException $exception) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();
         }

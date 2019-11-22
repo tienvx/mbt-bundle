@@ -24,7 +24,7 @@ class ReducerValidator extends ConstraintValidator
         $this->reducerManager = $reducerManager;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Reducer) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Reducer');
@@ -35,7 +35,7 @@ class ReducerValidator extends ConstraintValidator
         }
 
         if (!$this->reducerManager->has($value->getName())) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();
         }

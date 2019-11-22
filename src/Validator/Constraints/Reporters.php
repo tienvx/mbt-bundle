@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class Reporters extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid or supported reporter.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid or supported reporter.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

@@ -4,9 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
@@ -116,7 +114,7 @@ class Task
         $this->bugs->removeElement($bug);
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -126,7 +124,7 @@ class Task
         return $this->title;
     }
 
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -139,7 +137,7 @@ class Task
         return new Model($this->model);
     }
 
-    public function setModel(Model $model)
+    public function setModel(Model $model): void
     {
         $this->model = $model->getName();
     }
@@ -152,12 +150,12 @@ class Task
         return new Generator($this->generator);
     }
 
-    public function setGenerator(Generator $generator)
+    public function setGenerator(Generator $generator): void
     {
         $this->generator = $generator->getName();
     }
 
-    public function setGeneratorOptions(?GeneratorOptions $generatorOptions)
+    public function setGeneratorOptions(?GeneratorOptions $generatorOptions): void
     {
         $this->generatorOptions = $generatorOptions->serialize();
     }
@@ -175,15 +173,13 @@ class Task
         return new Reducer($this->reducer);
     }
 
-    public function setReducer(Reducer $reducer)
+    public function setReducer(Reducer $reducer): void
     {
         $this->reducer = $reducer->getName();
     }
 
     /**
      * @MbtAssert\Reporters
-     *
-     * @return Reporter[]
      */
     public function getReporters(): array
     {
@@ -195,7 +191,7 @@ class Task
         return $values;
     }
 
-    public function setReporters(array $reporters)
+    public function setReporters(array $reporters): void
     {
         $values = [];
         foreach ($reporters as $reporter) {
@@ -211,20 +207,17 @@ class Task
         return $this->status;
     }
 
-    public function setStatus(string $status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @return Collection|Bug[]
-     */
-    public function getBugs()
+    public function getBugs(): ?ArrayCollection
     {
         return $this->bugs;
     }
 
-    public function setCreatedAt(DateTime $createdAt)
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
@@ -234,7 +227,7 @@ class Task
         return $this->createdAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
@@ -244,22 +237,20 @@ class Task
         return $this->updatedAt;
     }
 
-    public function setTakeScreenshots(bool $takeScreenshots)
+    public function setTakeScreenshots(bool $takeScreenshots): void
     {
         $this->takeScreenshots = $takeScreenshots;
     }
 
-    public function getTakeScreenshots()
+    public function getTakeScreenshots(): bool
     {
         return $this->takeScreenshots;
     }
 
     /**
      * @ORM\PrePersist
-     *
-     * @throws Exception
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         if (!$this->getCreatedAt()) {
             $this->setCreatedAt(new DateTime());
@@ -272,10 +263,8 @@ class Task
 
     /**
      * @ORM\PreUpdate
-     *
-     * @throws Exception
      */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         if (!$this->getUpdatedAt()) {
             $this->setUpdatedAt(new DateTime());

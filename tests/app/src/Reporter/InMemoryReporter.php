@@ -42,7 +42,7 @@ class InMemoryReporter implements ReporterInterface
     /**
      * @throws Exception
      */
-    public function report(Bug $bug)
+    public function report(Bug $bug): void
     {
         $model = $bug->getModel()->getName();
         $subject = $this->subjectManager->create($model);

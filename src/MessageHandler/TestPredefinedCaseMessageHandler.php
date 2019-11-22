@@ -2,12 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
 use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -23,16 +20,6 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
      * @var SubjectManager
      */
     private $subjectManager;
-
-    /**
-     * @var GeneratorManager
-     */
-    private $generatorManager;
-
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
 
     /**
      * @var PredefinedCaseManager
@@ -52,30 +39,23 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         SubjectManager $subjectManager,
-        GeneratorManager $generatorManager,
-        EntityManagerInterface $entityManager,
         PredefinedCaseManager $predefinedCaseManager,
         MessageHelper $messageHelper,
         TokenHelper $tokenHelper,
         WorkflowHelper $workflowHelper
     ) {
         $this->subjectManager = $subjectManager;
-        $this->generatorManager = $generatorManager;
-        $this->entityManager = $entityManager;
         $this->predefinedCaseManager = $predefinedCaseManager;
         $this->messageHelper = $messageHelper;
         $this->tokenHelper = $tokenHelper;
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(TestPredefinedCaseMessage $message)
+    public function __invoke(TestPredefinedCaseMessage $message): void
     {
         $name = $message->getPredefinedCase();
 

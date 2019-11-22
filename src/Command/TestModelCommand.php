@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,7 +37,7 @@ class TestModelCommand extends Command
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         SubjectManager $subjectManager,
@@ -54,7 +53,7 @@ class TestModelCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('mbt:model:test')
@@ -65,10 +64,7 @@ class TestModelCommand extends Command
             ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator (in json).', '{}');
     }
 
-    /**
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $model = $input->getArgument('model');
         $subject = $this->subjectManager->createAndSetUp($model, true);
@@ -91,6 +87,11 @@ class TestModelCommand extends Command
             $subject->tearDown();
         }
 
+        $this->renderTable($output, $recorded);
+    }
+
+    protected function renderTable(OutputInterface $output, Steps $recorded): void
+    {
         $output->writeln([
             '<info>Testing model is finished! Here are steps:</info>',
         ]);

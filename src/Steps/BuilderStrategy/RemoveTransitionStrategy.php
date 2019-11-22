@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy;
 
+use Exception;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class RemoveTransitionStrategy implements StrategyInterface
@@ -28,9 +29,10 @@ class RemoveTransitionStrategy implements StrategyInterface
         return $steps;
     }
 
-    protected function findAndReplace(Steps $steps, string $find, string $replace, int $from)
+    protected function findAndReplace(Steps $steps, string $find, string $replace, int $from): void
     {
-        for ($i = $from; $i < $steps->getLength(); ++$i) {
+        $length = $steps->getLength();
+        for ($i = $from; $i < $length; ++$i) {
             $places = $steps->getPlacesAt($i);
             $key = array_search($find, $places);
             $newPlaces = array_replace($places, [$key => $replace]);

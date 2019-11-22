@@ -4,7 +4,14 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class RemoveScreenshotsMessage
 {
+    /**
+     * @var int
+     */
     protected $bugId;
+
+    /**
+     * @var string
+     */
     protected $model;
 
     public function __construct(int $bugId, string $model)

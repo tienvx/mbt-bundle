@@ -27,10 +27,7 @@ class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
         $this->bugWorkflow = $bugWorkflow;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ApplyBugTransitionMessage $message)
+    public function __invoke(ApplyBugTransitionMessage $message): void
     {
         $bugId = $message->getId();
         $transition = $message->getTransition();

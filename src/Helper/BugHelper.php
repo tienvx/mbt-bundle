@@ -26,7 +26,7 @@ class BugHelper
         $this->entityManager = $entityManager;
     }
 
-    public function setDefaultBugTitle(string $defaultBugTitle)
+    public function setDefaultBugTitle(string $defaultBugTitle): void
     {
         $this->defaultBugTitle = $defaultBugTitle;
     }
@@ -39,10 +39,10 @@ class BugHelper
     /**
      * @throws Throwable
      */
-    public function updateSteps(Bug $bug, Steps $newSteps)
+    public function updateSteps(Bug $bug, Steps $newSteps): void
     {
         $length = $bug->getSteps()->getLength();
-        $callback = function () use ($bug, $newSteps, $length) {
+        $callback = function () use ($bug, $newSteps, $length): void {
             // Reload the bug for the newest messages length.
             $bug = $this->entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
 

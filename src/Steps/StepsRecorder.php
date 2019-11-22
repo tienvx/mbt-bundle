@@ -13,7 +13,7 @@ class StepsRecorder
      * @throws Exception
      * @throws Throwable
      */
-    public static function record(iterable $steps, Workflow $workflow, SubjectInterface $subject, Steps $recorded)
+    public static function record(iterable $steps, Workflow $workflow, SubjectInterface $subject, Steps $recorded): void
     {
         $recorded->addStep(new Step(null, new Data(), $workflow->getDefinition()->getInitialPlaces()));
 
@@ -24,7 +24,7 @@ class StepsRecorder
         }
     }
 
-    protected static function recordStep(Step $step, Workflow $workflow, SubjectInterface $subject, Steps $recorded)
+    protected static function recordStep(Step $step, Workflow $workflow, SubjectInterface $subject, Steps $recorded): void
     {
         try {
             $workflow->apply($subject, $step->getTransition(), [

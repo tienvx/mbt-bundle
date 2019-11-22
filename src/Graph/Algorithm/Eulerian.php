@@ -10,7 +10,6 @@ use Fhaculty\Graph\Set\Edges;
 use Fhaculty\Graph\Vertex;
 use Graphp\Algorithms\ConnectedComponents;
 use Graphp\Algorithms\Eulerian as BaseEulerian;
-use Graphp\Algorithms\ShortestPath\Dijkstra;
 
 class Eulerian extends BaseEulerian
 {
@@ -20,12 +19,11 @@ class Eulerian extends BaseEulerian
     public function getEdges(Vertex $startVertex): Edges
     {
         $edges = [];
-        $components = new ConnectedComponents($this->graph);
-        if ($components->isSingle()) {
-            $resultGraph = $this->getResultGraph();
+        if ($this->singleComponent()) {
+            $balancedGraph = $this->balanceGraph();
 
             // Then get Euler path.
-            $vertex = $resultGraph->getVertex($startVertex->getId());
+            $vertex = $balancedGraph->getVertex($startVertex->getId());
             /** @var Directed $edge */
             while ($edge = $this->getUnvisitedEdge($vertex)) {
                 $edges[] = $edge;
@@ -37,74 +35,27 @@ class Eulerian extends BaseEulerian
         return new Edges($edges);
     }
 
-    protected function getResultGraph(): Graph
+    protected function singleComponent(): bool
     {
-        $resultGraph = $this->graph->createGraphClone();
-        $balanceMap = $this->getBalanceInfo($resultGraph);
+        $components = new ConnectedComponents($this->graph);
 
-        $this->balanceGraph($resultGraph, $balanceMap);
-
-        return $resultGraph;
+        return $components->isSingle();
     }
 
-    protected function getBalanceInfo(Graph $resultGraph): array
+    protected function balanceGraph(): Graph
     {
-        $balanceMap = [];
-        foreach ($resultGraph->getVertices() as $vertex) {
-            $balanceMap[$vertex->getId()] = $this->getBalance($vertex);
-        }
-        asort($balanceMap);
+        $balancer = new GraphBalancer($this->graph);
 
-        return $balanceMap;
-    }
-
-    protected function getBalance(Vertex $vertex): int
-    {
-        $balance = 0;
-        /** @var Directed $edge */
-        foreach ($vertex->getEdges() as $edge) {
-            if ($edge->hasVertexTarget($vertex)) {
-                ++$balance;
-            }
-            if ($edge->hasVertexStart($vertex)) {
-                --$balance;
-            }
-        }
-
-        return $balance;
-    }
-
-    protected function balanceGraph(Graph $resultGraph, array $balanceMap)
-    {
-        while (reset($balanceMap) < 0 && end($balanceMap) > 0) {
-            reset($balanceMap);
-            $first = key($balanceMap);
-            end($balanceMap);
-            $last = key($balanceMap);
-            $algorithm = new Dijkstra($this->graph->getVertex($last));
-            $edges = $algorithm->getEdgesTo($this->graph->getVertex($first))->getVector();
-            foreach ($edges as $edge) {
-                $vertexStart = $resultGraph->getVertex($edge->getVertexStart()->getId());
-                $vertexEnd = $resultGraph->getVertex($edge->getVertexEnd()->getId());
-                $cloneEdge = $vertexStart->createEdgeTo($vertexEnd);
-                $cloneEdge->setWeight($edge->getWeight());
-                $cloneEdge->setAttribute('name', $edge->getAttribute('name'));
-                $cloneEdge->setAttribute('label', $edge->getAttribute('label'));
-                $cloneEdge->setAttribute('probability', $edge->getAttribute('probability'));
-            }
-            ++$balanceMap[$first];
-            --$balanceMap[$last];
-            asort($balanceMap);
-        }
+        return $balancer->balance();
     }
 
     protected function getUnvisitedEdge(Vertex $vertex): ?Edge
     {
         try {
-            return $vertex->getEdges()->getEdgeMatch(function (Edge $edge) use ($vertex) {
+            return $vertex->getEdges()->getEdgeMatch(static function (Edge $edge) use ($vertex) {
                 return $edge->hasVertexStart($vertex) && !$edge->getAttribute('visited');
             });
-        } catch (UnderflowException $e) {
+        } catch (UnderflowException $exception) {
             return null;
         }
     }

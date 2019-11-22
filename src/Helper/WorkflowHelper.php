@@ -17,7 +17,7 @@ class WorkflowHelper
      */
     protected $workflowRegistry;
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
+    public function setWorkflowRegistry(Registry $workflowRegistry): void
     {
         $this->workflowRegistry = $workflowRegistry;
     }
@@ -59,7 +59,7 @@ class WorkflowHelper
         $definition = $workflow->getDefinition();
         $content = [
             'places' => $definition->getPlaces(),
-            'transitions' => array_map(function (Transition $transition) {
+            'transitions' => array_map(static function (Transition $transition) {
                 return [
                     'name' => $transition->getName(),
                     'froms' => $transition->getFroms(),

@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 
 interface ReducerInterface extends PluginInterface
 {

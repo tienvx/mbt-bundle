@@ -32,7 +32,7 @@ final class MakeSubject extends AbstractMaker
         return 'make:subject';
     }
 
-    public function configureCommand(Command $command, InputConfiguration $inputConf)
+    public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
             ->setDescription('Creates a new subject class for a model')
@@ -45,7 +45,7 @@ final class MakeSubject extends AbstractMaker
     /**
      * @throws Exception
      */
-    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $model = $input->getArgument('model');
         $workflow = $this->workflowHelper->get($model);
@@ -86,6 +86,16 @@ final class MakeSubject extends AbstractMaker
         ]);
     }
 
+    public function configureDependencies(DependencyBuilder $dependencies): void
+    {
+        $dependencies->addClassDependency(
+            // we only need doctrine/annotations, which contains
+            // the recipe that loads annotation data providers
+            Annotation::class,
+            'annotations'
+        );
+    }
+
     /**
      * @see http://www.mendoweb.be/blog/php-convert-string-to-camelcase-string/
      */
@@ -97,18 +107,7 @@ final class MakeSubject extends AbstractMaker
         // uppercase the first character of each word
         $str = ucwords($str);
         $str = str_replace(' ', '', $str);
-        $str = lcfirst($str);
 
-        return $str;
-    }
-
-    public function configureDependencies(DependencyBuilder $dependencies)
-    {
-        $dependencies->addClassDependency(
-            // we only need doctrine/annotations, which contains
-            // the recipe that loads annotation data providers
-            Annotation::class,
-            'annotations'
-        );
+        return lcfirst($str);
     }
 }

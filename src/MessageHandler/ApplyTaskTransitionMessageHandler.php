@@ -27,10 +27,7 @@ class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
         $this->taskWorkflow = $taskWorkflow;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ApplyTaskTransitionMessage $message)
+    public function __invoke(ApplyTaskTransitionMessage $message): void
     {
         $taskId = $message->getId();
         $transition = $message->getTransition();

@@ -57,17 +57,17 @@ class EmailReporter implements ReporterInterface
             class_exists('Symfony\Bridge\Twig\Mime\TemplatedEmail');
     }
 
-    public function setEmailFrom(string $emailFrom)
+    public function setEmailFrom(string $emailFrom): void
     {
         $this->emailFrom = $emailFrom;
     }
 
-    public function setEmailTo(string $emailTo)
+    public function setEmailTo(string $emailTo): void
     {
         $this->emailTo = $emailTo;
     }
 
-    public function setEmailSubject(string $emailSubject)
+    public function setEmailSubject(string $emailSubject): void
     {
         $this->emailSubject = $emailSubject;
     }
@@ -75,16 +75,21 @@ class EmailReporter implements ReporterInterface
     /**
      * @throws Exception
      */
-    public function report(Bug $bug)
+    public function report(Bug $bug): void
     {
         if (!class_exists('Symfony\Bridge\Twig\Mime\TemplatedEmail')) {
             return;
         }
 
-        if (empty($this->emailTo) || empty($this->emailFrom) || empty($this->mailer)) {
+        if ('' === $this->emailTo || '' === $this->emailFrom) {
             return;
         }
 
+        $this->sendEmail($bug);
+    }
+
+    protected function formatSteps(Bug $bug): array
+    {
         $model = $bug->getModel()->getName();
         $subject = $this->subjectManager->create($model);
 
@@ -99,6 +104,11 @@ class EmailReporter implements ReporterInterface
             ];
         }
 
+        return $steps;
+    }
+
+    protected function sendEmail(Bug $bug): void
+    {
         $email = (new TemplatedEmail())
             ->from($this->emailFrom)
             ->to($this->emailTo)
@@ -108,7 +118,7 @@ class EmailReporter implements ReporterInterface
                 'id' => $bug->getId(),
                 'title' => $bug->getTitle(),
                 'bugMessage' => $bug->getBugMessage(),
-                'steps' => $steps,
+                'steps' => $this->formatSteps($bug),
             ]);
 
         $this->mailer->send($email);

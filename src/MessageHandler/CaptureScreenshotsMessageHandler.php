@@ -6,12 +6,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CaptureScreenshotsMessage;
-use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\StepsCapturer;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
@@ -29,7 +28,7 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
     /**
      * @var FilesystemInterface
      */
-    protected $mbtStorage;
+    private $mbtStorage;
 
     /**
      * @var TokenHelper
@@ -39,7 +38,7 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -55,10 +54,7 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(CaptureScreenshotsMessage $message)
+    public function __invoke(CaptureScreenshotsMessage $message): void
     {
         $bugId = $message->getBugId();
         $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
@@ -78,23 +74,6 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
 
         $this->tokenHelper->setAnonymousToken();
 
-        try {
-            foreach ($bug->getSteps() as $index => $step) {
-                if ($step->getTransition() && $step->getData() instanceof Data) {
-                    try {
-                        $workflow->apply($subject, $step->getTransition(), [
-                            'data' => $step->getData(),
-                        ]);
-                    } catch (Throwable $throwable) {
-                    } finally {
-                        $subject->captureScreenshot($bugId, $index);
-                    }
-                } elseif (0 === $index) {
-                    $subject->captureScreenshot($bugId, $index);
-                }
-            }
-        } finally {
-            $subject->tearDown();
-        }
+        StepsCapturer::capture($bug->getSteps(), $workflow, $subject, $bugId);
     }
 }

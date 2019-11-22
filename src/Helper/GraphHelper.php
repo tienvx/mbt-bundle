@@ -32,7 +32,8 @@ class GraphHelper
     public function build(Workflow $workflow): Graph
     {
         $cacheItem = $this->cache->getItem('mbt.graph.'.$workflow->getName());
-        if ($cacheItem->isHit() && ($graph = $cacheItem->get()) instanceof Graph) {
+        $graph = $cacheItem->get();
+        if ($cacheItem->isHit() && $graph instanceof Graph) {
             return $graph;
         }
 

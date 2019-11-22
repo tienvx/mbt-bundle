@@ -13,14 +13,11 @@ class GraphBuilder
      */
     protected $strategy;
 
-    public function setStrategy(StrategyInterface $strategy)
+    public function setStrategy(StrategyInterface $strategy): void
     {
         $this->strategy = $strategy;
     }
 
-    /**
-     * @throws Exception
-     */
     public function build(): Graph
     {
         if (!$this->strategy instanceof StrategyInterface) {

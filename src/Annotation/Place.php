@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
+ *
  * @Target({"METHOD"})
  */
 class Place extends AbstractAnnotation

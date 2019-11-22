@@ -28,7 +28,7 @@ class CreateBugMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -40,30 +40,12 @@ class CreateBugMessageHandler implements MessageHandlerInterface
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(CreateBugMessage $message)
+    public function __invoke(CreateBugMessage $message): void
     {
-        $title = $message->getTitle();
-        $steps = $message->getSteps();
-        $bugMessage = $message->getMessage();
-        $taskId = $message->getTaskId();
-        $status = $message->getStatus();
-        $model = $message->getModel();
+        $bug = $this->initBug($message);
 
-        $workflow = $this->workflowHelper->get($model);
-
-        $bug = new Bug();
-        $bug->setTitle($title);
-        $bug->setSteps(Steps::deserialize($steps));
-        $bug->setModel(new Model($model));
-        $bug->setModelHash($this->workflowHelper->checksum($workflow));
-        $bug->setBugMessage($bugMessage);
-        $bug->setStatus($status);
-
-        if ($taskId) {
-            $task = $this->entityManager->getRepository(Task::class)->find($taskId);
+        if ($message->getTaskId()) {
+            $task = $this->entityManager->getRepository(Task::class)->find($message->getTaskId());
             if ($task instanceof Task) {
                 $bug->setTask($task);
             }
@@ -77,5 +59,27 @@ class CreateBugMessageHandler implements MessageHandlerInterface
 
         $this->entityManager->persist($bug);
         $this->entityManager->flush();
+    }
+
+    protected function initBug(CreateBugMessage $message): Bug
+    {
+        $workflow = $this->workflowHelper->get($message->getModel());
+
+        $bug = new Bug();
+        $bug->setTitle($message->getTitle());
+        $bug->setSteps(Steps::deserialize($message->getSteps()));
+        $bug->setModel(new Model($message->getModel()));
+        $bug->setModelHash($this->workflowHelper->checksum($workflow));
+        $bug->setBugMessage($message->getMessage());
+        $bug->setStatus($message->getStatus());
+
+        if ($message->getTaskId()) {
+            $task = $this->entityManager->getRepository(Task::class)->find($message->getTaskId());
+            if ($task instanceof Task) {
+                $bug->setTask($task);
+            }
+        }
+
+        return $bug;
     }
 }

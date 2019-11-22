@@ -19,7 +19,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     /**
      * @var ReporterManager
      */
-    protected $reporterManager;
+    private $reporterManager;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -29,10 +29,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         $this->reporterManager = $reporterManager;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ReportBugMessage $message)
+    public function __invoke(ReportBugMessage $message): void
     {
         $bugId = $message->getBugId();
         $reporter = $message->getReporter();

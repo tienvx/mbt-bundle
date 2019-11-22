@@ -49,7 +49,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     /**
      * @var MessageBusInterface
@@ -74,10 +74,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         $this->messageBus = $messageBus;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ExecuteTaskMessage $message)
+    public function __invoke(ExecuteTaskMessage $message): void
     {
         $taskId = $message->getId();
         $task = $this->entityManager->find(Task::class, $taskId);

@@ -2,15 +2,20 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
-use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginFinder;
 
 class ReporterPass implements CompilerPassInterface
 {
-    use PluginTrait;
-
+    /**
+     * @var string
+     */
     private $reporterService;
+
+    /**
+     * @var string
+     */
     private $reporterTag;
 
     public function __construct(
@@ -21,16 +26,14 @@ class ReporterPass implements CompilerPassInterface
         $this->reporterTag = $reporterTag;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition($this->reporterService)) {
             return;
         }
 
-        $reporters = $this->findPlugins($container, $this->reporterTag);
+        $finder = new PluginFinder($container);
+        $reporters = $finder->find($this->reporterTag);
 
         $reporterDefinition = $container->getDefinition($this->reporterService);
         $reporterDefinition->replaceArgument(0, $reporters);

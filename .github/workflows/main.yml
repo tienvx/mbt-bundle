@@ -25,7 +25,7 @@ jobs:
     - name: PHP Insights
       uses: docker://tienvx/phpinsights-action
       with:
-        args: "-v --min-quality=70 --min-complexity=70 --min-architecture=50 --min-style=80"
+        args: "-v --config-path=insights.php --min-quality=80 --min-complexity=80 --min-architecture=80 --min-style=90"
 
   test:
     name: Test PHP ${{ matrix.php }}

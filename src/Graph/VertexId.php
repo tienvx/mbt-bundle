@@ -14,6 +14,11 @@ class VertexId
         $this->id = $id;
     }
 
+    public function __toString()
+    {
+        return $this->id;
+    }
+
     public static function fromPlaces(array $places): string
     {
         if (count($places) > 1) {
@@ -23,10 +28,5 @@ class VertexId
         $id = json_encode($places);
 
         return new static($id);
-    }
-
-    public function __toString()
-    {
-        return $this->id;
     }
 }

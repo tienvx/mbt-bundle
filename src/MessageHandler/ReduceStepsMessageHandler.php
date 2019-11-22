@@ -24,7 +24,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
     /**
      * @var EntityManager
      */
-    protected $entityManager;
+    private $entityManager;
 
     /**
      * @var TokenHelper
@@ -39,7 +39,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         ReducerManager $reducerManager,
@@ -55,10 +55,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ReduceStepsMessage $message)
+    public function __invoke(ReduceStepsMessage $message): void
     {
         $bugId = $message->getBugId();
         $reducer = $message->getReducer();

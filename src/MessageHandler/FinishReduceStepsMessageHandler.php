@@ -32,14 +32,19 @@ class FinishReduceStepsMessageHandler implements MessageHandlerInterface
         $this->messageBus = $messageBus;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(FinishReduceStepsMessage $message)
+    public function __invoke(FinishReduceStepsMessage $message): void
     {
         $bugId = $message->getBugId();
 
-        $callback = function () use ($bugId) {
+        $bug = $this->updateMessagesCount($bugId);
+        if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
+            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
+        }
+    }
+
+    protected function updateMessagesCount(int $bugId): Bug
+    {
+        $callback = function () use ($bugId): Bug {
             $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
 
             if (!$bug instanceof Bug) {
@@ -53,9 +58,6 @@ class FinishReduceStepsMessageHandler implements MessageHandlerInterface
             return $bug;
         };
 
-        $bug = $this->entityManager->transactional($callback);
-        if ($bug instanceof Bug && 0 === $bug->getMessagesCount()) {
-            $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
-        }
+        return $this->entityManager->transactional($callback);
     }
 }

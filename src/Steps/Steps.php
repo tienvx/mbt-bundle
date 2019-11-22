@@ -17,15 +17,7 @@ class Steps implements Iterator
      */
     protected $position = 0;
 
-    /**
-     * @return Step[]
-     */
-    public function getSteps(): array
-    {
-        return $this->steps;
-    }
-
-    public function addStep(Step $step)
+    public function addStep(Step $step): void
     {
         $this->steps[] = $step;
     }
@@ -35,34 +27,12 @@ class Steps implements Iterator
         return count($this->steps);
     }
 
-    public function countUniqueTransitions(): int
-    {
-        $transitions = [];
-        foreach ($this->steps as $step) {
-            if (!in_array($step->getTransition(), $transitions)) {
-                $transitions[] = $step->getTransition();
-            }
-        }
-
-        return count(array_filter($transitions));
-    }
-
-    public function countUniquePlaces(): int
-    {
-        $places = [];
-        foreach ($this->steps as $step) {
-            $places = array_merge($places, $step->getPlaces());
-        }
-
-        return count(array_unique($places));
-    }
-
     public function getPlacesAt(int $index): ?array
     {
         return isset($this->steps[$index]) ? $this->steps[$index]->getPlaces() : null;
     }
 
-    public function setPlacesAt(int $index, array $places)
+    public function setPlacesAt(int $index, array $places): void
     {
         if (isset($this->steps[$index])) {
             $this->steps[$index]->setPlaces($places);
@@ -72,7 +42,7 @@ class Steps implements Iterator
     public function normalize(): array
     {
         $return = [];
-        foreach ($this->getSteps() as $step) {
+        foreach ($this->steps as $step) {
             $return[] = $step->normalize();
         }
 
@@ -110,7 +80,7 @@ class Steps implements Iterator
         return $this->steps[$this->position];
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
@@ -125,7 +95,7 @@ class Steps implements Iterator
         return isset($this->steps[$this->position]);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }

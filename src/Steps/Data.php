@@ -11,7 +11,7 @@ class Data
      */
     protected $data = [];
 
-    public function has(string $key)
+    public function has(string $key): bool
     {
         return isset($this->data[$key]);
     }
@@ -26,7 +26,7 @@ class Data
      *
      * @throws Exception
      */
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
         if (!is_scalar($value)) {
             throw new Exception('Only support scalar value');

@@ -20,7 +20,7 @@ final class MakeReducer extends AbstractMaker
         return 'make:reducer';
     }
 
-    public function configureCommand(Command $command, InputConfiguration $inputConf)
+    public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
             ->setDescription('Creates a new reducer class')
@@ -33,7 +33,7 @@ final class MakeReducer extends AbstractMaker
     /**
      * @throws Exception
      */
-    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $name = $input->getArgument('name');
         $reducerClass = $input->getArgument('reducer-class');
@@ -56,7 +56,7 @@ final class MakeReducer extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies)
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
     }
 }

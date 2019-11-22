@@ -12,12 +12,12 @@ class TokenHelper
      */
     private $tokenStorage = null;
 
-    public function setTokenStorage(TokenStorage $tokenStorage)
+    public function setTokenStorage(TokenStorage $tokenStorage): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function setAnonymousToken()
+    public function setAnonymousToken(): void
     {
         if ($this->tokenStorage) {
             $token = new AnonymousToken('default', 'anon.');

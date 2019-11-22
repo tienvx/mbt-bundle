@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\WorkflowRegisterPass;
 
 class TienvxMbtBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new GeneratorPass());
         $container->addCompilerPass(new ReducerPass());

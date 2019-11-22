@@ -12,7 +12,7 @@ class StepsBuilder
      */
     protected $strategy;
 
-    public function setStrategy(StrategyInterface $strategy)
+    public function setStrategy(StrategyInterface $strategy): void
     {
         $this->strategy = $strategy;
     }

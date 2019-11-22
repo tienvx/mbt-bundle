@@ -12,7 +12,7 @@ class PredefinedCaseManager
      */
     private $predefinedCases = [];
 
-    public function add(PredefinedCase $predefinedCase)
+    public function add(PredefinedCase $predefinedCase): void
     {
         $this->predefinedCases[$predefinedCase->getName()] = $predefinedCase;
     }

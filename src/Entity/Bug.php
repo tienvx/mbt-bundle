@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
@@ -93,7 +92,7 @@ class Bug
      */
     private $updatedAt;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -103,7 +102,7 @@ class Bug
         return $this->title;
     }
 
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -113,20 +112,17 @@ class Bug
         return $this->status;
     }
 
-    public function setStatus(string $status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @throws Exception
-     */
     public function getSteps(): Steps
     {
         return Steps::deserialize($this->steps);
     }
 
-    public function setSteps(Steps $steps)
+    public function setSteps(Steps $steps): void
     {
         $this->steps = $steps->serialize();
     }
@@ -139,7 +135,7 @@ class Bug
         return new Model($this->model);
     }
 
-    public function setModel(Model $model)
+    public function setModel(Model $model): void
     {
         $this->model = $model->getName();
     }
@@ -149,7 +145,7 @@ class Bug
         return $this->modelHash;
     }
 
-    public function setModelHash(string $modelHash)
+    public function setModelHash(string $modelHash): void
     {
         $this->modelHash = $modelHash;
     }
@@ -159,7 +155,7 @@ class Bug
         return $this->task;
     }
 
-    public function setTask(?Task $task)
+    public function setTask(?Task $task): void
     {
         $this->task = $task;
     }
@@ -169,7 +165,7 @@ class Bug
         return $this->bugMessage;
     }
 
-    public function setBugMessage(string $bugMessage)
+    public function setBugMessage(string $bugMessage): void
     {
         $this->bugMessage = $bugMessage;
     }
@@ -179,12 +175,12 @@ class Bug
         return $this->messagesCount;
     }
 
-    public function setMessagesCount(int $messagesCount)
+    public function setMessagesCount(int $messagesCount): void
     {
         $this->messagesCount = $messagesCount;
     }
 
-    public function setCreatedAt(DateTime $createdAt)
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
@@ -194,7 +190,7 @@ class Bug
         return $this->createdAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
@@ -206,10 +202,8 @@ class Bug
 
     /**
      * @ORM\PrePersist
-     *
-     * @throws Exception
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         if (!$this->getCreatedAt()) {
             $this->setCreatedAt(new DateTime());
@@ -222,10 +216,8 @@ class Bug
 
     /**
      * @ORM\PreUpdate
-     *
-     * @throws Exception
      */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         if (!$this->getUpdatedAt()) {
             $this->setUpdatedAt(new DateTime());

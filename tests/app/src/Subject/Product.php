@@ -22,7 +22,7 @@ class Product extends AbstractSubject
         throw new Exception('Can not upload file!');
     }
 
-    public function getScreenshotUrl($bugId, $index)
+    public function getScreenshotUrl($bugId, $index): string
     {
         return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
     }

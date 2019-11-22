@@ -6,21 +6,21 @@ use League\Flysystem\FilesystemInterface;
 
 interface SubjectInterface
 {
-    public function setUp(bool $testing = false);
+    public function setUp(bool $testing = false): void;
 
-    public function tearDown();
+    public function tearDown(): void;
 
-    public function getScreenshotUrl($bugId, $index);
+    public function getScreenshotUrl($bugId, $index): string;
 
-    public function setFilesystem(FilesystemInterface $filesystem);
+    public function setFilesystem(FilesystemInterface $filesystem): void;
 
-    public function removeScreenshots($bugId);
+    public function removeScreenshots($bugId): void;
 
-    public function captureScreenshot($bugId, $index);
+    public function captureScreenshot($bugId, $index): void;
 
-    public function getScreenshot($bugId, $index);
+    public function getScreenshot($bugId, $index): string;
 
-    public function isImageScreenshot();
+    public function isImageScreenshot(): bool;
 
-    public function hasScreenshot($bugId, $index);
+    public function hasScreenshot($bugId, $index): bool;
 }

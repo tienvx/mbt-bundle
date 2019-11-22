@@ -2,16 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Steps;
 
-use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class StepsRunner
 {
-    /**
-     * @throws Exception
-     */
-    public static function run(iterable $steps, Workflow $workflow, SubjectInterface $subject)
+    public static function run(iterable $steps, Workflow $workflow, SubjectInterface $subject): void
     {
         $subject->setUp();
 

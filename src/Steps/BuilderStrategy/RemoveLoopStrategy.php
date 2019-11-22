@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy;
 
+use Exception;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class RemoveLoopStrategy implements StrategyInterface

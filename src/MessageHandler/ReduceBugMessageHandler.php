@@ -34,7 +34,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
     /**
      * @var WorkflowHelper
      */
-    protected $workflowHelper;
+    private $workflowHelper;
 
     public function __construct(
         ReducerManager $reducerManager,
@@ -48,10 +48,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
         $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(ReduceBugMessage $message)
+    public function __invoke(ReduceBugMessage $message): void
     {
         $bugId = $message->getId();
         $reducer = $message->getReducer();
@@ -66,21 +63,31 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
+        $this->dispatchMessages($reducer, $bug);
+    }
+
+    protected function dispatchMessages(string $reducer, Bug $bug): void
+    {
         $reducerService = $this->reducerManager->get($reducer);
         $messagesCount = $reducerService->dispatch($bug);
         if (0 === $messagesCount && 0 === $bug->getMessagesCount()) {
             $this->messageBus->dispatch(new FinishReduceBugMessage($bug->getId()));
         } elseif ($messagesCount > 0) {
-            $callback = function () use ($bug, $messagesCount) {
-                // Reload the bug for the newest messages count.
-                $bug = $this->entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
-
-                if ($bug instanceof Bug) {
-                    $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
-                }
-            };
-
-            $this->entityManager->transactional($callback);
+            $this->updateMessagesCount($bug->getId(), $messagesCount);
         }
+    }
+
+    protected function updateMessagesCount(int $bugId, int $messagesCount): void
+    {
+        $callback = function () use ($bugId, $messagesCount): void {
+            // Reload the bug for the newest messages count.
+            $bug = $this->entityManager->find(Bug::class, $bugId, LockMode::PESSIMISTIC_WRITE);
+
+            if ($bug instanceof Bug) {
+                $bug->setMessagesCount($bug->getMessagesCount() + $messagesCount);
+            }
+        };
+
+        $this->entityManager->transactional($callback);
     }
 }

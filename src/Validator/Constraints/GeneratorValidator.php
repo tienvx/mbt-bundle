@@ -24,7 +24,7 @@ class GeneratorValidator extends ConstraintValidator
         $this->generatorManager = $generatorManager;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Generator) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Generator');
@@ -35,7 +35,7 @@ class GeneratorValidator extends ConstraintValidator
         }
 
         if (!$this->generatorManager->has($value->getName())) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();
         }

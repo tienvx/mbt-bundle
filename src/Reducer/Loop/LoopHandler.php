@@ -1,0 +1,35 @@
+<?php
+
+namespace Tienvx\Bundle\MbtBundle\Reducer\Loop;
+
+use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Reducer\HandlerTemplate;
+use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\RemoveLoopStrategy;
+use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\StrategyInterface as StepsBuilderStrategy;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
+
+class LoopHandler extends HandlerTemplate
+{
+    public static function getReducerName(): string
+    {
+        return LoopReducer::getName();
+    }
+
+    protected function extraValidate(Steps $steps, int $from, int $to): bool
+    {
+        $fromPlaces = $steps->getPlacesAt($from);
+        $toPlaces = $steps->getPlacesAt($to);
+        if (!($fromPlaces && $toPlaces &&
+            !array_diff($fromPlaces, $toPlaces) &&
+            !array_diff($toPlaces, $fromPlaces))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function getStepsBuilderStrategy(Workflow $workflow): StepsBuilderStrategy
+    {
+        return new RemoveLoopStrategy();
+    }
+}

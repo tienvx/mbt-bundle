@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
+namespace Tienvx\Bundle\MbtBundle\Plugin;
 
 interface PluginInterface
 {

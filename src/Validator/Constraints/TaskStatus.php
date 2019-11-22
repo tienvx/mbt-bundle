@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class TaskStatus extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid task status.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid task status.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

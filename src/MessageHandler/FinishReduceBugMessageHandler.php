@@ -32,10 +32,7 @@ class FinishReduceBugMessageHandler implements MessageHandlerInterface
         $this->messageBus = $messageBus;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __invoke(FinishReduceBugMessage $message)
+    public function __invoke(FinishReduceBugMessage $message): void
     {
         $bugId = $message->getId();
         $bug = $this->entityManager->find(Bug::class, $bugId);
@@ -48,14 +45,22 @@ class FinishReduceBugMessageHandler implements MessageHandlerInterface
 
         $task = $bug->getTask();
         if ($task instanceof Task) {
-            if (!empty($task->getReporters())) {
-                foreach ($task->getReporters() as $reporter) {
-                    $this->messageBus->dispatch(new ReportBugMessage($bug->getId(), $reporter->getName()));
-                }
-            }
-            if ($task->getTakeScreenshots()) {
-                $this->messageBus->dispatch(new CaptureScreenshotsMessage($bug->getId()));
-            }
+            $this->reportBug($task, $bugId);
+            $this->takeScreenshots($task, $bugId);
+        }
+    }
+
+    protected function reportBug(Task $task, int $bugId): void
+    {
+        foreach ($task->getReporters() as $reporter) {
+            $this->messageBus->dispatch(new ReportBugMessage($bugId, $reporter->getName()));
+        }
+    }
+
+    protected function takeScreenshots(Task $task, int $bugId): void
+    {
+        if ($task->getTakeScreenshots()) {
+            $this->messageBus->dispatch(new CaptureScreenshotsMessage($bugId));
         }
     }
 }

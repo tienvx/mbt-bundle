@@ -27,7 +27,7 @@ class MessageHelper
         $this->bugHelper = $bugHelper;
     }
 
-    public function createBug(Steps $steps, string $bugMessage, ?int $taskId, string $model)
+    public function createBug(Steps $steps, string $bugMessage, ?int $taskId, string $model): void
     {
         $message = new CreateBugMessage(
             $this->bugHelper->getDefaultBugTitle(),
