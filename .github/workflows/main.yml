@@ -56,11 +56,12 @@ jobs:
         chmod +x phpunit
         ./phpunit -d memory_limit=256M --coverage-clover tests/logs/clover.xml
 
-    - name: Submit Code Coverage
+    - name: Send to coveralls
       run: |
-        wget -q -O codecov.sh https://codecov.io/bash
-        chmod +x codecov.sh
-        ./codecov.sh -f tests/logs/clover.xml -t $CODECOV_TOKEN
+        wget -q -O php-coveralls https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+        chmod +x php-coveralls
+        php ./php-coveralls -v
       env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.php == '7.3' && github.event_name == 'push'
+        COVERALLS_RUN_LOCALLY: 1
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      if: matrix.php == '7.3'
