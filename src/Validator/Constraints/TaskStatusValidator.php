@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
  */
 class TaskStatusValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof TaskStatus) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\TaskStatus');
@@ -28,7 +28,7 @@ class TaskStatusValidator extends ConstraintValidator
         }
 
         if (!in_array($value, [TaskWorkflow::NOT_STARTED, TaskWorkflow::IN_PROGRESS, TaskWorkflow::COMPLETED])) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();
         }

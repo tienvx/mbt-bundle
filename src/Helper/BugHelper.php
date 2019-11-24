@@ -2,33 +2,55 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class BugHelper
 {
     /**
-     * @param EntityManager $entityManager
-     * @param Bug           $bug
-     * @param Steps         $newSteps
-     *
+     * @var string
+     */
+    private $defaultBugTitle;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    public function setDefaultBugTitle(string $defaultBugTitle): void
+    {
+        $this->defaultBugTitle = $defaultBugTitle;
+    }
+
+    public function getDefaultBugTitle(): string
+    {
+        return $this->defaultBugTitle;
+    }
+
+    /**
      * @throws Throwable
      */
-    public static function updateSteps(EntityManager $entityManager, Bug $bug, Steps $newSteps)
+    public function updateSteps(Bug $bug, Steps $newSteps): void
     {
         $length = $bug->getSteps()->getLength();
-        $callback = function () use ($entityManager, $bug, $newSteps, $length) {
+        $callback = function () use ($bug, $newSteps, $length): void {
             // Reload the bug for the newest messages length.
-            $bug = $entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
+            $bug = $this->entityManager->find(Bug::class, $bug->getId(), LockMode::PESSIMISTIC_WRITE);
 
             if ($bug instanceof Bug && $length === $bug->getSteps()->getLength()) {
                 $bug->setSteps($newSteps);
             }
         };
 
-        $entityManager->transactional($callback);
+        $this->entityManager->transactional($callback);
     }
 }

@@ -11,13 +11,13 @@ use Tienvx\Bundle\MbtBundle\Entity\Task;
 class TaskWorkflow
 {
     // Places
-    const NOT_STARTED = 'not-started';
-    const IN_PROGRESS = 'in-progress';
-    const COMPLETED = 'completed';
+    public const NOT_STARTED = 'not-started';
+    public const IN_PROGRESS = 'in-progress';
+    public const COMPLETED = 'completed';
 
     // Transitions
-    const START = 'start';
-    const COMPLETE = 'complete';
+    public const START = 'start';
+    public const COMPLETE = 'complete';
 
     /**
      * @var Workflow
@@ -39,7 +39,7 @@ class TaskWorkflow
         $this->workflow = new Workflow($definition, $marking, null, 'task-workflow');
     }
 
-    public function apply(Task $task, string $transition)
+    public function apply(Task $task, string $transition): void
     {
         $this->workflow->apply($task, $transition);
     }

@@ -2,12 +2,12 @@
 
 namespace App\Subject;
 
+use App\Helper\DataHelper;
 use Exception;
+use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
-use Tienvx\Bundle\MbtBundle\Annotation\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Data;
-use Tienvx\Bundle\MbtBundle\Helper\DataHelper;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 /**
@@ -137,8 +137,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewAnyCategoryFromHome")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function viewAnyCategoryFromHome(Data $data)
@@ -150,8 +148,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewOtherCategory")
-     *
-     * @param Data $data
      *
      * @throws Exception
      */
@@ -165,8 +161,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewAnyCategoryFromProduct")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function viewAnyCategoryFromProduct(Data $data)
@@ -178,8 +172,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewAnyCategoryFromCart")
-     *
-     * @param Data $data
      *
      * @throws Exception
      */
@@ -193,8 +185,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewProductFromHome")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function viewProductFromHome(Data $data)
@@ -206,8 +196,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewProductFromCart")
-     *
-     * @param Data $data
      *
      * @throws Exception
      */
@@ -221,8 +209,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("viewProductFromCategory")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function viewProductFromCategory(Data $data)
@@ -234,8 +220,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewCartFromHome")
-     *
-     * @param Data $data
      */
     public function viewCartFromHome(Data $data)
     {
@@ -245,8 +229,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewCartFromCategory")
-     *
-     * @param Data $data
      */
     public function viewCartFromCategory(Data $data)
     {
@@ -256,8 +238,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewCartFromProduct")
-     *
-     * @param Data $data
      */
     public function viewCartFromProduct(Data $data)
     {
@@ -267,8 +247,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("viewCartFromCheckout")
-     *
-     * @param Data $data
      */
     public function viewCartFromCheckout(Data $data)
     {
@@ -278,8 +256,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("checkoutFromHome")
-     *
-     * @param Data $data
      */
     public function checkoutFromHome(Data $data)
     {
@@ -289,8 +265,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("checkoutFromCategory")
-     *
-     * @param Data $data
      */
     public function checkoutFromCategory(Data $data)
     {
@@ -300,8 +274,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("checkoutFromProduct")
-     *
-     * @param Data $data
      */
     public function checkoutFromProduct(Data $data)
     {
@@ -311,8 +283,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("checkoutFromCart")
-     *
-     * @param Data $data
      */
     public function checkoutFromCart(Data $data)
     {
@@ -322,8 +292,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("backToHomeFromCategory")
-     *
-     * @param Data $data
      */
     public function backToHomeFromCategory(Data $data)
     {
@@ -333,8 +301,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("backToHomeFromProduct")
-     *
-     * @param Data $data
      */
     public function backToHomeFromProduct(Data $data)
     {
@@ -344,8 +310,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("backToHomeFromCart")
-     *
-     * @param Data $data
      */
     public function backToHomeFromCart(Data $data)
     {
@@ -355,8 +319,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("backToHomeFromCheckout")
-     *
-     * @param Data $data
      */
     public function backToHomeFromCheckout(Data $data)
     {
@@ -366,8 +328,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("addFromHome")
-     *
-     * @param Data $data
      *
      * @throws Exception
      */
@@ -387,8 +347,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("addFromCategory")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function addFromCategory(Data $data)
@@ -407,8 +365,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("addFromProduct")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function addFromProduct(Data $data)
@@ -426,8 +382,6 @@ class ShoppingCart extends AbstractSubject
     /**
      * @Transition("remove")
      *
-     * @param Data $data
-     *
      * @throws Exception
      */
     public function remove(Data $data)
@@ -438,8 +392,6 @@ class ShoppingCart extends AbstractSubject
 
     /**
      * @Transition("update")
-     *
-     * @param Data $data
      *
      * @throws Exception
      */
@@ -534,7 +486,7 @@ class ShoppingCart extends AbstractSubject
         return !empty($products);
     }
 
-    public function getScreenshotUrl($bugId, $index)
+    public function getScreenshotUrl($bugId, $index): string
     {
         return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
     }

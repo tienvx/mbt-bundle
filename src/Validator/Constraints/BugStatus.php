@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class BugStatus extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid bug status.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid bug status.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

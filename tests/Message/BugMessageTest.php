@@ -3,35 +3,31 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Workflow\Registry;
+use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class BugMessageTest extends MessageTestCase
 {
     /**
-     * @param string $model
-     * @param array  $steps
-     * @param string $reducer
-     * @param array  $expectedSteps
      * @dataProvider consumeMessageData
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testExecute(string $model, array $steps, string $reducer, array $expectedSteps)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        /** @var Registry $workflowRegistry */
-        $workflowRegistry = self::$container->get(Registry::class);
-        $workflow = WorkflowHelper::get($workflowRegistry, $model);
+        /** @var WorkflowHelper $workflowHelper */
+        $workflowHelper = self::$container->get(WorkflowHelper::class);
+        $workflow = $workflowHelper->get($model);
 
         $steps = Steps::denormalize($steps);
         $expectedSteps = Steps::denormalize($expectedSteps);
@@ -73,7 +69,7 @@ class BugMessageTest extends MessageTestCase
         $bug->setTitle('Test bug title');
         $bug->setSteps($steps);
         $bug->setModel(new Model($model));
-        $bug->setModelHash(WorkflowHelper::checksum($workflow));
+        $bug->setModelHash($workflowHelper->checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
@@ -82,7 +78,7 @@ class BugMessageTest extends MessageTestCase
 
         $this->consumeMessages();
 
-        $entityManager->refresh($bug);
+        $bug = $entityManager->getRepository(Bug::class)->findOneBy(['id' => $bug->getId()]);
 
         /** @var Bug[] $bugs */
         $bugs = $entityManager->getRepository(Bug::class)->findBy(['task' => $task->getId()]);

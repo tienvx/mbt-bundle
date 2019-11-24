@@ -2,13 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
-use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class SubjectPass implements CompilerPassInterface
 {
+    /**
+     * @var string
+     */
     private $subjectService;
+
+    /**
+     * @var string
+     */
     private $subjectTag;
 
     public function __construct(
@@ -19,12 +25,7 @@ class SubjectPass implements CompilerPassInterface
         $this->subjectTag = $subjectTag;
     }
 
-    /**
-     * @param ContainerBuilder $container
-     *
-     * @throws Exception
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition($this->subjectService)) {
             return;
@@ -32,8 +33,8 @@ class SubjectPass implements CompilerPassInterface
 
         $services = [];
         foreach ($container->findTaggedServiceIds($this->subjectTag, true) as $serviceId => $attributes) {
-            $def = $container->getDefinition($serviceId);
-            $services[] = $def->getClass();
+            $definition = $container->getDefinition($serviceId);
+            $services[] = $definition->getClass();
         }
 
         $subjectDefinition = $container->getDefinition($this->subjectService);

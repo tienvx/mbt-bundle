@@ -13,46 +13,53 @@ use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 class WorkflowHelper
 {
     /**
-     * @param Registry|null $registry
-     * @param string        $model
-     *
-     * @return Workflow
-     *
+     * @var Registry
+     */
+    protected $workflowRegistry;
+
+    public function setWorkflowRegistry(Registry $workflowRegistry): void
+    {
+        $this->workflowRegistry = $workflowRegistry;
+    }
+
+    /**
      * @throws Exception
      */
-    public static function get(?Registry $registry, string $model): Workflow
+    public function get(string $model): Workflow
     {
-        if (!$registry instanceof Registry) {
+        if (!$this->workflowRegistry instanceof Registry) {
             throw new Exception('No models were defined');
         }
 
         $subject = static::fakeSubject();
 
         try {
-            return $registry->get($subject, $model);
+            return $this->workflowRegistry->get($subject, $model);
         } catch (InvalidArgumentException $exception) {
             throw new Exception(sprintf('Model "%s" does not exist', $model));
         }
     }
 
     /**
-     * @param Registry $registry
-     *
      * @return Workflow[]
      */
-    public static function all(Registry $registry): array
+    public function all(): array
     {
+        if (!$this->workflowRegistry instanceof Registry) {
+            return [];
+        }
+
         $subject = static::fakeSubject();
 
-        return $registry->all($subject);
+        return $this->workflowRegistry->all($subject);
     }
 
-    public static function checksum(Workflow $workflow)
+    public function checksum(Workflow $workflow): string
     {
         $definition = $workflow->getDefinition();
         $content = [
             'places' => $definition->getPlaces(),
-            'transitions' => array_map(function (Transition $transition) {
+            'transitions' => array_map(static function (Transition $transition) {
                 return [
                     'name' => $transition->getName(),
                     'froms' => $transition->getFroms(),

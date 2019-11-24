@@ -4,10 +4,29 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class ReduceStepsMessage
 {
+    /**
+     * @var int
+     */
     protected $bugId;
+
+    /**
+     * @var string
+     */
     protected $reducer;
+
+    /**
+     * @var int
+     */
     protected $length;
+
+    /**
+     * @var int
+     */
     protected $from;
+
+    /**
+     * @var int
+     */
     protected $to;
 
     public function __construct(int $bugId, string $reducer, int $length, int $from, int $to)

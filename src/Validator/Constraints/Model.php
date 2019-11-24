@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class Model extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid model.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid model.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

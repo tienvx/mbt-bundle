@@ -1,4 +1,4 @@
-# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][codecov_badge]][codecov_link]
+# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link]
 
 This Bundle provides ability to test your application using Model Based Testing
 techique.
@@ -24,7 +24,7 @@ All you have to do:
 ## Requirements
 
 * PHP 7.2 / 7.3
-* Symfony 4.3
+* Symfony 4.4
 * See also the `require` section of [composer.json](composer.json)
 
 ## Installation
@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "^1.14"
+$ composer require tienvx/mbt-bundle "^1.15"
 ```
 
 ### Step 3: Config file storage
@@ -110,8 +110,8 @@ This package is available under the [MIT license](LICENSE).
 [actions_badge]: https://github.com/tienvx/mbt-bundle/workflows/main/badge.svg
 [actions_link]: https://github.com/tienvx/mbt-bundle/actions
 
-[codecov_badge]: https://codecov.io/gh/tienvx/mbt-bundle/branch/master/graph/badge.svg
-[codecov_link]: https://codecov.io/gh/tienvx/mbt-bundle
+[coveralls_badge]: https://coveralls.io/repos/tienvx/mbt-bundle/badge.svg?branch=master&service=github
+[coveralls_link]: https://coveralls.io/github/tienvx/mbt-bundle?branch=master
 
 [docs]: https://mbtbundle.gitbook.io/docs/
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors

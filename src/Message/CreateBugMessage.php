@@ -4,11 +4,34 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class CreateBugMessage
 {
+    /**
+     * @var string
+     */
     protected $title;
+
+    /**
+     * @var string
+     */
     protected $steps;
+
+    /**
+     * @var string
+     */
     protected $message;
+
+    /**
+     * @var int|null
+     */
     protected $taskId;
+
+    /**
+     * @var string
+     */
     protected $status;
+
+    /**
+     * @var string
+     */
     protected $model;
 
     public function __construct(string $title, string $steps, string $message, ?int $taskId, string $status, string $model)
@@ -21,32 +44,32 @@ class CreateBugMessage
         $this->model = $model;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getSteps()
+    public function getSteps(): string
     {
         return $this->steps;
     }
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function getTaskId()
+    public function getTaskId(): ?int
     {
         return $this->taskId;
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function getModel()
+    public function getModel(): string
     {
         return $this->model;
     }

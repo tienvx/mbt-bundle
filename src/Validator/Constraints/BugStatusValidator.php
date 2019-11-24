@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
  */
 class BugStatusValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof BugStatus) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\BugStatus');
@@ -28,7 +28,7 @@ class BugStatusValidator extends ConstraintValidator
         }
 
         if (!in_array($value, [BugWorkflow::NEW, BugWorkflow::REDUCING, BugWorkflow::REDUCED, BugWorkflow::CLOSED])) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();
         }

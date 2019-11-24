@@ -20,7 +20,7 @@ final class MakeReporter extends AbstractMaker
         return 'make:reporter';
     }
 
-    public function configureCommand(Command $command, InputConfiguration $inputConf)
+    public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
             ->setDescription('Creates a new reporter class')
@@ -31,13 +31,9 @@ final class MakeReporter extends AbstractMaker
     }
 
     /**
-     * @param InputInterface $input
-     * @param ConsoleStyle   $io
-     * @param Generator      $generator
-     *
      * @throws Exception
      */
-    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $name = $input->getArgument('name');
         $reporterClass = $input->getArgument('reporter-class');
@@ -60,7 +56,7 @@ final class MakeReporter extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies)
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
     }
 }

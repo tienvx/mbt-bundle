@@ -4,6 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class TestPredefinedCaseMessage
 {
+    /**
+     * @var string
+     */
     protected $predefinedCase;
 
     public function __construct(string $predefinedCase)

@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('tienvx_mbt');
         $rootNode = $treeBuilder->getRootNode();
@@ -37,7 +37,7 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function addPredefinedCaseSection(ArrayNodeDefinition $rootNode)
+    private function addPredefinedCaseSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('predefined_case')

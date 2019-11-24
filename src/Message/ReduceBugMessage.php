@@ -4,7 +4,14 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class ReduceBugMessage
 {
+    /**
+     * @var int
+     */
     protected $id;
+
+    /**
+     * @var string
+     */
     protected $reducer;
 
     public function __construct(int $id, string $reducer)
@@ -13,12 +20,12 @@ class ReduceBugMessage
         $this->reducer = $reducer;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getReducer()
+    public function getReducer(): string
     {
         return $this->reducer;
     }

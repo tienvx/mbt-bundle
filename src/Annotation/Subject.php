@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
+ *
  * @Target({"CLASS"})
  */
 class Subject extends AbstractAnnotation

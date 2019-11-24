@@ -9,5 +9,13 @@ use Symfony\Component\Validator\Constraint;
  */
 class Reducer extends Constraint
 {
-    public $message = '"{{ string }}" is not a valid or supported path reducer.';
+    /**
+     * @var string
+     */
+    protected $message = '"{{ string }}" is not a valid or supported path reducer.';
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

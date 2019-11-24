@@ -12,17 +12,13 @@ class PredefinedCaseManager
      */
     private $predefinedCases = [];
 
-    public function add(PredefinedCase $predefinedCase)
+    public function add(PredefinedCase $predefinedCase): void
     {
         $this->predefinedCases[$predefinedCase->getName()] = $predefinedCase;
     }
 
     /**
      * Returns one predefined case by name.
-     *
-     * @param string $name
-     *
-     * @return PredefinedCase
      *
      * @throws Exception
      */
@@ -37,10 +33,6 @@ class PredefinedCaseManager
 
     /**
      * Check if there is a predefined case by name.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
     public function has(string $name): bool
     {

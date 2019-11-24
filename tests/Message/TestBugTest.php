@@ -5,35 +5,28 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
-use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class TestBugTest extends MessageTestCase
 {
     /**
-     * @param string $model
-     * @param string $bugMessage
-     * @param Steps  $steps
-     * @param int    $bugsCount
-     * @param bool   $reopen
-     *
      * @throws Exception
      */
     public function setUpAndExecute(string $model, string $bugMessage, Steps $steps, int $bugsCount, bool $reopen = false)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        /** @var Registry $workflowRegistry */
-        $workflowRegistry = self::$container->get(Registry::class);
-        $workflow = WorkflowHelper::get($workflowRegistry, $model);
+        /** @var WorkflowHelper $workflowHelper */
+        $workflowHelper = self::$container->get(WorkflowHelper::class);
+        $workflow = $workflowHelper->get($model);
 
         $task = new Task();
         $task->setTitle('Just dummy task');
@@ -46,7 +39,7 @@ class TestBugTest extends MessageTestCase
         $bug->setTitle('Test regression bug');
         $bug->setSteps($steps);
         $bug->setModel(new Model($model));
-        $bug->setModelHash(WorkflowHelper::checksum($workflow));
+        $bug->setModelHash($workflowHelper->checksum($workflow));
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $bug->setStatus(BugWorkflow::CLOSED);

@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Maker;
 
-use Exception;
 use Doctrine\Common\Annotations\Annotation;
+use Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -13,19 +13,18 @@ use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 final class MakeSubject extends AbstractMaker
 {
     /**
-     * @var Registry
+     * @var WorkflowHelper
      */
-    private $workflowRegistry;
+    private $workflowHelper;
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
+    public function __construct(WorkflowHelper $workflowHelper)
     {
-        $this->workflowRegistry = $workflowRegistry;
+        $this->workflowHelper = $workflowHelper;
     }
 
     public static function getCommandName(): string
@@ -33,7 +32,7 @@ final class MakeSubject extends AbstractMaker
         return 'make:subject';
     }
 
-    public function configureCommand(Command $command, InputConfiguration $inputConf)
+    public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
             ->setDescription('Creates a new subject class for a model')
@@ -44,16 +43,12 @@ final class MakeSubject extends AbstractMaker
     }
 
     /**
-     * @param InputInterface $input
-     * @param ConsoleStyle   $io
-     * @param Generator      $generator
-     *
      * @throws Exception
      */
-    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $model = $input->getArgument('model');
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
+        $workflow = $this->workflowHelper->get($model);
         $subject = $input->getArgument('subject-class');
 
         $subjectClassNameDetails = $generator->createClassNameDetails(
@@ -91,12 +86,18 @@ final class MakeSubject extends AbstractMaker
         ]);
     }
 
+    public function configureDependencies(DependencyBuilder $dependencies): void
+    {
+        $dependencies->addClassDependency(
+            // we only need doctrine/annotations, which contains
+            // the recipe that loads annotation data providers
+            Annotation::class,
+            'annotations'
+        );
+    }
+
     /**
      * @see http://www.mendoweb.be/blog/php-convert-string-to-camelcase-string/
-     *
-     * @param string $str
-     *
-     * @return string
      */
     private function camelCase(string $str): string
     {
@@ -106,18 +107,7 @@ final class MakeSubject extends AbstractMaker
         // uppercase the first character of each word
         $str = ucwords($str);
         $str = str_replace(' ', '', $str);
-        $str = lcfirst($str);
 
-        return $str;
-    }
-
-    public function configureDependencies(DependencyBuilder $dependencies)
-    {
-        $dependencies->addClassDependency(
-            // we only need doctrine/annotations, which contains
-            // the recipe that loads annotation data providers
-            Annotation::class,
-            'annotations'
-        );
+        return lcfirst($str);
     }
 }

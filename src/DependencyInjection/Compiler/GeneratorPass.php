@@ -2,16 +2,21 @@
 
 namespace Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler;
 
-use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginFinder;
 
 class GeneratorPass implements CompilerPassInterface
 {
-    use PluginTrait;
-
+    /**
+     * @var string
+     */
     private $generatorService;
+
+    /**
+     * @var string
+     */
     private $generatorTag;
 
     public function __construct(
@@ -22,18 +27,16 @@ class GeneratorPass implements CompilerPassInterface
         $this->generatorTag = $generatorTag;
     }
 
-    /**
-     * @param ContainerBuilder $container
-     *
-     * @throws Exception
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition($this->generatorService)) {
             return;
         }
 
-        if (!$generators = $this->findPlugins($container, $this->generatorTag)) {
+        $finder = new PluginFinder($container);
+        $generators = $finder->find($this->generatorTag);
+
+        if (!$generators) {
             throw new RuntimeException(sprintf('You must tag at least one service as "%s" to use the "%s" service.', $this->generatorTag, $this->generatorService));
         }
 

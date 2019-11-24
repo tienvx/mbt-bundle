@@ -11,17 +11,17 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 class BugWorkflow
 {
     // Places
-    const NEW = 'new';
-    const REDUCING = 'reducing';
-    const REDUCED = 'reduced';
-    const CLOSED = 'closed';
+    public const NEW = 'new';
+    public const REDUCING = 'reducing';
+    public const REDUCED = 'reduced';
+    public const CLOSED = 'closed';
 
     // Transitions
-    const REDUCE = 'reduce';
-    const COMPLETE_REDUCE = 'complete_reduce';
-    const REDUCE_AGAIN = 'reduce_again';
-    const CLOSE = 'close';
-    const REOPEN = 'reopen';
+    public const REDUCE = 'reduce';
+    public const COMPLETE_REDUCE = 'complete_reduce';
+    public const REDUCE_AGAIN = 'reduce_again';
+    public const CLOSE = 'close';
+    public const REOPEN = 'reopen';
 
     /**
      * @var Workflow
@@ -46,7 +46,7 @@ class BugWorkflow
         $this->workflow = new Workflow($definition, $marking, null, 'bug-workflow');
     }
 
-    public function apply(Bug $bug, string $transition)
+    public function apply(Bug $bug, string $transition): void
     {
         $this->workflow->apply($bug, $transition);
     }

@@ -2,13 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Validator\Constraints;
 
-use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
-use Symfony\Component\Workflow\Registry;
 use Tienvx\Bundle\MbtBundle\Entity\Model as ModelEntity;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
@@ -18,22 +16,16 @@ use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 class ModelValidator extends ConstraintValidator
 {
     /**
-     * @var Registry
+     * @var WorkflowHelper
      */
-    protected $workflowRegistry;
+    protected $workflowHelper;
 
-    public function setWorkflowRegistry(Registry $workflowRegistry)
+    public function __construct(WorkflowHelper $workflowHelper)
     {
-        $this->workflowRegistry = $workflowRegistry;
+        $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @param mixed      $value
-     * @param Constraint $constraint
-     *
-     * @throws Exception
-     */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Model) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Model');
@@ -44,9 +36,9 @@ class ModelValidator extends ConstraintValidator
         }
 
         try {
-            WorkflowHelper::get($this->workflowRegistry, $value->getName());
+            $this->workflowHelper->get($value->getName());
         } catch (InvalidArgumentException $exception) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();
         }

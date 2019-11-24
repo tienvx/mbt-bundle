@@ -6,18 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Tienvx\Bundle\MbtBundle\Command\WorkflowRegisterTrait;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
+use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class CreateBugMessageHandler implements MessageHandlerInterface
 {
-    use WorkflowRegisterTrait;
-
     /**
      * @var ValidatorInterface
      */
@@ -28,38 +25,27 @@ class CreateBugMessageHandler implements MessageHandlerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
+    /**
+     * @var WorkflowHelper
+     */
+    private $workflowHelper;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        WorkflowHelper $workflowHelper
+    ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @param CreateBugMessage $message
-     *
-     * @throws Exception
-     */
-    public function __invoke(CreateBugMessage $message)
+    public function __invoke(CreateBugMessage $message): void
     {
-        $title = $message->getTitle();
-        $steps = $message->getSteps();
-        $bugMessage = $message->getMessage();
-        $taskId = $message->getTaskId();
-        $status = $message->getStatus();
-        $model = $message->getModel();
+        $bug = $this->initBug($message);
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $model);
-
-        $bug = new Bug();
-        $bug->setTitle($title);
-        $bug->setSteps(Steps::deserialize($steps));
-        $bug->setModel(new Model($model));
-        $bug->setModelHash(WorkflowHelper::checksum($workflow));
-        $bug->setBugMessage($bugMessage);
-        $bug->setStatus($status);
-
-        if ($taskId) {
-            $task = $this->entityManager->getRepository(Task::class)->find($taskId);
+        if ($message->getTaskId()) {
+            $task = $this->entityManager->getRepository(Task::class)->find($message->getTaskId());
             if ($task instanceof Task) {
                 $bug->setTask($task);
             }
@@ -73,5 +59,27 @@ class CreateBugMessageHandler implements MessageHandlerInterface
 
         $this->entityManager->persist($bug);
         $this->entityManager->flush();
+    }
+
+    protected function initBug(CreateBugMessage $message): Bug
+    {
+        $workflow = $this->workflowHelper->get($message->getModel());
+
+        $bug = new Bug();
+        $bug->setTitle($message->getTitle());
+        $bug->setSteps(Steps::deserialize($message->getSteps()));
+        $bug->setModel(new Model($message->getModel()));
+        $bug->setModelHash($this->workflowHelper->checksum($workflow));
+        $bug->setBugMessage($message->getMessage());
+        $bug->setStatus($message->getStatus());
+
+        if ($message->getTaskId()) {
+            $task = $this->entityManager->getRepository(Task::class)->find($message->getTaskId());
+            if ($task instanceof Task) {
+                $bug->setTask($task);
+            }
+        }
+
+        return $bug;
     }
 }

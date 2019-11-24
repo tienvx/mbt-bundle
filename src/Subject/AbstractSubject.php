@@ -20,7 +20,7 @@ abstract class AbstractSubject implements SubjectInterface
     /**
      * @var FilesystemInterface
      */
-    protected $filesystem;
+    private $filesystem;
 
     public function __construct($marking = null)
     {
@@ -28,12 +28,24 @@ abstract class AbstractSubject implements SubjectInterface
         $this->context = [];
     }
 
+    public function setUp(bool $testing = false): void
+    {
+        // Init system-under-test connection e.g.
+        // $this->client = Client::createChromeClient();
+    }
+
+    public function tearDown(): void
+    {
+        // Destroy system-under-test connection e.g.
+        // $this->client->quit();
+    }
+
     public function getMarking()
     {
         return $this->marking;
     }
 
-    public function setMarking($marking, array $context = [])
+    public function setMarking($marking, array $context = []): void
     {
         $this->marking = $marking;
         $this->context = $context;
@@ -44,20 +56,17 @@ abstract class AbstractSubject implements SubjectInterface
         return $this->context;
     }
 
-    /**
-     * @param FilesystemInterface $filesystem
-     */
-    public function setFilesystem(FilesystemInterface $filesystem)
+    public function setFilesystem(FilesystemInterface $filesystem): void
     {
         $this->filesystem = $filesystem;
     }
 
-    public function captureScreenshot($bugId, $index)
+    public function captureScreenshot($bugId, $index): void
     {
         $this->filesystem->put("{$bugId}/{$index}.png", '');
     }
 
-    public function getScreenshot($bugId, $index)
+    public function getScreenshot($bugId, $index): string
     {
         try {
             return $this->filesystem->read("{$bugId}/{$index}.png");
@@ -66,12 +75,12 @@ abstract class AbstractSubject implements SubjectInterface
         }
     }
 
-    public function isImageScreenshot()
+    public function isImageScreenshot(): bool
     {
         return true;
     }
 
-    public function hasScreenshot($bugId, $index)
+    public function hasScreenshot($bugId, $index): bool
     {
         return $this->filesystem->has("{$bugId}/{$index}.png");
     }
@@ -81,25 +90,13 @@ abstract class AbstractSubject implements SubjectInterface
      *
      * @see https://stackoverflow.com/a/13468943
      */
-    public function removeScreenshots($bugId)
+    public function removeScreenshots($bugId): void
     {
-        $this->filesystem->deleteDir("$bugId/");
+        $this->filesystem->deleteDir("{$bugId}/");
     }
 
-    public function getScreenshotUrl($bugId, $index)
+    public function getScreenshotUrl($bugId, $index): string
     {
         return '';
-    }
-
-    public function setUp(bool $testing = false)
-    {
-        // Init system-under-test connection e.g.
-        // $this->client = Client::createChromeClient();
-    }
-
-    public function tearDown()
-    {
-        // Destroy system-under-test connection e.g.
-        // $this->client->quit();
     }
 }

@@ -30,57 +30,36 @@ class GeneratorOptions
      */
     private $maxSteps;
 
-    /**
-     * @return int|null
-     */
     public function getMaxSteps(): ?int
     {
         return $this->maxSteps;
     }
 
-    /**
-     * @param int|null $maxSteps
-     */
     public function setMaxSteps(?int $maxSteps): void
     {
         $this->maxSteps = $maxSteps;
     }
 
-    /**
-     * @return int|null
-     */
     public function getPlaceCoverage(): ?int
     {
         return $this->placeCoverage;
     }
 
-    /**
-     * @param int|null $placeCoverage
-     */
     public function setPlaceCoverage(?int $placeCoverage): void
     {
         $this->placeCoverage = $placeCoverage;
     }
 
-    /**
-     * @return int|null
-     */
     public function getTransitionCoverage(): ?int
     {
         return $this->transitionCoverage;
     }
 
-    /**
-     * @param int|null $transitionCoverage
-     */
     public function setTransitionCoverage(?int $transitionCoverage): void
     {
         $this->transitionCoverage = $transitionCoverage;
     }
 
-    /**
-     * @return array
-     */
     public function normalize(): array
     {
         $values = [
@@ -92,19 +71,11 @@ class GeneratorOptions
         return array_filter($values);
     }
 
-    /**
-     * @return string
-     */
     public function serialize(): string
     {
         return json_encode($this->normalize());
     }
 
-    /**
-     * @param array $data
-     *
-     * @return GeneratorOptions
-     */
     public static function denormalize(?array $data): GeneratorOptions
     {
         if (!$data) {
@@ -118,11 +89,6 @@ class GeneratorOptions
         return $generatorOptions;
     }
 
-    /**
-     * @param string $data
-     *
-     * @return GeneratorOptions
-     */
     public static function deserialize(?string $data): GeneratorOptions
     {
         if (!$data) {

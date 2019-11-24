@@ -2,8 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Annotation;
 
+use InvalidArgumentException;
+
 abstract class AbstractAnnotation
 {
+    /**
+     * @var string
+     */
     private $name;
 
     public function __construct(array $options)
@@ -15,14 +20,14 @@ abstract class AbstractAnnotation
 
         foreach ($options as $key => $value) {
             if (!property_exists($this, $key)) {
-                throw new \InvalidArgumentException(sprintf('Property "%s" does not exist', $key));
+                throw new InvalidArgumentException(sprintf('Property "%s" does not exist', $key));
             }
 
             $this->$key = $value;
         }
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

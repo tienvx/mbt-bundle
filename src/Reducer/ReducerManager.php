@@ -19,13 +19,9 @@ class ReducerManager
     /**
      * Returns one reducer by name.
      *
-     * @param $name
-     *
-     * @return ReducerInterface
-     *
      * @throws Exception
      */
-    public function getReducer($name): ReducerInterface
+    public function get(string $name): ReducerInterface
     {
         if (isset($this->reducers[$name])) {
             return $this->reducers[$name];
@@ -36,12 +32,8 @@ class ReducerManager
 
     /**
      * Check if there is a reducer by name.
-     *
-     * @param $name
-     *
-     * @return bool
      */
-    public function hasReducer($name): bool
+    public function has(string $name): bool
     {
         return isset($this->reducers[$name]);
     }
@@ -49,7 +41,7 @@ class ReducerManager
     /**
      * @return ReducerInterface[]
      */
-    public function getAllReducers(): array
+    public function all(): array
     {
         return $this->reducers;
     }

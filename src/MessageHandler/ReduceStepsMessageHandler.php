@@ -7,20 +7,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Tienvx\Bundle\MbtBundle\Command\MessageTrait;
-use Tienvx\Bundle\MbtBundle\Command\TokenTrait;
-use Tienvx\Bundle\MbtBundle\Command\WorkflowRegisterTrait;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
 class ReduceStepsMessageHandler implements MessageHandlerInterface
 {
-    use TokenTrait;
-    use WorkflowRegisterTrait;
-    use MessageTrait;
-
     /**
      * @var ReducerManager
      */
@@ -29,24 +24,38 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
     /**
      * @var EntityManager
      */
-    protected $entityManager;
+    private $entityManager;
+
+    /**
+     * @var TokenHelper
+     */
+    private $tokenHelper;
+
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
+    /**
+     * @var WorkflowHelper
+     */
+    private $workflowHelper;
 
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $messageBus
+        TokenHelper $tokenHelper,
+        MessageBusInterface $messageBus,
+        WorkflowHelper $workflowHelper
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
+        $this->tokenHelper = $tokenHelper;
         $this->messageBus = $messageBus;
+        $this->workflowHelper = $workflowHelper;
     }
 
-    /**
-     * @param ReduceStepsMessage $message
-     *
-     * @throws Exception
-     */
-    public function __invoke(ReduceStepsMessage $message)
+    public function __invoke(ReduceStepsMessage $message): void
     {
         $bugId = $message->getBugId();
         $reducer = $message->getReducer();
@@ -59,16 +68,16 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $workflow = WorkflowHelper::get($this->workflowRegistry, $bug->getModel()->getName());
-        if (WorkflowHelper::checksum($workflow) !== $bug->getModelHash()) {
+        $workflow = $this->workflowHelper->get($bug->getModel()->getName());
+        if ($this->workflowHelper->checksum($workflow) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
-        $this->setAnonymousToken();
+        $this->tokenHelper->setAnonymousToken();
 
-        $reducerService = $this->reducerManager->getReducer($reducer);
+        $reducerService = $this->reducerManager->get($reducer);
         $reducerService->handle($bug, $workflow, $length, $from, $to);
 
-        $this->finishReduceSteps($bug);
+        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
     }
 }

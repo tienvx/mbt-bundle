@@ -24,19 +24,15 @@ class SubjectManager
         $this->reader = $reader;
     }
 
-    public function setSubjects(array $subjects)
+    public function setSubjects(array $subjects): void
     {
         $this->subjects = $subjects;
     }
 
     /**
-     * @param string $model
-     *
-     * @return SubjectInterface
-     *
      * @throws Exception
      */
-    public function createSubject(string $model): SubjectInterface
+    public function create(string $model): SubjectInterface
     {
         foreach ($this->subjects as $subject) {
             $reflectionClass = new ReflectionClass($subject);
@@ -46,5 +42,13 @@ class SubjectManager
             }
         }
         throw new Exception(sprintf('Subject for model %s not found', $model));
+    }
+
+    public function createAndSetUp(string $model, bool $testing = false): SubjectInterface
+    {
+        $subject = $this->create($model);
+        $subject->setUp($testing);
+
+        return $subject;
     }
 }
