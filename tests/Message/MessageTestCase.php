@@ -2,14 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
-use App\Reporter\InMemoryReporter;
+use App\Mailer\InMemoryTransportFactory as MailerInMemoryTransportFactory;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Symfony\Component\Messenger\Transport\InMemoryTransport as MessengerInMemoryTransport;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
@@ -25,14 +24,14 @@ abstract class MessageTestCase extends TestCase
     protected $filesystem;
 
     /**
-     * @var InMemoryTransport
+     * @var MessengerInMemoryTransport
      */
-    protected $transport;
+    protected $messengerTransport;
 
     /**
-     * @var InMemoryReporter
+     * @var MailerInMemoryTransportFactory
      */
-    protected $report;
+    protected $mailerTransportFactory;
 
     /**
      * @var MessageBusInterface
@@ -54,12 +53,8 @@ abstract class MessageTestCase extends TestCase
         $this->logDir = $params->get('kernel.logs_dir');
 
         $this->filesystem = self::$container->get('mbt.storage');
-
-        $this->transport = self::$container->get('messenger.transport.memory');
-
-        $reporterManager = self::$container->get('mbt.reporter_manager');
-        $this->report = $reporterManager->get('in-memory');
-
+        $this->messengerTransport = self::$container->get('messenger.transport.memory');
+        $this->mailerTransportFactory = self::$container->get(MailerInMemoryTransportFactory::class);
         $this->messageBus = self::$container->get(MessageBusInterface::class);
     }
 
@@ -75,27 +70,22 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearMessages()
     {
-        $this->transport->reset();
+        $this->messengerTransport->reset();
     }
 
     protected function hasMessages()
     {
-        return count($this->transport->get()) > 0;
+        return count($this->messengerTransport->get()) > 0;
     }
 
-    protected function clearReport()
+    protected function clearEmails()
     {
-        $this->report->reset();
+        $this->mailerTransportFactory->reset();
     }
 
-    protected function hasReport(Bug $bug)
+    protected function hasEmail()
     {
-        return $this->report->isReported($bug->getId());
-    }
-
-    protected function reportHasScreenshot(Bug $bug)
-    {
-        return $this->report->hasScreenshot($bug->getId());
+        return 1 === $this->mailerTransportFactory->count();
     }
 
     protected function removeScreenshots()

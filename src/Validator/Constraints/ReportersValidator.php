@@ -38,6 +38,11 @@ class ReportersValidator extends ConstraintValidator
             return;
         }
 
+        $this->validateValue($values, $constraint);
+    }
+
+    protected function validateValue($values, Constraint $constraint): void
+    {
         foreach ($values as $value) {
             if (!($value instanceof ReporterEntity)) {
                 throw new UnexpectedValueException($value, ReporterEntity::class);

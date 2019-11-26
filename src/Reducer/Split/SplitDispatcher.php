@@ -22,17 +22,25 @@ class SplitDispatcher extends DispatcherTemplate
             if ($quotient <= 1) {
                 break;
             }
-            $remainder = $steps->getLength() % $divisor;
-            for ($k = 0; $k < $divisor; ++$k) {
-                $i = $quotient * $k;
-                if ($k === ($divisor - 1)) {
-                    $j = $quotient * ($k + 1) - 1 + $remainder;
-                } else {
-                    $j = $quotient * ($k + 1) - 1;
-                }
-                $pairs[] = [$i, $j];
-            }
+            $pairs += $this->divide($steps, $divisor, $quotient);
         } while (count($pairs) < floor(sqrt($steps->getLength())));
+
+        return $pairs;
+    }
+
+    protected function divide(Steps $steps, int $divisor, int $quotient): array
+    {
+        $pairs = [];
+        $remainder = $steps->getLength() % $divisor;
+        for ($k = 0; $k < $divisor; ++$k) {
+            $i = $quotient * $k;
+            if ($k === ($divisor - 1)) {
+                $j = $quotient * ($k + 1) - 1 + $remainder;
+            } else {
+                $j = $quotient * ($k + 1) - 1;
+            }
+            $pairs[] = [$i, $j];
+        }
 
         return $pairs;
     }

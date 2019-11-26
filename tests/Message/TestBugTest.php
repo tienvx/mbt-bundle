@@ -48,7 +48,7 @@ class TestBugTest extends MessageTestCase
         $entityManager->flush();
 
         $this->clearMessages();
-        $this->clearReport();
+        $this->clearEmails();
         $this->removeScreenshots();
 
         $this->sendMessage(new TestBugMessage($bug->getId()));

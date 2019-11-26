@@ -38,9 +38,10 @@ jobs:
     steps:
     - name: Set Up Container
       run: |
-        apk add -q --no-cache $PHPIZE_DEPS git bash
+        apk add -q --no-cache $PHPIZE_DEPS git bash libxslt-dev libgcrypt-dev libgpg-error-dev
         pecl install pcov > /dev/null
         docker-php-ext-enable pcov
+        docker-php-ext-install xsl
         curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
         composer global require hirak/prestissimo > /dev/null
 
@@ -54,7 +55,7 @@ jobs:
       run: |
         wget -q -O phpunit https://phar.phpunit.de/phpunit-8.phar
         chmod +x phpunit
-        ./phpunit -d memory_limit=256M --coverage-clover tests/logs/clover.xml
+        ./phpunit -d memory_limit=512M --coverage-clover tests/logs/clover.xml
 
     - name: Send to coveralls
       run: |

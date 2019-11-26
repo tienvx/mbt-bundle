@@ -35,6 +35,11 @@ class ModelValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, ModelEntity::class);
         }
 
+        $this->validateValue($value, $constraint);
+    }
+
+    protected function validateValue($value, Constraint $constraint): void
+    {
         try {
             $this->workflowHelper->get($value->getName());
         } catch (InvalidArgumentException $exception) {

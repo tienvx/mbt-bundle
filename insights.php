@@ -51,8 +51,6 @@ return [
     'exclude' => [
         //  'path/to/directory-or-file'
         'src/DependencyInjection/Configuration.php',
-        'src/Entity/Bug.php',
-        'src/Entity/Task.php',
         'insights.php',
     ],
 

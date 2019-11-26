@@ -10,14 +10,14 @@ class ReportBugMessage
     protected $bugId;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $reporter;
+    protected $channels;
 
-    public function __construct(int $bugId, string $reporter)
+    public function __construct(int $bugId, array $channels)
     {
         $this->bugId = $bugId;
-        $this->reporter = $reporter;
+        $this->channels = $channels;
     }
 
     public function getBugId(): int
@@ -25,8 +25,8 @@ class ReportBugMessage
         return $this->bugId;
     }
 
-    public function getReporter(): string
+    public function getChannels(): array
     {
-        return $this->reporter;
+        return $this->channels;
     }
 }

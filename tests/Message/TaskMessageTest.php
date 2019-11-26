@@ -23,7 +23,7 @@ class TaskMessageTest extends MessageTestCase
     public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
     {
         $this->clearMessages();
-        $this->clearReport();
+        $this->clearEmails();
         $this->removeScreenshots();
 
         /** @var EntityManagerInterface $entityManager */
@@ -38,7 +38,7 @@ class TaskMessageTest extends MessageTestCase
         // Use default generator options.
         //$task->setGeneratorOptions($generatorOptions);
         if ($reportBug) {
-            $task->setReporters([new Reporter('in-memory')]);
+            $task->setReporters([new Reporter('email')]);
         }
         $entityManager->persist($task);
         $entityManager->flush();
@@ -75,10 +75,7 @@ class TaskMessageTest extends MessageTestCase
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());
 
-            $this->assertEquals($reportBug, $this->hasReport($bugs[0]));
-            if ($takeScreenshots && $reportBug) {
-                $this->assertTrue($this->reportHasScreenshot($bugs[0]));
-            }
+            $this->assertEquals($reportBug, $this->hasEmail());
             $this->assertEquals(BugWorkflow::REDUCED, $bugs[0]->getStatus());
 
             $bugId = $bugs[0]->getId();

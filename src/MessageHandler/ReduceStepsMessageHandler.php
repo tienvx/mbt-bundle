@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -73,6 +74,11 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
+        $this->reduce($reducer, $bug, $workflow, $length, $from, $to);
+    }
+
+    protected function reduce(string $reducer, Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
+    {
         $this->tokenHelper->setAnonymousToken();
 
         $reducerService = $this->reducerManager->get($reducer);

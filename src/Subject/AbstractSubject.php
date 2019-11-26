@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 
-abstract class AbstractSubject implements SubjectInterface
+abstract class AbstractSubject implements SubjectInterface, SubjectScreenshotInterface, SubjectMarkingInterface
 {
     /**
      * @var mixed Required by workflow component
@@ -22,12 +22,6 @@ abstract class AbstractSubject implements SubjectInterface
      */
     private $filesystem;
 
-    public function __construct($marking = null)
-    {
-        $this->marking = $marking;
-        $this->context = [];
-    }
-
     public function setUp(bool $testing = false): void
     {
         // Init system-under-test connection e.g.
@@ -40,20 +34,21 @@ abstract class AbstractSubject implements SubjectInterface
         // $this->client->quit();
     }
 
+    /**
+     * Required by workflow component.
+     */
     public function getMarking()
     {
         return $this->marking;
     }
 
+    /**
+     * Required by workflow component.
+     */
     public function setMarking($marking, array $context = []): void
     {
         $this->marking = $marking;
         $this->context = $context;
-    }
-
-    public function getContext(): array
-    {
-        return $this->context;
     }
 
     public function setFilesystem(FilesystemInterface $filesystem): void
@@ -93,10 +88,5 @@ abstract class AbstractSubject implements SubjectInterface
     public function removeScreenshots($bugId): void
     {
         $this->filesystem->deleteDir("{$bugId}/");
-    }
-
-    public function getScreenshotUrl($bugId, $index): string
-    {
-        return '';
     }
 }

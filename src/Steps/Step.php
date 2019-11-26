@@ -70,7 +70,7 @@ class Step
         return new Step(
             $step['transition'],
             Data::denormalize($step['data']),
-            !empty($step['places']) && is_array($step['places']) ? $step['places'] : []
+            isset($step['places']) && is_array($step['places']) ? $step['places'] : []
         );
     }
 
