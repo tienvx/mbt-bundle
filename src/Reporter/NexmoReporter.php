@@ -2,20 +2,20 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reporter;
 
-class SlackReporter implements ReporterInterface
+class NexmoReporter implements ReporterInterface
 {
     public static function getName(): string
     {
-        return 'chat/slack';
+        return 'sms/nexmo';
     }
 
     public function getLabel(): string
     {
-        return 'Slack';
+        return 'Nexmo';
     }
 
     public static function support(): bool
     {
-        return class_exists('Symfony\Component\Notifier\Bridge\Slack\SlackTransport');
+        return class_exists('Symfony\Component\Notifier\Bridge\Nexmo\NexmoTransport');
     }
 }

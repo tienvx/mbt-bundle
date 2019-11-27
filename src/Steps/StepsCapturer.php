@@ -2,9 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Steps;
 
+use Exception;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectScreenshotInterface;
 
 class StepsCapturer
 {
@@ -21,6 +23,10 @@ class StepsCapturer
 
     protected static function captureSingleStep(Step $step, int $index, Workflow $workflow, SubjectInterface $subject, int $bugId): void
     {
+        if (!$subject instanceof SubjectScreenshotInterface) {
+            throw new Exception(sprintf('Class %s must implements interface %s', get_class($subject), SubjectScreenshotInterface::class));
+        }
+
         if ($step->getTransition() && $step->getData() instanceof Data) {
             try {
                 $workflow->apply($subject, $step->getTransition(), [

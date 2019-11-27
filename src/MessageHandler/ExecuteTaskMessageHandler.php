@@ -83,6 +83,11 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No task found for id %d', $taskId));
         }
 
+        $this->execute($task);
+    }
+
+    protected function execute(Task $task): void
+    {
         $subject = $this->subjectManager->createAndSetUp($task->getModel()->getName());
         $generator = $this->generatorManager->get($task->getGenerator()->getName());
         $workflow = $this->workflowHelper->get($task->getModel()->getName());
@@ -94,11 +99,11 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
             $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
             StepsRecorder::record($steps, $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->messageHelper->createBug($recorded, $throwable->getMessage(), $taskId, $task->getModel()->getName());
+            $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getModel()->getName());
         } finally {
             $subject->tearDown();
 
-            $this->messageBus->dispatch(new ApplyTaskTransitionMessage($taskId, TaskWorkflow::COMPLETE));
+            $this->messageBus->dispatch(new ApplyTaskTransitionMessage($task->getId(), TaskWorkflow::COMPLETE));
         }
     }
 }

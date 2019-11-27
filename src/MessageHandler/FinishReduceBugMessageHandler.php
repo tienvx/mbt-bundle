@@ -52,8 +52,12 @@ class FinishReduceBugMessageHandler implements MessageHandlerInterface
 
     protected function reportBug(Task $task, int $bugId): void
     {
+        $channels = [];
         foreach ($task->getReporters() as $reporter) {
-            $this->messageBus->dispatch(new ReportBugMessage($bugId, $reporter->getName()));
+            $channels[] = $reporter->getName();
+        }
+        if (count($channels) > 0) {
+            $this->messageBus->dispatch(new ReportBugMessage($bugId, $channels));
         }
     }
 

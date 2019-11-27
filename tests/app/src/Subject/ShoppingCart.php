@@ -128,7 +128,6 @@ class ShoppingCart extends AbstractSubject
 
     public function __construct()
     {
-        parent::__construct();
         $this->cart = [];
         $this->category = null;
         $this->product = null;
@@ -484,11 +483,6 @@ class ShoppingCart extends AbstractSubject
         $products = $this->productsInCategory[$this->category] ?? [];
 
         return !empty($products);
-    }
-
-    public function getScreenshotUrl($bugId, $index): string
-    {
-        return sprintf('http://localhost/mbt-api/bug-screenshot/%d/%d', $bugId, $index);
     }
 
     public function randomCategory()

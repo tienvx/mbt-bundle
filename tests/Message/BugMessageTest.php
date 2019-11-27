@@ -53,7 +53,7 @@ class BugMessageTest extends MessageTestCase
         $task->setGenerator(new Generator('random'));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
-        $task->setReporters([new Reporter('in-memory')]);
+        $task->setReporters([new Reporter('email')]);
         // Does not matter, because we are testing reducer.
         //$task->setGeneratorOptions($generatorOptions);
         $entityManager->persist($task);
@@ -61,7 +61,7 @@ class BugMessageTest extends MessageTestCase
         $entityManager->flush();
 
         $this->clearMessages();
-        $this->clearReport();
+        $this->clearEmails();
         // Just to make sure
         $this->removeScreenshots();
 
@@ -92,7 +92,7 @@ class BugMessageTest extends MessageTestCase
             $this->assertLessThanOrEqual($expectedSteps->getLength(), $bugs[0]->getSteps()->getLength());
         }
 
-        $this->assertTrue($this->hasReport($bugs[0]));
+        $this->assertTrue($this->hasEmail());
         $this->assertEquals(BugWorkflow::REDUCED, $bug->getStatus());
 
         // Because screenshots had not been captured, and had been removed during set-up, no need to test this

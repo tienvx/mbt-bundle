@@ -14,11 +14,10 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\Random\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
-use Tienvx\Bundle\MbtBundle\Reporter\EmailReporter;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
-use Tienvx\Bundle\MbtBundle\Reporter\SlackReporter;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
@@ -65,16 +64,9 @@ class TienvxMbtExtension extends Extension
         $probabilityGeneratorDefinition = $container->getDefinition(ProbabilityGenerator::class);
         $probabilityGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
 
-        $slackReporterDefinition = $container->getDefinition(SlackReporter::class);
-        $slackReporterDefinition->addMethodCall('setSlackHookUrl', [$config['slack_hook_url']]);
-        $slackReporterDefinition->addMethodCall('setSlackFrom', [$config['slack_from']]);
-        $slackReporterDefinition->addMethodCall('setSlackTo', [$config['slack_to']]);
-        $slackReporterDefinition->addMethodCall('setSlackMessage', [$config['slack_message']]);
-
-        $emailReporterDefinition = $container->getDefinition(EmailReporter::class);
-        $emailReporterDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
-        $emailReporterDefinition->addMethodCall('setEmailTo', [$config['email_to']]);
-        $emailReporterDefinition->addMethodCall('setEmailSubject', [$config['email_subject']]);
+        $reportBugMessageHandlerDefinition = $container->getDefinition(ReportBugMessageHandler::class);
+        $reportBugMessageHandlerDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);
+        $reportBugMessageHandlerDefinition->addMethodCall('setAdminUrl', [$config['admin_url']]);
     }
 
     private function registerPredefinedCasesConfiguration(array $config, ContainerBuilder $container): void

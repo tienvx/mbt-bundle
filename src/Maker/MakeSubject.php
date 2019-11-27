@@ -13,6 +13,7 @@ use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 final class MakeSubject extends AbstractMaker
@@ -49,36 +50,9 @@ final class MakeSubject extends AbstractMaker
     {
         $model = $input->getArgument('model');
         $workflow = $this->workflowHelper->get($model);
-        $subject = $input->getArgument('subject-class');
+        $subjectClass = $input->getArgument('subject-class');
 
-        $subjectClassNameDetails = $generator->createClassNameDetails(
-            $subject,
-            'Subject\\'
-        );
-
-        $places = [];
-        foreach ($workflow->getDefinition()->getPlaces() as $place => $status) {
-            if ($status) {
-                $places[$place] = $this->camelCase($place);
-            }
-        }
-
-        $transitions = [];
-        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
-            $transitions[$transition->getName()] = $this->camelCase($transition->getName());
-        }
-
-        $generator->generateClass(
-            $subjectClassNameDetails->getFullName(),
-            __DIR__.'/../Resources/skeleton/subject/Subject.php.tpl',
-            [
-                'places' => $places,
-                'transitions' => $transitions,
-                'model' => $model,
-            ]
-        );
-
-        $generator->writeChanges();
+        $this->generateClass($generator, $subjectClass, $workflow, $model);
 
         $this->writeSuccessMessage($io);
         $io->text([
@@ -109,5 +83,47 @@ final class MakeSubject extends AbstractMaker
         $str = str_replace(' ', '', $str);
 
         return lcfirst($str);
+    }
+
+    private function getPlaces(Workflow $workflow): array
+    {
+        $places = [];
+        foreach ($workflow->getDefinition()->getPlaces() as $place => $status) {
+            if ($status) {
+                $places[$place] = $this->camelCase($place);
+            }
+        }
+
+        return $places;
+    }
+
+    private function getTransitions(Workflow $workflow): array
+    {
+        $transitions = [];
+        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
+            $transitions[$transition->getName()] = $this->camelCase($transition->getName());
+        }
+
+        return $transitions;
+    }
+
+    private function generateClass(Generator $generator, string $subjectClass, Workflow $workflow, string $model): void
+    {
+        $subjectClassNameDetails = $generator->createClassNameDetails(
+            $subjectClass,
+            'Subject\\'
+        );
+
+        $generator->generateClass(
+            $subjectClassNameDetails->getFullName(),
+            __DIR__.'/../Resources/skeleton/subject/Subject.php.tpl',
+            [
+                'places' => $this->getPlaces($workflow),
+                'transitions' => $this->getTransitions($workflow),
+                'model' => $model,
+            ]
+        );
+
+        $generator->writeChanges();
     }
 }

@@ -34,6 +34,11 @@ class ReducerValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, ReducerEntity::class);
         }
 
+        $this->validateValue($value, $constraint);
+    }
+
+    protected function validateValue($value, Constraint $constraint): void
+    {
         if (!$this->reducerManager->has($value->getName())) {
             $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())

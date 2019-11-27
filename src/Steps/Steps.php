@@ -3,20 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Steps;
 
 use Exception;
-use Iterator;
 
-class Steps implements Iterator
+class Steps extends StepsIterator
 {
-    /**
-     * @var Step[]
-     */
-    protected $steps = [];
-
-    /**
-     * @var int
-     */
-    protected $position = 0;
-
     public function addStep(Step $step): void
     {
         $this->steps[] = $step;
@@ -73,30 +62,5 @@ class Steps implements Iterator
     public static function deserialize(string $steps): Steps
     {
         return self::denormalize(json_decode($steps, true));
-    }
-
-    public function current()
-    {
-        return $this->steps[$this->position];
-    }
-
-    public function next(): void
-    {
-        ++$this->position;
-    }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function valid()
-    {
-        return isset($this->steps[$this->position]);
-    }
-
-    public function rewind(): void
-    {
-        $this->position = 0;
     }
 }

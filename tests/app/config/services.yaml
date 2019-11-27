@@ -7,3 +7,6 @@ services:
     App\:
         resource: '../src/*'
         exclude: '../src/{AppKernel.php,Helper}'
+
+    App\Mailer\InMemoryTransportFactory:
+        tags: ['mailer.transport_factory']

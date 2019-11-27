@@ -4,7 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
 use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
@@ -12,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\Message\TestPredefinedCaseMessage;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Steps\StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
@@ -68,6 +71,11 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
         $workflow = $this->workflowHelper->get($model);
         $subject = $this->subjectManager->createAndSetUp($model);
 
+        $this->test($predefinedCase, $workflow, $subject, $model);
+    }
+
+    protected function test(PredefinedCase $predefinedCase, Workflow $workflow, SubjectInterface $subject, string $model): void
+    {
         $this->tokenHelper->setAnonymousToken();
 
         $recorded = new Steps();

@@ -8,13 +8,16 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Steps\StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestModelCommand extends Command
@@ -64,7 +67,7 @@ class TestModelCommand extends Command
             ->addOption('generator-options', 'o', InputOption::VALUE_OPTIONAL, 'The options for the generator (in json).', '{}');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $model = $input->getArgument('model');
         $subject = $this->subjectManager->createAndSetUp($model, true);
@@ -72,6 +75,13 @@ class TestModelCommand extends Command
         $generator = $this->generatorManager->get($input->getOption('generator'));
         $generatorOptions = GeneratorOptions::deserialize($input->getOption('generator-options'));
 
+        $this->test($generator, $generatorOptions, $model, $workflow, $subject, $output);
+
+        return 0;
+    }
+
+    protected function test(GeneratorInterface $generator, GeneratorOptions $generatorOptions, string $model, Workflow $workflow, SubjectInterface $subject, OutputInterface $output): void
+    {
         $this->tokenHelper->setAnonymousToken();
 
         $recorded = new Steps();

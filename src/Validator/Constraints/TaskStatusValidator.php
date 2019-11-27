@@ -27,6 +27,11 @@ class TaskStatusValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
+        $this->validateValue($value, $constraint);
+    }
+
+    protected function validateValue($value, Constraint $constraint): void
+    {
         if (!in_array($value, [TaskWorkflow::NOT_STARTED, TaskWorkflow::IN_PROGRESS, TaskWorkflow::COMPLETED])) {
             $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value)

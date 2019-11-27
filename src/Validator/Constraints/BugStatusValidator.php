@@ -27,6 +27,11 @@ class BugStatusValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
+        $this->validateValue($value, $constraint);
+    }
+
+    protected function validateValue($value, Constraint $constraint): void
+    {
         if (!in_array($value, [BugWorkflow::NEW, BugWorkflow::REDUCING, BugWorkflow::REDUCED, BugWorkflow::CLOSED])) {
             $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value)
