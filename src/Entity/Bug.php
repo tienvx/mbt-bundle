@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
@@ -77,18 +78,16 @@ class Bug
     private $messagesCount = 0;
 
     /**
-     * @var DateTime
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Assert\DateTime
      */
     private $createdAt;
 
     /**
-     * @var DateTime
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     * @Assert\DateTime
      */
     private $updatedAt;
 
@@ -180,22 +179,22 @@ class Bug
         $this->messagesCount = $messagesCount;
     }
 
-    public function setCreatedAt(DateTime $createdAt): void
+    public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt): void
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updatedAt;
     }
