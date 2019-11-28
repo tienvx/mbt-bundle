@@ -9,3 +9,4 @@
 /.php_cs export-ignore
 /_config.yml export-ignore
 /phpunit.xml.dist export-ignore
+/insights.php export-ignore
