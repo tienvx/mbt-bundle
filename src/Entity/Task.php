@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
@@ -211,7 +212,7 @@ class Task
         $this->status = $status;
     }
 
-    public function getBugs(): ?ArrayCollection
+    public function getBugs(): ?Collection
     {
         return $this->bugs;
     }
