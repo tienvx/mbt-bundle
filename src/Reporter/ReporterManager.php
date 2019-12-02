@@ -7,40 +7,36 @@ use Exception;
 class ReporterManager
 {
     /**
-     * @var ReporterInterface[]
+     * @var array
      */
-    private $reporters;
+    private $reporters = [];
 
-    public function __construct(array $reporters = [])
+    public function __construct(iterable $reporters)
     {
-        $this->reporters = $reporters;
+        foreach ($reporters as $reporter) {
+            if ($reporter instanceof ReporterInterface && $reporter->support()) {
+                $this->reporters[$reporter->getName()] = $reporter;
+            }
+        }
     }
 
-    /**
-     * Returns one reporter by name.
-     *
-     * @throws Exception
-     */
     public function get(string $name): ReporterInterface
     {
-        if (isset($this->reporters[$name])) {
-            return $this->reporters[$name];
+        $reporter = $this->reporters[$name] ?? null;
+        if ($reporter instanceof ReporterInterface) {
+            return $reporter;
         }
 
         throw new Exception(sprintf('Reporter "%s" does not exist.', $name));
     }
 
-    /**
-     * Check if there is a reporter by name.
-     */
     public function has(string $name): bool
     {
-        return isset($this->reporters[$name]);
+        $reporter = $this->reporters[$name] ?? null;
+
+        return $reporter instanceof ReporterInterface;
     }
 
-    /**
-     * @return ReporterInterface[]
-     */
     public function all(): array
     {
         return $this->reporters;
