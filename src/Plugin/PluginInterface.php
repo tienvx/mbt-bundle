@@ -7,4 +7,6 @@ interface PluginInterface
     public static function getName(): string;
 
     public static function support(): bool;
+
+    public function getLabel(): string;
 }
