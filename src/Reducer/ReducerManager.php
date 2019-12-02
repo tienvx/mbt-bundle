@@ -7,40 +7,36 @@ use Exception;
 class ReducerManager
 {
     /**
-     * @var ReducerInterface[]
+     * @var array
      */
-    private $reducers;
+    private $reducers = [];
 
-    public function __construct(array $reducers = [])
+    public function __construct(iterable $reducers)
     {
-        $this->reducers = $reducers;
+        foreach ($reducers as $reducer) {
+            if ($reducer instanceof ReducerInterface && $reducer->support()) {
+                $this->reducers[$reducer->getName()] = $reducer;
+            }
+        }
     }
 
-    /**
-     * Returns one reducer by name.
-     *
-     * @throws Exception
-     */
     public function get(string $name): ReducerInterface
     {
-        if (isset($this->reducers[$name])) {
-            return $this->reducers[$name];
+        $reducer = $this->reducers[$name] ?? null;
+        if ($reducer instanceof ReducerInterface) {
+            return $reducer;
         }
 
         throw new Exception(sprintf('Path reducer "%s" does not exist.', $name));
     }
 
-    /**
-     * Check if there is a reducer by name.
-     */
     public function has(string $name): bool
     {
-        return isset($this->reducers[$name]);
+        $reducer = $this->reducers[$name] ?? null;
+
+        return $reducer instanceof ReducerInterface;
     }
 
-    /**
-     * @return ReducerInterface[]
-     */
     public function all(): array
     {
         return $this->reducers;

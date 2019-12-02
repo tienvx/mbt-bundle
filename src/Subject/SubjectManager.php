@@ -10,23 +10,32 @@ use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 class SubjectManager
 {
     /**
-     * @var string[] Subject classes
+     * @var array
      */
-    protected $subjects;
+    protected $classes = [];
 
     /**
      * @var Reader
      */
     protected $reader;
 
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, iterable $subjects)
     {
         $this->reader = $reader;
+        $this->initSubjects($subjects);
     }
 
-    public function setSubjects(array $subjects): void
+    public function initSubjects(iterable $subjects): void
     {
-        $this->subjects = $subjects;
+        foreach ($subjects as $subject) {
+            $class = get_class($subject);
+            $reflectionClass = new ReflectionClass($class);
+            $annotation = $this->reader->getClassAnnotation($reflectionClass, Subject::class);
+            if ($annotation instanceof Subject) {
+                $model = $annotation->getName();
+                $this->classes[$model] = $class;
+            }
+        }
     }
 
     /**
@@ -34,12 +43,9 @@ class SubjectManager
      */
     public function create(string $model): SubjectInterface
     {
-        foreach ($this->subjects as $subject) {
-            $reflectionClass = new ReflectionClass($subject);
-            $annotation = $this->reader->getClassAnnotation($reflectionClass, Subject::class);
-            if ($annotation instanceof Subject && $annotation->getName() === $model) {
-                return new $subject();
-            }
+        $class = $this->classes[$model] ?? null;
+        if (!is_null($class)) {
+            return new $class();
         }
         throw new Exception(sprintf('Subject for model %s not found', $model));
     }

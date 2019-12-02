@@ -7,20 +7,19 @@ use Exception;
 class GeneratorManager
 {
     /**
-     * @var GeneratorInterface[]
+     * @var array
      */
-    private $generators;
+    private $generators = [];
 
-    public function __construct(array $generators = [])
+    public function __construct(iterable $generators)
     {
-        $this->generators = $generators;
+        foreach ($generators as $generator) {
+            if ($generator instanceof GeneratorInterface && $generator->support()) {
+                $this->generators[$generator->getName()] = $generator;
+            }
+        }
     }
 
-    /**
-     * Returns one generator by name.
-     *
-     * @throws Exception
-     */
     public function get(string $name): GeneratorInterface
     {
         $generator = $this->generators[$name] ?? null;
@@ -33,7 +32,9 @@ class GeneratorManager
 
     public function has(string $name): bool
     {
-        return isset($this->generators[$name]);
+        $generator = $this->generators[$name] ?? null;
+
+        return $generator instanceof GeneratorInterface;
     }
 
     public function all(): array
