@@ -11,6 +11,4 @@ interface ReducerInterface extends PluginInterface
     public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void;
 
     public function dispatch(Bug $bug): int;
-
-    public function getLabel(): string;
 }
