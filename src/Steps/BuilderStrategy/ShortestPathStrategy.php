@@ -6,7 +6,7 @@ use Exception;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Set\Edges;
-use Graphp\Algorithms\ShortestPath\Dijkstra;
+use Graphp\Algorithms\ShortestPath\BreadthFirst;
 use Tienvx\Bundle\MbtBundle\Graph\VertexId;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Steps\Step;
@@ -64,7 +64,7 @@ class ShortestPathStrategy implements StrategyInterface
     {
         $fromVertex = $this->graph->getVertex($fromVertexId);
         $toVertex = $this->graph->getVertex($toVertexId);
-        $algorithm = new Dijkstra($fromVertex);
+        $algorithm = new BreadthFirst($fromVertex);
 
         return $algorithm->getEdgesTo($toVertex);
     }

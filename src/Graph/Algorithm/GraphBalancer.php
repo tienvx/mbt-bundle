@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Graph\Algorithm;
 
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
-use Graphp\Algorithms\ShortestPath\Dijkstra;
+use Graphp\Algorithms\ShortestPath\BreadthFirst;
 
 class GraphBalancer
 {
@@ -23,7 +23,7 @@ class GraphBalancer
         $graphClone = $this->graph->createGraphClone();
         $balanceInfo = new BalanceInfo($graphClone);
         $balanceCallback = function (string $firstVertexId, string $lastVertexId) use ($graphClone): void {
-            $algorithm = new Dijkstra($this->graph->getVertex($firstVertexId));
+            $algorithm = new BreadthFirst($this->graph->getVertex($firstVertexId));
             $edges = $algorithm->getEdgesTo($this->graph->getVertex($lastVertexId))->getVector();
             foreach ($edges as $edge) {
                 $this->cloneEdge($graphClone, $edge);
