@@ -11,23 +11,14 @@
         <instanceof id="Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface">
             <tag name="mbt.generator"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Generator\GeneratorManager">
-            <bind key="iterable $generators" type="tagged_iterator" tag="mbt.generator"/>
-        </service>
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface">
             <tag name="mbt.reducer"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Reducer\ReducerManager">
-            <bind key="iterable $reducers" type="tagged_iterator" tag="mbt.reducer"/>
-        </service>
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface">
             <tag name="mbt.reporter"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager">
-            <bind key="iterable $reporters" type="tagged_iterator" tag="mbt.reporter"/>
-        </service>
 
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
