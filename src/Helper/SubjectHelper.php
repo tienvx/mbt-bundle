@@ -2,47 +2,49 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
-use Doctrine\Common\Annotations\Reader;
-use ReflectionObject;
-use Tienvx\Bundle\MbtBundle\Annotation\Place;
-use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class SubjectHelper
 {
     /**
-     * @var Reader
+     * @var array
      */
-    protected $reader;
+    protected $places;
 
-    public function __construct(Reader $reader)
+    /**
+     * @var array
+     */
+    protected $transitions;
+
+    public function __construct(array $places, array $transitions)
     {
-        $this->reader = $reader;
+        $this->places = $places;
+        $this->transitions = $transitions;
     }
 
     public function invokePlace(SubjectInterface $subject, string $place): void
     {
-        $reflectionObject = new ReflectionObject($subject);
+        $subjectClass = get_class($subject);
 
-        foreach ($reflectionObject->getMethods() as $reflectionMethod) {
-            $annotation = $this->reader->getMethodAnnotation($reflectionMethod, Place::class);
-            if ($annotation instanceof Place && $annotation->getName() === $place) {
-                $reflectionMethod->invoke($subject);
-                break;
+        if (isset($this->places[$subjectClass][$place])) {
+            $method = $this->places[$subjectClass][$place];
+            $callable = [$subject, $method];
+            if (is_callable($callable)) {
+                $callable();
             }
         }
     }
 
     public function invokeTransition(SubjectInterface $subject, string $transition, ?Data $data): void
     {
-        $reflectionObject = new ReflectionObject($subject);
+        $subjectClass = get_class($subject);
 
-        foreach ($reflectionObject->getMethods() as $reflectionMethod) {
-            $annotation = $this->reader->getMethodAnnotation($reflectionMethod, Transition::class);
-            if ($annotation instanceof Transition && $annotation->getName() === $transition && $data instanceof Data) {
-                $reflectionMethod->invoke($subject, $data);
-                break;
+        if (isset($this->transitions[$subjectClass][$transition])) {
+            $method = $this->transitions[$subjectClass][$transition];
+            $callable = [$subject, $method];
+            if (is_callable($callable) && $data instanceof Data) {
+                $callable($data);
             }
         }
     }

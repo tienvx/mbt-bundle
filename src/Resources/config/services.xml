@@ -29,12 +29,6 @@
             <bind key="iterable $reporters" type="tagged_iterator" tag="mbt.reporter"/>
         </service>
 
-        <!-- Can not auto configure subjects, because subject classes are not
-        available at this time. We need to register for auto configuration -->
-        <service id="Tienvx\Bundle\MbtBundle\Subject\SubjectManager">
-            <bind key="iterable $subjects" type="tagged_iterator" tag="mbt.subject"/>
-        </service>
-
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
