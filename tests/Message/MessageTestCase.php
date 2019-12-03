@@ -64,7 +64,7 @@ abstract class MessageTestCase extends TestCase
     protected function consumeMessages()
     {
         while ($this->hasMessages()) {
-            $this->runCommand('messenger:consume memory --limit=1');
+            $this->runCommand('messenger:consume memory --limit=1 -q');
         }
     }
 
