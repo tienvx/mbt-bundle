@@ -58,15 +58,15 @@ class WorkflowHelper
     {
         $definition = $workflow->getDefinition();
         $content = [
-            'places' => $definition->getPlaces(),
-            'transitions' => array_map(static function (Transition $transition) {
+            0 => $definition->getPlaces(),
+            1 => array_map(static function (Transition $transition) {
                 return [
-                    'name' => $transition->getName(),
-                    'froms' => $transition->getFroms(),
-                    'tos' => $transition->getTos(),
+                    0 => $transition->getName(),
+                    1 => $transition->getFroms(),
+                    2 => $transition->getTos(),
                 ];
             }, $definition->getTransitions()),
-            'initialPlaces' => $definition->getInitialPlaces(),
+            2 => $definition->getInitialPlaces(),
         ];
 
         return md5(json_encode($content));

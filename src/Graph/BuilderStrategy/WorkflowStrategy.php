@@ -7,7 +7,7 @@ use Fhaculty\Graph\Vertex;
 use Graphp\Algorithms\ConnectedComponents;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Graph\GraphWithAttributes;
+use Tienvx\Bundle\MbtBundle\Graph\GraphAttributes;
 use Tienvx\Bundle\MbtBundle\Graph\VertexId;
 
 class WorkflowStrategy implements StrategyInterface
@@ -25,12 +25,21 @@ class WorkflowStrategy implements StrategyInterface
     public function build(): Graph
     {
         $graph = new Graph();
+        $verticesCount = 0;
         do {
-            $newVertices = 0;
+            $verticesCount = $graph->getVertices()->count();
             foreach ($this->workflow->getDefinition()->getTransitions() as $transition) {
-                $newVertices += $this->createVertices($graph, $transition);
+                $froms = $transition->getFroms();
+                $tos = $transition->getTos();
+                sort($froms);
+                sort($tos);
+
+                if (0 === $verticesCount) {
+                    $this->createVerticesAndEdge($graph, $transition, $froms, $tos);
+                }
+                $this->createRelatedVerticesAndEdges($graph, $transition, $froms, $tos);
             }
-        } while ($newVertices > 0);
+        } while ($graph->getVertices()->count() - $verticesCount > 0);
 
         return $this->cleanUpGraph($graph);
     }
@@ -46,42 +55,20 @@ class WorkflowStrategy implements StrategyInterface
         return $components->createGraphComponentVertex($initVertex);
     }
 
-    protected function createVerticesAndEdge(Graph $graph, Transition $transition, array $froms, array $tos): int
+    protected function createVerticesAndEdge(Graph $graph, Transition $transition, array $froms, array $tos): void
     {
-        $newVertices = 0;
         $from = VertexId::fromPlaces($froms);
         $to = VertexId::fromPlaces($tos);
 
-        $newVertices += $this->createVertex($graph, $from, $froms);
-        $newVertices += $this->createVertex($graph, $to, $tos);
+        GraphAttributes::createVertex($graph, $from);
+        GraphAttributes::createVertex($graph, $to);
 
-        $this->createEdge($graph, $transition, $from, $to);
-
-        return $newVertices;
+        $metadata = $this->workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
+        GraphAttributes::createEdge($graph, $from, $to, $transition->getName(), $metadata['label'] ?? '', $metadata['weight'] ?? 1, $metadata['probability'] ?? 1);
     }
 
-    protected function createVertices(Graph $graph, Transition $transition): int
+    protected function createRelatedVerticesAndEdges(Graph $graph, Transition $transition, array $froms, array $tos): void
     {
-        $newVertices = 0;
-        $froms = $transition->getFroms();
-        $tos = $transition->getTos();
-        sort($froms);
-        sort($tos);
-
-        $newVertices += $this->createDirectedVertices($graph, $transition, $froms, $tos);
-        $newVertices += $this->createRelatedVertices($graph, $transition, $froms, $tos);
-
-        return $newVertices;
-    }
-
-    protected function createDirectedVertices(Graph $graph, Transition $transition, array $froms, array $tos): int
-    {
-        return $this->createVerticesAndEdge($graph, $transition, $froms, $tos);
-    }
-
-    protected function createRelatedVertices(Graph $graph, Transition $transition, array $froms, array $tos): int
-    {
-        $newVertices = 0;
         $vertices = $graph->getVertices()->getVerticesMatch(static function (Vertex $vertex) use ($froms) {
             $vertexPlaces = $vertex->getAttribute('places');
             $intersect = array_intersect($vertexPlaces, $froms);
@@ -94,32 +81,7 @@ class WorkflowStrategy implements StrategyInterface
             sort($newFroms);
             sort($newTos);
 
-            $newVertices += $this->createVerticesAndEdge($graph, $transition, $newFroms, $newTos);
-        }
-
-        return $newVertices;
-    }
-
-    protected function createVertex(Graph $graph, string $name, array $places): int
-    {
-        $newVertices = 0;
-        $graphWithAttributes = new GraphWithAttributes($graph, $this->workflow);
-
-        if (!$graph->hasVertex($name)) {
-            $graphWithAttributes->createVertex($name, $places);
-            $newVertices = 1;
-        }
-
-        return $newVertices;
-    }
-
-    protected function createEdge(Graph $graph, Transition $transition, string $from, string $to): void
-    {
-        $graphWithAttributes = new GraphWithAttributes($graph, $this->workflow);
-
-        // TODO: support 2 different transitions but has exactly same froms and tos.
-        if (!$graph->getVertex($from)->hasEdgeTo($graph->getVertex($to))) {
-            $graphWithAttributes->createEdge($transition, $from, $to);
+            $this->createVerticesAndEdge($graph, $transition, $newFroms, $newTos);
         }
     }
 }

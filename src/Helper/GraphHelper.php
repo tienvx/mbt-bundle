@@ -11,6 +11,7 @@ use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Graph\BuilderStrategy\StateMachineStrategy;
 use Tienvx\Bundle\MbtBundle\Graph\BuilderStrategy\StrategyInterface;
 use Tienvx\Bundle\MbtBundle\Graph\BuilderStrategy\WorkflowStrategy;
+use Tienvx\Bundle\MbtBundle\Graph\GraphAttributes;
 use Tienvx\Bundle\MbtBundle\Graph\GraphBuilder;
 
 class GraphHelper
@@ -32,16 +33,16 @@ class GraphHelper
     public function build(Workflow $workflow): Graph
     {
         $cacheItem = $this->cache->getItem('mbt.graph.'.$workflow->getName());
-        $graph = $cacheItem->get();
-        if ($cacheItem->isHit() && $graph instanceof Graph) {
-            return $graph;
+        $graphAttributes = $cacheItem->get();
+        if ($cacheItem->isHit() && $graphAttributes instanceof GraphAttributes) {
+            return $graphAttributes->toGraph();
         }
 
         $builder = new GraphBuilder();
         $builder->setStrategy($this->getStrategy($workflow));
         $graph = $builder->build();
 
-        $cacheItem->set($graph);
+        $cacheItem->set(GraphAttributes::fromGraph($graph));
         $this->cache->save($cacheItem);
 
         return $graph;
