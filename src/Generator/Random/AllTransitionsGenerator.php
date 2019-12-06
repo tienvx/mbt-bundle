@@ -6,7 +6,7 @@ use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
-class ProbabilityGenerator extends RandomGeneratorTemplate
+class AllTransitionsGenerator extends RandomGeneratorTemplate
 {
     /**
      * @var int
@@ -20,12 +20,12 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
 
     public static function getName(): string
     {
-        return 'probability';
+        return 'all-transitions';
     }
 
     public function getLabel(): string
     {
-        return 'Probability';
+        return 'All Transitions';
     }
 
     public static function support(): bool
@@ -38,17 +38,23 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
         return [
             'stepsCount' => 1,
             'maxSteps' => $generatorOptions->getMaxSteps() ?? $this->maxSteps,
+            'visitedTransitions' => [],
+            'totalTransitions' => count($workflow->getDefinition()->getTransitions()),
         ];
     }
 
     protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
+
+        if (!in_array($transitionName, $state['visitedTransitions'])) {
+            $state['visitedTransitions'][] = $transitionName;
+        }
     }
 
     protected function canStop(array $state): bool
     {
-        return $state['stepsCount'] >= $state['maxSteps'];
+        return count($state['visitedTransitions']) === $state['totalTransitions'] || $state['stepsCount'] >= $state['maxSteps'];
     }
 
     protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
@@ -60,37 +66,16 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
 
         $transitions = [];
         foreach ($enabledTransitions as $index => $transition) {
-            $transitionMetadata = $workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
-            $transitions[$transition->getName()] = $transitionMetadata['probability'] ?? 1;
-        }
-
-        return $this->randomByProbability($transitions);
-    }
-
-    /**
-     * Random transition name by probabilty https://stackoverflow.com/a/11872928.
-     *
-     * @param array $transitions [transition-name => probability]
-     *
-     * @return string random transition name
-     */
-    protected function randomByProbability(array $transitions): string
-    {
-        $maxRand = (int) array_sum($transitions);
-        if (0 === $maxRand) {
-            $rand = mt_rand(0, count($transitions) - 1);
-
-            return array_keys($transitions)[$rand];
-        }
-
-        $rand = mt_rand(1, $maxRand);
-        foreach ($transitions as $key => $value) {
-            $rand -= $value;
-            if ($rand <= 0) {
-                return $key;
+            if (!in_array($transition->getName(), $state['visitedTransitions'])) {
+                $transitions[] = $transition;
             }
         }
 
-        return array_keys($transitions)[0];
+        if (0 === count($transitions)) {
+            $transitions = $enabledTransitions;
+        }
+        $index = array_rand($enabledTransitions);
+
+        return $enabledTransitions[$index]->getName();
     }
 }

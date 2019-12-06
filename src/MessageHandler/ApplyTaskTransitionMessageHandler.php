@@ -12,19 +12,13 @@ use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var TaskWorkflow
-     */
-    private $taskWorkflow;
-
-    /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, TaskWorkflow $taskWorkflow)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->taskWorkflow = $taskWorkflow;
     }
 
     public function __invoke(ApplyTaskTransitionMessage $message): void
@@ -37,7 +31,8 @@ class ApplyTaskTransitionMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No task found for id %d', $taskId));
         }
 
-        $this->taskWorkflow->apply($task, $transition);
+        $taskWorkflow = new TaskWorkflow();
+        $taskWorkflow->apply($task, $transition);
         $this->entityManager->flush();
     }
 }

@@ -18,8 +18,8 @@ abstract class RandomGeneratorTemplate implements GeneratorInterface
     {
         $state = $this->initState($workflow, $generatorOptions);
 
-        while (true) {
-            $transitionName = $this->randomTransition($workflow, $subject);
+        while (!$this->canStop($state)) {
+            $transitionName = $this->randomTransition($workflow, $subject, $state);
             if (is_null($transitionName)) {
                 break;
             }
@@ -27,10 +27,6 @@ abstract class RandomGeneratorTemplate implements GeneratorInterface
             yield new Step($transitionName, new Data());
 
             $this->updateState($workflow, $subject, $transitionName, $state);
-            $canStop = $this->canStop($state);
-            if ($canStop) {
-                break;
-            }
         }
     }
 
@@ -48,7 +44,7 @@ abstract class RandomGeneratorTemplate implements GeneratorInterface
         return true;
     }
 
-    protected function randomTransition(Workflow $workflow, SubjectInterface $subject): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
         return null;
     }

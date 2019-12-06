@@ -7,7 +7,6 @@ use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
-use Tienvx\Bundle\MbtBundle\Helper\GraphHelper;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\ShortestPathStrategy;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\StrategyInterface as StepsBuilderStrategy;
@@ -29,11 +28,6 @@ abstract class HandlerTemplate implements HandlerInterface
     protected $messageBus;
 
     /**
-     * @var GraphHelper
-     */
-    protected $graphHelper;
-
-    /**
      * @var BugHelper
      */
     protected $bugHelper;
@@ -41,12 +35,10 @@ abstract class HandlerTemplate implements HandlerInterface
     public function __construct(
         SubjectManager $subjectManager,
         MessageBusInterface $messageBus,
-        GraphHelper $graphHelper,
         BugHelper $bugHelper
     ) {
         $this->subjectManager = $subjectManager;
         $this->messageBus = $messageBus;
-        $this->graphHelper = $graphHelper;
         $this->bugHelper = $bugHelper;
     }
 
@@ -88,9 +80,7 @@ abstract class HandlerTemplate implements HandlerInterface
 
     protected function getStepsBuilderStrategy(Workflow $workflow): StepsBuilderStrategy
     {
-        $graph = $this->graphHelper->build($workflow);
-
-        return new ShortestPathStrategy($graph);
+        return new ShortestPathStrategy($workflow);
     }
 
     protected function run(string $model, Steps $newSteps, Bug $bug, Workflow $workflow): void

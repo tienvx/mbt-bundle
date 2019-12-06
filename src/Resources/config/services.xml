@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Message,Graph,Steps,Plugin,Notification}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Annotation,Entity,Resources,Message,Algorithm,Steps,Plugin,Notification,Workflow}" />
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface">
             <tag name="mbt.generator"/>

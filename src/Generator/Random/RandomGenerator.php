@@ -99,7 +99,7 @@ class RandomGenerator extends RandomGeneratorTemplate
         return false;
     }
 
-    protected function randomTransition(Workflow $workflow, SubjectInterface $subject): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
         $transitions = $workflow->getEnabledTransitions($subject);
         if (count($transitions) > 0) {
