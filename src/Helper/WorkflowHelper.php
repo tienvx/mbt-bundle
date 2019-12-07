@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Helper;
 use Exception;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
-use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
@@ -57,15 +56,17 @@ class WorkflowHelper
     public function checksum(Workflow $workflow): string
     {
         $definition = $workflow->getDefinition();
+        $transitions = [];
+        foreach ($definition->getTransitions() as $transition) {
+            $transitions[] = [
+                0 => $transition->getName(),
+                1 => $transition->getFroms(),
+                2 => $transition->getTos(),
+            ];
+        }
         $content = [
             0 => $definition->getPlaces(),
-            1 => array_map(static function (Transition $transition) {
-                return [
-                    0 => $transition->getName(),
-                    1 => $transition->getFroms(),
-                    2 => $transition->getTos(),
-                ];
-            }, $definition->getTransitions()),
+            1 => $transitions,
             2 => $definition->getInitialPlaces(),
         ];
 
