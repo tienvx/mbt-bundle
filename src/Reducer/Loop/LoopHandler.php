@@ -19,13 +19,10 @@ class LoopHandler extends HandlerTemplate
     {
         $fromPlaces = $steps->getPlacesAt($from);
         $toPlaces = $steps->getPlacesAt($to);
-        if (!($fromPlaces && $toPlaces &&
-            !array_diff($fromPlaces, $toPlaces) &&
-            !array_diff($toPlaces, $fromPlaces))) {
-            return false;
-        }
 
-        return true;
+        return $fromPlaces && $toPlaces &&
+            !array_diff($fromPlaces, $toPlaces) &&
+            !array_diff($toPlaces, $fromPlaces);
     }
 
     protected function getStepsBuilderStrategy(Workflow $workflow): StepsBuilderStrategy

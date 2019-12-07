@@ -1,0 +1,213 @@
+[
+    "checkout",
+    [
+        {
+            "transition": null,
+            "data": [],
+            "places": [
+                "home"
+            ]
+        },
+        {
+            "transition": "addProductAndCheckoutNotLoggedIn",
+            "data": [],
+            "places": [
+                "awaitingAccount"
+            ]
+        },
+        {
+            "transition": "guestCheckout",
+            "data": [],
+            "places": [
+                "awaitingPersonalDetails",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillPersonalDetails",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillBillingAddress",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "billingAddressFilled"
+            ]
+        },
+        {
+            "transition": "guestCheckoutAndAddBillingAddress",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "awaitingDeliveryAddress"
+            ]
+        },
+        {
+            "transition": "useExistingDeliveryAddress",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "deliveryAddressAdded",
+                "awaitingDeliveryMethod"
+            ]
+        },
+        {
+            "transition": "addDeliveryMethod",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "deliveryAddressAdded",
+                "deliveryMethodAdded",
+                "awaitingPaymentMethod"
+            ]
+        },
+        {
+            "transition": "addPaymentMethod",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "deliveryAddressAdded",
+                "deliveryMethodAdded",
+                "paymentMethodAdded",
+                "awaitingOrderConfirm"
+            ]
+        },
+        {
+            "transition": "confirmOrder",
+            "data": [],
+            "places": [
+                "orderPlaced"
+            ]
+        },
+        {
+            "transition": "continueShopping",
+            "data": [],
+            "places": [
+                "home"
+            ]
+        },
+        {
+            "transition": "addProductAndCheckoutNotLoggedIn",
+            "data": [],
+            "places": [
+                "awaitingAccount"
+            ]
+        },
+        {
+            "transition": "registerAccount",
+            "data": [],
+            "places": [
+                "awaitingPersonalDetails",
+                "awaitingPassword",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillPersonalDetails",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "awaitingPassword",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillPassword",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "passwordFilled",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillBillingAddress",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "passwordFilled",
+                "billingAddressFilled"
+            ]
+        },
+        {
+            "transition": "registerAndAddBillingAddress",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "awaitingDeliveryAddress"
+            ]
+        }
+    ],
+    "loop",
+    [
+        {
+            "transition": null,
+            "data": [],
+            "places": [
+                "home"
+            ]
+        },
+        {
+            "transition": "addProductAndCheckoutNotLoggedIn",
+            "data": [],
+            "places": [
+                "awaitingAccount"
+            ]
+        },
+        {
+            "transition": "registerAccount",
+            "data": [],
+            "places": [
+                "awaitingPersonalDetails",
+                "awaitingPassword",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillPersonalDetails",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "awaitingPassword",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillPassword",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "passwordFilled",
+                "awaitingBillingAddress"
+            ]
+        },
+        {
+            "transition": "fillBillingAddress",
+            "data": [],
+            "places": [
+                "personalDetailsFilled",
+                "passwordFilled",
+                "billingAddressFilled"
+            ]
+        },
+        {
+            "transition": "registerAndAddBillingAddress",
+            "data": [],
+            "places": [
+                "accountAdded",
+                "billingAddressAdded",
+                "awaitingDeliveryAddress"
+            ]
+        }
+    ]
+]
