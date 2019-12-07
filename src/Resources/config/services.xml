@@ -8,18 +8,6 @@
 
         <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Annotation,Entity,Resources,Message,Algorithm,Steps,Plugin,Notification,Workflow}" />
 
-        <instanceof id="Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface">
-            <tag name="mbt.generator"/>
-        </instanceof>
-
-        <instanceof id="Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface">
-            <tag name="mbt.reducer"/>
-        </instanceof>
-
-        <instanceof id="Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface">
-            <tag name="mbt.reporter"/>
-        </instanceof>
-
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
