@@ -51,7 +51,7 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
         return $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
+    protected function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, array $state): array
     {
         $enabledTransitions = $workflow->getEnabledTransitions($subject);
         if (0 === count($enabledTransitions)) {
@@ -64,23 +64,17 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
             $transitions[$transition->getName()] = $transitionMetadata['probability'] ?? 1;
         }
 
-        return $this->randomByProbability($transitions);
+        return $transitions;
     }
 
     /**
      * Random transition name by probabilty https://stackoverflow.com/a/11872928.
-     *
-     * @param array $transitions [transition-name => probability]
-     *
-     * @return string random transition name
      */
-    protected function randomByProbability(array $transitions): string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $transitions): ?string
     {
         $maxRand = (int) array_sum($transitions);
         if (0 === $maxRand) {
-            $rand = mt_rand(0, count($transitions) - 1);
-
-            return array_keys($transitions)[$rand];
+            return array_rand($transitions);
         }
 
         $rand = mt_rand(1, $maxRand);
@@ -91,6 +85,6 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
             }
         }
 
-        return array_keys($transitions)[0];
+        return null;
     }
 }

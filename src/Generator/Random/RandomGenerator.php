@@ -99,15 +99,19 @@ class RandomGenerator extends RandomGeneratorTemplate
         return false;
     }
 
-    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
+    protected function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, array $state): array
     {
-        $transitions = $workflow->getEnabledTransitions($subject);
-        if (count($transitions) > 0) {
-            $index = array_rand($transitions);
-
-            return $transitions[$index]->getName();
+        $transitions = [];
+        $marking = $workflow->getMarking($subject);
+        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
+            foreach ($transition->getFroms() as $place) {
+                if (!$marking->has($place)) {
+                    break;
+                }
+            }
+            $transitions[$transition->getName()] = 1;
         }
 
-        return null;
+        return $transitions;
     }
 }

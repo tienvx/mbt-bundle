@@ -59,25 +59,36 @@ class AllPlacesGenerator extends RandomGeneratorTemplate
         return count($state['visitedPlaces']) === $state['totalPlaces'] || $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
+    protected function getTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
-        $enabledTransitions = $workflow->getEnabledTransitions($subject);
-        if (0 === count($enabledTransitions)) {
-            return null;
+        $transitions = $this->getAvailableTransitions($workflow, $subject, $state);
+        $transitionName = $this->randomTransition($workflow, $subject, $transitions);
+        if (!is_null($transitionName)) {
+            return $transitionName;
         }
 
+        $remainTransitions = $this->getAvailableTransitions($workflow, $subject, $state, true);
+
+        return $this->randomTransition($workflow, $subject, $remainTransitions);
+    }
+
+    protected function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, array $state, bool $visited = false): array
+    {
         $transitions = [];
-        foreach ($enabledTransitions as $index => $transition) {
-            if (array_diff($transition->getTos(), $state['visitedPlaces'])) {
-                $transitions[] = $transition;
+        $marking = $workflow->getMarking($subject);
+        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
+            foreach ($transition->getFroms() as $place) {
+                if (!$marking->has($place)) {
+                    break;
+                }
+            }
+            if (array_diff($transition->getTos(), $state['visitedPlaces']) && !$visited) {
+                $transitions[$transition->getName()] = 1;
+            } elseif (!array_diff($transition->getTos(), $state['visitedPlaces']) && $visited) {
+                $transitions[$transition->getName()] = 1;
             }
         }
 
-        if (0 === count($transitions)) {
-            $transitions = $enabledTransitions;
-        }
-        $index = array_rand($enabledTransitions);
-
-        return $enabledTransitions[$index]->getName();
+        return $transitions;
     }
 }
