@@ -19,14 +19,11 @@ class TransitionHandler extends HandlerTemplate
     {
         $fromPlaces = $steps->getPlacesAt($from);
         $toPlaces = $steps->getPlacesAt($to);
-        if (!($fromPlaces && $toPlaces &&
+
+        return $fromPlaces && $toPlaces &&
             count($fromPlaces) > 1 && count($toPlaces) > 1 &&
             1 === count(array_diff($fromPlaces, $toPlaces)) &&
-            1 === count(array_diff($toPlaces, $fromPlaces)))) {
-            return false;
-        }
-
-        return true;
+            1 === count(array_diff($toPlaces, $fromPlaces));
     }
 
     protected function getStepsBuilderStrategy(Workflow $workflow): StepsBuilderStrategy

@@ -1,0 +1,84 @@
+[
+    "shopping_cart",
+    [
+        {
+            "transition": null,
+            "data": [],
+            "places": [
+                "home"
+            ]
+        },
+        {
+            "transition": "viewAnyCategoryFromHome",
+            "data": [
+                {
+                    "key": "category",
+                    "value": 57
+                }
+            ],
+            "places": [
+                "category"
+            ]
+        },
+        {
+            "transition": "addFromCategory",
+            "data": [
+                {
+                    "key": "product",
+                    "value": 49
+                }
+            ],
+            "places": [
+                "category"
+            ]
+        },
+        {
+            "transition": "checkoutFromCategory",
+            "data": [],
+            "places": [
+                "checkout"
+            ]
+        }
+    ],
+    "split",
+    [
+        {
+            "transition": null,
+            "data": [],
+            "places": [
+                "home"
+            ]
+        },
+        {
+            "transition": "viewAnyCategoryFromHome",
+            "data": [
+                {
+                    "key": "category",
+                    "value": 57
+                }
+            ],
+            "places": [
+                "category"
+            ]
+        },
+        {
+            "transition": "addFromCategory",
+            "data": [
+                {
+                    "key": "product",
+                    "value": 49
+                }
+            ],
+            "places": [
+                "category"
+            ]
+        },
+        {
+            "transition": "checkoutFromCategory",
+            "data": [],
+            "places": [
+                "checkout"
+            ]
+        }
+    ]
+]
