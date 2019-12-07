@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
+use Symfony\Component\Workflow\Definition;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
 use Symfony\Component\Workflow\Transition;
@@ -19,17 +20,23 @@ class ModelHelper
         $this->subjectHelper = $subjectHelper;
     }
 
-    public function apply(SubjectInterface $subject, Transition $transition, MarkingStoreInterface $markingStore, Marking $marking, array $context = []): Marking
+    public function apply(SubjectInterface $subject, string $transitionName, Definition $definition, MarkingStoreInterface $markingStore, Marking $marking, array $context = []): Marking
     {
-        $this->leave($transition, $marking);
+        foreach ($definition->getTransitions() as $transition) {
+            if ($transition->getName() === $transitionName) {
+                $this->leave($transition, $marking);
 
-        $this->transition($subject, $transition, $context);
+                $this->transition($subject, $transition, $context);
 
-        $this->enter($transition, $marking);
+                $this->enter($transition, $marking);
 
-        $markingStore->setMarking($subject, $marking, $context);
+                $markingStore->setMarking($subject, $marking, $context);
 
-        $this->entered($subject, $marking);
+                $this->entered($subject, $marking);
+
+                break;
+            }
+        }
 
         return $marking;
     }

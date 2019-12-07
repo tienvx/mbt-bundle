@@ -33,13 +33,6 @@ class StateMachine extends BaseStateMachine
             throw new Exception(sprintf('Can not apply transition %s', $transitionName));
         }
 
-        $marking = $this->getMarking($subject);
-        foreach ($this->getDefinition()->getTransitions() as $transition) {
-            if ($transition->getName() === $transitionName) {
-                return $this->modelHelper->apply($subject, $transition, $this->getMarkingStore(), $marking, $context);
-            }
-        }
-
-        return $marking;
+        return $this->modelHelper->apply($subject, $transitionName, $this->getDefinition(), $this->getMarkingStore(), $this->getMarking($subject), $context);
     }
 }
