@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\Random\AllPlacesGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\AllTransitionsGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\ProbabilityGenerator;
@@ -17,6 +18,8 @@ use Tienvx\Bundle\MbtBundle\Generator\Random\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
+use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
@@ -91,8 +94,17 @@ class TienvxMbtExtension extends Extension
 
     private function registerForAutoconfiguration(ContainerBuilder $container): void
     {
+        $container->registerForAutoconfiguration(GeneratorInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.generator');
+        $container->registerForAutoconfiguration(ReducerInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.reducer');
         $container->registerForAutoconfiguration(SubjectInterface::class)
             ->setLazy(true)
             ->addTag('mbt.subject');
+        $container->registerForAutoconfiguration(ReporterInterface::class)
+            ->setLazy(true)
+            ->addTag('mbt.reporter');
     }
 }
