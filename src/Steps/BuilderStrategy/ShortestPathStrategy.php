@@ -3,25 +3,22 @@
 namespace Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy;
 
 use Exception;
-use Fhaculty\Graph\Edge\Directed;
-use Fhaculty\Graph\Graph;
-use Fhaculty\Graph\Set\Edges;
-use Graphp\Algorithms\ShortestPath\Dijkstra;
-use Tienvx\Bundle\MbtBundle\Graph\VertexId;
-use Tienvx\Bundle\MbtBundle\Steps\Data;
-use Tienvx\Bundle\MbtBundle\Steps\Step;
+use Symfony\Component\Workflow\Workflow;
+use Tienvx\Bundle\MbtBundle\Algorithm\AStar;
+use Tienvx\Bundle\MbtBundle\Algorithm\Node;
+use Tienvx\Bundle\MbtBundle\Algorithm\Nodes;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class ShortestPathStrategy implements StrategyInterface
 {
     /**
-     * @var Graph
+     * @var Workflow
      */
-    private $graph;
+    private $workflow;
 
-    public function __construct(Graph $graph)
+    public function __construct(Workflow $workflow)
     {
-        $this->graph = $graph;
+        $this->workflow = $workflow;
     }
 
     public function create(Steps $original, int $from, int $to): Steps
@@ -37,35 +34,22 @@ class ShortestPathStrategy implements StrategyInterface
         return $replaceStrategy->create($original, $from, $to);
     }
 
-    protected function getMiddleSteps(array $fromPlaces, array $toPlaces)
+    protected function getMiddleSteps(array $fromPlaces, array $toPlaces): array
     {
         $samePlaces = !array_diff($fromPlaces, $toPlaces) && !array_diff($toPlaces, $fromPlaces);
         if ($samePlaces) {
             return [];
         }
 
-        $middleSteps = [];
-        foreach ($this->shortestPath(VertexId::fromPlaces($fromPlaces), VertexId::fromPlaces($toPlaces)) as $edge) {
-            if ($edge instanceof Directed) {
-                $middleSteps[] = new Step(
-                    $edge->getAttribute('name', ''),
-                    new Data(),
-                    $edge->getVertexEnd()->getAttribute('places', [])
-                );
-            } else {
-                throw new Exception('Only support directed graph');
-            }
-        }
-
-        return $middleSteps;
+        return Nodes::toSteps($this->shortestPath($fromPlaces, $toPlaces));
     }
 
-    protected function shortestPath(string $fromVertexId, string $toVertexId): Edges
+    protected function shortestPath(array $fromPlaces, array $toPlaces): array
     {
-        $fromVertex = $this->graph->getVertex($fromVertexId);
-        $toVertex = $this->graph->getVertex($toVertexId);
-        $algorithm = new Dijkstra($fromVertex);
+        $start = new Node($fromPlaces);
+        $goal = new Node($toPlaces);
+        $aStar = new AStar($this->workflow);
 
-        return $algorithm->getEdgesTo($toVertex);
+        return $aStar->run($start, $goal);
     }
 }

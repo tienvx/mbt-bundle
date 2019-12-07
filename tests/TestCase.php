@@ -5,7 +5,8 @@ namespace Tienvx\Bundle\MbtBundle\Tests;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 abstract class TestCase extends KernelTestCase
 {
@@ -28,7 +29,7 @@ abstract class TestCase extends KernelTestCase
      */
     protected function runCommand($command)
     {
-        return $this->application->run(new StringInput(sprintf('%s --quiet', $command)));
+        return $this->application->run(new ArrayInput($command), new NullOutput());
     }
 
     protected function getApplication()

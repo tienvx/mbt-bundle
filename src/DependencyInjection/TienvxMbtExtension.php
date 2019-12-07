@@ -10,6 +10,8 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
+use Tienvx\Bundle\MbtBundle\Generator\Random\AllPlacesGenerator;
+use Tienvx\Bundle\MbtBundle\Generator\Random\AllTransitionsGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
@@ -60,6 +62,12 @@ class TienvxMbtExtension extends Extension
 
         $probabilityGeneratorDefinition = $container->getDefinition(ProbabilityGenerator::class);
         $probabilityGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
+
+        $allPlacesGeneratorDefinition = $container->getDefinition(AllPlacesGenerator::class);
+        $allPlacesGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
+
+        $allTransitionsGeneratorDefinition = $container->getDefinition(AllTransitionsGenerator::class);
+        $allTransitionsGeneratorDefinition->addMethodCall('setMaxSteps', [$config['max_steps']]);
 
         $reportBugMessageHandlerDefinition = $container->getDefinition(ReportBugMessageHandler::class);
         $reportBugMessageHandlerDefinition->addMethodCall('setEmailFrom', [$config['email_from']]);

@@ -9,20 +9,16 @@ class GeneratorManager
     /**
      * @var array
      */
-    private $generators = [];
+    private $plugins;
 
-    public function __construct(iterable $generators)
+    public function __construct(array $plugins)
     {
-        foreach ($generators as $generator) {
-            if ($generator instanceof GeneratorInterface && $generator->support()) {
-                $this->generators[$generator->getName()] = $generator;
-            }
-        }
+        $this->plugins = $plugins;
     }
 
     public function get(string $name): GeneratorInterface
     {
-        $generator = $this->generators[$name] ?? null;
+        $generator = $this->plugins[$name] ?? null;
         if ($generator instanceof GeneratorInterface) {
             return $generator;
         }
@@ -32,13 +28,13 @@ class GeneratorManager
 
     public function has(string $name): bool
     {
-        $generator = $this->generators[$name] ?? null;
+        $generator = $this->plugins[$name] ?? null;
 
         return $generator instanceof GeneratorInterface;
     }
 
     public function all(): array
     {
-        return $this->generators;
+        return $this->plugins;
     }
 }

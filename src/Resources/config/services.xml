@@ -6,37 +6,38 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Entity,Resources,Message,Graph,Steps,Plugin,Notification}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Annotation,Entity,Resources,Message,Algorithm,Steps,Plugin,Notification,Workflow}" />
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface">
             <tag name="mbt.generator"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Generator\GeneratorManager">
-            <bind key="iterable $generators" type="tagged_iterator" tag="mbt.generator"/>
-        </service>
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface">
             <tag name="mbt.reducer"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Reducer\ReducerManager">
-            <bind key="iterable $reducers" type="tagged_iterator" tag="mbt.reducer"/>
-        </service>
 
         <instanceof id="Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface">
             <tag name="mbt.reporter"/>
         </instanceof>
-        <service id="Tienvx\Bundle\MbtBundle\Reporter\ReporterManager">
-            <bind key="iterable $reporters" type="tagged_iterator" tag="mbt.reporter"/>
-        </service>
-
-        <!-- Can not auto configure subjects, because subject classes are not
-        available at this time. We need to register for auto configuration -->
-        <service id="Tienvx\Bundle\MbtBundle\Subject\SubjectManager">
-            <bind key="iterable $subjects" type="tagged_iterator" tag="mbt.subject"/>
-        </service>
 
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
+        </service>
+
+        <!-- see symfony/framework-bundle/Resources/config/workflow.xml -->
+        <service id="workflow.abstract" class="Tienvx\Bundle\MbtBundle\Workflow\Model\Workflow" abstract="true" public="true">
+            <argument /> <!-- workflow definition -->
+            <argument type="constant">null</argument> <!-- marking store -->
+            <argument type="service" id="event_dispatcher" on-invalid="ignore" />
+            <argument /> <!-- name -->
+            <argument type="service" id="Tienvx\Bundle\MbtBundle\Helper\ModelHelper" />
+        </service>
+        <service id="state_machine.abstract" class="Tienvx\Bundle\MbtBundle\Workflow\Model\StateMachine" abstract="true" public="true">
+            <argument /> <!-- workflow definition -->
+            <argument type="constant">null</argument> <!-- marking store -->
+            <argument type="service" id="event_dispatcher" on-invalid="ignore" />
+            <argument /> <!-- name -->
+            <argument type="service" id="Tienvx\Bundle\MbtBundle\Helper\ModelHelper" />
         </service>
     </services>
 </container>

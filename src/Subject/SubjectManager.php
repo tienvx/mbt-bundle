@@ -2,40 +2,18 @@
 
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
-use Doctrine\Common\Annotations\Reader;
 use Exception;
-use ReflectionClass;
-use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 
 class SubjectManager
 {
     /**
      * @var array
      */
-    protected $classes = [];
+    protected $subjects;
 
-    /**
-     * @var Reader
-     */
-    protected $reader;
-
-    public function __construct(Reader $reader, iterable $subjects)
+    public function __construct(array $subjects)
     {
-        $this->reader = $reader;
-        $this->initSubjects($subjects);
-    }
-
-    public function initSubjects(iterable $subjects): void
-    {
-        foreach ($subjects as $subject) {
-            $class = get_class($subject);
-            $reflectionClass = new ReflectionClass($class);
-            $annotation = $this->reader->getClassAnnotation($reflectionClass, Subject::class);
-            if ($annotation instanceof Subject) {
-                $model = $annotation->getName();
-                $this->classes[$model] = $class;
-            }
-        }
+        $this->subjects = $subjects;
     }
 
     /**
@@ -43,7 +21,7 @@ class SubjectManager
      */
     public function create(string $model): SubjectInterface
     {
-        $class = $this->classes[$model] ?? null;
+        $class = $this->subjects[$model] ?? null;
         if (!is_null($class)) {
             return new $class();
         }

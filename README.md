@@ -85,8 +85,9 @@ For the usage guide and reference, see [docs][docs]
 ## Built With
 
 * [Symfony][symfony] - The web framework, and its components
-* [Graphp algorithms][graphp] - Common mathematical graph algorithms implemented in PHP
+* [League's flysystem][league] - Screenshot storage
 * [Doctrine][doctrine] - Database storage and object mapping
+* [A Star][a-star] - PHP A* search algorithm
 
 ## Contributing
 
@@ -119,5 +120,6 @@ This package is available under the [MIT license](LICENSE).
 [issues]: https://github.com/tienvx/mbt-bundle/issues
 
 [symfony]: https://symfony.com/
-[graphp]: https://github.com/graphp/algorithms
+[league]: https://flysystem.thephpleague.com/docs/
 [doctrine]: https://www.doctrine-project.org/
+[a-star]: https://github.com/jmgq/php-a-star

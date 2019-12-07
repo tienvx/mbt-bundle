@@ -9,20 +9,16 @@ class ReducerManager
     /**
      * @var array
      */
-    private $reducers = [];
+    private $plugins;
 
-    public function __construct(iterable $reducers)
+    public function __construct(array $plugins)
     {
-        foreach ($reducers as $reducer) {
-            if ($reducer instanceof ReducerInterface && $reducer->support()) {
-                $this->reducers[$reducer->getName()] = $reducer;
-            }
-        }
+        $this->plugins = $plugins;
     }
 
     public function get(string $name): ReducerInterface
     {
-        $reducer = $this->reducers[$name] ?? null;
+        $reducer = $this->plugins[$name] ?? null;
         if ($reducer instanceof ReducerInterface) {
             return $reducer;
         }
@@ -32,13 +28,13 @@ class ReducerManager
 
     public function has(string $name): bool
     {
-        $reducer = $this->reducers[$name] ?? null;
+        $reducer = $this->plugins[$name] ?? null;
 
         return $reducer instanceof ReducerInterface;
     }
 
     public function all(): array
     {
-        return $this->reducers;
+        return $this->plugins;
     }
 }

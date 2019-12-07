@@ -9,20 +9,16 @@ class ReporterManager
     /**
      * @var array
      */
-    private $reporters = [];
+    private $plugins;
 
-    public function __construct(iterable $reporters)
+    public function __construct(array $plugins)
     {
-        foreach ($reporters as $reporter) {
-            if ($reporter instanceof ReporterInterface && $reporter->support()) {
-                $this->reporters[$reporter->getName()] = $reporter;
-            }
-        }
+        $this->plugins = $plugins;
     }
 
     public function get(string $name): ReporterInterface
     {
-        $reporter = $this->reporters[$name] ?? null;
+        $reporter = $this->plugins[$name] ?? null;
         if ($reporter instanceof ReporterInterface) {
             return $reporter;
         }
@@ -32,13 +28,13 @@ class ReporterManager
 
     public function has(string $name): bool
     {
-        $reporter = $this->reporters[$name] ?? null;
+        $reporter = $this->plugins[$name] ?? null;
 
         return $reporter instanceof ReporterInterface;
     }
 
     public function all(): array
     {
-        return $this->reporters;
+        return $this->plugins;
     }
 }

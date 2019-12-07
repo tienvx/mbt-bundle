@@ -12,19 +12,13 @@ use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var BugWorkflow
-     */
-    private $bugWorkflow;
-
-    /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, BugWorkflow $bugWorkflow)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->bugWorkflow = $bugWorkflow;
     }
 
     public function __invoke(ApplyBugTransitionMessage $message): void
@@ -37,7 +31,8 @@ class ApplyBugTransitionMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $this->bugWorkflow->apply($bug, $transition);
+        $bugWorkflow = new BugWorkflow();
+        $bugWorkflow->apply($bug, $transition);
         $this->entityManager->flush();
     }
 }

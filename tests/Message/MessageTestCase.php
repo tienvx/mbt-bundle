@@ -44,9 +44,19 @@ abstract class MessageTestCase extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->runCommand('doctrine:database:drop --force');
-        $this->runCommand('doctrine:database:create');
-        $this->runCommand('doctrine:schema:create');
+        $this->runCommand([
+            'command' => 'doctrine:database:drop',
+            '--force' => true,
+            '--quiet' => true,
+        ]);
+        $this->runCommand([
+            'command' => 'doctrine:database:create',
+            '--quiet' => true,
+        ]);
+        $this->runCommand([
+            'command' => 'doctrine:schema:create',
+            '--quiet' => true,
+        ]);
 
         /** @var ParameterBagInterface $params */
         $params = self::$container->get(ParameterBagInterface::class);
@@ -64,7 +74,12 @@ abstract class MessageTestCase extends TestCase
     protected function consumeMessages()
     {
         while ($this->hasMessages()) {
-            $this->runCommand('messenger:consume memory --limit=1');
+            $this->runCommand([
+                'command' => 'messenger:consume',
+                'receivers' => ['memory'],
+                '--limit' => 1,
+                '--quiet' => true,
+            ]);
         }
     }
 
