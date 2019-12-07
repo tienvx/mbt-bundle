@@ -2,13 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 
-use App\Mailer\InMemoryTransportFactory as MailerInMemoryTransportFactory;
+use App\EventListener\MessageListener;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Transport\InMemoryTransport as MessengerInMemoryTransport;
+use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
@@ -24,14 +24,14 @@ abstract class MessageTestCase extends TestCase
     protected $filesystem;
 
     /**
-     * @var MessengerInMemoryTransport
+     * @var InMemoryTransport
      */
     protected $messengerTransport;
 
     /**
-     * @var MailerInMemoryTransportFactory
+     * @var MessageListener
      */
-    protected $mailerTransportFactory;
+    protected $messageListener;
 
     /**
      * @var MessageBusInterface
@@ -64,7 +64,7 @@ abstract class MessageTestCase extends TestCase
 
         $this->filesystem = self::$container->get('mbt.storage');
         $this->messengerTransport = self::$container->get('messenger.transport.memory');
-        $this->mailerTransportFactory = self::$container->get(MailerInMemoryTransportFactory::class);
+        $this->messageListener = self::$container->get(MessageListener::class);
         $this->messageBus = self::$container->get(MessageBusInterface::class);
     }
 
@@ -95,12 +95,12 @@ abstract class MessageTestCase extends TestCase
 
     protected function clearEmails()
     {
-        $this->mailerTransportFactory->reset();
+        $this->messageListener->reset();
     }
 
     protected function hasEmail()
     {
-        return 1 === $this->mailerTransportFactory->count();
+        return 1 === $this->messageListener->count();
     }
 
     protected function removeScreenshots()

@@ -17,8 +17,7 @@ framework:
         auto_mapping:
             Tienvx\Bundle\MbtBundle\Entity\: []
     mailer:
-        # null://null or smtp://localhost
-        dsn: 'in-memory://null'
+        dsn: 'null://null'
     notifier:
         channel_policy:
             urgent: ['email']
