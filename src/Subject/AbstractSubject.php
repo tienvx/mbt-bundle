@@ -10,17 +10,17 @@ abstract class AbstractSubject implements SubjectInterface, SubjectScreenshotInt
     /**
      * @var mixed Required by workflow component
      */
-    private $marking;
+    protected $marking;
 
     /**
      * @var array Required by workflow component
      */
-    private $context;
+    protected $context;
 
     /**
      * @var FilesystemInterface
      */
-    private $filesystem;
+    protected $filesystem;
 
     public function setUp(bool $testing = false): void
     {
