@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Helper;
+namespace Tienvx\Bundle\MbtBundle\Steps;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Steps\Data;
 
 class DataHelper
 {
