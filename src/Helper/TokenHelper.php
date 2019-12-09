@@ -3,23 +3,23 @@
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class TokenHelper
 {
     /**
-     * @var TokenStorage|null
+     * @var TokenStorageInterface|null
      */
     private $tokenStorage = null;
 
-    public function setTokenStorage(TokenStorage $tokenStorage): void
+    public function setTokenStorage(TokenStorageInterface $tokenStorage): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
     public function setAnonymousToken(): void
     {
-        if ($this->tokenStorage) {
+        if ($this->tokenStorage instanceof TokenStorageInterface) {
             $token = new AnonymousToken('default', 'anon.');
             $this->tokenStorage->setToken($token);
         }
