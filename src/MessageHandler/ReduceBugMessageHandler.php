@@ -9,7 +9,7 @@ use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
@@ -32,20 +32,20 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
     private $messageBus;
 
     /**
-     * @var WorkflowHelper
+     * @var ModelHelper
      */
-    private $workflowHelper;
+    private $modelHelper;
 
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
-        WorkflowHelper $workflowHelper
+        ModelHelper $modelHelper
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     public function __invoke(ReduceBugMessage $message): void
@@ -58,8 +58,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $workflow = $this->workflowHelper->get($bug->getModel()->getName());
-        if ($this->workflowHelper->checksum($workflow) !== $bug->getModelHash()) {
+        if ($this->modelHelper->checksum($bug->getModel()->getName()) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 

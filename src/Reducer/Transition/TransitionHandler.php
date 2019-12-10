@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer\Transition;
 
-use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\Definition;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerTemplate;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\RemoveTransitionStrategy;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\StrategyInterface as StepsBuilderStrategy;
@@ -26,7 +26,7 @@ class TransitionHandler extends HandlerTemplate
             1 === count(array_diff($toPlaces, $fromPlaces));
     }
 
-    protected function getStepsBuilderStrategy(Workflow $workflow): StepsBuilderStrategy
+    protected function getStepsBuilderStrategy(Definition $definition): StepsBuilderStrategy
     {
         return new RemoveTransitionStrategy();
     }

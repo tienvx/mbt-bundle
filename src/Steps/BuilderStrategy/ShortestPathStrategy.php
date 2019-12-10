@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy;
 
 use Exception;
-use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\Definition;
 use Tienvx\Bundle\MbtBundle\Algorithm\AStar;
 use Tienvx\Bundle\MbtBundle\Algorithm\Node;
 use Tienvx\Bundle\MbtBundle\Algorithm\Nodes;
@@ -12,13 +12,13 @@ use Tienvx\Bundle\MbtBundle\Steps\Steps;
 class ShortestPathStrategy implements StrategyInterface
 {
     /**
-     * @var Workflow
+     * @var Definition
      */
-    private $workflow;
+    private $definition;
 
-    public function __construct(Workflow $workflow)
+    public function __construct(Definition $definition)
     {
-        $this->workflow = $workflow;
+        $this->definition = $definition;
     }
 
     public function create(Steps $original, int $from, int $to): Steps
@@ -48,7 +48,7 @@ class ShortestPathStrategy implements StrategyInterface
     {
         $start = new Node($fromPlaces);
         $goal = new Node($toPlaces);
-        $aStar = new AStar($this->workflow);
+        $aStar = new AStar($this->definition);
 
         return $aStar->run($start, $goal);
     }

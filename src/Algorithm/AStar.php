@@ -5,24 +5,24 @@ namespace Tienvx\Bundle\MbtBundle\Algorithm;
 use Exception;
 use JMGQ\AStar\AStar as AbstractAStar;
 use JMGQ\AStar\Node as NodeInterface;
-use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\Definition;
 
 class AStar extends AbstractAStar
 {
     /**
-     * @var Workflow
+     * @var Definition
      */
-    protected $workflow;
+    protected $definition;
 
     /**
      * @var CostCalculator
      */
     protected $costCalculator;
 
-    public function __construct(Workflow $workflow)
+    public function __construct(Definition $definition)
     {
-        $this->workflow = $workflow;
-        $this->costCalculator = new CostCalculator($workflow);
+        $this->definition = $definition;
+        $this->costCalculator = new CostCalculator($definition);
     }
 
     public function calculateEstimatedCost(NodeInterface $start, NodeInterface $end): float
@@ -49,7 +49,7 @@ class AStar extends AbstractAStar
             throw new Exception('The provided node is invalid');
         }
         $adjacents = [];
-        foreach ($this->workflow->getDefinition()->getTransitions() as $transition) {
+        foreach ($this->definition->getTransitions() as $transition) {
             if (count($transition->getFroms()) === count(array_intersect($node->getPlaces(), $transition->getFroms()))) {
                 $places = array_unique(array_merge(array_diff($node->getPlaces(), $transition->getFroms()), $transition->getTos()));
                 $adjacents[] = new Node($places, $transition->getName());

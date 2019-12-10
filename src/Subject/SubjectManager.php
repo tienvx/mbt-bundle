@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use Exception;
+use Tienvx\Bundle\MbtBundle\Helper\MarkingHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 
 class SubjectManager
 {
@@ -11,9 +13,21 @@ class SubjectManager
      */
     protected $subjects;
 
-    public function __construct(array $subjects)
+    /**
+     * @var MarkingHelper
+     */
+    protected $markingHelper;
+
+    /**
+     * @var ModelHelper
+     */
+    protected $modelHelper;
+
+    public function __construct(array $subjects, MarkingHelper $markingHelper, ModelHelper $modelHelper)
     {
         $this->subjects = $subjects;
+        $this->markingHelper = $markingHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     /**
@@ -32,6 +46,7 @@ class SubjectManager
     {
         $subject = $this->create($model);
         $subject->setUp($testing);
+        $this->markingHelper->init($this->modelHelper->get($model), $subject);
 
         return $subject;
     }

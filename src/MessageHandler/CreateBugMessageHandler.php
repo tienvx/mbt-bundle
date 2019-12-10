@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
@@ -26,30 +26,23 @@ class CreateBugMessageHandler implements MessageHandlerInterface
     private $entityManager;
 
     /**
-     * @var WorkflowHelper
+     * @var ModelHelper
      */
-    private $workflowHelper;
+    private $modelHelper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        WorkflowHelper $workflowHelper
+        ModelHelper $modelHelper
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     public function __invoke(CreateBugMessage $message): void
     {
         $bug = $this->initBug($message);
-
-        if ($message->getTaskId()) {
-            $task = $this->entityManager->getRepository(Task::class)->find($message->getTaskId());
-            if ($task instanceof Task) {
-                $bug->setTask($task);
-            }
-        }
 
         $errors = $this->validator->validate($bug);
 
@@ -63,13 +56,11 @@ class CreateBugMessageHandler implements MessageHandlerInterface
 
     protected function initBug(CreateBugMessage $message): Bug
     {
-        $workflow = $this->workflowHelper->get($message->getModel());
-
         $bug = new Bug();
         $bug->setTitle($message->getTitle());
         $bug->setSteps(Steps::deserialize($message->getSteps()));
         $bug->setModel(new Model($message->getModel()));
-        $bug->setModelHash($this->workflowHelper->checksum($workflow));
+        $bug->setModelHash($this->modelHelper->checksum($message->getModel()));
         $bug->setBugMessage($message->getMessage());
         $bug->setStatus($message->getStatus());
 

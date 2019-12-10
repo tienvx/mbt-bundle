@@ -6,18 +6,12 @@ use App\EventListener\MessageListener;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Tienvx\Bundle\MbtBundle\Tests\TestCase;
 
 abstract class MessageTestCase extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $logDir;
-
     /**
      * @var Filesystem
      */
@@ -57,10 +51,6 @@ abstract class MessageTestCase extends TestCase
             'command' => 'doctrine:schema:create',
             '--quiet' => true,
         ]);
-
-        /** @var ParameterBagInterface $params */
-        $params = self::$container->get(ParameterBagInterface::class);
-        $this->logDir = $params->get('kernel.logs_dir');
 
         $this->filesystem = self::$container->get('mbt.storage');
         $this->messengerTransport = self::$container->get('messenger.transport.memory');

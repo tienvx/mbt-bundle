@@ -73,6 +73,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
             sprintf('We found a new bug during testing the model "%s"!', $bug->getModel()->getName()),
             sprintf('Bug id: %d', $bug->getId()),
             sprintf('Bug title: %s', $bug->getTitle()),
+            sprintf('Bug message: %s', $bug->getBugMessage()),
             'The reproduce steps have been reduced, and the screenshots have been captured if configured',
             'You can download exception.txt to see the bug message, or',
             'follow the action to get more information about the bug',

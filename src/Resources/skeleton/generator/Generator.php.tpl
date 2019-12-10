@@ -2,14 +2,15 @@
 
 namespace <?= $namespace; ?>;
 
-use Generator;
 use Symfony\Component\Workflow\Transition;
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Generator\AbstractGenerator;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Steps\Data;
+use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
-class <?= $class_name; ?> extends AbstractGenerator
+class <?= $class_name; ?> implements GeneratorInterface
 {
     public static function getName(): string
     {
@@ -21,23 +22,21 @@ class <?= $class_name; ?> extends AbstractGenerator
         return '';
     }
 
-    /**
-     * @param Workflow         $workflow
-     * @param SubjectInterface $subject
-     * @param GeneratorOptions $generatorOptions
-     *
-     * @return Generator
-     */
-    public function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): Generator
+    public static function support(): bool
+    {
+        return true;
+    }
+
+    public function generate(Model $model, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         while (true) {
             /** @var Transition[] $transitions */
-            $transitions = $workflow->getEnabledTransitions($subject);
+            $transitions = $model->getEnabledTransitions($subject);
             if (!empty($transitions)) {
                 // TODO This code always generate the first transition, never stop, change this to fit your requirements
                 $transition = reset($transitions);
 
-                yield $transition->getName();
+                yield new Step($$transition->getName(), new Data());
             } else {
                 break;
             }

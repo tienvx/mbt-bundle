@@ -7,6 +7,7 @@ framework:
                 - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             initial_marking: start
             metadata:
+                model: true
                 title: workflow title
             places:
                 start_name_not_used:

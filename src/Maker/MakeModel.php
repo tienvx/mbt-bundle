@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 
-final class MakeModel extends AbstractMaker
+class MakeModel extends AbstractMaker
 {
     public static function getCommandName(): string
     {

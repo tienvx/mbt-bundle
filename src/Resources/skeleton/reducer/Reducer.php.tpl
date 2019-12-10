@@ -2,13 +2,18 @@
 
 namespace <?= $namespace; ?>;
 
-use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Reducer\AbstractReducer;
-use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
+use Tienvx\Bundle\MbtBundle\Reducer\DispatcherInterface;
+use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerTemplate;
 
-class <?= $class_name; ?> extends AbstractReducer
+class <?= $class_name; ?> extends ReducerTemplate
 {
+//    public function __construct(DispatcherInterface $dispatcher, HandlerInterface $handler)
+//    {
+//        $this->dispatcher = $dispatcher;
+//        $this->handler = $handler;
+//    }
+
     public static function getName(): string
     {
         return '<?= $name; ?>';
@@ -19,15 +24,8 @@ class <?= $class_name; ?> extends AbstractReducer
         return '';
     }
 
-    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to)
+    public static function support(): bool
     {
-        $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
-    }
-
-    public function dispatch(Bug $bug): int
-    {
-        $message = new ReduceStepsMessage($bugId, static::getName(), 0, 0, 0);
-        $this->messageBus->dispatch($message);
-        return 1;
+        return true;
     }
 }

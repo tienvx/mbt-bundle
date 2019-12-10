@@ -8,6 +8,7 @@ framework:
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             metadata:
+                model: true
                 label: "Checkout"
                 tags: ["opencart's checkout process", "demo", "workflow", "testing", "model-based-testing"]
             places:

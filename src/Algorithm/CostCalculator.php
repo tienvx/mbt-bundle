@@ -3,23 +3,23 @@
 namespace Tienvx\Bundle\MbtBundle\Algorithm;
 
 use Exception;
-use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\Definition;
 
 class CostCalculator
 {
     /**
-     * @var Workflow
+     * @var Definition
      */
-    protected $workflow;
+    protected $definition;
 
     /**
      * @var float
      */
     protected $averageCost;
 
-    public function __construct(Workflow $workflow)
+    public function __construct(Definition $definition)
     {
-        $this->workflow = $workflow;
+        $this->definition = $definition;
         $this->averageCost = $this->calculateAverageCost();
     }
 
@@ -32,19 +32,19 @@ class CostCalculator
 
     public function getRealCost(Node $node, Node $adjacent): float
     {
-        foreach ($this->workflow->getDefinition()->getTransitions() as $transition) {
+        foreach ($this->definition->getTransitions() as $transition) {
             if ($transition->getName() === $adjacent->getTransition()) {
-                $metadata = $this->workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
+                $metadata = $this->definition->getMetadataStore()->getTransitionMetadata($transition);
 
                 return (float) ($metadata['weight'] ?? 1);
             }
         }
-        foreach ($this->workflow->getDefinition()->getTransitions() as $transition) {
+        foreach ($this->definition->getTransitions() as $transition) {
             $places = array_unique(array_merge(array_diff($node->getPlaces(), $transition->getFroms()), $transition->getTos()));
             if (!array_diff($places, $adjacent->getPlaces()) && !array_diff($adjacent->getPlaces(), $places)) {
                 // Goal node
                 $adjacent->setTransition($transition->getName());
-                $metadata = $this->workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
+                $metadata = $this->definition->getMetadataStore()->getTransitionMetadata($transition);
 
                 return (float) ($metadata['weight'] ?? 1);
             }
@@ -56,14 +56,14 @@ class CostCalculator
     protected function calculateAverageCost(): float
     {
         $totalCost = 0;
-        foreach ($this->workflow->getDefinition()->getTransitions() as $transition) {
-            $metadata = $this->workflow->getDefinition()->getMetadataStore()->getTransitionMetadata($transition);
+        foreach ($this->definition->getTransitions() as $transition) {
+            $metadata = $this->definition->getMetadataStore()->getTransitionMetadata($transition);
             if (isset($metadata['weight']) && $metadata['weight'] < 0) {
                 throw new Exception(sprintf('Weight of transition %s should not less than zero', $transition->getName()));
             }
             $totalCost += $metadata['weight'] ?? 1;
         }
 
-        return $totalCost / count($this->workflow->getDefinition()->getTransitions());
+        return $totalCost / count($this->definition->getTransitions());
     }
 }
