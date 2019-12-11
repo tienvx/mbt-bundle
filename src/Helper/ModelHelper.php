@@ -59,6 +59,11 @@ class ModelHelper
         }
     }
 
+    public function count(): int
+    {
+        return count($this->models);
+    }
+
     public function checksum(string $model): string
     {
         $definition = $this->getDefinition($model);
