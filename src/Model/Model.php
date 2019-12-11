@@ -99,6 +99,11 @@ class Model implements WorkflowInterface
         return $this->name;
     }
 
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     protected function leave(Transition $transition, Marking $marking): void
     {
         $places = $transition->getFroms();
