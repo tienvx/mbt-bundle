@@ -8,20 +8,21 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Steps\StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestModelCommand extends Command
 {
+    protected static $defaultName = 'mbt:model:test';
+
     /**
      * @var SubjectManager
      */
@@ -33,25 +34,25 @@ class TestModelCommand extends Command
     private $generatorManager;
 
     /**
-     * @var TokenHelper
+     * @var ModelHelper
      */
-    private $tokenHelper;
+    private $modelHelper;
 
     /**
-     * @var WorkflowHelper
+     * @var StepsRecorder
      */
-    private $workflowHelper;
+    private $stepsRecorder;
 
     public function __construct(
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
-        TokenHelper $tokenHelper,
-        WorkflowHelper $workflowHelper
+        ModelHelper $modelHelper,
+        StepsRecorder $stepsRecorder
     ) {
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
-        $this->tokenHelper = $tokenHelper;
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
+        $this->stepsRecorder = $stepsRecorder;
 
         parent::__construct();
     }
@@ -59,7 +60,6 @@ class TestModelCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('mbt:model:test')
             ->setDescription('Test model and subject together.')
             ->setHelp('Call system under test to test model and print steps for it.')
             ->addArgument('model', InputArgument::REQUIRED, 'The model to test.')
@@ -69,28 +69,26 @@ class TestModelCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $model = $input->getArgument('model');
-        $subject = $this->subjectManager->createAndSetUp($model, true);
-        $workflow = $this->workflowHelper->get($model);
+        $modelName = $input->getArgument('model');
+        $subject = $this->subjectManager->createAndSetUp($modelName, true);
+        $model = $this->modelHelper->get($modelName);
         $generator = $this->generatorManager->get($input->getOption('generator'));
         $generatorOptions = GeneratorOptions::deserialize($input->getOption('generator-options'));
 
-        $this->test($generator, $generatorOptions, $model, $workflow, $subject, $output);
+        $this->test($generator, $generatorOptions, $model, $subject, $output);
 
         return 0;
     }
 
-    protected function test(GeneratorInterface $generator, GeneratorOptions $generatorOptions, string $model, Workflow $workflow, SubjectInterface $subject, OutputInterface $output): void
+    protected function test(GeneratorInterface $generator, GeneratorOptions $generatorOptions, Model $model, SubjectInterface $subject, OutputInterface $output): void
     {
-        $this->tokenHelper->setAnonymousToken();
-
         $recorded = new Steps();
         try {
-            $steps = $generator->generate($workflow, $subject, $generatorOptions);
-            StepsRecorder::record($steps, $workflow, $subject, $recorded);
+            $steps = $generator->generate($model, $subject, $generatorOptions);
+            $this->stepsRecorder->record($steps, $model, $subject, $recorded);
         } catch (Throwable $throwable) {
             $output->writeln([
-                sprintf("<comment>There is an issue while testing model '%s':</comment>", $model),
+                sprintf("<comment>There is an issue while testing model '%s':</comment>", $model->getName()),
                 "<error>{$throwable->getMessage()}</error>",
             ]);
         } finally {

@@ -10,7 +10,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
@@ -24,9 +23,7 @@ class TestBugTest extends MessageTestCase
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        /** @var WorkflowHelper $workflowHelper */
-        $workflowHelper = self::$container->get(WorkflowHelper::class);
-        $workflow = $workflowHelper->get($model);
+        $checksum = json_decode(file_get_contents(__DIR__.'/../app/var/checksum.json'), true);
 
         $task = new Task();
         $task->setTitle('Just dummy task');
@@ -39,7 +36,7 @@ class TestBugTest extends MessageTestCase
         $bug->setTitle('Test regression bug');
         $bug->setSteps($steps);
         $bug->setModel(new Model($model));
-        $bug->setModelHash($workflowHelper->checksum($workflow));
+        $bug->setModelHash($checksum[$model]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $bug->setStatus(BugWorkflow::CLOSED);

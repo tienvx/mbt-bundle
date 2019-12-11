@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 abstract class ReducerTemplate implements ReducerInterface
@@ -22,8 +21,8 @@ abstract class ReducerTemplate implements ReducerInterface
         return $this->dispatcher->dispatch($bug);
     }
 
-    public function handle(Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
+    public function handle(Bug $bug, int $length, int $from, int $to): void
     {
-        $this->handler->handle($bug, $workflow, $length, $from, $to);
+        $this->handler->handle($bug, $length, $from, $to);
     }
 }

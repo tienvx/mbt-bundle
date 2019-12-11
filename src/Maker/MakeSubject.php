@@ -13,19 +13,19 @@ use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Workflow\Workflow;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Symfony\Component\Workflow\Definition;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 
-final class MakeSubject extends AbstractMaker
+class MakeSubject extends AbstractMaker
 {
     /**
-     * @var WorkflowHelper
+     * @var ModelHelper
      */
-    private $workflowHelper;
+    private $modelHelper;
 
-    public function __construct(WorkflowHelper $workflowHelper)
+    public function __construct(ModelHelper $modelHelper)
     {
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     public static function getCommandName(): string
@@ -49,10 +49,10 @@ final class MakeSubject extends AbstractMaker
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $model = $input->getArgument('model');
-        $workflow = $this->workflowHelper->get($model);
+        $definition = $this->modelHelper->getDefinition($model);
         $subjectClass = $input->getArgument('subject-class');
 
-        $this->generateClass($generator, $subjectClass, $workflow, $model);
+        $this->generateClass($generator, $subjectClass, $definition, $model);
 
         $this->writeSuccessMessage($io);
         $io->text([
@@ -85,10 +85,10 @@ final class MakeSubject extends AbstractMaker
         return lcfirst($str);
     }
 
-    private function getPlaces(Workflow $workflow): array
+    private function getPlaces(Definition $definition): array
     {
         $places = [];
-        foreach ($workflow->getDefinition()->getPlaces() as $place => $status) {
+        foreach ($definition->getPlaces() as $place => $status) {
             if ($status) {
                 $places[$place] = $this->camelCase($place);
             }
@@ -97,17 +97,17 @@ final class MakeSubject extends AbstractMaker
         return $places;
     }
 
-    private function getTransitions(Workflow $workflow): array
+    private function getTransitions(Definition $definition): array
     {
         $transitions = [];
-        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
+        foreach ($definition->getTransitions() as $transition) {
             $transitions[$transition->getName()] = $this->camelCase($transition->getName());
         }
 
         return $transitions;
     }
 
-    private function generateClass(Generator $generator, string $subjectClass, Workflow $workflow, string $model): void
+    private function generateClass(Generator $generator, string $subjectClass, Definition $definition, string $model): void
     {
         $subjectClassNameDetails = $generator->createClassNameDetails(
             $subjectClass,
@@ -118,8 +118,8 @@ final class MakeSubject extends AbstractMaker
             $subjectClassNameDetails->getFullName(),
             __DIR__.'/../Resources/skeleton/subject/Subject.php.tpl',
             [
-                'places' => $this->getPlaces($workflow),
-                'transitions' => $this->getTransitions($workflow),
+                'places' => $this->getPlaces($definition),
+                'transitions' => $this->getTransitions($definition),
                 'model' => $model,
             ]
         );

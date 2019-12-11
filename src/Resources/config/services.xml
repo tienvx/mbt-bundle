@@ -6,26 +6,10 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Annotation,Entity,Resources,Message,Algorithm,Steps,Plugin,Notification,Workflow}" />
+        <prototype namespace="Tienvx\Bundle\MbtBundle\" resource="../../*" exclude="../../{Annotation,Entity,Resources,Message,Algorithm,Steps,Plugin,Notification,Workflow,Model}" />
 
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
-        </service>
-
-        <!-- see symfony/framework-bundle/Resources/config/workflow.xml -->
-        <service id="workflow.abstract" class="Tienvx\Bundle\MbtBundle\Workflow\Model\Workflow" abstract="true" public="true">
-            <argument /> <!-- workflow definition -->
-            <argument type="constant">null</argument> <!-- marking store -->
-            <argument type="service" id="event_dispatcher" on-invalid="ignore" />
-            <argument /> <!-- name -->
-            <argument type="service" id="Tienvx\Bundle\MbtBundle\Helper\ModelHelper" />
-        </service>
-        <service id="state_machine.abstract" class="Tienvx\Bundle\MbtBundle\Workflow\Model\StateMachine" abstract="true" public="true">
-            <argument /> <!-- workflow definition -->
-            <argument type="constant">null</argument> <!-- marking store -->
-            <argument type="service" id="event_dispatcher" on-invalid="ignore" />
-            <argument /> <!-- name -->
-            <argument type="service" id="Tienvx\Bundle\MbtBundle\Helper\ModelHelper" />
         </service>
     </services>
 </container>

@@ -10,7 +10,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
@@ -25,9 +24,7 @@ class BugMessageTest extends MessageTestCase
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        /** @var WorkflowHelper $workflowHelper */
-        $workflowHelper = self::$container->get(WorkflowHelper::class);
-        $workflow = $workflowHelper->get($model);
+        $checksum = json_decode(file_get_contents(__DIR__.'/../app/var/checksum.json'), true);
 
         $steps = Steps::denormalize($steps);
         $expectedSteps = Steps::denormalize($expectedSteps);
@@ -69,7 +66,7 @@ class BugMessageTest extends MessageTestCase
         $bug->setTitle('Test bug title');
         $bug->setSteps($steps);
         $bug->setModel(new Model($model));
-        $bug->setModelHash($workflowHelper->checksum($workflow));
+        $bug->setModelHash($checksum[$model]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
@@ -117,8 +114,8 @@ class BugMessageTest extends MessageTestCase
             '12.product.transition.json',
         ];
 
-        return array_map(function (string $file) {
-            return json_decode(file_get_contents(__DIR__."/bugs/{$file}"), true);
-        }, $files);
+        foreach ($files as $file) {
+            yield json_decode(file_get_contents(__DIR__."/../app/var/bugs/{$file}"), true);
+        }
     }
 }

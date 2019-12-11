@@ -6,9 +6,8 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Tienvx\Bundle\MbtBundle\Entity\Model as ModelEntity;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 
 /**
  * @Annotation
@@ -16,13 +15,13 @@ use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 class ModelValidator extends ConstraintValidator
 {
     /**
-     * @var WorkflowHelper
+     * @var ModelHelper
      */
-    protected $workflowHelper;
+    protected $modelHelper;
 
-    public function __construct(WorkflowHelper $workflowHelper)
+    public function __construct(ModelHelper $modelHelper)
     {
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     public function validate($value, Constraint $constraint): void
@@ -40,9 +39,7 @@ class ModelValidator extends ConstraintValidator
 
     protected function validateValue($value, Constraint $constraint): void
     {
-        try {
-            $this->workflowHelper->get($value->getName());
-        } catch (InvalidArgumentException $exception) {
+        if (!$this->modelHelper->has($value->getName())) {
             $this->context->buildViolation($constraint->getMessage())
                 ->setParameter('{{ string }}', $value->getName())
                 ->addViolation();

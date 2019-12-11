@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class AllTransitionsGenerator extends RandomGeneratorTemplate
@@ -33,17 +33,17 @@ class AllTransitionsGenerator extends RandomGeneratorTemplate
         return true;
     }
 
-    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
+    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
     {
         return [
             'stepsCount' => 1,
             'maxSteps' => $generatorOptions->getMaxSteps() ?? $this->maxSteps,
             'visitedTransitions' => [],
-            'totalTransitions' => count($workflow->getDefinition()->getTransitions()),
+            'totalTransitions' => count($model->getDefinition()->getTransitions()),
         ];
     }
 
-    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
 
@@ -57,36 +57,23 @@ class AllTransitionsGenerator extends RandomGeneratorTemplate
         return count($state['visitedTransitions']) === $state['totalTransitions'] || $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function getTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $this->getAvailableTransitions($workflow, $subject, $state);
-        $transitionName = $this->randomTransition($workflow, $subject, $transitions);
-        if (!is_null($transitionName)) {
-            return $transitionName;
+        $transitions = $model->getEnabledTransitions($subject);
+        if (0 === count($transitions)) {
+            return null;
         }
 
-        $remainTransitions = $this->getAvailableTransitions($workflow, $subject, $state, true);
-
-        return $this->randomTransition($workflow, $subject, $remainTransitions);
-    }
-
-    protected function getAvailableTransitions(Workflow $workflow, SubjectInterface $subject, array $state, bool $visited = false): array
-    {
-        $transitions = [];
-        $marking = $workflow->getMarking($subject);
-        foreach ($workflow->getDefinition()->getTransitions() as $transition) {
-            foreach ($transition->getFroms() as $place) {
-                if (!$marking->has($place)) {
-                    break;
-                }
-            }
-            if (!in_array($transition->getName(), $state['visitedTransitions']) && !$visited) {
-                $transitions[$transition->getName()] = 1;
-            } elseif (in_array($transition->getName(), $state['visitedTransitions']) && $visited) {
-                $transitions[$transition->getName()] = 1;
+        $unvisitedTransitions = [];
+        foreach ($transitions as $transition) {
+            if (!in_array($transition->getName(), $state['visitedTransitions'])) {
+                $unvisitedTransitions[] = $transition;
             }
         }
+        if (count($unvisitedTransitions) > 0) {
+            return $unvisitedTransitions[array_rand($unvisitedTransitions)]->getName();
+        }
 
-        return $transitions;
+        return $transitions[array_rand($transitions)]->getName();
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Notification;
 
-use Exception;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Notifier\Message\ChatMessage;
 use Symfony\Component\Notifier\Message\EmailMessage;
@@ -59,7 +58,6 @@ class BugNotification extends Notification implements ChatNotificationInterface,
             ->subject($this->getSubject())
             ->text($this->getContent())
             ->importance($this->getImportance())
-            ->exception(new Exception($this->bug->getBugMessage()))
             ->action('View the bug', sprintf($bugUrl, $bugId))
         ;
 

@@ -7,10 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Message\FinishReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
@@ -28,32 +26,25 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
     private $entityManager;
 
     /**
-     * @var TokenHelper
-     */
-    private $tokenHelper;
-
-    /**
      * @var MessageBusInterface
      */
     private $messageBus;
 
     /**
-     * @var WorkflowHelper
+     * @var ModelHelper
      */
-    private $workflowHelper;
+    private $modelHelper;
 
     public function __construct(
         ReducerManager $reducerManager,
         EntityManagerInterface $entityManager,
-        TokenHelper $tokenHelper,
         MessageBusInterface $messageBus,
-        WorkflowHelper $workflowHelper
+        ModelHelper $modelHelper
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
-        $this->tokenHelper = $tokenHelper;
         $this->messageBus = $messageBus;
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
     }
 
     public function __invoke(ReduceStepsMessage $message): void
@@ -69,20 +60,17 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('No bug found for id %d', $bugId));
         }
 
-        $workflow = $this->workflowHelper->get($bug->getModel()->getName());
-        if ($this->workflowHelper->checksum($workflow) !== $bug->getModelHash()) {
+        if ($this->modelHelper->checksum($bug->getModel()->getName()) !== $bug->getModelHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
-        $this->reduce($reducer, $bug, $workflow, $length, $from, $to);
+        $this->reduce($reducer, $bug, $length, $from, $to);
     }
 
-    protected function reduce(string $reducer, Bug $bug, Workflow $workflow, int $length, int $from, int $to): void
+    protected function reduce(string $reducer, Bug $bug, int $length, int $from, int $to): void
     {
-        $this->tokenHelper->setAnonymousToken();
-
         $reducerService = $this->reducerManager->get($reducer);
-        $reducerService->handle($bug, $workflow, $length, $from, $to);
+        $reducerService->handle($bug, $length, $from, $to);
 
         $this->messageBus->dispatch(new FinishReduceStepsMessage($bug->getId()));
     }

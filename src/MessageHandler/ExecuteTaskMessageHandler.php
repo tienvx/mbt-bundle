@@ -10,12 +10,11 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
-use Tienvx\Bundle\MbtBundle\Helper\TokenHelper;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Steps\StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
@@ -42,36 +41,36 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     private $messageHelper;
 
     /**
-     * @var TokenHelper
+     * @var ModelHelper
      */
-    private $tokenHelper;
-
-    /**
-     * @var WorkflowHelper
-     */
-    private $workflowHelper;
+    private $modelHelper;
 
     /**
      * @var MessageBusInterface
      */
     private $messageBus;
 
+    /**
+     * @var StepsRecorder
+     */
+    private $stepsRecorder;
+
     public function __construct(
         SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         MessageHelper $messageHelper,
-        TokenHelper $tokenHelper,
-        WorkflowHelper $workflowHelper,
-        MessageBusInterface $messageBus
+        ModelHelper $modelHelper,
+        MessageBusInterface $messageBus,
+        StepsRecorder $stepsRecorder
     ) {
         $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->messageHelper = $messageHelper;
-        $this->tokenHelper = $tokenHelper;
-        $this->workflowHelper = $workflowHelper;
+        $this->modelHelper = $modelHelper;
         $this->messageBus = $messageBus;
+        $this->stepsRecorder = $stepsRecorder;
     }
 
     public function __invoke(ExecuteTaskMessage $message): void
@@ -90,14 +89,12 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     {
         $subject = $this->subjectManager->createAndSetUp($task->getModel()->getName());
         $generator = $this->generatorManager->get($task->getGenerator()->getName());
-        $workflow = $this->workflowHelper->get($task->getModel()->getName());
-
-        $this->tokenHelper->setAnonymousToken();
+        $model = $this->modelHelper->get($task->getModel()->getName());
 
         $recorded = new Steps();
         try {
-            $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
-            StepsRecorder::record($steps, $workflow, $subject, $recorded);
+            $steps = $generator->generate($model, $subject, $task->getGeneratorOptions());
+            $this->stepsRecorder->record($steps, $model, $subject, $recorded);
         } catch (Throwable $throwable) {
             $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getModel()->getName());
         } finally {

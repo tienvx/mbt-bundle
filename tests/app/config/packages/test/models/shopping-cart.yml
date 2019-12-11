@@ -8,6 +8,7 @@ framework:
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
             metadata:
+                model: true
                 label: "Shopping Cart"
                 tags: ["opencart's shopping cart", "demo", "state-machine", "testing", "model-based-testing"]
             places:

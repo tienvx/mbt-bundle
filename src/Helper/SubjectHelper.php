@@ -36,6 +36,13 @@ class SubjectHelper
         }
     }
 
+    public function invokePlaces(SubjectInterface $subject, array $places): void
+    {
+        foreach ($places as $place) {
+            $this->invokePlace($subject, $place);
+        }
+    }
+
     public function invokeTransition(SubjectInterface $subject, string $transition, ?Data $data): void
     {
         $subjectClass = get_class($subject);

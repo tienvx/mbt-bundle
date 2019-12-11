@@ -2,75 +2,80 @@
 
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
+use Exception;
+use Generator;
 use Symfony\Component\Workflow\Definition;
-use Symfony\Component\Workflow\Marking;
-use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
-use Symfony\Component\Workflow\Transition;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model;
 
 class ModelHelper
 {
     /**
-     * @var SubjectHelper
+     * @var array
      */
-    protected $subjectHelper;
+    protected $models = [];
 
-    public function __construct(SubjectHelper $subjectHelper)
+    public function addModel(string $name, string $type, Definition $definition): void
     {
-        $this->subjectHelper = $subjectHelper;
+        $this->models[$name] = [
+            $definition,
+            $name,
+            $type,
+        ];
     }
 
-    public function apply(SubjectInterface $subject, string $transitionName, Definition $definition, MarkingStoreInterface $markingStore, Marking $marking, array $context = []): Marking
+    public function has(string $model): bool
     {
+        return isset($this->models[$model]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get(string $model): Model
+    {
+        if (!$this->has($model)) {
+            throw new Exception(sprintf('Model "%s" does not exist', $model));
+        }
+
+        return new Model(...$this->models[$model]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getDefinition(string $model): Definition
+    {
+        if (!$this->has($model)) {
+            throw new Exception(sprintf('Model "%s" does not exist', $model));
+        }
+
+        return $this->models[$model][0];
+    }
+
+    public function all(): Generator
+    {
+        foreach ($this->models as $args) {
+            yield new Model(...$args);
+        }
+    }
+
+    public function checksum(string $model): string
+    {
+        $definition = $this->getDefinition($model);
+        $transitions = [];
         foreach ($definition->getTransitions() as $transition) {
-            if ($transition->getName() === $transitionName) {
-                $this->leave($transition, $marking);
-
-                $this->transition($subject, $transition, $context);
-
-                $this->enter($transition, $marking);
-
-                $markingStore->setMarking($subject, $marking, $context);
-
-                $this->entered($subject, $marking);
-
-                break;
-            }
+            $transitions[] = [
+                0 => $transition->getName(),
+                1 => $transition->getFroms(),
+                2 => $transition->getTos(),
+            ];
         }
+        $content = [
+            0 => $definition->getPlaces(),
+            1 => $transitions,
+            2 => $definition->getInitialPlaces(),
+        ];
 
-        return $marking;
-    }
-
-    protected function leave(Transition $transition, Marking $marking): void
-    {
-        $places = $transition->getFroms();
-
-        foreach ($places as $place) {
-            $marking->unmark($place);
-        }
-    }
-
-    protected function transition(SubjectInterface $subject, Transition $transition, array $context): void
-    {
-        $data = $context['data'] ?? null;
-
-        $this->subjectHelper->invokeTransition($subject, $transition->getName(), $data);
-    }
-
-    protected function enter(Transition $transition, Marking $marking): void
-    {
-        $places = $transition->getTos();
-
-        foreach ($places as $place) {
-            $marking->mark($place);
-        }
-    }
-
-    protected function entered(SubjectInterface $subject, Marking $marking): void
-    {
-        $places = array_keys(array_filter($marking->getPlaces()));
-        foreach ($places as $place) {
-            $this->subjectHelper->invokePlace($subject, $place);
-        }
+        return md5(json_encode($content));
     }
 }

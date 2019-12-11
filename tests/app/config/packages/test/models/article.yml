@@ -6,6 +6,8 @@ framework:
                 type: "method"
             supports:
                 - Tienvx\Bundle\MbtBundle\Subject\SubjectInterface
+            metadata:
+                model: true
             initial_marking: draft
             places:
                 # simple format
