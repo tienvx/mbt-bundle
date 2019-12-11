@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model;
 
+use Exception;
 use Symfony\Component\Workflow\Definition;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
@@ -80,15 +81,7 @@ class Model implements WorkflowInterface
 
     public function getEnabledTransitions(object $subject): array
     {
-        $enabledTransitions = [];
-
-        foreach ($this->definition->getTransitions() as $transition) {
-            if ($this->isEnabled($subject, $transition)) {
-                $enabledTransitions[] = $transition;
-            }
-        }
-
-        return $enabledTransitions;
+        return [];
     }
 
     public function getMarkingStore(): MarkingStoreInterface
@@ -104,17 +97,6 @@ class Model implements WorkflowInterface
     public function getName(): string
     {
         return $this->name;
-    }
-
-    protected function isEnabled(object $subject, Transition $transition): bool
-    {
-        foreach ($transition->getFroms() as $place) {
-            if (!$this->getMarking($subject)->has($place)) {
-                return false;
-            }
-        }
-
-        return $this->can($subject, $transition->getName());
     }
 
     protected function leave(Transition $transition, Marking $marking): void

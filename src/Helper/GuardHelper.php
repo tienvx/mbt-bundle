@@ -30,13 +30,32 @@ class GuardHelper
 
         $guards = (array) $this->configuration[$key];
         foreach ($guards as $guard) {
-            if ($guard instanceof GuardExpression &&
-                $guard->getTransition() !== $transition &&
-                !$this->expressionLanguage->evaluate($guard->getExpression(), ['subject' => $subject])) {
+            if (!$this->validateGuard($guard, $subject, $transition)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected function validateGuard($guard, SubjectInterface $subject, string $transition): bool
+    {
+        if ($guard instanceof GuardExpression) {
+            if ($guard->getTransition()->getName() !== $transition) {
+                return true;
+            }
+            if (!$this->validateGuardExpression($subject, $guard->getExpression())) {
+                return false;
+            }
+        } else {
+            return $this->validateGuardExpression($subject, $guard);
+        }
+
+        return true;
+    }
+
+    protected function validateGuardExpression(SubjectInterface $subject, string $expression): bool
+    {
+        return $this->expressionLanguage->evaluate($expression, ['subject' => $subject]);
     }
 }
