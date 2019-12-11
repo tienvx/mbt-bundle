@@ -59,7 +59,7 @@ class AllTransitionsGenerator extends RandomGeneratorTemplate
 
     protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $model->getEnabledTransitions($subject);
+        $transitions = $this->getEnabledTransitions($model, $subject);
         if (0 === count($transitions)) {
             return null;
         }

@@ -101,7 +101,7 @@ class RandomGenerator extends RandomGeneratorTemplate
 
     protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $model->getEnabledTransitions($subject);
+        $transitions = $this->getEnabledTransitions($model, $subject);
         if (count($transitions) > 0) {
             $key = array_rand($transitions);
 

@@ -39,7 +39,7 @@ class Recorder
         $recorded->addStep(new Step(null, new Data(), $model->getDefinition()->getInitialPlaces()));
 
         foreach ($steps as $step) {
-            if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data && $this->guardHelper->can($subject, $model->getName(), $step->getTransition())) {
+            if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
                 $this->recordStep($step, $model, $subject, $recorded);
             }
         }
@@ -47,6 +47,9 @@ class Recorder
 
     protected function recordStep(Step $step, Model $model, SubjectInterface $subject, Steps $recorded): void
     {
+        if (!$this->guardHelper->can($subject, $model->getName(), $step->getTransition())) {
+            throw new Exception(sprintf('Transition %s is not enabled', $step->getTransition()));
+        }
         try {
             $marking = $model->apply($subject, $step->getTransition());
             $this->subjectHelper->invokeTransition($subject, $step->getTransition(), $step->getData());

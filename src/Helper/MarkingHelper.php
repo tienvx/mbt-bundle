@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Helper;
 
 use Exception;
+use LogicException;
 use Symfony\Component\Workflow\Marking;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Model\Model;
@@ -36,7 +37,7 @@ class MarkingHelper
     protected function initPlaces(Model $model, SubjectInterface $subject, Marking $marking): void
     {
         if (!$model->getDefinition()->getInitialPlaces()) {
-            throw new LogicException(sprintf('The Marking is empty and there is no initial place for workflow "%s".', $this->name));
+            throw new LogicException(sprintf('The Marking is empty and there is no initial place for workflow "%s".', $model->getName()));
         }
         foreach ($model->getDefinition()->getInitialPlaces() as $place) {
             $marking->mark($place);
