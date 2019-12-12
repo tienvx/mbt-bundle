@@ -33,6 +33,8 @@ class ModelPass implements CompilerPassInterface
                 $modelHelperDefinition->addMethodCall('addModel', [$name, $type, new Reference($serviceId)]);
 
                 $this->mergeGuardConfiguration($container, $type, $name, $guardHelperDefinition);
+                $workflowId = sprintf('%s.%s', $type, $name);
+                $container->removeDefinition($workflowId);
             }
         }
         $guardHelperDefinition->addMethodCall('setExpressionLanguage', [new Reference('workflow.security.expression_language')]);
@@ -59,6 +61,7 @@ class ModelPass implements CompilerPassInterface
         if ($container->hasDefinition($guardId)) {
             $guardDefinition = $container->getDefinition($guardId);
             $guardHelperDefinition->addMethodCall('mergeConfiguration', [$guardDefinition->getArgument(0)]);
+            $container->removeDefinition($guardId);
         }
     }
 }
