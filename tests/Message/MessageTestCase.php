@@ -60,11 +60,11 @@ abstract class MessageTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
         unset($this->filesystem);
         unset($this->messengerTransport);
         unset($this->messageListener);
         unset($this->messageBus);
+        parent::tearDown();
     }
 
     /**

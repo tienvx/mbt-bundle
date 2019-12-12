@@ -22,8 +22,9 @@ abstract class TestCase extends KernelTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
         unset($this->application);
+        parent::tearDown();
+        gc_collect_cycles();
     }
 
     /**
