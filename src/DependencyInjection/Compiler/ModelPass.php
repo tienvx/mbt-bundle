@@ -33,8 +33,7 @@ class ModelPass implements CompilerPassInterface
                 $modelHelperDefinition->addMethodCall('addModel', [$name, $type, new Reference($serviceId)]);
 
                 $this->mergeGuardConfiguration($container, $type, $name, $guardHelperDefinition);
-                $workflowId = sprintf('%s.%s', $type, $name);
-                $container->removeDefinition($workflowId);
+                $this->removeWorkflow($container, $type, $name);
             }
         }
         $guardHelperDefinition->addMethodCall('setExpressionLanguage', [new Reference('workflow.security.expression_language')]);
@@ -63,5 +62,22 @@ class ModelPass implements CompilerPassInterface
             $guardHelperDefinition->addMethodCall('mergeConfiguration', [$guardDefinition->getArgument(0)]);
             $container->removeDefinition($guardId);
         }
+    }
+
+    protected function removeWorkflow(ContainerBuilder $container, string $type, string $name): void
+    {
+        $workflowId = sprintf('%s.%s', $type, $name);
+        $container->removeDefinition($workflowId);
+
+        $registryDefinition = $container->getDefinition('workflow.registry');
+        $calls = $registryDefinition->getMethodCalls();
+
+        foreach ($calls as $i => $call) {
+            if ('addWorkflow' === $call[0] && $workflowId === (string) $call[1][0]) {
+                unset($calls[$i]);
+                break;
+            }
+        }
+        $registryDefinition->setMethodCalls($calls);
     }
 }
