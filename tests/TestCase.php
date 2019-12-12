@@ -20,6 +20,12 @@ abstract class TestCase extends KernelTestCase
         $this->application = $this->getApplication();
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        unset($this->application);
+    }
+
     /**
      * @param $command
      *
