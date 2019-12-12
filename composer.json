@@ -37,7 +37,7 @@
     "require-dev": {
         "symfony/yaml": "~5.0.1",
         "symfony/expression-language": "~5.0.1",
-        "symfony/security-bundle": "~5.0.1",
+        "symfony/security-core": "~5.0.1",
         "symfony/maker-bundle": "~1.14.3",
         "league/flysystem-memory": "~1.0.2"
     },
