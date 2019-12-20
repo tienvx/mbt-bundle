@@ -67,7 +67,6 @@ class Bug
     /**
      * @ORM\Column(type="text")
      * @Assert\Type("string")
-     * @Assert\NotBlank
      */
     private $bugMessage;
 
