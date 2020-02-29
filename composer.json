@@ -26,7 +26,7 @@
         "symfony/property-info": "~5.0.1",
         "doctrine/doctrine-bundle": "~2.0.0",
         "doctrine/orm": "~2.7.0",
-        "league/flysystem-bundle": "~1.3.0",
+        "league/flysystem-bundle": "~1.4.0",
         "symfony/notifier": "~5.0.1",
         "symfony/mailer": "~5.0.1",
         "symfony/twig-bridge": "~5.0.1",
@@ -57,7 +57,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.15-dev"
+            "dev-master": "1.16-dev"
         }
     },
     "suggest": {
