@@ -23,7 +23,7 @@ All you have to do:
 
 ## Requirements
 
-* PHP 7.2 / 7.3 / 7.4
+* PHP 7.3 / 7.4
 * Symfony 5.0
 * See also the `require` section of [composer.json](composer.json)
 
