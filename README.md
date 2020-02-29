@@ -69,7 +69,7 @@ the way to tell this bundle to interact with your application.
 You can run the tests with:
 ```console
 $ php tests/app/bin/console cache:clear # Only if you added new code
-$ phpunit
+$ vendor/bin/phpunit
 ```
 
 ## Validate code with coding standards

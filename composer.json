@@ -35,6 +35,7 @@
         "jmgq/a-star": "^1.1"
     },
     "require-dev": {
+        "phpunit/phpunit": "~9.0.1",
         "symfony/yaml": "~5.0.1",
         "symfony/expression-language": "~5.0.1",
         "symfony/security-core": "~5.0.1",

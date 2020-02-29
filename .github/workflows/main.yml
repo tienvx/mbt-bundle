@@ -53,9 +53,7 @@ jobs:
 
     - name: Test & Generate Code Coverage
       run: |
-        wget -q -O phpunit https://phar.phpunit.de/phpunit-8.phar
-        chmod +x phpunit
-        ./phpunit -d memory_limit=512M --coverage-clover tests/logs/clover.xml
+        ./vendor/bin/phpunit -d memory_limit=512M --coverage-clover tests/logs/clover.xml
 
     - name: Send to coveralls
       run: |
