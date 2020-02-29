@@ -58,7 +58,7 @@ class TaskMessageTest extends MessageTestCase
                 $ids = [];
                 foreach ($bugs[0]->getSteps() as $step) {
                     if ($step->getData() && $step->getData()->has('product')) {
-                        $ids[] = $step->getData()->get('product');
+                        $ids[] = (int) $step->getData()->get('product');
                     }
                 }
                 if ('You added an out-of-stock product into cart! Can not checkout' === $bugs[0]->getBugMessage()) {

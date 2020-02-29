@@ -23,7 +23,7 @@ All you have to do:
 
 ## Requirements
 
-* PHP 7.2 / 7.3 / 7.4
+* PHP 7.3 / 7.4
 * Symfony 5.0
 * See also the `require` section of [composer.json](composer.json)
 
@@ -69,7 +69,7 @@ the way to tell this bundle to interact with your application.
 You can run the tests with:
 ```console
 $ php tests/app/bin/console cache:clear # Only if you added new code
-$ phpunit
+$ vendor/bin/phpunit
 ```
 
 ## Validate code with coding standards
