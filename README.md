@@ -43,7 +43,7 @@ $ composer create-project symfony/skeleton my-project
 Install lastest version of this bundle:
 
 ```console
-$ composer require tienvx/mbt-bundle "^1.15"
+$ composer require tienvx/mbt-bundle "^1.16"
 ```
 
 ### Step 3: Config file storage
