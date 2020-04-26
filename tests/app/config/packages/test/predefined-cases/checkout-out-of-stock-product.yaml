@@ -2,7 +2,7 @@ tienvx_mbt:
     predefined_cases:
         checkout_out_of_stock:
             title: 'Checkout out-of-stock product'
-            model: 'shopping_cart'
+            workflow: 'shopping_cart'
             steps:
                 - transition: null
                   data: []

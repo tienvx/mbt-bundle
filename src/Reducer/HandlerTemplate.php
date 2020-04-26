@@ -7,8 +7,8 @@ use Symfony\Component\Workflow\Definition;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Runner as StepsRunner;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\ShortestPathStrategy;
 use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\StrategyInterface as StepsBuilderStrategy;
@@ -34,9 +34,9 @@ abstract class HandlerTemplate implements HandlerInterface
     protected $bugHelper;
 
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    protected $modelHelper;
+    protected $workflowHelper;
 
     /**
      * @var StepsRunner
@@ -47,19 +47,19 @@ abstract class HandlerTemplate implements HandlerInterface
         SubjectManager $subjectManager,
         MessageBusInterface $messageBus,
         BugHelper $bugHelper,
-        ModelHelper $modelHelper,
+        WorkflowHelper $workflowHelper,
         StepsRunner $stepsRunner
     ) {
         $this->subjectManager = $subjectManager;
         $this->messageBus = $messageBus;
         $this->bugHelper = $bugHelper;
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
         $this->stepsRunner = $stepsRunner;
     }
 
     public function handle(Bug $bug, int $length, int $from, int $to): void
     {
-        $model = $bug->getModel()->getName();
+        $workflow = $bug->getWorkflow()->getName();
         $steps = $bug->getSteps();
 
         if ($steps->getLength() !== $length) {
@@ -71,13 +71,13 @@ abstract class HandlerTemplate implements HandlerInterface
             return;
         }
 
-        $newSteps = $this->buildNewSteps($this->modelHelper->getDefinition($model), $steps, $from, $to);
+        $newSteps = $this->buildNewSteps($this->workflowHelper->getDefinition($workflow), $steps, $from, $to);
         if ($newSteps->getLength() >= $steps->getLength()) {
             // New path is longer than or equals old path.
             return;
         }
 
-        $this->run($model, $newSteps, $bug);
+        $this->run($workflow, $newSteps, $bug);
     }
 
     protected function extraValidate(Steps $steps, int $from, int $to): bool
@@ -98,12 +98,12 @@ abstract class HandlerTemplate implements HandlerInterface
         return new ShortestPathStrategy($definition);
     }
 
-    protected function run(string $modelName, Steps $newSteps, Bug $bug): void
+    protected function run(string $workflowName, Steps $newSteps, Bug $bug): void
     {
         try {
-            $model = $this->modelHelper->get($modelName);
-            $subject = $this->subjectManager->createAndSetUp($modelName);
-            $this->stepsRunner->run($newSteps, $model, $subject);
+            $workflow = $this->workflowHelper->get($workflowName);
+            $subject = $this->subjectManager->createAndSetUp($workflowName);
+            $this->stepsRunner->run($newSteps, $workflow, $subject);
         } catch (Throwable $newThrowable) {
             if ($newThrowable->getMessage() === $bug->getBugMessage()) {
                 $this->bugHelper->updateSteps($bug, $newSteps);

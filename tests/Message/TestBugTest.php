@@ -7,9 +7,9 @@ use Doctrine\ORM\EntityRepository;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Entity\Workflow;
 use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
@@ -27,7 +27,7 @@ class TestBugTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Just dummy task');
-        $task->setModel(new Model($model));
+        $task->setWorkflow(new Workflow($model));
         $task->setGenerator(new Generator('random'));
         $task->setReducer(new Reducer('loop'));
         $entityManager->persist($task);
@@ -35,8 +35,8 @@ class TestBugTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test regression bug');
         $bug->setSteps($steps);
-        $bug->setModel(new Model($model));
-        $bug->setModelHash($checksum[$model]);
+        $bug->setWorkflow(new Workflow($model));
+        $bug->setWorkflowHash($checksum[$model]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $bug->setStatus(BugWorkflow::CLOSED);

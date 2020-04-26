@@ -17,11 +17,11 @@ use Tienvx\Bundle\MbtBundle\Generator\Random\ProbabilityGenerator;
 use Tienvx\Bundle\MbtBundle\Generator\Random\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reporter\ReporterInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -84,7 +84,7 @@ class TienvxMbtExtension extends Extension
         foreach ($config['predefined_cases'] as $name => $case) {
             $caseDefinition = new Definition(PredefinedCase::class);
             $caseDefinition->setPublic(false);
-            $caseDefinition->addMethodCall('init', [$name, $case['title'], $case['model'], Steps::denormalize($case['steps'])->serialize()]);
+            $caseDefinition->addMethodCall('init', [$name, $case['title'], $case['workflow'], Steps::denormalize($case['steps'])->serialize()]);
             $id = sprintf('predefined_case.%s', $name);
             $container->setDefinition($id, $caseDefinition);
 

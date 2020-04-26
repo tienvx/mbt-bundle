@@ -10,8 +10,8 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
@@ -41,9 +41,9 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     private $messageHelper;
 
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    private $modelHelper;
+    private $workflowHelper;
 
     /**
      * @var MessageBusInterface
@@ -60,7 +60,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         MessageHelper $messageHelper,
-        ModelHelper $modelHelper,
+        WorkflowHelper $workflowHelper,
         MessageBusInterface $messageBus,
         StepsRecorder $stepsRecorder
     ) {
@@ -68,7 +68,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->messageHelper = $messageHelper;
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
         $this->messageBus = $messageBus;
         $this->stepsRecorder = $stepsRecorder;
     }
@@ -87,16 +87,16 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
 
     protected function execute(Task $task): void
     {
-        $subject = $this->subjectManager->createAndSetUp($task->getModel()->getName());
+        $subject = $this->subjectManager->createAndSetUp($task->getWorkflow()->getName());
         $generator = $this->generatorManager->get($task->getGenerator()->getName());
-        $model = $this->modelHelper->get($task->getModel()->getName());
+        $workflow = $this->workflowHelper->get($task->getWorkflow()->getName());
 
         $recorded = new Steps();
         try {
-            $steps = $generator->generate($model, $subject, $task->getGeneratorOptions());
-            $this->stepsRecorder->record($steps, $model, $subject, $recorded);
+            $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
+            $this->stepsRecorder->record($steps, $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getModel()->getName());
+            $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getWorkflow()->getName());
         } finally {
             $subject->tearDown();
 

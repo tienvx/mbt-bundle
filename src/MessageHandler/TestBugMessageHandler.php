@@ -11,8 +11,8 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
@@ -42,9 +42,9 @@ class TestBugMessageHandler implements MessageHandlerInterface
     private $messageHelper;
 
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    private $modelHelper;
+    private $workflowHelper;
 
     /**
      * @var MessageBusInterface
@@ -61,7 +61,7 @@ class TestBugMessageHandler implements MessageHandlerInterface
         EntityManagerInterface $entityManager,
         BugHelper $bugHelper,
         MessageHelper $messageHelper,
-        ModelHelper $modelHelper,
+        WorkflowHelper $workflowHelper,
         MessageBusInterface $messageBus,
         StepsRecorder $stepsRecorder
     ) {
@@ -69,7 +69,7 @@ class TestBugMessageHandler implements MessageHandlerInterface
         $this->entityManager = $entityManager;
         $this->bugHelper = $bugHelper;
         $this->messageHelper = $messageHelper;
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
         $this->messageBus = $messageBus;
         $this->stepsRecorder = $stepsRecorder;
     }
@@ -81,10 +81,10 @@ class TestBugMessageHandler implements MessageHandlerInterface
 
         $recorded = new Steps();
         try {
-            $model = $this->modelHelper->get($bug->getModel()->getName());
-            $subject = $this->subjectManager->createAndSetUp($bug->getModel()->getName());
+            $workflow = $this->workflowHelper->get($bug->getWorkflow()->getName());
+            $subject = $this->subjectManager->createAndSetUp($bug->getWorkflow()->getName());
 
-            $this->stepsRecorder->record($bug->getSteps(), $model, $subject, $recorded);
+            $this->stepsRecorder->record($bug->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
             $this->handleThrowable($throwable, $bug, $recorded);
         } finally {
@@ -100,7 +100,7 @@ class TestBugMessageHandler implements MessageHandlerInterface
             }
             $this->messageBus->dispatch(new ApplyBugTransitionMessage($bug->getId(), BugWorkflow::REOPEN));
         } else {
-            $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $bug->getModel()->getName());
+            $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $bug->getWorkflow()->getName());
         }
     }
 
@@ -114,7 +114,7 @@ class TestBugMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('Can not test bug with id %d, only closed bug can be tested again', $bug->getId()));
         }
 
-        if ($this->modelHelper->checksum($bug->getModel()->getName()) !== $bug->getModelHash()) {
+        if ($this->workflowHelper->checksum($bug->getWorkflow()->getName()) !== $bug->getWorkflowHash()) {
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bug->getId()));
         }
     }

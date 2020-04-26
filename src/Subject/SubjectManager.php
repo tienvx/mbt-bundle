@@ -3,8 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Helper\MarkingHelper;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class SubjectManager
 {
@@ -13,40 +12,29 @@ class SubjectManager
      */
     protected $subjects;
 
-    /**
-     * @var MarkingHelper
-     */
-    protected $markingHelper;
-
-    /**
-     * @var ModelHelper
-     */
-    protected $modelHelper;
-
-    public function __construct(array $subjects, MarkingHelper $markingHelper, ModelHelper $modelHelper)
+    public function __construct(array $subjects)
     {
         $this->subjects = $subjects;
-        $this->markingHelper = $markingHelper;
-        $this->modelHelper = $modelHelper;
     }
 
     /**
      * @throws Exception
      */
-    public function create(string $model): SubjectInterface
+    public function create(string $workflowName): SubjectInterface
     {
-        $class = $this->subjects[$model] ?? null;
+        $class = $this->subjects[$workflowName] ?? null;
         if (!is_null($class)) {
             return new $class();
         }
-        throw new Exception(sprintf('Subject for model %s not found', $model));
+        throw new Exception(sprintf('Subject for workflow %s not found', $workflowName));
     }
 
-    public function createAndSetUp(string $model, bool $testing = false): SubjectInterface
+    public function createAndSetUp(string $workflowName, bool $trying = false): SubjectInterface
     {
-        $subject = $this->create($model);
-        $subject->setUp($testing);
-        $this->markingHelper->init($this->modelHelper->get($model), $subject);
+        $subject = $this->create($workflowName);
+        if ($subject instanceof SetUpInterface) {
+            $subject->setUp($trying);
+        }
 
         return $subject;
     }

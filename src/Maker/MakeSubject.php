@@ -14,18 +14,18 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Workflow\Definition;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 
 class MakeSubject extends AbstractMaker
 {
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    private $modelHelper;
+    private $workflowHelper;
 
-    public function __construct(ModelHelper $modelHelper)
+    public function __construct(WorkflowHelper $workflowHelper)
     {
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
     }
 
     public static function getCommandName(): string
@@ -36,8 +36,8 @@ class MakeSubject extends AbstractMaker
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
-            ->setDescription('Creates a new subject class for a model')
-            ->addArgument('model', InputArgument::OPTIONAL, 'The model to generate subject.')
+            ->setDescription('Creates a new subject class for a workflow')
+            ->addArgument('workflow', InputArgument::OPTIONAL, 'The workflow name to generate subject.')
             ->addArgument('subject-class', InputArgument::OPTIONAL, sprintf('Choose a name for your subject class (e.g. <fg=yellow>%s</>)', Str::asClassName(Str::getRandomTerm())))
             ->setHelp(file_get_contents(__DIR__.'/../Resources/help/MakeSubject.txt'))
         ;
@@ -48,11 +48,11 @@ class MakeSubject extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $model = $input->getArgument('model');
-        $definition = $this->modelHelper->getDefinition($model);
+        $workflow = $input->getArgument('workflow');
+        $definition = $this->workflowHelper->getDefinition($workflow);
         $subjectClass = $input->getArgument('subject-class');
 
-        $this->generateClass($generator, $subjectClass, $definition, $model);
+        $this->generateClass($generator, $subjectClass, $definition, $workflow);
 
         $this->writeSuccessMessage($io);
         $io->text([
@@ -107,7 +107,7 @@ class MakeSubject extends AbstractMaker
         return $transitions;
     }
 
-    private function generateClass(Generator $generator, string $subjectClass, Definition $definition, string $model): void
+    private function generateClass(Generator $generator, string $subjectClass, Definition $definition, string $workflow): void
     {
         $subjectClassNameDetails = $generator->createClassNameDetails(
             $subjectClass,
@@ -120,7 +120,7 @@ class MakeSubject extends AbstractMaker
             [
                 'places' => $this->getPlaces($definition),
                 'transitions' => $this->getTransitions($definition),
-                'model' => $model,
+                'workflow' => $workflow,
             ]
         );
 

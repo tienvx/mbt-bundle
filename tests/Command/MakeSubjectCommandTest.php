@@ -6,7 +6,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class MakeSubjectCommandTest extends CommandTestCase
 {
-    public function modelData()
+    public function workflowData()
     {
         return [
             ['article', 'Article'],
@@ -15,16 +15,16 @@ class MakeSubjectCommandTest extends CommandTestCase
     }
 
     /**
-     * @dataProvider modelData
+     * @dataProvider workflowData
      */
-    public function testExecute(string $model, string $subjectClass)
+    public function testExecute(string $workflow, string $subjectClass)
     {
         $command = $this->application->find('make:subject');
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            'model' => $model,
+            'workflow' => $workflow,
             'subject-class' => $subjectClass,
         ]);
 

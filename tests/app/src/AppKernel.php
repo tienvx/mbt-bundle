@@ -26,7 +26,6 @@ class AppKernel extends Kernel
     {
         $loader->load(dirname(__DIR__).'/config/config.yaml');
         $loader->load(dirname(__DIR__).'/config/services.yaml');
-        $loader->load(dirname(__DIR__).'/config/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
     }
 
     public function getCacheDir()

@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class AllPlacesGenerator extends RandomGeneratorTemplate
 {
@@ -33,21 +33,21 @@ class AllPlacesGenerator extends RandomGeneratorTemplate
         return true;
     }
 
-    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
+    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
     {
         return [
             'stepsCount' => 1,
             'maxSteps' => $generatorOptions->getMaxSteps() ?? $this->maxSteps,
-            'visitedPlaces' => $model->getDefinition()->getInitialPlaces(),
-            'totalPlaces' => count($model->getDefinition()->getPlaces()),
+            'visitedPlaces' => $workflow->getDefinition()->getInitialPlaces(),
+            'totalPlaces' => count($workflow->getDefinition()->getPlaces()),
         ];
     }
 
-    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
 
-        foreach ($model->getMarking($subject)->getPlaces() as $place => $status) {
+        foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {
             if ($status && !in_array($place, $state['visitedPlaces'])) {
                 $state['visitedPlaces'][] = $place;
             }
@@ -59,9 +59,9 @@ class AllPlacesGenerator extends RandomGeneratorTemplate
         return count($state['visitedPlaces']) === $state['totalPlaces'] || $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $this->getEnabledTransitions($model, $subject);
+        $transitions = $workflow->getEnabledTransitions($subject);
         if (0 === count($transitions)) {
             return null;
         }

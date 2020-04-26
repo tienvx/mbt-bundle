@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class RandomGenerator extends RandomGeneratorTemplate
 {
@@ -53,12 +53,12 @@ class RandomGenerator extends RandomGeneratorTemplate
         return true;
     }
 
-    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
+    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
     {
         return [
             'stepsCount' => 1,
             'visitedTransitions' => [],
-            'visitedPlaces' => $model->getDefinition()->getInitialPlaces(),
+            'visitedPlaces' => $workflow->getDefinition()->getInitialPlaces(),
             'transitionCoverage' => $generatorOptions->getTransitionCoverage() ?? $this->transitionCoverage,
             'placeCoverage' => $generatorOptions->getPlaceCoverage() ?? $this->placeCoverage,
             'maxSteps' => $generatorOptions->getMaxSteps() ?? $this->maxSteps,
@@ -67,12 +67,12 @@ class RandomGenerator extends RandomGeneratorTemplate
         ];
     }
 
-    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
 
         // Update visited places and transitions.
-        foreach ($model->getMarking($subject)->getPlaces() as $place => $status) {
+        foreach ($workflow->getMarking($subject)->getPlaces() as $place => $status) {
             if ($status && !in_array($place, $state['visitedPlaces'])) {
                 $state['visitedPlaces'][] = $place;
             }
@@ -82,8 +82,8 @@ class RandomGenerator extends RandomGeneratorTemplate
         }
 
         // Update current coverage.
-        $state['currentTransitionCoverage'] = count($state['visitedTransitions']) / count($model->getDefinition()->getTransitions()) * 100;
-        $state['currentPlaceCoverage'] = count($state['visitedPlaces']) / count($model->getDefinition()->getPlaces()) * 100;
+        $state['currentTransitionCoverage'] = count($state['visitedTransitions']) / count($workflow->getDefinition()->getTransitions()) * 100;
+        $state['currentPlaceCoverage'] = count($state['visitedPlaces']) / count($workflow->getDefinition()->getPlaces()) * 100;
     }
 
     protected function canStop(array $state): bool
@@ -99,9 +99,9 @@ class RandomGenerator extends RandomGeneratorTemplate
         return false;
     }
 
-    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $this->getEnabledTransitions($model, $subject);
+        $transitions = $workflow->getEnabledTransitions($subject);
         if (count($transitions) > 0) {
             $key = array_rand($transitions);
 

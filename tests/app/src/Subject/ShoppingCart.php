@@ -7,7 +7,6 @@ use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
-use Tienvx\Bundle\MbtBundle\Steps\DataHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 /**
@@ -140,7 +139,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromHome(Data $data)
     {
-        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
+        $category = $data->getSet('category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -152,7 +151,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewOtherCategory(Data $data)
     {
-        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
+        $category = $data->getSet('category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -164,7 +163,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromProduct(Data $data)
     {
-        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
+        $category = $data->getSet('category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -176,7 +175,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewAnyCategoryFromCart(Data $data)
     {
-        $category = DataHelper::get($data, 'category', [$this, 'randomCategory'], [$this, 'validateCategory']);
+        $category = $data->getSet('category', [$this, 'randomCategory'], [$this, 'validateCategory']);
         $this->category = $category;
         $this->product = null;
     }
@@ -188,7 +187,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromHome(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
+        $product = $data->getSet('product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
         $this->product = $product;
         $this->category = null;
     }
@@ -200,7 +199,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCart(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
+        $product = $data->getSet('product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         $this->product = $product;
         $this->category = null;
     }
@@ -212,7 +211,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function viewProductFromCategory(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
+        $product = $data->getSet('product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
         $this->product = $product;
         $this->category = null;
     }
@@ -332,7 +331,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromHome(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
+        $product = $data->getSet('product', [$this, 'randomProductFromHome'], [$this, 'validateProductFromHome']);
         if (in_array($product, $this->needOptions)) {
             throw new Exception('You need to specify options for this product! Can not add product');
         }
@@ -350,7 +349,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function addFromCategory(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
+        $product = $data->getSet('product', [$this, 'randomProductFromCategory'], [$this, 'validateProductFromCategory']);
         if (in_array($product, $this->needOptions)) {
             throw new Exception('You need to specify options for this product! Can not add product');
         }
@@ -385,7 +384,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function remove(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
+        $product = $data->getSet('product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         unset($this->cart[$product]);
     }
 
@@ -396,7 +395,7 @@ class ShoppingCart extends AbstractSubject
      */
     public function update(Data $data)
     {
-        $product = DataHelper::get($data, 'product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
+        $product = $data->getSet('product', [$this, 'randomProductFromCart'], [$this, 'validateProductFromCart']);
         $this->cart[$product] = rand(1, 99);
     }
 

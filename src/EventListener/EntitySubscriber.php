@@ -57,7 +57,7 @@ class EntitySubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         if ($entity instanceof Bug) {
-            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getModel()->getName()));
+            $this->messageBus->dispatch(new RemoveScreenshotsMessage($entity->getId(), $entity->getWorkflow()->getName()));
         }
     }
 

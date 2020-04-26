@@ -32,16 +32,16 @@ class CreateBugMessage
     /**
      * @var string
      */
-    protected $model;
+    protected $workflow;
 
-    public function __construct(string $title, string $steps, string $message, ?int $taskId, string $status, string $model)
+    public function __construct(string $title, string $steps, string $message, ?int $taskId, string $status, string $workflow)
     {
         $this->title = $title;
         $this->steps = $steps;
         $this->message = $message;
         $this->taskId = $taskId;
         $this->status = $status;
-        $this->model = $model;
+        $this->workflow = $workflow;
     }
 
     public function getTitle(): string
@@ -69,8 +69,8 @@ class CreateBugMessage
         return $this->status;
     }
 
-    public function getModel(): string
+    public function getWorkflow(): string
     {
-        return $this->model;
+        return $this->workflow;
     }
 }

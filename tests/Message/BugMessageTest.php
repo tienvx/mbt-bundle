@@ -6,10 +6,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Entity\Workflow;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
@@ -46,7 +46,7 @@ class BugMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel(new Model($model));
+        $task->setWorkflow(new Workflow($model));
         $task->setGenerator(new Generator('random'));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
@@ -65,8 +65,8 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setSteps($steps);
-        $bug->setModel(new Model($model));
-        $bug->setModelHash($checksum[$model]);
+        $bug->setWorkflow(new Workflow($model));
+        $bug->setWorkflowHash($checksum[$model]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
