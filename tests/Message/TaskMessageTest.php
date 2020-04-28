@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
@@ -44,8 +45,6 @@ class TaskMessageTest extends MessageTestCase
         $entityManager->flush();
 
         $this->consumeMessages();
-
-        $task = $entityManager->getRepository(Task::class)->findOneBy(['id' => $task->getId()]);
 
         /** @var EntityRepository $entityRepository */
         $entityRepository = $entityManager->getRepository(Bug::class);
@@ -92,7 +91,24 @@ class TaskMessageTest extends MessageTestCase
         } else {
             $this->assertEquals(0, count($bugs));
         }
+
+        $task = $entityManager->getRepository(Task::class)->findOneBy(['id' => $task->getId()]);
         $this->assertEquals(TaskWorkflow::COMPLETED, $task->getStatus());
+    }
+
+    public function testCanNotExecuteWithTransitionReducerAndStateMachine()
+    {
+        /** @var ValidatorInterface $validator */
+        $validator = self::$container->get(ValidatorInterface::class);
+
+        $task = new Task();
+        $task->setTitle('Test task title');
+        $task->setWorkflow(new Workflow('shopping_cart'));
+        $task->setGenerator(new Generator('random'));
+        $task->setReducer(new Reducer('transition'));
+
+        $constraints = $validator->getMetadataFor($task)->getConstraints();
+        $this->assertCount(1, $validator->validate($task, $constraints));
     }
 
     public function consumeMessageData()

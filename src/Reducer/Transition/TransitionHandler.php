@@ -20,6 +20,7 @@ class TransitionHandler extends HandlerTemplate
         $fromPlaces = $steps->getPlacesAt($from);
         $toPlaces = $steps->getPlacesAt($to);
 
+        // Workflow only, does not work with state machine
         return $fromPlaces && $toPlaces &&
             count($fromPlaces) > 1 && count($toPlaces) > 1 &&
             1 === count(array_diff($fromPlaces, $toPlaces)) &&

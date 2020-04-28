@@ -11,6 +11,7 @@ use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ * @MbtAssert\TransitionReducerWorkflowType
  */
 class Task extends TaskModel
 {
