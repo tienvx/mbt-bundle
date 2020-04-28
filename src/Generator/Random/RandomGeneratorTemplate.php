@@ -2,52 +2,40 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
-use Symfony\Component\Workflow\Transition;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Helper\GuardHelper;
-use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Steps\Step;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 abstract class RandomGeneratorTemplate implements GeneratorInterface
 {
     /**
-     * @var GuardHelper
-     */
-    protected $guardHelper;
-
-    public function __construct(GuardHelper $guardHelper)
-    {
-        $this->guardHelper = $guardHelper;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function generate(Model $model, SubjectInterface $subject, GeneratorOptions $generatorOptions): iterable
+    public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions): iterable
     {
-        $state = $this->initState($model, $generatorOptions);
+        $state = $this->initState($workflow, $generatorOptions);
 
         while (!$this->canStop($state)) {
-            $transitionName = $this->randomTransition($model, $subject, $state);
+            $transitionName = $this->randomTransition($workflow, $subject, $state);
             if (is_null($transitionName)) {
                 break;
             }
 
             yield new Step($transitionName, new Data());
 
-            $this->updateState($model, $subject, $transitionName, $state);
+            $this->updateState($workflow, $subject, $transitionName, $state);
         }
     }
 
-    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
+    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
     {
         return [];
     }
 
-    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
     }
 
@@ -56,32 +44,8 @@ abstract class RandomGeneratorTemplate implements GeneratorInterface
         return true;
     }
 
-    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
         return null;
-    }
-
-    protected function getEnabledTransitions(Model $model, SubjectInterface $subject): array
-    {
-        $enabledTransitions = [];
-
-        foreach ($model->getDefinition()->getTransitions() as $transition) {
-            if ($this->isEnabled($model, $subject, $transition)) {
-                $enabledTransitions[] = $transition;
-            }
-        }
-
-        return $enabledTransitions;
-    }
-
-    protected function isEnabled(Model $model, SubjectInterface $subject, Transition $transition): bool
-    {
-        foreach ($transition->getFroms() as $place) {
-            if (!$model->getMarking($subject)->has($place)) {
-                return false;
-            }
-        }
-
-        return $this->guardHelper->can($subject, $model->getName(), $transition->getName());
     }
 }

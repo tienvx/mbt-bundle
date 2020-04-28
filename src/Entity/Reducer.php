@@ -2,25 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
-class Reducer
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Model\Reducer as ReducerModel;
+
+/**
+ * @ORM\Embeddable
+ */
+class Reducer extends ReducerModel
 {
     /**
-     * @var string
+     * @ORM\Column(type="string")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      */
-    private $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
+    protected $name;
 }

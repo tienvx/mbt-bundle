@@ -4,8 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Tienvx\Bundle\MbtBundle\Model\Subject\MarkingInterface;
+use Tienvx\Bundle\MbtBundle\Model\Subject\ScreenshotInterface;
+use Tienvx\Bundle\MbtBundle\Model\Subject\SetUpInterface;
+use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
-abstract class AbstractSubject implements SubjectInterface, SubjectScreenshotInterface, SubjectMarkingInterface
+abstract class AbstractSubject implements SubjectInterface, ScreenshotInterface, SetUpInterface, TearDownInterface, MarkingInterface
 {
     /**
      * @var mixed Required by workflow component
@@ -22,7 +27,7 @@ abstract class AbstractSubject implements SubjectInterface, SubjectScreenshotInt
      */
     protected $filesystem;
 
-    public function setUp(bool $testing = false): void
+    public function setUp(bool $trying = false): void
     {
         // Init system-under-test connection e.g.
         // $this->client = Client::createChromeClient();

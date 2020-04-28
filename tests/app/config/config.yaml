@@ -43,6 +43,10 @@ flysystem:
         mbt.storage:
             adapter: 'memory'
 
+imports:
+    - { resource: packages/test/workflows/*.yaml }
+    - { resource: packages/test/predefined-cases/*.yaml }
+
 tienvx_mbt:
     max_steps: 300
     transition_coverage: 100

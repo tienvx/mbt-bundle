@@ -7,9 +7,9 @@ use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Entity\Workflow;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
@@ -26,18 +26,18 @@ class CreateBugMessageHandler implements MessageHandlerInterface
     private $entityManager;
 
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    private $modelHelper;
+    private $workflowHelper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        ModelHelper $modelHelper
+        WorkflowHelper $workflowHelper
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
     }
 
     public function __invoke(CreateBugMessage $message): void
@@ -59,8 +59,8 @@ class CreateBugMessageHandler implements MessageHandlerInterface
         $bug = new Bug();
         $bug->setTitle($message->getTitle());
         $bug->setSteps(Steps::deserialize($message->getSteps()));
-        $bug->setModel(new Model($message->getModel()));
-        $bug->setModelHash($this->modelHelper->checksum($message->getModel()));
+        $bug->setWorkflow(new Workflow($message->getWorkflow()));
+        $bug->setWorkflowHash($this->workflowHelper->checksum($message->getWorkflow()));
         $bug->setBugMessage($message->getMessage());
         $bug->setStatus($message->getStatus());
 

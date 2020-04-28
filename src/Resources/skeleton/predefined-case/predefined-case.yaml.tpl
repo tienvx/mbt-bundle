@@ -2,7 +2,7 @@ tienvx_mbt:
     predefined_cases:
         '<?= $name; ?>':
             title: '<?= $name; ?>'
-            model: 'your_model_name'
+            workflow: 'your_workflow_name'
             steps:
                 - transition: null
                   data: []

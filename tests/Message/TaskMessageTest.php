@@ -7,10 +7,10 @@ use Doctrine\ORM\EntityRepository;
 use Exception;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Generator;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Reducer;
 use Tienvx\Bundle\MbtBundle\Entity\Reporter;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Entity\Workflow;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
@@ -31,7 +31,7 @@ class TaskMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setModel(new Model($model));
+        $task->setWorkflow(new Workflow($model));
         $task->setGenerator(new Generator($generator));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots($takeScreenshots);

@@ -12,12 +12,12 @@ class RemoveScreenshotsMessage
     /**
      * @var string
      */
-    protected $model;
+    protected $workflow;
 
-    public function __construct(int $bugId, string $model)
+    public function __construct(int $bugId, string $workflow)
     {
         $this->bugId = $bugId;
-        $this->model = $model;
+        $this->workflow = $workflow;
     }
 
     public function getBugId(): int
@@ -25,8 +25,8 @@ class RemoveScreenshotsMessage
         return $this->bugId;
     }
 
-    public function getModel(): string
+    public function getWorkflow(): string
     {
-        return $this->model;
+        return $this->workflow;
     }
 }

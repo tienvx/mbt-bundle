@@ -41,7 +41,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('title')
                                 ->defaultValue('')
                             ->end()
-                            ->scalarNode('model')
+                            ->scalarNode('workflow')
                                 ->cannotBeEmpty()
                             ->end()
                             ->arrayNode('steps')

@@ -3,12 +3,12 @@
 namespace <?= $namespace; ?>;
 
 use Symfony\Component\Workflow\Transition;
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Steps\Step;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class <?= $class_name; ?> implements GeneratorInterface
 {
@@ -27,11 +27,11 @@ class <?= $class_name; ?> implements GeneratorInterface
         return true;
     }
 
-    public function generate(Model $model, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
+    public function generate(Workflow $workflow, SubjectInterface $subject, GeneratorOptions $generatorOptions = null): iterable
     {
         while (true) {
             /** @var Transition[] $transitions */
-            $transitions = $model->getEnabledTransitions($subject);
+            $transitions = $workflow->getEnabledTransitions($subject);
             if (!empty($transitions)) {
                 // TODO This code always generate the first transition, never stop, change this to fit your requirements
                 $transition = reset($transitions);

@@ -7,12 +7,12 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\PredefinedCase;
 use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
-use Tienvx\Bundle\MbtBundle\Helper\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
+use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\TestPredefinedCaseMessage;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
@@ -33,9 +33,9 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
     private $messageHelper;
 
     /**
-     * @var ModelHelper
+     * @var WorkflowHelper
      */
-    private $modelHelper;
+    private $workflowHelper;
 
     /**
      * @var StepsRecorder
@@ -46,13 +46,13 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
         SubjectManager $subjectManager,
         PredefinedCaseManager $predefinedCaseManager,
         MessageHelper $messageHelper,
-        ModelHelper $modelHelper,
+        WorkflowHelper $workflowHelper,
         StepsRecorder $stepsRecorder
     ) {
         $this->subjectManager = $subjectManager;
         $this->predefinedCaseManager = $predefinedCaseManager;
         $this->messageHelper = $messageHelper;
-        $this->modelHelper = $modelHelper;
+        $this->workflowHelper = $workflowHelper;
         $this->stepsRecorder = $stepsRecorder;
     }
 
@@ -65,20 +65,20 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
         }
 
         $predefinedCase = $this->predefinedCaseManager->get($name);
-        $modelName = $predefinedCase->getModel()->getName();
-        $subject = $this->subjectManager->createAndSetUp($modelName);
+        $workflowName = $predefinedCase->getWorkflow()->getName();
+        $subject = $this->subjectManager->createAndSetUp($workflowName);
 
-        $this->test($predefinedCase, $subject, $modelName);
+        $this->test($predefinedCase, $subject, $workflowName);
     }
 
-    protected function test(PredefinedCase $predefinedCase, SubjectInterface $subject, string $modelName): void
+    protected function test(PredefinedCase $predefinedCase, SubjectInterface $subject, string $workflowName): void
     {
         $recorded = new Steps();
         try {
-            $model = $this->modelHelper->get($modelName);
-            $this->stepsRecorder->record($predefinedCase->getSteps(), $model, $subject, $recorded);
+            $workflow = $this->workflowHelper->get($workflowName);
+            $this->stepsRecorder->record($predefinedCase->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {
-            $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $modelName);
+            $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $workflowName);
         } finally {
             $subject->tearDown();
         }

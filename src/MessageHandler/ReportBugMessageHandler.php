@@ -70,7 +70,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     {
         $notification = new BugNotification($bug, $this->emailFrom, $this->adminUrl, sprintf('A new bug was found (id: %d)!', $bug->getId()), $channels);
         $notification->content(implode("\n", [
-            sprintf('We found a new bug during testing the model "%s"!', $bug->getModel()->getName()),
+            sprintf('We found a new bug during testing the workflow "%s"!', $bug->getWorkflow()->getName()),
             sprintf('Bug id: %d', $bug->getId()),
             sprintf('Bug title: %s', $bug->getTitle()),
             sprintf('Bug message: %s', $bug->getBugMessage()),

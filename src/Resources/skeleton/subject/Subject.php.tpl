@@ -6,11 +6,10 @@ use Tienvx\Bundle\MbtBundle\Annotation\Subject;
 use Tienvx\Bundle\MbtBundle\Annotation\Transition;
 use Tienvx\Bundle\MbtBundle\Annotation\Place;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
-use Tienvx\Bundle\MbtBundle\Steps\DataHelper;
 use Tienvx\Bundle\MbtBundle\Subject\AbstractSubject;
 
 /**
-* @Subject("<?= $model; ?>")
+* @Subject("<?= $workflow; ?>")
 */
 class <?= $class_name; ?> extends AbstractSubject
 {
@@ -34,7 +33,7 @@ class <?= $class_name; ?> extends AbstractSubject
      */
     public function <?= $method; ?>(Data $data)
     {
-        $value = DataHelper::get($data, 'key', $missCallback, $validateCallback);
+        $value = $data->getSet('key', $missCallback, $validateCallback);
     }
 <?php endforeach; ?>
 }

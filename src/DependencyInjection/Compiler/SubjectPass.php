@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\Annotation\Builder;
-use Tienvx\Bundle\MbtBundle\Helper\SubjectHelper;
+use Tienvx\Bundle\MbtBundle\EventListener\WorkflowSubscriber;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 
 class SubjectPass implements CompilerPassInterface
@@ -41,7 +41,7 @@ class SubjectPass implements CompilerPassInterface
         $subjectManagerDefinition = $container->getDefinition(SubjectManager::class);
         $subjectManagerDefinition->setBindings(['array $subjects' => $subjects]);
 
-        $subjectHelperDefinition = $container->getDefinition(SubjectHelper::class);
+        $subjectHelperDefinition = $container->getDefinition(WorkflowSubscriber::class);
         $subjectHelperDefinition->setBindings([
             'array $places' => $places,
             'array $transitions' => $transitions,

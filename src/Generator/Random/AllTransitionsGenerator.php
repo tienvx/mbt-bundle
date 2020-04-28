@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class AllTransitionsGenerator extends RandomGeneratorTemplate
 {
@@ -33,17 +33,17 @@ class AllTransitionsGenerator extends RandomGeneratorTemplate
         return true;
     }
 
-    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
+    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
     {
         return [
             'stepsCount' => 1,
             'maxSteps' => $generatorOptions->getMaxSteps() ?? $this->maxSteps,
             'visitedTransitions' => [],
-            'totalTransitions' => count($model->getDefinition()->getTransitions()),
+            'totalTransitions' => count($workflow->getDefinition()->getTransitions()),
         ];
     }
 
-    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
 
@@ -57,9 +57,9 @@ class AllTransitionsGenerator extends RandomGeneratorTemplate
         return count($state['visitedTransitions']) === $state['totalTransitions'] || $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $this->getEnabledTransitions($model, $subject);
+        $transitions = $workflow->getEnabledTransitions($subject);
         if (0 === count($transitions)) {
             return null;
         }

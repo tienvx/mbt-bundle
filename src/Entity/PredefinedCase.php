@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
+use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
@@ -20,18 +21,18 @@ class PredefinedCase
     /**
      * @var string
      */
-    private $model;
+    private $workflow;
 
     /**
      * @var string
      */
     private $steps;
 
-    public function init(string $name, string $title, string $model, string $steps): void
+    public function init(string $name, string $title, string $workflow, string $steps): void
     {
         $this->name = $name;
         $this->title = $title;
-        $this->model = $model;
+        $this->workflow = $workflow;
         $this->steps = $steps;
     }
 
@@ -56,16 +57,16 @@ class PredefinedCase
     }
 
     /**
-     * @MbtAssert\Model
+     * @MbtAssert\Workflow
      */
-    public function getModel(): Model
+    public function getWorkflow(): WorkflowInterface
     {
-        return new Model($this->model);
+        return new Workflow($this->workflow);
     }
 
-    public function setModel(Model $model): void
+    public function setWorkflow(WorkflowInterface $workflow): void
     {
-        $this->model = $model->getName();
+        $this->workflow = $workflow->getName();
     }
 
     public function getSteps(): Steps

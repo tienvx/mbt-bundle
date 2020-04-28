@@ -3,61 +3,43 @@
 namespace Tienvx\Bundle\MbtBundle\Helper\Steps;
 
 use Exception;
+use Symfony\Component\Workflow\Workflow;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Helper\GuardHelper;
-use Tienvx\Bundle\MbtBundle\Helper\SubjectHelper;
-use Tienvx\Bundle\MbtBundle\Model\Model;
+use Tienvx\Bundle\MbtBundle\EventListener\WorkflowSubscriber;
 use Tienvx\Bundle\MbtBundle\Steps\Data;
 use Tienvx\Bundle\MbtBundle\Steps\Step;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
 
 class Recorder
 {
     /**
-     * @var SubjectHelper
-     */
-    protected $subjectHelper;
-
-    /**
-     * @var GuardHelper
-     */
-    protected $guardHelper;
-
-    public function __construct(SubjectHelper $subjectHelper, GuardHelper $guardHelper)
-    {
-        $this->subjectHelper = $subjectHelper;
-        $this->guardHelper = $guardHelper;
-    }
-
-    /**
      * @throws Exception
      * @throws Throwable
      */
-    public function record(iterable $steps, Model $model, SubjectInterface $subject, Steps $recorded): void
+    public function record(iterable $steps, Workflow $workflow, object $subject, Steps $recorded): void
     {
-        $recorded->addStep(new Step(null, new Data(), $model->getDefinition()->getInitialPlaces()));
+        $recorded->addStep(new Step(null, new Data(), $workflow->getDefinition()->getInitialPlaces()));
 
         foreach ($steps as $step) {
             if ($step instanceof Step && $step->getTransition() && $step->getData() instanceof Data) {
-                $this->recordStep($step, $model, $subject, $recorded);
+                $this->recordStep($step, $workflow, $subject, $recorded, $step->getData());
             }
         }
     }
 
-    protected function recordStep(Step $step, Model $model, SubjectInterface $subject, Steps $recorded): void
+    protected function recordStep(Step $step, Workflow $workflow, object $subject, Steps $recorded, Data $data): void
     {
-        if (!$this->guardHelper->can($subject, $model->getName(), $step->getTransition())) {
-            throw new Exception(sprintf('Transition %s is not enabled', $step->getTransition()));
-        }
         try {
-            $marking = $model->apply($subject, $step->getTransition());
-            $this->subjectHelper->invokeTransition($subject, $step->getTransition(), $step->getData());
-            $this->subjectHelper->invokePlaces($subject, array_keys(array_filter($marking->getPlaces())));
+            if ($workflow->can($subject, $step->getTransition())) {
+                $workflow->apply($subject, $step->getTransition(), [
+                    Workflow::DISABLE_ANNOUNCE_EVENT => true,
+                    WorkflowSubscriber::DATA_CONTEXT => $data,
+                ]);
+            }
         } catch (Throwable $throwable) {
             throw $throwable;
         } finally {
-            $places = array_keys(array_filter($model->getMarking($subject)->getPlaces()));
+            $places = array_keys(array_filter($workflow->getMarking($subject)->getPlaces()));
             $step->setPlaces($places);
             $recorded->addStep($step);
         }

@@ -22,6 +22,30 @@ class Data
     }
 
     /**
+     * Get value by key, then validate value, or set value if missing.
+     *
+     * @param string   $key      Key to get value from data
+     * @param callable $miss     Call this to get value in case miss
+     * @param callable $validate Call this to validate in case hit
+     *
+     * @return mixed
+     *
+     * @throws Exception
+     */
+    public function getSet(string $key, callable $miss, callable $validate)
+    {
+        if ($this->has($key)) {
+            $value = $this->get($key);
+            $validate($value);
+        } else {
+            $value = $miss();
+            $this->set($key, $value);
+        }
+
+        return $value;
+    }
+
+    /**
      * @param mixed $value
      *
      * @throws Exception

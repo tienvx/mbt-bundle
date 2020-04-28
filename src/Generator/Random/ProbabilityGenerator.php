@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator\Random;
 
+use Symfony\Component\Workflow\Workflow;
 use Tienvx\Bundle\MbtBundle\Entity\GeneratorOptions;
-use Tienvx\Bundle\MbtBundle\Model\Model;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectInterface;
+use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class ProbabilityGenerator extends RandomGeneratorTemplate
 {
@@ -33,7 +33,7 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
         return true;
     }
 
-    protected function initState(Model $model, GeneratorOptions $generatorOptions): array
+    protected function initState(Workflow $workflow, GeneratorOptions $generatorOptions): array
     {
         return [
             'stepsCount' => 1,
@@ -41,7 +41,7 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
         ];
     }
 
-    protected function updateState(Model $model, SubjectInterface $subject, string $transitionName, array &$state): void
+    protected function updateState(Workflow $workflow, SubjectInterface $subject, string $transitionName, array &$state): void
     {
         ++$state['stepsCount'];
     }
@@ -51,16 +51,16 @@ class ProbabilityGenerator extends RandomGeneratorTemplate
         return $state['stepsCount'] >= $state['maxSteps'];
     }
 
-    protected function randomTransition(Model $model, SubjectInterface $subject, array $state): ?string
+    protected function randomTransition(Workflow $workflow, SubjectInterface $subject, array $state): ?string
     {
-        $transitions = $this->getEnabledTransitions($model, $subject);
+        $transitions = $workflow->getEnabledTransitions($subject);
         if (0 === count($transitions)) {
             return null;
         }
 
         $visibilities = [];
         foreach ($transitions as $index => $transition) {
-            $transitionMetadata = $model->getMetadataStore()->getTransitionMetadata($transition);
+            $transitionMetadata = $workflow->getMetadataStore()->getTransitionMetadata($transition);
             $visibilities[$transition->getName()] = $transitionMetadata['probability'] ?? 1;
         }
 
