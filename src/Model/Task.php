@@ -10,6 +10,21 @@ use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 class Task implements TaskInterface
 {
     /**
+     * @var int|null
+     */
+    protected $id;
+
+    /**
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $workflow;
+
+    /**
      * @var GeneratorInterface
      */
     protected $generator;
@@ -81,24 +96,24 @@ class Task implements TaskInterface
 
     public function getWorkflow(): WorkflowInterface
     {
-        return $this->workflow;
+        return new Workflow($this->workflow);
     }
 
     public function setWorkflow(WorkflowInterface $workflow): TaskInterface
     {
-        $this->workflow = $workflow;
+        $this->workflow = $workflow->getName();
 
         return $this;
     }
 
     public function getGenerator(): GeneratorInterface
     {
-        return $this->generator;
+        return new Generator($this->generator);
     }
 
     public function setGenerator(GeneratorInterface $generator): TaskInterface
     {
-        $this->generator = $generator;
+        $this->generator = $generator->getName();
 
         return $this;
     }
@@ -117,12 +132,12 @@ class Task implements TaskInterface
 
     public function getReducer(): ReducerInterface
     {
-        return $this->reducer;
+        return new Reducer($this->reducer);
     }
 
     public function setReducer(ReducerInterface $reducer): TaskInterface
     {
-        $this->reducer = $reducer;
+        $this->reducer = $reducer->getName();
 
         return $this;
     }

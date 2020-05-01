@@ -5,7 +5,10 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Model\GeneratorInterface;
+use Tienvx\Bundle\MbtBundle\Model\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
+use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
@@ -30,15 +33,17 @@ class Task extends TaskModel
     protected $title;
 
     /**
-     * @ORM\Embedded(class="Workflow")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      * @MbtAssert\Workflow
      */
     protected $workflow;
 
     /**
-     * @ORM\Embedded(class="Generator")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      * @MbtAssert\Generator
      */
     protected $generator;
@@ -50,8 +55,9 @@ class Task extends TaskModel
     protected $generatorOptions;
 
     /**
-     * @ORM\Embedded(class="Reducer")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      * @MbtAssert\Reducer
      */
     protected $reducer;
@@ -96,7 +102,27 @@ class Task extends TaskModel
      */
     public function getReporters(): array
     {
-        return parent::getReporters();
+        $values = [];
+        foreach (json_decode($this->reporters, true) as $reporter) {
+            $values[] = new Reporter($reporter);
+        }
+
+        return $values;
+    }
+
+    public function getWorkflow(): WorkflowInterface
+    {
+        return new Workflow($this->workflow);
+    }
+
+    public function getGenerator(): GeneratorInterface
+    {
+        return new Generator($this->generator);
+    }
+
+    public function getReducer(): ReducerInterface
+    {
+        return new Reducer($this->reducer);
     }
 
     /**

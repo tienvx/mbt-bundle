@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
+use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
@@ -43,8 +44,9 @@ class Bug extends BugModel
     protected $steps;
 
     /**
-     * @ORM\Embedded(class="Workflow")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      * @MbtAssert\Workflow
      */
     protected $workflow;
@@ -83,6 +85,11 @@ class Bug extends BugModel
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     protected $updatedAt;
+
+    public function getWorkflow(): WorkflowInterface
+    {
+        return new Workflow($this->workflow);
+    }
 
     /**
      * @ORM\PrePersist
