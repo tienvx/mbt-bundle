@@ -29,7 +29,7 @@ class Bug implements BugInterface
     protected $steps;
 
     /**
-     * @var WorkflowInterface
+     * @var string
      */
     protected $workflow;
 
@@ -111,12 +111,12 @@ class Bug implements BugInterface
 
     public function getWorkflow(): WorkflowInterface
     {
-        return $this->workflow;
+        return new Workflow($this->workflow);
     }
 
     public function setWorkflow(WorkflowInterface $workflow): BugInterface
     {
-        $this->workflow = $workflow;
+        $this->workflow = $workflow->getName();
 
         return $this;
     }

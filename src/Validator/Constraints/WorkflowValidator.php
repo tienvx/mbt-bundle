@@ -7,7 +7,6 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
-use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
 
 /**
  * @Annotation
@@ -30,18 +29,22 @@ class WorkflowValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Workflow');
         }
 
-        if (!($value instanceof WorkflowInterface)) {
-            throw new UnexpectedValueException($value, WorkflowInterface::class);
+        if (null === $value || '' === $value) {
+            return;
+        }
+
+        if (!is_scalar($value) && !(\is_object($value) && method_exists($value, '__toString'))) {
+            throw new UnexpectedValueException($value, 'string');
         }
 
         $this->validateValue($value, $constraint);
     }
 
-    protected function validateValue(WorkflowInterface $value, Constraint $constraint): void
+    protected function validateValue(string $value, Constraint $constraint): void
     {
-        if (!$this->workflowHelper->has($value->getName())) {
+        if (!$this->workflowHelper->has($value)) {
             $this->context->buildViolation($constraint->getMessage())
-                ->setParameter('{{ string }}', $value->getName())
+                ->setParameter('{{ string }}', $value)
                 ->addViolation();
         }
     }

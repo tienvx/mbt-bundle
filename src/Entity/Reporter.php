@@ -6,8 +6,4 @@ use Tienvx\Bundle\MbtBundle\Model\Reporter as ReporterModel;
 
 class Reporter extends ReporterModel
 {
-    /**
-     * @var string
-     */
-    protected $name;
 }
