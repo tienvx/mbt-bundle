@@ -21,7 +21,7 @@ class TaskMessageTest extends MessageTestCase
      * @throws Exception
      * @dataProvider consumeMessageData
      */
-    public function testExecute(string $model, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
+    public function testExecute(string $workflow, string $generator, string $reducer, bool $takeScreenshots, bool $reportBug)
     {
         $this->clearMessages();
         $this->clearEmails();
@@ -32,7 +32,7 @@ class TaskMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setWorkflow(new Workflow($model));
+        $task->setWorkflow(new Workflow($workflow));
         $task->setGenerator(new Generator($generator));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots($takeScreenshots);
@@ -53,7 +53,7 @@ class TaskMessageTest extends MessageTestCase
 
         if (count($bugs)) {
             $this->assertEquals(1, count($bugs));
-            if ('shopping_cart' === $model) {
+            if ('shopping_cart' === $workflow) {
                 $ids = [];
                 foreach ($bugs[0]->getSteps() as $step) {
                     if ($step->getData() && $step->getData()->has('product')) {
@@ -67,9 +67,9 @@ class TaskMessageTest extends MessageTestCase
                 } else {
                     $this->fail();
                 }
-            } elseif ('checkout' === $model) {
+            } elseif ('checkout' === $workflow) {
                 $this->assertEquals('Still able to do register account, guest checkout or login when logged in!', $bugs[0]->getBugMessage());
-            } elseif ('product' === $model) {
+            } elseif ('product' === $workflow) {
                 $this->assertEquals('Can not upload file!', $bugs[0]->getBugMessage());
             }
             $this->assertEquals(0, $bugs[0]->getMessagesCount());

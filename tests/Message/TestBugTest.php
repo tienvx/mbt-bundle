@@ -19,7 +19,7 @@ class TestBugTest extends MessageTestCase
     /**
      * @throws Exception
      */
-    public function setUpAndExecute(string $model, string $bugMessage, Steps $steps, int $bugsCount, bool $reopen = false)
+    public function setUpAndExecute(string $workflow, string $bugMessage, Steps $steps, int $bugsCount, bool $reopen = false)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -27,7 +27,7 @@ class TestBugTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Just dummy task');
-        $task->setWorkflow(new Workflow($model));
+        $task->setWorkflow(new Workflow($workflow));
         $task->setGenerator(new Generator('random'));
         $task->setReducer(new Reducer('loop'));
         $entityManager->persist($task);
@@ -35,8 +35,8 @@ class TestBugTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test regression bug');
         $bug->setSteps($steps);
-        $bug->setWorkflow(new Workflow($model));
-        $bug->setWorkflowHash($checksum[$model]);
+        $bug->setWorkflow(new Workflow($workflow));
+        $bug->setWorkflowHash($checksum[$workflow]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $bug->setStatus(BugWorkflow::CLOSED);
