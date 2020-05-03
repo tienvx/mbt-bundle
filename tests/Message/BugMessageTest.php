@@ -20,7 +20,7 @@ class BugMessageTest extends MessageTestCase
      *
      * @throws Exception
      */
-    public function testExecute(string $model, array $steps, string $reducer, array $expectedSteps)
+    public function testExecute(string $workflow, array $steps, string $reducer, array $expectedSteps)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -28,7 +28,7 @@ class BugMessageTest extends MessageTestCase
 
         $steps = Steps::denormalize($steps);
         $expectedSteps = Steps::denormalize($expectedSteps);
-        switch ($model) {
+        switch ($workflow) {
             case 'shopping_cart':
                 $bugMessage = 'You added an out-of-stock product into cart! Can not checkout';
                 break;
@@ -46,7 +46,7 @@ class BugMessageTest extends MessageTestCase
 
         $task = new Task();
         $task->setTitle('Test task title');
-        $task->setWorkflow(new Workflow($model));
+        $task->setWorkflow(new Workflow($workflow));
         $task->setGenerator(new Generator('random'));
         $task->setReducer(new Reducer($reducer));
         $task->setTakeScreenshots(false);
@@ -65,8 +65,8 @@ class BugMessageTest extends MessageTestCase
         $bug = new Bug();
         $bug->setTitle('Test bug title');
         $bug->setSteps($steps);
-        $bug->setWorkflow(new Workflow($model));
-        $bug->setWorkflowHash($checksum[$model]);
+        $bug->setWorkflow(new Workflow($workflow));
+        $bug->setWorkflowHash($checksum[$workflow]);
         $bug->setTask($task);
         $bug->setBugMessage($bugMessage);
         $entityManager->persist($bug);
