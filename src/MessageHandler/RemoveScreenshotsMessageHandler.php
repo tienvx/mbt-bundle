@@ -22,16 +22,22 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
      */
     protected $mbtStorage;
 
-    public function __construct(
-        SubjectManager $subjectManager,
-        FilesystemInterface $mbtStorage
-    ) {
+    public function __construct(SubjectManager $subjectManager)
+    {
         $this->subjectManager = $subjectManager;
+    }
+
+    public function setMbtStorage(FilesystemInterface $mbtStorage): void
+    {
         $this->mbtStorage = $mbtStorage;
     }
 
     public function __invoke(RemoveScreenshotsMessage $message): void
     {
+        if (!$this->mbtStorage instanceof FilesystemInterface) {
+            throw new Exception('Storage "mbt.storage" is missing');
+        }
+
         $bugId = $message->getBugId();
         $workflow = $message->getWorkflow();
 

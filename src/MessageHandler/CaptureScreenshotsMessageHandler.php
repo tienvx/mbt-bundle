@@ -44,19 +44,26 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
     public function __construct(
         EntityManagerInterface $entityManager,
         SubjectManager $subjectManager,
-        FilesystemInterface $mbtStorage,
         WorkflowHelper $workflowHelper,
         ScreenshotsCapturer $screenshotsCapturer
     ) {
         $this->entityManager = $entityManager;
         $this->subjectManager = $subjectManager;
-        $this->mbtStorage = $mbtStorage;
         $this->workflowHelper = $workflowHelper;
         $this->screenshotsCapturer = $screenshotsCapturer;
     }
 
+    public function setMbtStorage(FilesystemInterface $mbtStorage): void
+    {
+        $this->mbtStorage = $mbtStorage;
+    }
+
     public function __invoke(CaptureScreenshotsMessage $message): void
     {
+        if (!$this->mbtStorage instanceof FilesystemInterface) {
+            throw new Exception('Storage "mbt.storage" is missing');
+        }
+
         $bugId = $message->getBugId();
         $bug = $this->entityManager->getRepository(Bug::class)->find($bugId);
         $workflow = $bug->getWorkflow()->getName();

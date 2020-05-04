@@ -35,6 +35,13 @@ doctrine:
     orm:
         auto_mapping: true
 
+security:
+    providers:
+        in_memory: { memory: ~ }
+    firewalls:
+        main:
+            anonymous: ~
+
 maker:
     root_namespace: 'App'
 
