@@ -36,14 +36,22 @@ class ReportBugMessageHandler implements MessageHandlerInterface
      */
     private $adminUrl;
 
-    public function __construct(EntityManagerInterface $entityManager, NotifierInterface $notifier)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+
+    public function setNotifier(NotifierInterface $notifier): void
+    {
         $this->notifier = $notifier;
     }
 
     public function __invoke(ReportBugMessage $message): void
     {
+        if (!$this->notifier instanceof NotifierInterface) {
+            throw new Exception('Bug cannot be reported as the Notifier component is not installed. Try running "composer require symfony/notifier".');
+        }
+
         $bugId = $message->getBugId();
         $channels = $message->getChannels();
 
