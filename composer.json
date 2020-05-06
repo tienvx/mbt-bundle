@@ -20,10 +20,10 @@
         "ext-json": "*",
         "symfony/framework-bundle": "^4.4|^5.0",
         "symfony/console": "^4.4|^5.0",
-        "symfony/workflow": "5.1.x-dev",
+        "symfony/workflow": "5.1.0-BETA1",
         "symfony/validator": "^4.4|^5.0",
         "symfony/messenger": "^4.4|^5.0",
-        "doctrine/doctrine-bundle": "~2.0.0",
+        "doctrine/doctrine-bundle": "^1.12|^2.0",
         "doctrine/orm": "~2.7.0",
         "jmgq/a-star": "^1.1"
     },
