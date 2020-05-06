@@ -16,6 +16,6 @@ class EmailReporter implements ReporterInterface
 
     public static function support(): bool
     {
-        return true;
+        return class_exists('Symfony\Component\Notifier\Notifier');
     }
 }
