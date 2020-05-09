@@ -51,7 +51,7 @@ class GuardPass implements CompilerPassInterface
         return false;
     }
 
-    protected function replaceDefinition(ContainerBuilder $container, string $guardId)
+    protected function replaceDefinition(ContainerBuilder $container, string $guardId): void
     {
         $guardsConfiguration = $container->getDefinition($guardId)->getArgument(0);
         $tags = $container->getDefinition($guardId)->getTags();

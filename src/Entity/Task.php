@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\GeneratorInterface;
@@ -18,6 +17,8 @@ use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
  */
 class Task extends TaskModel
 {
+    use TimestampableTrait;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id()
@@ -88,16 +89,6 @@ class Task extends TaskModel
     protected $takeScreenshots;
 
     /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    protected $updatedAt;
-
-    /**
      * @MbtAssert\Reporters
      */
     public function getReporters(): array
@@ -123,22 +114,5 @@ class Task extends TaskModel
     public function getReducer(): ReducerInterface
     {
         return new Reducer($this->reducer);
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist(): void
-    {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate(): void
-    {
-        $this->updatedAt = new DateTime();
     }
 }

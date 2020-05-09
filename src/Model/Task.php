@@ -2,13 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model;
 
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
 
 class Task implements TaskInterface
 {
+    use TimestampableTrait;
+
     /**
      * @var int|null
      */
@@ -58,16 +59,6 @@ class Task implements TaskInterface
      * @var bool
      */
     protected $takeScreenshots;
-
-    /**
-     * @var ?DateTimeInterface
-     */
-    protected $updatedAt;
-
-    /**
-     * @var ?DateTimeInterface
-     */
-    protected $createdAt;
 
     public function __construct()
     {
@@ -208,29 +199,5 @@ class Task implements TaskInterface
     public function getTakeScreenshots(): bool
     {
         return $this->takeScreenshots;
-    }
-
-    public function setCreatedAt(DateTimeInterface $createdAt): TaskInterface
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): TaskInterface
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTimeInterface
-    {
-        return $this->updatedAt;
     }
 }

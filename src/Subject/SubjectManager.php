@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Subject;
 
 use Exception;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Tienvx\Bundle\MbtBundle\Event\SubjectInitEvent;
 use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 
 class SubjectManager
@@ -12,29 +14,27 @@ class SubjectManager
      */
     protected $subjects;
 
-    public function __construct(array $subjects)
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
+
+    public function __construct(array $subjects, EventDispatcherInterface $dispatcher)
     {
         $this->subjects = $subjects;
+        $this->dispatcher = $dispatcher;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function create(string $workflowName): SubjectInterface
+    public function create(string $workflowName, bool $trying = false): SubjectInterface
     {
         $class = $this->subjects[$workflowName] ?? null;
-        if (!is_null($class)) {
-            return new $class();
+        if (is_null($class)) {
+            throw new Exception(sprintf('Subject for workflow %s not found', $workflowName));
         }
-        throw new Exception(sprintf('Subject for workflow %s not found', $workflowName));
-    }
 
-    public function createAndSetUp(string $workflowName, bool $trying = false): SubjectInterface
-    {
-        $subject = $this->create($workflowName);
-        if ($subject instanceof SetUpInterface) {
-            $subject->setUp($trying);
-        }
+        $subject = new $class();
+        $event = new SubjectInitEvent($subject, $trying);
+        $this->dispatcher->dispatch($event, SubjectInitEvent::NAME);
 
         return $subject;
     }
