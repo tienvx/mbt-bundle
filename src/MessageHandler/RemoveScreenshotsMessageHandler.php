@@ -27,11 +27,6 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
         $this->subjectManager = $subjectManager;
     }
 
-    public function setMbtStorage(FilesystemInterface $mbtStorage): void
-    {
-        $this->mbtStorage = $mbtStorage;
-    }
-
     public function __invoke(RemoveScreenshotsMessage $message): void
     {
         if (!$this->mbtStorage instanceof FilesystemInterface) {
@@ -44,6 +39,11 @@ class RemoveScreenshotsMessageHandler implements MessageHandlerInterface
         $subject = $this->subjectManager->create($workflow);
 
         $this->removeScreenshots($subject, $bugId);
+    }
+
+    public function setMbtStorage(FilesystemInterface $mbtStorage): void
+    {
+        $this->mbtStorage = $mbtStorage;
     }
 
     protected function removeScreenshots(SubjectInterface $subject, int $bugId): void

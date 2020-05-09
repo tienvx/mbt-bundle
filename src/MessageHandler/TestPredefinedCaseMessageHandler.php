@@ -66,7 +66,7 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
 
         $predefinedCase = $this->predefinedCaseManager->get($name);
         $workflowName = $predefinedCase->getWorkflow()->getName();
-        $subject = $this->subjectManager->createAndSetUp($workflowName);
+        $subject = $this->subjectManager->create($workflowName);
 
         $this->test($predefinedCase, $subject, $workflowName);
     }

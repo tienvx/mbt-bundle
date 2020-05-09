@@ -53,11 +53,6 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
         $this->screenshotsCapturer = $screenshotsCapturer;
     }
 
-    public function setMbtStorage(FilesystemInterface $mbtStorage): void
-    {
-        $this->mbtStorage = $mbtStorage;
-    }
-
     public function __invoke(CaptureScreenshotsMessage $message): void
     {
         if (!$this->mbtStorage instanceof FilesystemInterface) {
@@ -76,9 +71,14 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
-        $subject = $this->subjectManager->createAndSetUp($workflow);
+        $subject = $this->subjectManager->create($workflow);
 
         $this->capture($subject, $bug);
+    }
+
+    public function setMbtStorage(FilesystemInterface $mbtStorage): void
+    {
+        $this->mbtStorage = $mbtStorage;
     }
 
     protected function capture(SubjectInterface $subject, Bug $bug): void

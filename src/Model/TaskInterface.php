@@ -47,11 +47,11 @@ interface TaskInterface
 
     public function setTakeScreenshots(bool $takeScreenshots): self;
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self;
+    public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): ?DateTimeInterface;
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self;
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void;
 
     public function getUpdatedAt(): ?DateTimeInterface;
 }

@@ -41,11 +41,6 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         $this->entityManager = $entityManager;
     }
 
-    public function setNotifier(NotifierInterface $notifier): void
-    {
-        $this->notifier = $notifier;
-    }
-
     public function __invoke(ReportBugMessage $message): void
     {
         if (!$this->notifier instanceof NotifierInterface) {
@@ -62,6 +57,11 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         }
 
         $this->sendNotification($bug, $channels);
+    }
+
+    public function setNotifier(NotifierInterface $notifier): void
+    {
+        $this->notifier = $notifier;
     }
 
     public function setEmailFrom(string $emailFrom): void

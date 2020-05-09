@@ -27,7 +27,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         $this->transitions = $transitions;
     }
 
-    public function onEntered(EnteredEvent $event)
+    public function onEntered(EnteredEvent $event): void
     {
         $subject = $event->getSubject();
         $places = array_keys(array_filter($event->getMarking()->getPlaces()));
@@ -37,7 +37,7 @@ class WorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onTransition(TransitionEvent $event)
+    public function onTransition(TransitionEvent $event): void
     {
         $subject = $event->getSubject();
         $transition = $event->getTransition()->getName();

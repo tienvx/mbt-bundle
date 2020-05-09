@@ -82,7 +82,7 @@ class TestBugMessageHandler implements MessageHandlerInterface
         $recorded = new Steps();
         try {
             $workflow = $this->workflowHelper->get($bug->getWorkflow()->getName());
-            $subject = $this->subjectManager->createAndSetUp($bug->getWorkflow()->getName());
+            $subject = $this->subjectManager->create($bug->getWorkflow()->getName());
 
             $this->stepsRecorder->record($bug->getSteps(), $workflow, $subject, $recorded);
         } catch (Throwable $throwable) {

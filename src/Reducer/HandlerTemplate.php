@@ -102,7 +102,7 @@ abstract class HandlerTemplate implements HandlerInterface
     {
         try {
             $workflow = $this->workflowHelper->get($workflowName);
-            $subject = $this->subjectManager->createAndSetUp($workflowName);
+            $subject = $this->subjectManager->create($workflowName);
             $this->stepsRunner->run($newSteps, $workflow, $subject);
         } catch (Throwable $newThrowable) {
             if ($newThrowable->getMessage() === $bug->getBugMessage()) {
