@@ -88,6 +88,12 @@ class Task extends TaskModel
      */
     protected $takeScreenshots;
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->generatorOptions = new GeneratorOptions();
+    }
+
     /**
      * @MbtAssert\Reporters
      */

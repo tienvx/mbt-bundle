@@ -66,6 +66,7 @@ class Task implements TaskInterface
         $this->takeScreenshots = false;
         $this->status = TaskWorkflow::NOT_STARTED;
         $this->reporters = '[]';
+        $this->generatorOptions = new GeneratorOptions();
     }
 
     public function getId(): ?int
