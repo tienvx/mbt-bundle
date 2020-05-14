@@ -14,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
+use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
@@ -98,7 +99,9 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         } catch (Throwable $throwable) {
             $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getWorkflow()->getName());
         } finally {
-            $subject->tearDown();
+            if ($subject instanceof TearDownInterface) {
+                $subject->tearDown();
+            }
 
             $this->messageBus->dispatch(new ApplyTaskTransitionMessage($task->getId(), TaskWorkflow::COMPLETE));
         }

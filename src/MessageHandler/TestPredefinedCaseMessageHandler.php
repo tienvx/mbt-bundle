@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\TestPredefinedCaseMessage;
+use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
 use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\PredefinedCase\PredefinedCaseManager;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
@@ -80,7 +81,9 @@ class TestPredefinedCaseMessageHandler implements MessageHandlerInterface
         } catch (Throwable $throwable) {
             $this->messageHelper->createBug($recorded, $throwable->getMessage(), null, $workflowName);
         } finally {
-            $subject->tearDown();
+            if ($subject instanceof TearDownInterface) {
+                $subject->tearDown();
+            }
         }
     }
 }
