@@ -15,6 +15,7 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
 use Tienvx\Bundle\MbtBundle\Model\SubjectInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
@@ -97,7 +98,9 @@ class WorkflowTryCommand extends Command
                 "<error>{$throwable->getMessage()}</error>",
             ]);
         } finally {
-            $subject->tearDown();
+            if ($subject instanceof TearDownInterface) {
+                $subject->tearDown();
+            }
         }
 
         $this->renderTable($output, $recorded);

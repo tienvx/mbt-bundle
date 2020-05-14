@@ -15,6 +15,7 @@ use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
 use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
 use Tienvx\Bundle\MbtBundle\Message\ApplyBugTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\TestBugMessage;
+use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
@@ -88,7 +89,9 @@ class TestBugMessageHandler implements MessageHandlerInterface
         } catch (Throwable $throwable) {
             $this->handleThrowable($throwable, $bug, $recorded);
         } finally {
-            $subject->tearDown();
+            if ($subject instanceof TearDownInterface) {
+                $subject->tearDown();
+            }
         }
     }
 
