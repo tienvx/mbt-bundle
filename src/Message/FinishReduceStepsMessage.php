@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class FinishReduceStepsMessage
+class FinishReduceStepsMessage implements MessageInterface
 {
     /**
      * @var int

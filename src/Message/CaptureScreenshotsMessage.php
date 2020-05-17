@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class CaptureScreenshotsMessage
+class CaptureScreenshotsMessage implements MessageInterface
 {
     /**
      * @var int

@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ExecuteTaskMessage
+class ExecuteTaskMessage implements MessageInterface
 {
     /**
      * @var int

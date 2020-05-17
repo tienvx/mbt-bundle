@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ApplyBugTransitionMessage
+class ApplyBugTransitionMessage implements MessageInterface
 {
     /**
      * @var int
