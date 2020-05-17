@@ -11,5 +11,10 @@
         <service id="Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
+
+        <service id="Tienvx\Bundle\MbtBundle\Command\MessagesCountCommand">
+            <argument type="service" id="messenger.receiver_locator" />
+            <tag name="console.command" command="mbt:messages:count" />
+        </service>
     </services>
 </container>

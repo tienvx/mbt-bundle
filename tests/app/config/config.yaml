@@ -11,8 +11,10 @@ framework:
                     delay: 1000
                     multiplier: 2
                     max_delay: 0
+            doctrine: 'doctrine://default'
         routing:
-            '*': memory
+            'Tienvx\Bundle\MbtBundle\Message\MessageInterface': memory
+            'App\Message\CountableMessage': doctrine
     validation:
         auto_mapping:
             Tienvx\Bundle\MbtBundle\Entity\: []

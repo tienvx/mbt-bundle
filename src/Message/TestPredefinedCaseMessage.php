@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class TestPredefinedCaseMessage
+class TestPredefinedCaseMessage implements MessageInterface
 {
     /**
      * @var string

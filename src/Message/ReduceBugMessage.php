@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ReduceBugMessage
+class ReduceBugMessage implements MessageInterface
 {
     /**
      * @var int
