@@ -48,7 +48,13 @@ $ composer require tienvx/mbt-bundle "^1.17"
 
 ### Step 3: Config file storage
 
-In order to save screenshots of bug report, we need to configure file system:
+In order to save screenshots of bug report, we need to install flysystem bundle:
+
+```console
+$ composer require league/flysystem-bundle
+```
+
+Then configure file system:
 ```yaml
 flysystem:
     storages:
