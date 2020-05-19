@@ -41,11 +41,11 @@ interface BugInterface
 
     public function setMessagesCount(int $messagesCount): self;
 
-    public function setCreatedAt(DateTimeInterface $createdAt): void;
+    public function setCreatedAt(DateTimeInterface $createdAt): self;
 
     public function getCreatedAt(): ?DateTimeInterface;
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): void;
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self;
 
     public function getUpdatedAt(): ?DateTimeInterface;
 }
