@@ -2,13 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model;
 
+use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Steps\Steps;
 use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
 
 class Bug implements BugInterface
 {
-    use TimestampableTrait;
-
     /**
      * @var int|null
      */
@@ -53,6 +52,16 @@ class Bug implements BugInterface
      * @var int
      */
     protected $messagesCount = 0;
+
+    /**
+     * @var ?DateTimeInterface
+     */
+    protected $updatedAt;
+
+    /**
+     * @var ?DateTimeInterface
+     */
+    protected $createdAt;
 
     public function __construct()
     {
@@ -158,5 +167,29 @@ class Bug implements BugInterface
         $this->messagesCount = $messagesCount;
 
         return $this;
+    }
+
+    public function setCreatedAt(DateTimeInterface $createdAt): BugInterface
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setUpdatedAt(DateTimeInterface $updatedAt): BugInterface
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
     }
 }
