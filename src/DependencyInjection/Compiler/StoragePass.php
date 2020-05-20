@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Tienvx\Bundle\MbtBundle\MessageHandler\CaptureScreenshotsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RemoveScreenshotsMessageHandler;
+use Tienvx\Bundle\MbtBundle\Validator\Constraints\TakeScreenshotsValidator;
 
 class StoragePass implements CompilerPassInterface
 {
@@ -15,6 +16,7 @@ class StoragePass implements CompilerPassInterface
         $services = [
             CaptureScreenshotsMessageHandler::class,
             RemoveScreenshotsMessageHandler::class,
+            TakeScreenshotsValidator::class,
         ];
         if ($container->has('mbt.storage')) {
             foreach ($services as $service) {

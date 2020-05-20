@@ -84,6 +84,7 @@ class Task extends TaskModel
     /**
      * @ORM\Column(type="boolean")
      * @Assert\Type("bool")
+     * @MbtAssert\TakeScreenshots
      */
     protected $takeScreenshots;
     /**
