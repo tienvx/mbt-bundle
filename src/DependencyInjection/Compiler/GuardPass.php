@@ -29,6 +29,10 @@ class GuardPass implements CompilerPassInterface
             $workflowId = sprintf('%s.%s', $type, $name);
             $guardId = sprintf('%s.listener.guard', $workflowId);
 
+            if (!$container->hasDefinition($guardId)) {
+                $guardId = '.'.$guardId;
+            }
+
             if (!$this->isModel($container, $workflowId) || !$container->hasDefinition($guardId)) {
                 continue;
             }
