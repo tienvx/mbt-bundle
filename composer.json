@@ -65,6 +65,7 @@
         "ext-amqp": "Needed to support amqp transport for messenger component",
         "symfony/expression-language": "Support guard in transition",
         "symfony/security-bundle": "Support guard in transition",
+        "league/flysystem-bundle": "Support capturing screenshots",
         "symfony/notifier": "Support notifying bug",
         "symfony/mailer": "Support notifying bug",
         "symfony/nexmo-notifier": "Notify bug using Nexmo API",
