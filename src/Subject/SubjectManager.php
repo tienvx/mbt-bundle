@@ -18,14 +18,21 @@ class SubjectManager
         $this->subjects = $subjects;
     }
 
-    public function create(string $workflowName, bool $trying = false): SubjectInterface
+    /**
+     * @throws Exception
+     */
+    public function create(string $workflowName): SubjectInterface
     {
         $class = $this->subjects[$workflowName] ?? null;
-        if (is_null($class)) {
-            throw new Exception(sprintf('Subject for workflow %s not found', $workflowName));
+        if (!is_null($class)) {
+            return new $class();
         }
+        throw new Exception(sprintf('Subject for workflow %s not found', $workflowName));
+    }
 
-        $subject = new $class();
+    public function createAndSetUp(string $workflowName, bool $trying = false): SubjectInterface
+    {
+        $subject = $this->create($workflowName);
         if ($subject instanceof SetUpInterface) {
             $subject->setUp($trying);
         }

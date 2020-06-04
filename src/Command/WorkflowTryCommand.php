@@ -73,7 +73,7 @@ class WorkflowTryCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $workflowName = $input->getArgument('workflow-name');
-        $subject = $this->subjectManager->create($workflowName, true);
+        $subject = $this->subjectManager->createAndSetUp($workflowName, true);
         $workflow = $this->workflowHelper->get($workflowName);
         $generator = $this->generatorManager->get($input->getOption('generator'));
         $generatorOptions = new GeneratorOptions();

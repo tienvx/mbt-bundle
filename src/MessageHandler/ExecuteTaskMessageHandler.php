@@ -88,7 +88,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
 
     protected function execute(Task $task): void
     {
-        $subject = $this->subjectManager->create($task->getWorkflow()->getName());
+        $subject = $this->subjectManager->createAndSetUp($task->getWorkflow()->getName());
         $generator = $this->generatorManager->get($task->getGenerator()->getName());
         $workflow = $this->workflowHelper->get($task->getWorkflow()->getName());
 
