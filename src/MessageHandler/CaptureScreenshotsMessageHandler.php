@@ -71,7 +71,7 @@ class CaptureScreenshotsMessageHandler implements MessageHandlerInterface
             throw new Exception(sprintf('Model checksum of bug with id %d does not match', $bugId));
         }
 
-        $subject = $this->subjectManager->create($workflow);
+        $subject = $this->subjectManager->createAndSetUp($workflow);
 
         $this->capture($subject, $bug);
     }
