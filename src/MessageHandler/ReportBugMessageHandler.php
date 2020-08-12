@@ -3,102 +3,74 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Notifier\Notifier;
 use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
+use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\BugSubscriberInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 
 /**
  * Override this service to customize notification.
  */
 class ReportBugMessageHandler implements MessageHandlerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    protected EntityManagerInterface $entityManager;
+    protected NotifierInterface $notifier;
+    protected ConfigLoaderInterface $configLoader;
+    protected BugSubscriberInterface $bugSubscriber;
+    protected BugHelperInterface $bugHelper;
+    protected TranslatorInterface $translator;
 
-    /**
-     * @var NotifierInterface
-     */
-    private $notifier;
-
-    /**
-     * @var string
-     */
-    private $emailFrom;
-
-    /**
-     * @var string
-     */
-    private $adminUrl;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        NotifierInterface $notifier,
+        ConfigLoaderInterface $configLoader,
+        BugSubscriberInterface $bugSubscriber,
+        BugHelperInterface $bugHelper,
+        TranslatorInterface $translator
+    ) {
         $this->entityManager = $entityManager;
+        $this->notifier = $notifier;
+        $this->configLoader = $configLoader;
+        $this->bugSubscriber = $bugSubscriber;
+        $this->bugHelper = $bugHelper;
+        $this->translator = $translator;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function __invoke(ReportBugMessage $message): void
     {
-        if (!$this->notifier instanceof NotifierInterface) {
-            throw new Exception('Bug cannot be reported as the Notifier component is not installed. Try running "composer require symfony/notifier".');
-        }
-
         $bugId = $message->getBugId();
-        $channels = $message->getChannels();
 
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
-        if (!$bug instanceof Bug) {
-            throw new Exception(sprintf('No bug found for id %d', $bugId));
+        if (!$bug instanceof BugInterface) {
+            throw new UnexpectedValueException(sprintf('No bug found for id %d', $bugId));
         }
 
-        $this->sendNotification($bug, $channels);
+        $this->sendNotification($bug);
     }
 
-    public function setNotifier(NotifierInterface $notifier): void
+    protected function sendNotification(BugInterface $bug): void
     {
-        $this->notifier = $notifier;
-    }
-
-    public function setEmailFrom(string $emailFrom): void
-    {
-        $this->emailFrom = $emailFrom;
-    }
-
-    public function setAdminUrl(string $adminUrl): void
-    {
-        $this->adminUrl = $adminUrl;
-    }
-
-    protected function sendNotification(Bug $bug, array $channels): void
-    {
-        $notification = new BugNotification($bug, $this->emailFrom, $this->adminUrl, sprintf('A new bug was found (id: %d)!', $bug->getId()), $channels);
+        $notification = new BugNotification($bug->getTitle(), $this->configLoader->getNotifyChannels());
+        $notification->setBugUrl($this->bugHelper->buildBugUrl($bug));
         $notification->content(implode("\n", [
-            sprintf('We found a new bug during testing the workflow "%s"!', $bug->getWorkflow()->getName()),
-            sprintf('Bug id: %d', $bug->getId()),
-            sprintf('Bug title: %s', $bug->getTitle()),
-            sprintf('Bug message: %s', $bug->getBugMessage()),
-            'The reproduce steps have been reduced, and the screenshots have been captured if configured',
-            'You can download exception.txt to see the bug message, or',
-            'follow the action to get more information about the bug',
+            $this->translator->trans('mbt.notify.bug_id', ['id' => $bug->getId()]),
+            $this->translator->trans('mbt.notify.bug_message', ['message' => $bug->getMessage()]),
+            $this->translator->trans('mbt.notify.more_info'),
         ]));
         $notification->emoji(':bug:');
 
-        foreach ($this->getRecipients() as $recipient) {
-            $this->notifier->send($notification, $recipient);
-        }
-    }
-
-    protected function getRecipients(): array
-    {
-        if ($this->notifier instanceof Notifier) {
-            return $this->notifier->getAdminRecipients();
-        }
-
-        return [];
+        $this->notifier->send($notification, ...$this->bugSubscriber->getRecipies());
     }
 }

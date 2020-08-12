@@ -3,16 +3,6 @@
 /.vscode/
 /vendor/
 /composer.lock
-/phpunit.xml
 /.phpunit.result.cache
-/.php-cs.cache
-
-# Ignore files created during tests
-/tests/app/var/cache/
-/tests/app/var/log/
-/tests/app/var/screenshots/
-/tests/logs/
-/tests/app/src/Subject/Article.php
-/tests/app/src/Subject/PullRequest.php
-/tests/app/src/Generator/Test.php
-/tests/app/src/PathReducer/Test.php
+/clover.xml
+/coveralls-upload.json

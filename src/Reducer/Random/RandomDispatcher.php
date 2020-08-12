@@ -2,24 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer\Random;
 
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\DispatcherTemplate;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
 
 class RandomDispatcher extends DispatcherTemplate
 {
-    public static function getReducerName(): string
+    protected function getPairs(StepsInterface $steps): array
     {
-        return RandomReducer::getName();
-    }
-
-    protected function getPairs(Steps $steps): array
-    {
-        $max = $steps->getLength();
-        $count = floor(sqrt($steps->getLength()));
+        $length = $steps->getLength();
+        $maxPairs = $this->maxPairs($steps);
         $pairs = [];
 
-        while (count($pairs) < $count) {
-            $pair = array_rand(range(0, $max - 1), 2);
+        while (count($pairs) < $maxPairs) {
+            $pair = array_rand(range(0, $length - 1), 2);
             if (!in_array($pair, $pairs)) {
                 $pairs[] = $pair;
             }

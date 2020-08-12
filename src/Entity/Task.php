@@ -3,132 +3,58 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Model\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Model\ReducerInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
-use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @MbtAssert\TransitionReducerWorkflowType
+ * @MbtAssert\StopConditions
  */
 class Task extends TaskModel
 {
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    protected ?int $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\Type("string")
      * @Assert\NotBlank
      */
-    protected $title;
+    protected string $title;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @MbtAssert\Workflow
+     * @ORM\OneToOne(targetEntity="Model")
      */
-    protected $workflow;
+    protected ModelInterface $model;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @MbtAssert\Generator
+     * @ORM\Embedded(class="Progress")
      */
-    protected $generator;
+    protected ProgressInterface $progress;
 
-    /**
-     * @ORM\Embedded(class="GeneratorOptions")
-     * @Assert\Valid
-     */
-    protected $generatorOptions;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @MbtAssert\Reducer
-     */
-    protected $reducer;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     */
-    protected $reporters;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @MbtAssert\TaskStatus
-     */
-    protected $status;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Bug", mappedBy="task", cascade={"persist"})
-     */
-    protected $bugs;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Assert\Type("bool")
-     * @MbtAssert\TakeScreenshots
-     */
-    protected $takeScreenshots;
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
-    protected $createdAt;
+    protected ?DateTimeInterface $createdAt = null;
 
     /**
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
-    protected $updatedAt;
+    protected ?DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
         parent::__construct();
-        $this->generatorOptions = new GeneratorOptions();
-    }
-
-    /**
-     * @MbtAssert\Reporters
-     */
-    public function getReporters(): array
-    {
-        $values = [];
-        foreach (json_decode($this->reporters, true) as $reporter) {
-            $values[] = new Reporter($reporter);
-        }
-
-        return $values;
-    }
-
-    public function getWorkflow(): WorkflowInterface
-    {
-        return new Workflow($this->workflow);
-    }
-
-    public function getGenerator(): GeneratorInterface
-    {
-        return new Generator($this->generator);
-    }
-
-    public function getReducer(): ReducerInterface
-    {
-        return new Reducer($this->reducer);
+        $this->progress = new Progress();
     }
 
     /**

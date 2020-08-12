@@ -2,27 +2,31 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 abstract class ReducerTemplate implements ReducerInterface
 {
-    /**
-     * @var DispatcherInterface
-     */
-    protected $dispatcher;
+    protected DispatcherInterface $dispatcher;
 
-    /**
-     * @var HandlerInterface
-     */
-    protected $handler;
+    protected HandlerInterface $handler;
 
-    public function dispatch(Bug $bug): int
+    public static function getManager(): string
+    {
+        return ReducerManager::class;
+    }
+
+    public static function isSupported(): bool
+    {
+        return true;
+    }
+
+    public function dispatch(BugInterface $bug): int
     {
         return $this->dispatcher->dispatch($bug);
     }
 
-    public function handle(Bug $bug, int $length, int $from, int $to): void
+    public function handle(BugInterface $bug, int $from, int $to): void
     {
-        $this->handler->handle($bug, $length, $from, $to);
+        $this->handler->handle($bug, $from, $to);
     }
 }

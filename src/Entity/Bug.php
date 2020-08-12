@@ -3,15 +3,19 @@
 namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
-use Tienvx\Bundle\MbtBundle\Model\WorkflowInterface;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ * @MbtAssert\Steps
  */
 class Bug extends BugModel
 {
@@ -20,75 +24,53 @@ class Bug extends BugModel
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     */
-    protected $title;
+    protected ?int $id;
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @MbtAssert\BugStatus
+     * @Assert\NotBlank
      */
-    protected $status;
+    protected string $title;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Steps", nullable=false, cascade={"persist", "remove"})
+     */
+    protected StepsInterface $steps;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Model")
+     */
+    protected ModelInterface $model;
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\Type("string")
-     * @Assert\NotNull
      */
-    protected $steps;
+    protected string $message;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @MbtAssert\Workflow
+     * @ORM\Embedded(class="Progress")
      */
-    protected $workflow;
+    protected ProgressInterface $progress;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
+     * @ORM\Column(type="boolean")
      */
-    protected $workflowHash;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Task")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
-     */
-    protected $task;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\Type("string")
-     */
-    protected $bugMessage;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Assert\Type("integer")
-     */
-    protected $messagesCount = 0;
+    protected bool $closed = false;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
-    protected $createdAt;
+    protected ?DateTimeInterface $createdAt = null;
 
     /**
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
-    protected $updatedAt;
+    protected ?DateTimeInterface $updatedAt = null;
 
-    public function getWorkflow(): WorkflowInterface
+    public function __construct()
     {
-        return new Workflow($this->workflow);
+        parent::__construct();
+        $this->progress = new Progress();
     }
 
     /**

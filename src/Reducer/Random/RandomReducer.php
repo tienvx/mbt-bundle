@@ -16,14 +16,4 @@ class RandomReducer extends ReducerTemplate
     {
         return 'random';
     }
-
-    public function getLabel(): string
-    {
-        return 'Random';
-    }
-
-    public static function support(): bool
-    {
-        return true;
-    }
 }

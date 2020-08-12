@@ -2,11 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 interface HandlerInterface
 {
-    public function handle(Bug $bug, int $length, int $from, int $to): void;
-
-    public static function getReducerName(): string;
+    public function handle(BugInterface $bug, int $from, int $to): void;
 }
