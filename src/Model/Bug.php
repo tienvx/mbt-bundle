@@ -3,69 +3,36 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Workflow\BugWorkflow;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 
 class Bug implements BugInterface
 {
-    /**
-     * @var int|null
-     */
-    protected $id;
+    protected ?int $id;
 
-    /**
-     * @var string
-     */
-    protected $title;
+    protected string $title;
 
-    /**
-     * @var string
-     */
-    protected $status;
+    protected StepsInterface $steps;
 
-    /**
-     * @var string
-     */
-    protected $steps;
+    protected ModelInterface $model;
 
-    /**
-     * @var string
-     */
-    protected $workflow;
+    protected string $message;
 
-    /**
-     * @var string
-     */
-    protected $workflowHash;
+    protected ProgressInterface $progress;
 
-    /**
-     * @var TaskInterface
-     */
-    protected $task;
+    protected bool $closed = false;
 
-    /**
-     * @var string
-     */
-    protected $bugMessage;
+    protected ?DateTimeInterface $updatedAt = null;
 
-    /**
-     * @var int
-     */
-    protected $messagesCount = 0;
-
-    /**
-     * @var ?DateTimeInterface
-     */
-    protected $updatedAt;
-
-    /**
-     * @var ?DateTimeInterface
-     */
-    protected $createdAt;
+    protected ?DateTimeInterface $createdAt = null;
 
     public function __construct()
     {
-        $this->status = BugWorkflow::NEW;
+        $this->progress = new Progress();
+    }
+
+    public function setId(int $id)
+    {
+        $this->id = $id;
     }
 
     public function getId(): ?int
@@ -78,102 +45,64 @@ class Bug implements BugInterface
         return $this->title;
     }
 
-    public function setTitle(string $title): BugInterface
+    public function setTitle(string $title): void
     {
         $this->title = $title;
-
-        return $this;
     }
 
-    public function getStatus(): string
+    public function getSteps(): StepsInterface
     {
-        return $this->status;
+        return $this->steps;
     }
 
-    public function setStatus(string $status): BugInterface
+    public function setSteps(StepsInterface $steps): void
     {
-        $this->status = $status;
-
-        return $this;
+        $this->steps = $steps;
     }
 
-    public function getSteps(): Steps
+    public function getModel(): ModelInterface
     {
-        return Steps::deserialize($this->steps);
+        return $this->model;
     }
 
-    public function setSteps(Steps $steps): BugInterface
+    public function setModel(ModelInterface $model): void
     {
-        $this->steps = $steps->serialize();
-
-        return $this;
+        $this->model = $model;
     }
 
-    public function getWorkflow(): WorkflowInterface
+    public function getMessage(): string
     {
-        return new Workflow($this->workflow);
+        return $this->message;
     }
 
-    public function setWorkflow(WorkflowInterface $workflow): BugInterface
+    public function setMessage(string $message): void
     {
-        $this->workflow = $workflow->getName();
-
-        return $this;
+        $this->message = $message;
     }
 
-    public function getWorkflowHash(): string
+    public function getProgress(): ProgressInterface
     {
-        return $this->workflowHash;
+        return $this->progress;
     }
 
-    public function setWorkflowHash(string $workflowHash): BugInterface
+    public function setProgress(ProgressInterface $progress): void
     {
-        $this->workflowHash = $workflowHash;
-
-        return $this;
+        $this->progress = $progress;
     }
 
-    public function getTask(): ?TaskInterface
+    public function isClosed(): bool
     {
-        return $this->task;
+        return $this->closed;
     }
 
-    public function setTask(?TaskInterface $task): BugInterface
+    public function setClosed(bool $closed): void
     {
-        $this->task = $task;
-
-        return $this;
+        $this->closed = $closed;
     }
 
-    public function getBugMessage(): string
-    {
-        return $this->bugMessage;
-    }
-
-    public function setBugMessage(string $bugMessage): BugInterface
-    {
-        $this->bugMessage = $bugMessage;
-
-        return $this;
-    }
-
-    public function getMessagesCount(): int
-    {
-        return $this->messagesCount;
-    }
-
-    public function setMessagesCount(int $messagesCount): BugInterface
-    {
-        $this->messagesCount = $messagesCount;
-
-        return $this;
-    }
-
-    public function setCreatedAt(DateTimeInterface $createdAt): BugInterface
+    public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -181,11 +110,9 @@ class Bug implements BugInterface
         return $this->createdAt;
     }
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): BugInterface
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

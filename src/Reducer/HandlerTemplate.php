@@ -2,113 +2,80 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Definition;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Helper\BugHelper;
-use Tienvx\Bundle\MbtBundle\Helper\Steps\Runner as StepsRunner;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
+use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\ShortestPathStrategy;
-use Tienvx\Bundle\MbtBundle\Steps\BuilderStrategy\StrategyInterface as StepsBuilderStrategy;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Steps\StepsBuilder;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
-    /**
-     * @var SubjectManager
-     */
-    protected $subjectManager;
-
-    /**
-     * @var MessageBusInterface
-     */
-    protected $messageBus;
-
-    /**
-     * @var BugHelper
-     */
-    protected $bugHelper;
-
-    /**
-     * @var WorkflowHelper
-     */
-    protected $workflowHelper;
-
-    /**
-     * @var StepsRunner
-     */
-    protected $stepsRunner;
+    protected EntityManagerInterface $entityManager;
+    protected MessageBusInterface $messageBus;
+    protected StepsRunnerInterface $stepsRunner;
+    protected StepsBuilderInterface $stepsBuilder;
 
     public function __construct(
-        SubjectManager $subjectManager,
+        EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
-        BugHelper $bugHelper,
-        WorkflowHelper $workflowHelper,
-        StepsRunner $stepsRunner
+        StepsRunnerInterface $stepsRunner,
+        StepsBuilderInterface $stepsBuilder
     ) {
-        $this->subjectManager = $subjectManager;
+        $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
-        $this->bugHelper = $bugHelper;
-        $this->workflowHelper = $workflowHelper;
         $this->stepsRunner = $stepsRunner;
+        $this->stepsBuilder = $stepsBuilder;
     }
 
-    public function handle(Bug $bug, int $length, int $from, int $to): void
+    /**
+     * @throws ExceptionInterface
+     */
+    public function handle(BugInterface $bug, int $from, int $to): void
     {
-        $workflow = $bug->getWorkflow()->getName();
-        $steps = $bug->getSteps();
-
-        if ($steps->getLength() !== $length) {
-            // The reproduce path has been reduced.
+        $newSteps = $this->stepsBuilder->create($bug, $from, $to);
+        if ($newSteps->getLength() >= $bug->getSteps()->getLength()) {
             return;
         }
 
-        if (!$this->extraValidate($steps, $from, $to)) {
-            return;
-        }
-
-        $newSteps = $this->buildNewSteps($this->workflowHelper->getDefinition($workflow), $steps, $from, $to);
-        if ($newSteps->getLength() >= $steps->getLength()) {
-            // New path is longer than or equals old path.
-            return;
-        }
-
-        $this->run($workflow, $newSteps, $bug);
+        $this->run($newSteps, $bug);
     }
 
-    protected function extraValidate(Steps $steps, int $from, int $to): bool
-    {
-        return true;
-    }
-
-    protected function buildNewSteps(Definition $definition, Steps $steps, int $from, int $to): Steps
-    {
-        $stepsBuilder = new StepsBuilder();
-        $stepsBuilder->setStrategy($this->getStepsBuilderStrategy($definition));
-
-        return $stepsBuilder->create($steps, $from, $to);
-    }
-
-    protected function getStepsBuilderStrategy(Definition $definition): StepsBuilderStrategy
-    {
-        return new ShortestPathStrategy($definition);
-    }
-
-    protected function run(string $workflowName, Steps $newSteps, Bug $bug): void
+    /**
+     * @throws ExceptionInterface
+     */
+    protected function run(StepsInterface $newSteps, BugInterface $bug): void
     {
         try {
-            $workflow = $this->workflowHelper->get($workflowName);
-            $subject = $this->subjectManager->createAndSetUp($workflowName);
-            $this->stepsRunner->run($newSteps, $workflow, $subject);
-        } catch (Throwable $newThrowable) {
-            if ($newThrowable->getMessage() === $bug->getBugMessage()) {
-                $this->bugHelper->updateSteps($bug, $newSteps);
-                $this->messageBus->dispatch(new ReduceBugMessage($bug->getId(), static::getReducerName()));
+            foreach ($this->stepsRunner->run($newSteps->getSteps()) as $step) {
+                // Do nothing
+            }
+        } catch (ExceptionInterface $exception) {
+            throw $exception;
+        } catch (Throwable $throwable) {
+            if ($throwable->getMessage() === $bug->getMessage()) {
+                $this->updateSteps($bug, $newSteps);
+                $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
             }
         }
+    }
+
+    public function updateSteps(BugInterface $bug, StepsInterface $newSteps): void
+    {
+        $callback = function () use ($bug, $newSteps): void {
+            // Refresh the bug for the latest steps's length.
+            $this->entityManager->refresh($bug);
+
+            if ($newSteps->getLength() <= $bug->getSteps()->getLength()) {
+                $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
+                $bug->setSteps($newSteps);
+            }
+        };
+
+        $this->entityManager->transactional($callback);
     }
 }

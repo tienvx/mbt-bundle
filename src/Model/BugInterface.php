@@ -3,49 +3,43 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 
 interface BugInterface
 {
+    public function setId(int $id);
+
     public function getId(): ?int;
 
     public function getTitle(): string;
 
-    public function setTitle(string $title): self;
+    public function setTitle(string $title): void;
 
-    public function getStatus(): string;
+    public function getSteps(): StepsInterface;
 
-    public function setStatus(string $status): self;
+    public function setSteps(StepsInterface $steps): void;
 
-    public function getSteps(): Steps;
+    public function getModel(): ModelInterface;
 
-    public function setSteps(Steps $steps): self;
+    public function setModel(ModelInterface $workflow): void;
 
-    public function getWorkflow(): WorkflowInterface;
+    public function getMessage(): string;
 
-    public function setWorkflow(WorkflowInterface $workflow): self;
+    public function setMessage(string $bugMessage): void;
 
-    public function getWorkflowHash(): string;
+    public function getProgress(): ProgressInterface;
 
-    public function setWorkflowHash(string $workflowHash): self;
+    public function setProgress(ProgressInterface $progress): void;
 
-    public function getTask(): ?TaskInterface;
+    public function isClosed(): bool;
 
-    public function setTask(?TaskInterface $task): self;
+    public function setClosed(bool $closed): void;
 
-    public function getBugMessage(): string;
-
-    public function setBugMessage(string $bugMessage): self;
-
-    public function getMessagesCount(): int;
-
-    public function setMessagesCount(int $messagesCount): self;
-
-    public function setCreatedAt(DateTimeInterface $createdAt): self;
+    public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): ?DateTimeInterface;
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self;
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void;
 
     public function getUpdatedAt(): ?DateTimeInterface;
 }

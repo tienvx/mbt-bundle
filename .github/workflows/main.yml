@@ -3,64 +3,40 @@ name: main
 on: [push, pull_request]
 
 jobs:
-  php-cs-fixer:
-    name: PHP CS Fixer
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@master
-
-    - name: PHP CS Fixer
-      uses: docker://oskarstark/php-cs-fixer-ga
-      with:
-        args: --diff --dry-run
-
-  phpinsights:
-    name: PHP Insights
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@master
-
-    - name: PHP Insights
-      uses: docker://tienvx/phpinsights-action
-      with:
-        args: "-v --config-path=insights.php --min-quality=80 --min-complexity=80 --min-architecture=70 --min-style=90"
-
   test:
     name: Test PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['7.2', '7.3', '7.4']
-    container:
-      image: php:${{ matrix.php }}-cli-alpine
+        php-versions: ['7.4']
     steps:
-    - name: Set Up Container
-      run: |
-        apk add -q --no-cache $PHPIZE_DEPS git bash libxslt-dev libgcrypt-dev libgpg-error-dev
-        pecl install pcov > /dev/null
-        docker-php-ext-enable pcov
-        docker-php-ext-install xsl
-        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-        composer global require hirak/prestissimo > /dev/null
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: pcov
+        tools: phpstan, php-cs-fixer, phpunit, composer:v2
+        #extensions: mbstring, intl
 
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
 
-    - name: Install Dependencies
+    - name: Install
       run: composer install
 
-    - name: Test & Generate Code Coverage
-      run: |
-        ./vendor/bin/phpunit -d memory_limit=512M --coverage-clover tests/logs/clover.xml
+    - name: Run PHP CS Fixer
+      run: php-cs-fixer fix --diff --dry-run
 
-    - name: Send to coveralls
-      run: |
-        wget -q -O php-coveralls https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
-        chmod +x php-coveralls
-        php ./php-coveralls -v
+    - name: Run PHPStan
+      run: phpstan analyse src tests
+
+    - name: Test & Generate Code Coverage
+      run: phpunit
+
+    - name: Upload coverage results to Coveralls
       env:
-        COVERALLS_RUN_LOCALLY: 1
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      if: matrix.php == '7.3'
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        composer global require php-coveralls/php-coveralls
+        php-coveralls --coverage_clover=clover.xml -v
+      if: matrix.php-versions == '7.4'

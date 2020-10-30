@@ -1,5 +1,0 @@
-The <info>%command.name%</info> command generates a new subject class for a workflow.
-
-<info>php %command.full_name% workflow-name CoolStuffSubject</info>
-
-If the argument is missing, the command will ask for the workflow name and subject class name interactively.

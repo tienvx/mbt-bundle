@@ -3,23 +3,20 @@
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Symfony\Component\Messenger\MessageBusInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 abstract class DispatcherTemplate implements DispatcherInterface
 {
-    /**
-     * @var MessageBusInterface
-     */
-    protected $messageBus;
+    protected MessageBusInterface $messageBus;
 
     public function __construct(MessageBusInterface $messageBus)
     {
         $this->messageBus = $messageBus;
     }
 
-    public function dispatch(Bug $bug): int
+    public function dispatch(BugInterface $bug): int
     {
         $steps = $bug->getSteps();
 
@@ -30,15 +27,20 @@ abstract class DispatcherTemplate implements DispatcherInterface
         $pairs = $this->getPairs($steps);
 
         foreach ($pairs as $pair) {
-            $message = new ReduceStepsMessage($bug->getId(), static::getReducerName(), $steps->getLength(), $pair[0], $pair[1]);
+            $message = new ReduceStepsMessage($bug->getId(), $steps->getLength(), $pair[0], $pair[1]);
             $this->messageBus->dispatch($message);
         }
 
         return count($pairs);
     }
 
-    protected function getPairs(Steps $steps): array
+    protected function getPairs(StepsInterface $steps): array
     {
         return [];
+    }
+
+    protected function maxPairs(StepsInterface $steps): int
+    {
+        return floor(sqrt($steps->getLength()));
     }
 }

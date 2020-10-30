@@ -3,107 +3,82 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\Bug\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
-use Tienvx\Bundle\MbtBundle\Helper\MessageHelper;
-use Tienvx\Bundle\MbtBundle\Helper\Steps\Recorder as StepsRecorder;
-use Tienvx\Bundle\MbtBundle\Helper\WorkflowHelper;
-use Tienvx\Bundle\MbtBundle\Message\ApplyTaskTransitionMessage;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
-use Tienvx\Bundle\MbtBundle\Model\Subject\TearDownInterface;
-use Tienvx\Bundle\MbtBundle\Steps\Steps;
-use Tienvx\Bundle\MbtBundle\Subject\SubjectManager;
-use Tienvx\Bundle\MbtBundle\Workflow\TaskWorkflow;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
 class ExecuteTaskMessageHandler implements MessageHandlerInterface
 {
-    /**
-     * @var SubjectManager
-     */
-    private $subjectManager;
-
-    /**
-     * @var GeneratorManager
-     */
-    private $generatorManager;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var MessageHelper
-     */
-    private $messageHelper;
-
-    /**
-     * @var WorkflowHelper
-     */
-    private $workflowHelper;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
-
-    /**
-     * @var StepsRecorder
-     */
-    private $stepsRecorder;
+    protected GeneratorManager $generatorManager;
+    protected EntityManagerInterface $entityManager;
+    protected StepsRunnerInterface $stepsRunner;
+    protected ConfigLoaderInterface $configLoader;
+    protected TaskProgressInterface $taskProgress;
+    protected BugHelperInterface $bugHelper;
 
     public function __construct(
-        SubjectManager $subjectManager,
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
-        MessageHelper $messageHelper,
-        WorkflowHelper $workflowHelper,
-        MessageBusInterface $messageBus,
-        StepsRecorder $stepsRecorder
+        StepsRunnerInterface $stepsRunner,
+        ConfigLoaderInterface $configLoader,
+        TaskProgressInterface $taskProgress,
+        BugHelperInterface $bugHelper
     ) {
-        $this->subjectManager = $subjectManager;
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
-        $this->messageHelper = $messageHelper;
-        $this->workflowHelper = $workflowHelper;
-        $this->messageBus = $messageBus;
-        $this->stepsRecorder = $stepsRecorder;
+        $this->stepsRunner = $stepsRunner;
+        $this->configLoader = $configLoader;
+        $this->taskProgress = $taskProgress;
+        $this->bugHelper = $bugHelper;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function __invoke(ExecuteTaskMessage $message): void
     {
         $taskId = $message->getId();
         $task = $this->entityManager->find(Task::class, $taskId);
 
-        if (!$task instanceof Task) {
-            throw new Exception(sprintf('No task found for id %d', $taskId));
+        if (!$task instanceof TaskInterface) {
+            throw new UnexpectedValueException(sprintf('No task found for id %d', $taskId));
         }
 
         $this->execute($task);
     }
 
-    protected function execute(Task $task): void
+    /**
+     * @throws ExceptionInterface
+     */
+    protected function execute(TaskInterface $task): void
     {
-        $subject = $this->subjectManager->createAndSetUp($task->getWorkflow()->getName());
-        $generator = $this->generatorManager->get($task->getGenerator()->getName());
-        $workflow = $this->workflowHelper->get($task->getWorkflow()->getName());
-
-        $recorded = new Steps();
+        $steps = new Steps();
+        $generator = $this->generatorManager->get($this->configLoader->getGenerator());
+        $this->taskProgress->setTotal($task, $this->configLoader->getMaxSteps());
         try {
-            $steps = $generator->generate($workflow, $subject, $task->getGeneratorOptions());
-            $this->stepsRecorder->record($steps, $workflow, $subject, $recorded);
-        } catch (Throwable $throwable) {
-            $this->messageHelper->createBug($recorded, $throwable->getMessage(), $task->getId(), $task->getWorkflow()->getName());
-        } finally {
-            if ($subject instanceof TearDownInterface) {
-                $subject->tearDown();
+            foreach ($this->stepsRunner->run($generator->generate($task->getModel()->getPetrinet())) as $step) {
+                if ($step instanceof StepInterface) {
+                    $steps->addStep($step);
+                    $this->taskProgress->increaseProcessed($task, 1);
+                }
             }
-
-            $this->messageBus->dispatch(new ApplyTaskTransitionMessage($task->getId(), TaskWorkflow::COMPLETE));
+        } catch (ExceptionInterface $exception) {
+            throw $exception;
+        } catch (Throwable $throwable) {
+            $this->bugHelper->create($steps, $throwable->getMessage(), $task->getModel());
+        } finally {
+            $this->taskProgress->flush();
         }
     }
 }

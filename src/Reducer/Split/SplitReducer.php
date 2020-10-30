@@ -16,14 +16,4 @@ class SplitReducer extends ReducerTemplate
     {
         return 'split';
     }
-
-    public function getLabel(): string
-    {
-        return 'Split';
-    }
-
-    public static function support(): bool
-    {
-        return true;
-    }
 }

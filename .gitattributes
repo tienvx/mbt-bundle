@@ -7,4 +7,3 @@
 /.coveralls.yml export-ignore
 /.php_cs export-ignore
 /phpunit.xml.dist export-ignore
-/insights.php export-ignore
