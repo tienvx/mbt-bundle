@@ -1,14 +1,14 @@
 {
     "name": "tienvx/mbt-bundle",
     "type": "symfony-bundle",
-    "description": "Provide tools to test a system using Model Based Testing technique.",
+    "description": "Core Library For SICOPE Model Project",
     "keywords": ["model based testing", "testing tools"],
     "license": "MIT",
     "authors": [
         {
           "name": "Tien Xuan Vo",
-          "email": "tien.xuan.vo@gmail.com",
-          "role": "Developer"
+          "homepage": "https://tienvx.github.io/",
+          "role": "Maintainer & Developer"
         },
         {
             "name": "Community contributions",
