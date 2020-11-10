@@ -10,12 +10,10 @@ use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @MbtAssert\Steps
  */
 class Bug extends BugModel
 {

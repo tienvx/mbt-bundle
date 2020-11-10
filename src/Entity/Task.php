@@ -9,12 +9,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
 
 /**
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @MbtAssert\StopConditions
  */
 class Task extends TaskModel
 {

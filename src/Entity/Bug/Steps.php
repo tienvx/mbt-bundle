@@ -20,7 +20,7 @@ class Steps extends StepsModel
 
     /**
      * @ORM\OneToMany(
-     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Steps",
+     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Step",
      *   orphanRemoval=true,
      *   cascade={"persist", "remove"}
      * )

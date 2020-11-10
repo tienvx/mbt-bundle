@@ -2,14 +2,15 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity\Petrinet;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\Petrinet as BasePetrinet;
-use Tienvx\Bundle\MbtBundle\Validator\Constraints as MbtAssert;
+use Tienvx\Bundle\MbtBundle\Model\Petrinet\PlaceInterface;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="petrinet")
- * @MbtAssert\InitPlaces
  */
 class Petrinet extends BasePetrinet
 {
@@ -26,6 +27,8 @@ class Petrinet extends BasePetrinet
     protected array $initPlaceIds = [];
 
     /**
+     * @var ArrayCollection
+     *
      * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Place", orphanRemoval=true, cascade={"persist", "remove"})
      * @ORM\JoinTable(
      *  name="petrinet_place_xref",
@@ -36,6 +39,8 @@ class Petrinet extends BasePetrinet
     protected $places;
 
     /**
+     * @var ArrayCollection
+     *
      * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition", orphanRemoval=true, cascade={"persist", "remove"})
      * @ORM\JoinTable(
      *  name="petrinet_transition_xref",
@@ -44,4 +49,14 @@ class Petrinet extends BasePetrinet
      * )
      */
     protected $transitions;
+
+    /**
+     * @Assert\IsTrue()
+     */
+    public function isInitPlaceIdsValid()
+    {
+        $placeIds = $this->places->map(fn (PlaceInterface $place) => $place->getId())->getValues();
+
+        return !empty($this->initPlaceIds) && empty(array_diff($this->initPlaceIds, $placeIds));
+    }
 }
