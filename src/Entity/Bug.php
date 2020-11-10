@@ -31,7 +31,8 @@ class Bug extends BugModel
     protected string $title;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Steps", nullable=false, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Steps", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="steps_id", referencedColumnName="id", nullable=false)
      */
     protected StepsInterface $steps;
 

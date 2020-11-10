@@ -32,7 +32,8 @@ class Model extends BaseModel
     protected array $tags = [];
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", nullable=false, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="petrinet_id", referencedColumnName="id", nullable=false)
      * @Assert\Valid
      */
     protected PetrinetInterface $petrinet;

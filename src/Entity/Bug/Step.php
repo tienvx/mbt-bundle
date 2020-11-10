@@ -30,7 +30,8 @@ class Step extends StepModel
     protected MarkingInterface $marking;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition", nullable=true)
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition")
+     * @ORM\JoinColumn(name="transition_id", referencedColumnName="id", nullable=true)
      */
     protected ?TransitionInterface $transition = null;
 }
