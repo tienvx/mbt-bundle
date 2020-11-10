@@ -50,6 +50,11 @@ class Place extends BasePlace
      *   orphanRemoval=true,
      *   cascade={"persist", "remove"}
      * )
+     * @ORM\JoinTable(
+     *  name="place_command_xref",
+     *  joinColumns={@ORM\JoinColumn(name="place_id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="command_id", unique=true)}
+     * )
      */
     protected ArrayCollection $assertions;
 }

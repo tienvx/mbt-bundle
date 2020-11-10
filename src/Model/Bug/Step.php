@@ -16,17 +16,11 @@ class Step implements StepInterface
         $this->transition = $transition;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setMarking(MarkingInterface $marking): void
     {
         $this->marking = $marking;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getMarking(): MarkingInterface
     {
         return $this->marking;

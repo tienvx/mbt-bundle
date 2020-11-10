@@ -24,7 +24,7 @@ class Step extends StepModel
      * @ORM\JoinTable(
      *  name="step_marking_xref",
      *  joinColumns={@ORM\JoinColumn(name="step_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="place_id", unique=true)}
+     *  inverseJoinColumns={@ORM\JoinColumn(name="marking_id", unique=true)}
      * )
      */
     protected MarkingInterface $marking;

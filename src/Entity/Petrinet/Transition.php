@@ -55,6 +55,11 @@ class Transition extends BaseTransition
      *   orphanRemoval=true,
      *   cascade={"persist", "remove"}
      * )
+     * @ORM\JoinTable(
+     *  name="transition_command_xref",
+     *  joinColumns={@ORM\JoinColumn(name="transition_id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="command_id", unique=true)}
+     * )
      */
     protected ArrayCollection $actions;
 }

@@ -24,6 +24,11 @@ class Steps extends StepsModel
      *   orphanRemoval=true,
      *   cascade={"persist", "remove"}
      * )
+     * @ORM\JoinTable(
+     *  name="steps_step_xref",
+     *  joinColumns={@ORM\JoinColumn(name="steps_id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="step_id", unique=true)}
+     * )
      */
     protected ArrayCollection $steps;
 }
