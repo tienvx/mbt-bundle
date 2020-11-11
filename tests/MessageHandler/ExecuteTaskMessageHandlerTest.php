@@ -14,7 +14,6 @@ use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
@@ -26,7 +25,6 @@ use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Steps
  */
 class ExecuteTaskMessageHandlerTest extends TestCase
 {
@@ -127,9 +125,7 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
         $this->taskProgress->expects($this->exactly(3))->method('increaseProcessed')->with($task, 1);
         $this->taskProgress->expects($this->once())->method('flush');
-        $this->bugCreator->expects($this->once())->method('create')->with($this->callback(function ($recordedSteps) use ($steps) {
-            return $recordedSteps instanceof StepsInterface && $recordedSteps->getSteps()->toArray() === [$steps[0], $steps[1], $steps[2]];
-        }), 'Can not run the third step', $model);
+        $this->bugCreator->expects($this->once())->method('create')->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model);
 
         $message = new ExecuteTaskMessage(123);
         $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugCreator);

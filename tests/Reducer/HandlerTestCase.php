@@ -9,11 +9,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Steps;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
@@ -26,7 +24,7 @@ class HandlerTestCase extends TestCase
     protected MessageBusInterface $messageBus;
     protected StepsRunnerInterface $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
-    protected StepsInterface $newSteps;
+    protected array $newSteps;
     protected BugInterface $bug;
 
     protected function setUp(): void
@@ -35,31 +33,26 @@ class HandlerTestCase extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
-        $this->newSteps = new Steps();
-        $this->newSteps->setSteps(array_fill(0, 4, $this->createMock(StepInterface::class)));
+        $this->newSteps = array_map(fn () => $this->createMock(StepInterface::class), range(1, 4));
         $this->bug = new Bug();
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
+        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
         $this->stepsBuilder->expects($this->once())->method('create')->with($this->bug, 1, 2)->willReturn($this->newSteps);
     }
 
     public function testHandleOldBug(): void
     {
-        $steps = new Steps();
-        $steps->setSteps(array_fill(0, 3, $this->createMock(StepInterface::class)));
-        $this->bug->setSteps($steps);
+        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 3)));
         $this->stepsRunner->expects($this->never())->method('run');
         $this->handler->handle($this->bug, 1, 2);
     }
 
     public function testRun(): void
     {
-        $steps = new Steps();
-        $steps->setSteps(array_fill(0, 5, $this->createMock(StepInterface::class)));
-        $this->bug->setSteps($steps);
-        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps->getSteps())->willReturnCallback(
+        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps)->willReturnCallback(
             function (): iterable {
-                foreach ($this->newSteps->getSteps() as $step) {
+                foreach ($this->newSteps as $step) {
                     yield $step;
                 }
             }
@@ -69,10 +62,7 @@ class HandlerTestCase extends TestCase
 
     public function testRunIntoException(): void
     {
-        $steps = new Steps();
-        $steps->setSteps(array_fill(0, 5, $this->createMock(StepInterface::class)));
-        $this->bug->setSteps($steps);
-        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps->getSteps())->willThrowException(new RuntimeException('Something else wrong'));
+        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps)->willThrowException(new RuntimeException('Something else wrong'));
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Something else wrong');
         $this->handler->handle($this->bug, 1, 2);
@@ -80,9 +70,6 @@ class HandlerTestCase extends TestCase
 
     public function testRunFoundSameBug(): void
     {
-        $steps = new Steps();
-        $steps->setSteps(array_fill(0, 5, $this->createMock(StepInterface::class)));
-        $this->bug->setSteps($steps);
         $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
         $this->entityManager->expects($this->once())->method('lock')->with($this->bug, LockMode::PESSIMISTIC_WRITE);
         $this->entityManager->expects($this->once())->method('transactional')->with($this->callback(function ($callback) {
@@ -91,8 +78,8 @@ class HandlerTestCase extends TestCase
             return true;
         }));
         $this->messageBus->expects($this->once())->method('dispatch')->with($this->isInstanceOf(ReduceBugMessage::class))->willReturn(new Envelope(new \stdClass()));
-        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps->getSteps())->willThrowException(new Exception('Something wrong'));
+        $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps)->willThrowException(new Exception('Something wrong'));
         $this->handler->handle($this->bug, 1, 2);
-        $this->assertSame($this->newSteps, $this->bug->getSteps());
+        $this->assertSame($this->newSteps, $this->bug->getSteps()->toArray());
     }
 }

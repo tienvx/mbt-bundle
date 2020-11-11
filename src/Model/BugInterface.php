@@ -3,7 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Doctrine\Common\Collections\Collection;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
 interface BugInterface
 {
@@ -15,9 +16,13 @@ interface BugInterface
 
     public function setTitle(string $title): void;
 
-    public function getSteps(): StepsInterface;
+    public function getSteps(): Collection;
 
-    public function setSteps(StepsInterface $steps): void;
+    public function setSteps(iterable $steps): void;
+
+    public function addStep(StepInterface $step): void;
+
+    public function removeStep(StepInterface $step): void;
 
     public function getModel(): ModelInterface;
 

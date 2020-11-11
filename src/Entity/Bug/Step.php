@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 use Doctrine\ORM\Mapping as ORM;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step as StepModel;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
 
@@ -18,6 +19,11 @@ class Step extends StepModel
      * @ORM\Column(type="integer")
      */
     protected ?int $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug", inversedBy="steps")
+     */
+    protected BugInterface $bug;
 
     /**
      * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Marking")

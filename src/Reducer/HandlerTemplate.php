@@ -8,7 +8,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
@@ -37,8 +36,8 @@ abstract class HandlerTemplate implements HandlerInterface
      */
     public function handle(BugInterface $bug, int $from, int $to): void
     {
-        $newSteps = $this->stepsBuilder->create($bug, $from, $to);
-        if ($newSteps->getLength() >= $bug->getSteps()->getLength()) {
+        $newSteps = [...$this->stepsBuilder->create($bug, $from, $to)];
+        if (count($newSteps) >= $bug->getSteps()->count()) {
             return;
         }
 
@@ -48,12 +47,10 @@ abstract class HandlerTemplate implements HandlerInterface
     /**
      * @throws ExceptionInterface
      */
-    protected function run(StepsInterface $newSteps, BugInterface $bug): void
+    protected function run(array $newSteps, BugInterface $bug): void
     {
         try {
-            foreach ($this->stepsRunner->run($newSteps->getSteps()) as $step) {
-                // Do nothing
-            }
+            $this->stepsRunner->run($newSteps);
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
@@ -64,13 +61,13 @@ abstract class HandlerTemplate implements HandlerInterface
         }
     }
 
-    public function updateSteps(BugInterface $bug, StepsInterface $newSteps): void
+    public function updateSteps(BugInterface $bug, array $newSteps): void
     {
         $callback = function () use ($bug, $newSteps): void {
             // Refresh the bug for the latest steps's length.
             $this->entityManager->refresh($bug);
 
-            if ($newSteps->getLength() <= $bug->getSteps()->getLength()) {
+            if (count($newSteps) <= $bug->getSteps()->count()) {
                 $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
                 $bug->setSteps($newSteps);
             }

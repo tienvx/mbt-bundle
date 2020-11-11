@@ -51,7 +51,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             throw new UnexpectedValueException(sprintf('No bug found for id %d', $bugId));
         }
 
-        if ($bug->getSteps()->getLength() !== $length) {
+        if ($bug->getSteps()->count() !== $length) {
             // The reproduce steps has been reduced.
             return;
         }
