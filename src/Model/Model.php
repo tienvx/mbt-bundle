@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model;
 
+use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 
 class Model implements ModelInterface
@@ -15,6 +16,10 @@ class Model implements ModelInterface
     protected array $tags = [];
 
     protected PetrinetInterface $petrinet;
+
+    protected ?DateTimeInterface $updatedAt = null;
+
+    protected ?DateTimeInterface $createdAt = null;
 
     public function setId(int $id)
     {
@@ -64,5 +69,25 @@ class Model implements ModelInterface
     public function getPetrinet(): PetrinetInterface
     {
         return $this->petrinet;
+    }
+
+    public function setCreatedAt(DateTimeInterface $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
     }
 }
