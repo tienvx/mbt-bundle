@@ -24,7 +24,7 @@ class PlaceMarking extends BasePlaceMarking
     protected $place;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\ColorfulToken", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Token", cascade={"persist"})
      * @ORM\JoinTable(
      *  name="place_marking_token_xref",
      *  joinColumns={@ORM\JoinColumn(name="place_marking_id")},
