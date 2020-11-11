@@ -1,25 +1,17 @@
-#### Issue description
+## Expected Behavior
 
 
-
-#### Steps to reproduce the issue
-
-1.  
-2. 
-3. 
+## Actual Behavior
 
 
-#### What's the expected result?
+## Steps to Reproduce the Problem
 
--
+  1.
+  1.
+  1.
 
+## Specifications
 
-#### What's the actual result?
-
--
-
-
-#### Additional details / screenshot
-
-- ![Screenshot]()
--
+  - Version:
+  - Platform:
+  - Subsystem:
