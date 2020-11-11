@@ -10,7 +10,6 @@ use Tienvx\Bundle\MbtBundle\Tests\Reducer\DispatcherTestCase;
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\DispatcherTemplate
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Steps
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
  */
 class SplitDispatcherTest extends DispatcherTestCase

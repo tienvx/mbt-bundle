@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Steps;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -63,13 +62,13 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
      */
     protected function execute(TaskInterface $task): void
     {
-        $steps = new Steps();
+        $steps = [];
         $generator = $this->generatorManager->get($this->configLoader->getGenerator());
         $this->taskProgress->setTotal($task, $this->configLoader->getMaxSteps());
         try {
             foreach ($this->stepsRunner->run($generator->generate($task->getModel()->getPetrinet())) as $step) {
                 if ($step instanceof StepInterface) {
-                    $steps->addStep($step);
+                    $steps[] = $step;
                     $this->taskProgress->increaseProcessed($task, 1);
                 }
             }

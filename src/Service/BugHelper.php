@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
@@ -31,7 +30,7 @@ class BugHelper implements BugHelperInterface
         $this->bugUrl = $bugUrl;
     }
 
-    public function create(StepsInterface $steps, string $message, ModelInterface $model): void
+    public function create(array $steps, string $message, ModelInterface $model): void
     {
         // Executing task take long time. Reconnect database to create bug.
         $this->entityManager->getConnection()->connect();

@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Steps;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -26,9 +25,7 @@ class DispatcherTestCase extends TestCase
         $this->bug = new Bug();
         $this->bug->setId(123);
         $this->bug->setMessage('Something wrong');
-        $steps = new Steps();
-        $steps->setSteps(array_fill(0, 11, $this->createMock(StepInterface::class)));
-        $this->bug->setSteps($steps);
+        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 11)));
     }
 
     public function testDispatch(): void

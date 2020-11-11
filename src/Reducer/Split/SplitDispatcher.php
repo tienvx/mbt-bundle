@@ -2,14 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer\Split;
 
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Reducer\DispatcherTemplate;
 
 class SplitDispatcher extends DispatcherTemplate
 {
-    protected function getPairs(StepsInterface $steps): array
+    protected function getPairs(Collection $steps): array
     {
-        $length = $steps->getLength();
+        $length = $steps->count();
         $maxPairs = $this->maxPairs($steps);
         $pairs = [];
 

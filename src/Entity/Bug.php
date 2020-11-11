@@ -4,10 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 
@@ -31,10 +31,14 @@ class Bug extends BugModel
     protected string $title;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Steps", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="steps_id", referencedColumnName="id", nullable=false)
+     * @ORM\OneToMany(
+     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Step",
+     *   mappedBy="bug",
+     *   orphanRemoval=true,
+     *   cascade={"persist", "remove"}
+     * )
      */
-    protected StepsInterface $steps;
+    protected Collection $steps;
 
     /**
      * @ORM\OneToOne(targetEntity="Model")

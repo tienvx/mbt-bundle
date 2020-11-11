@@ -2,14 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer\Random;
 
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepsInterface;
+use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Reducer\DispatcherTemplate;
 
 class RandomDispatcher extends DispatcherTemplate
 {
-    protected function getPairs(StepsInterface $steps): array
+    protected function getPairs(Collection $steps): array
     {
-        $length = $steps->getLength();
+        $length = $steps->count();
         $maxPairs = $this->maxPairs($steps);
         $pairs = [];
 
