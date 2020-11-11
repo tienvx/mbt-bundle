@@ -26,12 +26,8 @@ class Step extends StepModel
     protected BugInterface $bug;
 
     /**
-     * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Marking")
-     * @ORM\JoinTable(
-     *  name="step_marking_xref",
-     *  joinColumns={@ORM\JoinColumn(name="step_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="marking_id", unique=true)}
-     * )
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Marking")
+     * @ORM\JoinColumn(name="marking_id", referencedColumnName="id", nullable=false)
      */
     protected MarkingInterface $marking;
 

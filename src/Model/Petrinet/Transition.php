@@ -12,6 +12,8 @@ class Transition extends BaseTransition implements TransitionInterface
 
     protected ArrayCollection $actions;
 
+    protected PetrinetInterface $petrinet;
+
     public function __construct()
     {
         parent::__construct();
@@ -71,5 +73,15 @@ class Transition extends BaseTransition implements TransitionInterface
     public function removeAction(CommandInterface $action)
     {
         $this->actions->removeElement($action);
+    }
+
+    public function setPetrinet(PetrinetInterface $petrinet): void
+    {
+        $this->petrinet = $petrinet;
+    }
+
+    public function getPetrinet(): PetrinetInterface
+    {
+        return $this->petrinet;
     }
 }

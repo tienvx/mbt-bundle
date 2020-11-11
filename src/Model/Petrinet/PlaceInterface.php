@@ -16,4 +16,8 @@ interface PlaceInterface extends BasePlaceInterface
     public function getAssertions(): ArrayCollection;
 
     public function setAssertions(iterable $assertions): void;
+
+    public function setPetrinet(PetrinetInterface $petrinet): void;
+
+    public function getPetrinet(): PetrinetInterface;
 }

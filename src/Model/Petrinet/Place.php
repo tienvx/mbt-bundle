@@ -12,6 +12,8 @@ class Place extends BasePlace implements PlaceInterface
 
     protected ArrayCollection $assertions;
 
+    protected PetrinetInterface $petrinet;
+
     public function __construct()
     {
         parent::__construct();
@@ -71,5 +73,15 @@ class Place extends BasePlace implements PlaceInterface
     public function removeAssertion(CommandInterface $assertion)
     {
         $this->assertions->removeElement($assertion);
+    }
+
+    public function setPetrinet(PetrinetInterface $petrinet): void
+    {
+        $this->petrinet = $petrinet;
+    }
+
+    public function getPetrinet(): PetrinetInterface
+    {
+        return $this->petrinet;
     }
 }

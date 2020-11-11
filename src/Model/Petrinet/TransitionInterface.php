@@ -16,4 +16,8 @@ interface TransitionInterface extends BaseTransitionInterface
     public function getActions(): ArrayCollection;
 
     public function setActions(iterable $actions): void;
+
+    public function setPetrinet(PetrinetInterface $petrinet): void;
+
+    public function getPetrinet(): PetrinetInterface;
 }

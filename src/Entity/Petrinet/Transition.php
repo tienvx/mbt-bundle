@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Entity\Petrinet;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\Transition as BaseTransition;
 
 /**
@@ -52,14 +53,15 @@ class Transition extends BaseTransition
     /**
      * @ORM\OneToMany(
      *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Selenium\Command",
+     *   mappedBy="transition",
      *   orphanRemoval=true,
      *   cascade={"persist", "remove"}
      * )
-     * @ORM\JoinTable(
-     *  name="transition_command_xref",
-     *  joinColumns={@ORM\JoinColumn(name="transition_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="command_id", unique=true)}
-     * )
      */
     protected ArrayCollection $actions;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", inversedBy="transitions")
+     */
+    protected PetrinetInterface $petrinet;
 }

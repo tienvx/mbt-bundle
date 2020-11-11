@@ -29,11 +29,11 @@ class Petrinet extends BasePetrinet
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Place", orphanRemoval=true, cascade={"persist", "remove"})
-     * @ORM\JoinTable(
-     *  name="petrinet_place_xref",
-     *  joinColumns={@ORM\JoinColumn(name="petrinet_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="place_id", unique=true)}
+     * @ORM\OneToMany(
+     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Place",
+     *   mappedBy="petrinet",
+     *   orphanRemoval=true,
+     *   cascade={"persist", "remove"}
      * )
      */
     protected $places;
@@ -41,11 +41,11 @@ class Petrinet extends BasePetrinet
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition", orphanRemoval=true, cascade={"persist", "remove"})
-     * @ORM\JoinTable(
-     *  name="petrinet_transition_xref",
-     *  joinColumns={@ORM\JoinColumn(name="petrinet_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="transition_id", unique=true)}
+     * @ORM\OneToMany(
+     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition",
+     *   mappedBy="petrinet",
+     *   orphanRemoval=true,
+     *   cascade={"persist", "remove"}
      * )
      */
     protected $transitions;
