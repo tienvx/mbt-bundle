@@ -9,7 +9,7 @@ class Command implements CommandInterface
 {
     protected string $command;
     protected string $target;
-    protected string $value;
+    protected ?string $value;
     protected PlaceInterface $place;
     protected TransitionInterface $transition;
 
@@ -33,12 +33,12 @@ class Command implements CommandInterface
         $this->target = $target;
     }
 
-    public function getValue(): string
+    public function getValue(): ?string
     {
         return $this->value;
     }
 
-    public function setValue(string $value): void
+    public function setValue(?string $value): void
     {
         $this->value = $value;
     }

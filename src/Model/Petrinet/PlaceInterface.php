@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Petrinet;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Petrinet\Model\PlaceInterface as BasePlaceInterface;
 
 interface PlaceInterface extends BasePlaceInterface
@@ -13,7 +13,7 @@ interface PlaceInterface extends BasePlaceInterface
 
     public function setLabel(string $label): void;
 
-    public function getAssertions(): ArrayCollection;
+    public function getAssertions(): Collection;
 
     public function setAssertions(iterable $assertions): void;
 

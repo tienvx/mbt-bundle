@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Petrinet;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use SingleColorPetrinet\Model\GuardedTransitionInterface as BaseTransitionInterface;
 
 interface TransitionInterface extends BaseTransitionInterface
@@ -13,7 +13,7 @@ interface TransitionInterface extends BaseTransitionInterface
 
     public function setLabel(string $label): void;
 
-    public function getActions(): ArrayCollection;
+    public function getActions(): Collection;
 
     public function setActions(iterable $actions): void;
 

@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Entity\Petrinet;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\OutputArc as BaseOutputArc;
 
 /**
@@ -30,11 +31,13 @@ class OutputArc extends BaseOutputArc
 
     /**
      * @ORM\Column(type="integer", nullable=false)
+     * @Assert\Type("integer")
      */
     protected $weight;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\Type("string")
      */
     protected $expression;
 }

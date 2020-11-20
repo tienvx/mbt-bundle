@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model\Petrinet;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Petrinet\Model\Place as BasePlace;
 use Tienvx\Bundle\MbtBundle\Model\Selenium\CommandInterface;
 
@@ -10,7 +11,7 @@ class Place extends BasePlace implements PlaceInterface
 {
     protected string $label = '';
 
-    protected ArrayCollection $assertions;
+    protected Collection $assertions;
 
     protected PetrinetInterface $petrinet;
 
@@ -35,7 +36,7 @@ class Place extends BasePlace implements PlaceInterface
         $this->label = $label;
     }
 
-    public function getAssertions(): ArrayCollection
+    public function getAssertions(): Collection
     {
         return $this->assertions;
     }

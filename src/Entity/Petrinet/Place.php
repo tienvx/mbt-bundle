@@ -2,8 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity\Petrinet;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\Place as BasePlace;
 
@@ -42,8 +43,10 @@ class Place extends BasePlace
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @Assert\Type("string")
      */
-    protected string $label = '';
+    protected string $label;
 
     /**
      * @ORM\OneToMany(
@@ -53,7 +56,7 @@ class Place extends BasePlace
      *   cascade={"persist", "remove"}
      * )
      */
-    protected ArrayCollection $assertions;
+    protected Collection $assertions;
 
     /**
      * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", inversedBy="places")
