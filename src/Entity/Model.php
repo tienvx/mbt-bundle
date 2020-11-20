@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 /**
  * @ORM\Entity
  * @ORM\Table(name="model")
+ * @ORM\HasLifecycleCallbacks
  */
 class Model extends BaseModel
 {
