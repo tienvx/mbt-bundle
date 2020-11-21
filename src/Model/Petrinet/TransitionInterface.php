@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Model\Petrinet;
 
 use Doctrine\Common\Collections\Collection;
 use SingleColorPetrinet\Model\GuardedTransitionInterface as BaseTransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Selenium\CommandInterface;
 
 interface TransitionInterface extends BaseTransitionInterface
 {
@@ -16,6 +17,10 @@ interface TransitionInterface extends BaseTransitionInterface
     public function getActions(): Collection;
 
     public function setActions(iterable $actions): void;
+
+    public function addAction(CommandInterface $action): void;
+
+    public function removeAction(CommandInterface $action): void;
 
     public function setPetrinet(PetrinetInterface $petrinet): void;
 

@@ -63,7 +63,7 @@ class Bug extends BugModel
     /**
      * @ORM\Column(type="integer")
      */
-    protected int $petrinetVersion;
+    protected int $modelVersion;
 
     /**
      * @ORM\Column(name="created_at", type="datetime")

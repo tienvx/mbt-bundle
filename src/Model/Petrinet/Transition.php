@@ -50,28 +50,12 @@ class Transition extends BaseTransition implements TransitionInterface
         }
     }
 
-    /**
-     * Adds a step.
-     */
-    public function addAction(CommandInterface $action)
+    public function addAction(CommandInterface $action): void
     {
         $this->actions[] = $action;
     }
 
-    /**
-     * Tells if the Steps has the given step.
-     *
-     * @return bool
-     */
-    public function hasAction(CommandInterface $action)
-    {
-        return $this->actions->contains($action);
-    }
-
-    /**
-     * Removes a step.
-     */
-    public function removeAction(CommandInterface $action)
+    public function removeAction(CommandInterface $action): void
     {
         $this->actions->removeElement($action);
     }

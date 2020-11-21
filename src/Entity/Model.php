@@ -57,6 +57,11 @@ class Model extends BaseModel
     protected DateTimeInterface $updatedAt;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    protected int $version;
+
+    /**
      * @ORM\PrePersist
      */
     public function prePersist(): void

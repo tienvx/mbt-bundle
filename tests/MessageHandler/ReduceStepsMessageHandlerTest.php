@@ -8,7 +8,6 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
@@ -47,10 +46,8 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
-        $petrinet = new Petrinet();
-        $petrinet->setVersion(1);
         $this->model = new Model();
-        $this->model->setPetrinet($petrinet);
+        $this->model->setVersion(1);
     }
 
     public function testInvokeNoBug(): void
@@ -65,9 +62,9 @@ class ReduceStepsMessageHandlerTest extends TestCase
 
     public function testInvokeBugWithModifiedModel(): void
     {
-        $this->model->getPetrinet()->setVersion(2);
+        $this->model->setVersion(2);
         $bug = new Bug();
-        $bug->setPetrinetVersion(1);
+        $bug->setModelVersion(1);
         $bug->setModel($this->model);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
         $this->configLoader->expects($this->never())->method('getReducer');
@@ -81,7 +78,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
     public function testInvokeReducedBug(): void
     {
         $bug = new Bug();
-        $bug->setPetrinetVersion(1);
+        $bug->setModelVersion(1);
         $bug->setModel($this->model);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
         $this->configLoader->expects($this->never())->method('getReducer');
@@ -99,7 +96,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $progress->setProcessed(5);
         $bug = new Bug();
         $bug->setProgress($progress);
-        $bug->setPetrinetVersion(1);
+        $bug->setModelVersion(1);
         $bug->setModel($this->model);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
         $reducer = $this->createMock(ReducerInterface::class);
@@ -122,7 +119,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setProgress($progress);
         $bug->setId(123);
-        $bug->setPetrinetVersion(1);
+        $bug->setModelVersion(1);
         $bug->setModel($this->model);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
         $reducer = $this->createMock(ReducerInterface::class);

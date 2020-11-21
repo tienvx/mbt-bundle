@@ -43,25 +43,4 @@ class Petrinet extends BasePetrinet
      * )
      */
     protected $transitions;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected int $version;
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist(): void
-    {
-        $this->setVersion(0);
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate(): void
-    {
-        $this->setVersion($this->getVersion() + 1);
-    }
 }
