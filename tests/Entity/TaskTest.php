@@ -14,8 +14,6 @@ class TaskTest extends TestCase
     public function testPrePersist(): void
     {
         $task = new Task();
-        $this->assertNull($task->getCreatedAt());
-        $this->assertNull($task->getUpdatedAt());
         $task->prePersist();
         $this->assertInstanceOf(\DateTime::class, $task->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $task->getUpdatedAt());
@@ -24,7 +22,7 @@ class TaskTest extends TestCase
     public function testPreUpdate(): void
     {
         $task = new Task();
-        $this->assertNull($task->getUpdatedAt());
+        $task->prePersist();
         $task->preUpdate();
         $this->assertInstanceOf(\DateTime::class, $task->getUpdatedAt());
     }

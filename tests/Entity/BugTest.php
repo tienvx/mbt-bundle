@@ -14,8 +14,6 @@ class BugTest extends TestCase
     public function testPrePersist(): void
     {
         $bug = new Bug();
-        $this->assertNull($bug->getCreatedAt());
-        $this->assertNull($bug->getUpdatedAt());
         $bug->prePersist();
         $this->assertInstanceOf(\DateTime::class, $bug->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $bug->getUpdatedAt());
@@ -24,7 +22,7 @@ class BugTest extends TestCase
     public function testPreUpdate(): void
     {
         $bug = new Bug();
-        $this->assertNull($bug->getUpdatedAt());
+        $bug->prePersist();
         $bug->preUpdate();
         $this->assertInstanceOf(\DateTime::class, $bug->getUpdatedAt());
     }

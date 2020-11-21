@@ -41,7 +41,7 @@ class RandomGenerator extends AbstractGenerator
         $marking = $markingBuilder->getMarking();
         $state = new State(
             $this->configLoader->getMaxSteps(),
-            $petrinet->getInitPlaceIds(),
+            $this->getInitPlaceIds($petrinet->getPlaces()),
             count($petrinet->getPlaces()),
             count($petrinet->getTransitions()),
             $this->configLoader->getMaxTransitionCoverage(),
@@ -67,7 +67,7 @@ class RandomGenerator extends AbstractGenerator
     protected function markInitPlaces(PetrinetInterface $petrinet, MarkingBuilder $markingBuilder): void
     {
         foreach ($petrinet->getPlaces() as $place) {
-            if ($place instanceof PlaceInterface && in_array($place->getId(), $petrinet->getInitPlaceIds())) {
+            if ($place instanceof PlaceInterface && true === $place->getInit()) {
                 $markingBuilder->mark($place, 1);
             }
         }
@@ -83,5 +83,17 @@ class RandomGenerator extends AbstractGenerator
         }
 
         return null;
+    }
+
+    protected function getInitPlaceIds(iterable $places): array
+    {
+        $ids = [];
+        foreach ($places as $place) {
+            if ($place instanceof PlaceInterface && $place->getInit()) {
+                $ids[] = $place->getId();
+            }
+        }
+
+        return $ids;
     }
 }

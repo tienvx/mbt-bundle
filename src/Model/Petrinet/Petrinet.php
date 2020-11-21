@@ -6,20 +6,20 @@ use Petrinet\Model\Petrinet as BasePetrinet;
 
 class Petrinet extends BasePetrinet implements PetrinetInterface
 {
-    protected array $initPlaceIds = [];
+    protected int $version;
 
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getInitPlaceIds(): array
+    public function getVersion(): int
     {
-        return $this->initPlaceIds;
+        return $this->version;
     }
 
-    public function setInitPlaceIds(array $initPlaceIds): void
+    public function setVersion(int $version): void
     {
-        $this->initPlaceIds = $initPlaceIds;
+        $this->version = $version;
     }
 }

@@ -14,9 +14,9 @@ class Task implements TaskInterface
 
     protected ProgressInterface $progress;
 
-    protected ?DateTimeInterface $updatedAt = null;
+    protected DateTimeInterface $updatedAt;
 
-    protected ?DateTimeInterface $createdAt = null;
+    protected DateTimeInterface $createdAt;
 
     public function __construct()
     {
@@ -68,7 +68,7 @@ class Task implements TaskInterface
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
@@ -78,7 +78,7 @@ class Task implements TaskInterface
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }

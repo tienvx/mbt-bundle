@@ -40,11 +40,15 @@ interface BugInterface
 
     public function setClosed(bool $closed): void;
 
+    public function getPetrinetVersion(): int;
+
+    public function setPetrinetVersion(int $petrinetVersion): void;
+
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
-    public function getCreatedAt(): ?DateTimeInterface;
+    public function getCreatedAt(): DateTimeInterface;
 
     public function setUpdatedAt(DateTimeInterface $updatedAt): void;
 
-    public function getUpdatedAt(): ?DateTimeInterface;
+    public function getUpdatedAt(): DateTimeInterface;
 }

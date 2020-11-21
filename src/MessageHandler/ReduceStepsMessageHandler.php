@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
@@ -47,12 +48,17 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
         $to = $message->getTo();
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
-        if (!$bug || !$bug instanceof Bug) {
-            throw new UnexpectedValueException(sprintf('No bug found for id %d', $bugId));
+        if (!$bug instanceof BugInterface) {
+            throw new UnexpectedValueException(sprintf('Can not reduce steps for bug %d: bug not found', $bugId));
+        }
+
+        if ($bug->getPetrinetVersion() !== $bug->getModel()->getPetrinet()->getVersion()) {
+            // The model has been modified.
+            return;
         }
 
         if ($bug->getSteps()->count() !== $length) {
-            // The reproduce steps has been reduced.
+            // The bug has been reduced.
             return;
         }
 

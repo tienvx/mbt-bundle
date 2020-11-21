@@ -15,13 +15,11 @@ interface ModelInterface
 
     public function setLabel(string $label): void;
 
-    public function getVersion(): int;
-
-    public function setVersion(int $version): void;
-
     public function getTags(): array;
 
     public function setTags(array $tags): void;
+
+    public function addTag(string $tag): void;
 
     public function setPetrinet(PetrinetInterface $petrinet): void;
 

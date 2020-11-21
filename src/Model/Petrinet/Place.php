@@ -11,6 +11,8 @@ class Place extends BasePlace implements PlaceInterface
 {
     protected string $label = '';
 
+    protected bool $init = false;
+
     protected Collection $assertions;
 
     protected PetrinetInterface $petrinet;
@@ -34,6 +36,16 @@ class Place extends BasePlace implements PlaceInterface
     public function setLabel(string $label): void
     {
         $this->label = $label;
+    }
+
+    public function getInit(): bool
+    {
+        return $this->init;
+    }
+
+    public function setInit(bool $init): void
+    {
+        $this->init = $init;
     }
 
     public function getAssertions(): Collection

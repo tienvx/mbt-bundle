@@ -45,7 +45,7 @@ class ReduceBugMessageHandlerTest extends TestCase
     public function testInvokeNoBug(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('No bug found for id 123');
+        $this->expectExceptionMessage('Can not reduce bug 123: bug not found');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn(null);
         $message = new ReduceBugMessage(123);
         $handler = new ReduceBugMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);

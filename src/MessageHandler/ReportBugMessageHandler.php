@@ -54,7 +54,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
         if (!$bug instanceof BugInterface) {
-            throw new UnexpectedValueException(sprintf('No bug found for id %d', $bugId));
+            throw new UnexpectedValueException(sprintf('Can not report bug %d: bug not found', $bugId));
         }
 
         $this->sendNotification($bug);

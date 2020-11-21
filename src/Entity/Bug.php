@@ -61,14 +61,19 @@ class Bug extends BugModel
     protected bool $closed = false;
 
     /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     * @ORM\Column(type="integer")
      */
-    protected ?DateTimeInterface $createdAt = null;
+    protected int $petrinetVersion;
 
     /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @ORM\Column(name="created_at", type="datetime")
      */
-    protected ?DateTimeInterface $updatedAt = null;
+    protected DateTimeInterface $createdAt;
+
+    /**
+     * @ORM\Column(name="updated_at", type="datetime")
+     */
+    protected DateTimeInterface $updatedAt;
 
     public function __construct()
     {

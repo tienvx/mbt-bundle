@@ -49,6 +49,12 @@ class Place extends BasePlace
     protected string $label;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Assert\Type("bool")
+     */
+    protected bool $init = false;
+
+    /**
      * @ORM\OneToMany(
      *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Selenium\Command",
      *   mappedBy="place",

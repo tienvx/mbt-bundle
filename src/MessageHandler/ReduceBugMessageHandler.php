@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
@@ -44,8 +45,8 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
         $bugId = $message->getId();
         $bug = $this->entityManager->find(Bug::class, $bugId);
 
-        if (!$bug instanceof Bug) {
-            throw new UnexpectedValueException(sprintf('No bug found for id %d', $bugId));
+        if (!$bug instanceof BugInterface) {
+            throw new UnexpectedValueException(sprintf('Can not reduce bug %d: bug not found', $bugId));
         }
 
         $reducer = $this->reducerManager->get($this->configLoader->getReducer());
