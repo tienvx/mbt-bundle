@@ -15,6 +15,8 @@ class Model implements ModelInterface
 
     protected PetrinetInterface $petrinet;
 
+    protected int $version;
+
     protected DateTimeInterface $updatedAt;
 
     protected DateTimeInterface $createdAt;
@@ -66,6 +68,16 @@ class Model implements ModelInterface
     public function getPetrinet(): PetrinetInterface
     {
         return $this->petrinet;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): void
+    {
+        $this->version = $version;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

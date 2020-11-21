@@ -7,7 +7,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugHelper;
 
 /**
@@ -32,11 +31,9 @@ class BugHelperTest extends TestCase
             $step3 = $this->createMock(StepInterface::class),
         ];
         $message = 'Can not run next step';
-        $petrinet = $this->createMock(PetrinetInterface::class);
-        $petrinet->expects($this->once())->method('getVersion')->willReturn(123);
         $model = $this->createMock(ModelInterface::class);
         $model->expects($this->once())->method('getLabel')->willReturn('Test shopping cart');
-        $model->expects($this->once())->method('getPetrinet')->willReturn($petrinet);
+        $model->expects($this->once())->method('getVersion')->willReturn(123);
         $this->translator->expects($this->once())->method('trans')->with('mbt.default_bug_title', ['model' => 'Test shopping cart'])->willReturn('New bug was found during testing model "Test shopping cart"');
         $bugHelper = new BugHelper($this->translator);
         $bug = $bugHelper->create($steps, $message, $model);
@@ -44,7 +41,7 @@ class BugHelperTest extends TestCase
         $this->assertSame($steps, $bug->getSteps()->toArray());
         $this->assertSame($message, $bug->getMessage());
         $this->assertSame($model, $bug->getModel());
-        $this->assertSame(123, $bug->getPetrinetVersion());
+        $this->assertSame(123, $bug->getModelVersion());
     }
 
     public function testGetBugUrl(): void

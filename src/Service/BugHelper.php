@@ -29,7 +29,7 @@ class BugHelper implements BugHelperInterface
         $bug->setSteps($steps);
         $bug->setMessage($message);
         $bug->setModel($model);
-        $bug->setPetrinetVersion($model->getPetrinet()->getVersion());
+        $bug->setModelVersion($model->getVersion());
 
         return $bug;
     }

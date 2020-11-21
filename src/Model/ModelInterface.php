@@ -27,6 +27,10 @@ interface ModelInterface
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
+    public function getVersion(): int;
+
+    public function setVersion(int $version): void;
+
     public function getCreatedAt(): ?DateTimeInterface;
 
     public function setUpdatedAt(DateTimeInterface $updatedAt): void;

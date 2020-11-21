@@ -62,28 +62,12 @@ class Place extends BasePlace implements PlaceInterface
         }
     }
 
-    /**
-     * Adds a step.
-     */
-    public function addAssertion(CommandInterface $assertion)
+    public function addAssertion(CommandInterface $assertion): void
     {
         $this->assertions[] = $assertion;
     }
 
-    /**
-     * Tells if the Steps has the given step.
-     *
-     * @return bool
-     */
-    public function hasAssertion(CommandInterface $assertion)
-    {
-        return $this->assertions->contains($assertion);
-    }
-
-    /**
-     * Removes a step.
-     */
-    public function removeAssertion(CommandInterface $assertion)
+    public function removeAssertion(CommandInterface $assertion): void
     {
         $this->assertions->removeElement($assertion);
     }
