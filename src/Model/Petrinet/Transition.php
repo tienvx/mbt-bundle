@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model\Petrinet;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use SingleColorPetrinet\Model\GuardedTransition as BaseTransition;
 use Tienvx\Bundle\MbtBundle\Model\Selenium\CommandInterface;
 
@@ -10,7 +11,7 @@ class Transition extends BaseTransition implements TransitionInterface
 {
     protected string $label = '';
 
-    protected ArrayCollection $actions;
+    protected Collection $actions;
 
     protected PetrinetInterface $petrinet;
 
@@ -35,7 +36,7 @@ class Transition extends BaseTransition implements TransitionInterface
         $this->label = $label;
     }
 
-    public function getActions(): ArrayCollection
+    public function getActions(): Collection
     {
         return $this->actions;
     }

@@ -15,9 +15,9 @@ interface CommandInterface
 
     public function setTarget(string $target): void;
 
-    public function getValue(): string;
+    public function getValue(): ?string;
 
-    public function setValue(string $value): void;
+    public function setValue(?string $value): void;
 
     public function setPlace(PlaceInterface $place);
 

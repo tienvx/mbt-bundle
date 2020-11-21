@@ -2,11 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 interface StepsInterface
 {
-    public function getSteps(): ArrayCollection;
+    public function getSteps(): Collection;
 
     /**
      * @param $steps

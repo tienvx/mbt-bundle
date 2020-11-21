@@ -26,6 +26,7 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="string")
      * @Assert\Type("string")
+     * @Assert\NotBlank
      */
     protected string $label;
 

@@ -2,8 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Entity\Petrinet;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Petrinet\Transition as BaseTransition;
 
@@ -42,13 +43,16 @@ class Transition extends BaseTransition
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\Type("string")
      */
     protected $guard = null;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     * @Assert\Type("string")
      */
-    protected string $label = '';
+    protected string $label;
 
     /**
      * @ORM\OneToMany(
@@ -58,7 +62,7 @@ class Transition extends BaseTransition
      *   cascade={"persist", "remove"}
      * )
      */
-    protected ArrayCollection $actions;
+    protected Collection $actions;
 
     /**
      * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", inversedBy="transitions")
