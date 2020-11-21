@@ -45,7 +45,7 @@ class ReportBugMessageHandlerTest extends TestCase
     public function testInvokeNoBug(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('No bug found for id 123');
+        $this->expectExceptionMessage('Can not report bug 123: bug not found');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn(null);
         $message = new ReportBugMessage(123);
         $handler = new ReportBugMessageHandler($this->entityManager, $this->notifier, $this->configLoader, $this->bugSubscriber, $this->bugHelper, $this->translator);

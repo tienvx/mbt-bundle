@@ -14,8 +14,6 @@ class ModelTest extends TestCase
     public function testPrePersist(): void
     {
         $model = new Model();
-        $this->assertNull($model->getCreatedAt());
-        $this->assertNull($model->getUpdatedAt());
         $model->prePersist();
         $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
@@ -24,8 +22,10 @@ class ModelTest extends TestCase
     public function testPreUpdate(): void
     {
         $model = new Model();
-        $this->assertNull($model->getUpdatedAt());
+        $model->prePersist();
         $model->preUpdate();
-        $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
+        $this->assertInstanceOf(\DateTime::class, $updatedAt = $model->getUpdatedAt());
+        $model->preUpdate();
+        $this->assertTrue($model->getUpdatedAt() instanceof \DateTime && $updatedAt !== $model->getUpdatedAt());
     }
 }

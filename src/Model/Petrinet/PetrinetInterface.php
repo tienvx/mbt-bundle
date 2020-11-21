@@ -8,7 +8,7 @@ interface PetrinetInterface extends BasePetrinetInterface
 {
     public function setId(int $id): void;
 
-    public function getInitPlaceIds(): array;
+    public function getVersion(): int;
 
-    public function setInitPlaceIds(array $initPlaceIds): void;
+    public function setVersion(int $version): void;
 }

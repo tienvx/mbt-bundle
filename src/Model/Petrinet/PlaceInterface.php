@@ -13,6 +13,10 @@ interface PlaceInterface extends BasePlaceInterface
 
     public function setLabel(string $label): void;
 
+    public function getInit(): bool;
+
+    public function setInit(bool $init): void;
+
     public function getAssertions(): Collection;
 
     public function setAssertions(iterable $assertions): void;

@@ -2,7 +2,6 @@
 
 use Doctrine\ORM\EntityManagerInterface;
 use Petrinet\Builder\MarkingBuilder;
-use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
@@ -182,11 +181,6 @@ return static function (ContainerConfigurator $container): void {
                 new Reference(ExpressionEvaluatorInterface::class),
             ])
             ->alias(GuardedTransitionServiceInterface::class, GuardedTransitionService::class)
-
-        ->set(SingleColorPetrinetBuilder::class)
-            ->args([
-                new Reference(ColorfulFactoryInterface::class),
-            ])
 
         ->set(MarkingBuilder::class)
             ->args([

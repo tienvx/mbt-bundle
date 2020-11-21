@@ -23,9 +23,11 @@ class Bug implements BugInterface
 
     protected bool $closed = false;
 
-    protected ?DateTimeInterface $updatedAt = null;
+    protected int $petrinetVersion;
 
-    protected ?DateTimeInterface $createdAt = null;
+    protected DateTimeInterface $updatedAt;
+
+    protected DateTimeInterface $createdAt;
 
     public function __construct()
     {
@@ -120,12 +122,22 @@ class Bug implements BugInterface
         $this->closed = $closed;
     }
 
+    public function getPetrinetVersion(): int
+    {
+        return $this->petrinetVersion;
+    }
+
+    public function setPetrinetVersion(int $petrinetVersion): void
+    {
+        $this->petrinetVersion = $petrinetVersion;
+    }
+
     public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
@@ -135,7 +147,7 @@ class Bug implements BugInterface
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }

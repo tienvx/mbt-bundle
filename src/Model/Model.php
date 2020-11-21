@@ -11,15 +11,13 @@ class Model implements ModelInterface
 
     protected string $label;
 
-    protected int $version = 0;
-
     protected array $tags = [];
 
     protected PetrinetInterface $petrinet;
 
-    protected ?DateTimeInterface $updatedAt = null;
+    protected DateTimeInterface $updatedAt;
 
-    protected ?DateTimeInterface $createdAt = null;
+    protected DateTimeInterface $createdAt;
 
     public function setId(int $id)
     {
@@ -41,16 +39,6 @@ class Model implements ModelInterface
         $this->label = $label;
     }
 
-    public function getVersion(): int
-    {
-        return $this->version;
-    }
-
-    public function setVersion(int $version): void
-    {
-        $this->version = $version;
-    }
-
     public function getTags(): array
     {
         return $this->tags;
@@ -58,7 +46,16 @@ class Model implements ModelInterface
 
     public function setTags(array $tags): void
     {
-        $this->tags = $tags;
+        $this->tags = [];
+
+        foreach ($tags as $tag) {
+            $this->addTag($tag);
+        }
+    }
+
+    public function addTag(string $tag): void
+    {
+        $this->tags[] = $tag;
     }
 
     public function setPetrinet(PetrinetInterface $petrinet): void
@@ -76,7 +73,7 @@ class Model implements ModelInterface
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
@@ -86,7 +83,7 @@ class Model implements ModelInterface
         $this->updatedAt = $updatedAt;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }

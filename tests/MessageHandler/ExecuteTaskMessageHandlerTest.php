@@ -2,9 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -25,6 +27,8 @@ use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  */
 class ExecuteTaskMessageHandlerTest extends TestCase
 {
@@ -33,7 +37,8 @@ class ExecuteTaskMessageHandlerTest extends TestCase
     protected StepsRunnerInterface $stepsRunner;
     protected ConfigLoaderInterface $configLoader;
     protected TaskProgressInterface $taskProgress;
-    protected BugHelperInterface $bugCreator;
+    protected BugHelperInterface $bugHelper;
+    protected Connection $connection;
 
     protected function setUp(): void
     {
@@ -42,16 +47,17 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
         $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
         $this->taskProgress = $this->createMock(TaskProgressInterface::class);
-        $this->bugCreator = $this->createMock(BugHelperInterface::class);
+        $this->bugHelper = $this->createMock(BugHelperInterface::class);
+        $this->connection = $this->createMock(Connection::class);
     }
 
     public function testInvokeNoTask(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('No task found for id 123');
+        $this->expectExceptionMessage('Can not execute task 123: task not found');
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn(null);
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugCreator);
+        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
         $handler($message);
     }
 
@@ -78,10 +84,11 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
         $this->taskProgress->expects($this->exactly(4))->method('increaseProcessed')->with($task, 1);
-        $this->taskProgress->expects($this->once())->method('flush');
-        $this->bugCreator->expects($this->never())->method('create');
+        $this->connection->expects($this->once())->method('connect');
+        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
+        $this->bugHelper->expects($this->never())->method('create');
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugCreator);
+        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
         $handler($message);
     }
 
@@ -98,6 +105,8 @@ class ExecuteTaskMessageHandlerTest extends TestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ];
+        $bug = new Bug();
+        $bug->setSteps($steps);
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($petrinet)->willReturnCallback(
             function () use ($steps): iterable {
@@ -124,11 +133,14 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
         $this->taskProgress->expects($this->exactly(3))->method('increaseProcessed')->with($task, 1);
-        $this->taskProgress->expects($this->once())->method('flush');
-        $this->bugCreator->expects($this->once())->method('create')->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model);
+        $this->entityManager->expects($this->once())->method('persist')->with($bug);
+        $this->entityManager->expects($this->once())->method('flush');
+        $this->connection->expects($this->once())->method('connect');
+        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
+        $this->bugHelper->expects($this->once())->method('create')->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model)->willReturn($bug);
 
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugCreator);
+        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
         $handler($message);
     }
 }

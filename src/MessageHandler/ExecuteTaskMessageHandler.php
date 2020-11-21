@@ -51,7 +51,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         $task = $this->entityManager->find(Task::class, $taskId);
 
         if (!$task instanceof TaskInterface) {
-            throw new UnexpectedValueException(sprintf('No task found for id %d', $taskId));
+            throw new UnexpectedValueException(sprintf('Can not execute task %d: task not found', $taskId));
         }
 
         $this->execute($task);
@@ -75,9 +75,12 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $this->bugHelper->create($steps, $throwable->getMessage(), $task->getModel());
+            $bug = $this->bugHelper->create($steps, $throwable->getMessage(), $task->getModel());
+            $this->entityManager->persist($bug);
         } finally {
-            $this->taskProgress->flush();
+            // Executing task take long time. Reconnect to flush changes.
+            $this->entityManager->getConnection()->connect();
+            $this->entityManager->flush();
         }
     }
 }

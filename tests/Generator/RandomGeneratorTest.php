@@ -58,12 +58,12 @@ class RandomGeneratorTest extends TestCase
             ->connect($this->t2, $this->p4 = $builder->place())
             ->getPetrinet();
         $this->p1->setId(1);
+        $this->p1->setInit(true);
         $this->p2->setId(2);
         $this->p3->setId(3);
         $this->p4->setId(4);
         $this->t1->setId(1);
         $this->t2->setId(2);
-        $this->petrinet->setInitPlaceIds([1]);
     }
 
     public function testGetManager(): void

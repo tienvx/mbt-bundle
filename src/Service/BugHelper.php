@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -10,18 +9,11 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class BugHelper implements BugHelperInterface
 {
-    protected EntityManagerInterface $entityManager;
-    protected ConfigLoaderInterface $configLoader;
     protected TranslatorInterface $translator;
     protected string $bugUrl;
 
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ConfigLoaderInterface $configLoader,
-        TranslatorInterface $translator
-    ) {
-        $this->entityManager = $entityManager;
-        $this->configLoader = $configLoader;
+    public function __construct(TranslatorInterface $translator)
+    {
         $this->translator = $translator;
     }
 
@@ -30,19 +22,16 @@ class BugHelper implements BugHelperInterface
         $this->bugUrl = $bugUrl;
     }
 
-    public function create(array $steps, string $message, ModelInterface $model): void
+    public function create(array $steps, string $message, ModelInterface $model): BugInterface
     {
-        // Executing task take long time. Reconnect database to create bug.
-        $this->entityManager->getConnection()->connect();
-
         $bug = new Bug();
         $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['model' => $model->getLabel()]));
         $bug->setSteps($steps);
         $bug->setMessage($message);
         $bug->setModel($model);
+        $bug->setPetrinetVersion($model->getPetrinet()->getVersion());
 
-        $this->entityManager->persist($bug);
-        $this->entityManager->flush();
+        return $bug;
     }
 
     public function buildBugUrl(BugInterface $bug): string

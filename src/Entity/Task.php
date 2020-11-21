@@ -40,14 +40,14 @@ class Task extends TaskModel
     protected ProgressInterface $progress;
 
     /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     * @ORM\Column(name="created_at", type="datetime")
      */
-    protected ?DateTimeInterface $createdAt = null;
+    protected DateTimeInterface $createdAt;
 
     /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @ORM\Column(name="updated_at", type="datetime")
      */
-    protected ?DateTimeInterface $updatedAt = null;
+    protected DateTimeInterface $updatedAt;
 
     public function __construct()
     {

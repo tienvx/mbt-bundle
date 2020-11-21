@@ -32,6 +32,10 @@ class Model extends BaseModel
 
     /**
      * @ORM\Column(type="array")
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Type("string")
+     * })
      */
     protected array $tags = [];
 
@@ -43,22 +47,22 @@ class Model extends BaseModel
     protected PetrinetInterface $petrinet;
 
     /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     * @ORM\Column(name="created_at", type="datetime")
      */
-    protected ?DateTimeInterface $createdAt = null;
+    protected DateTimeInterface $createdAt;
 
     /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @ORM\Column(name="updated_at", type="datetime")
      */
-    protected ?DateTimeInterface $updatedAt = null;
+    protected DateTimeInterface $updatedAt;
 
     /**
      * @ORM\PrePersist
      */
     public function prePersist(): void
     {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->setCreatedAt(new DateTime());
+        $this->setUpdatedAt(new DateTime());
     }
 
     /**
@@ -66,6 +70,6 @@ class Model extends BaseModel
      */
     public function preUpdate(): void
     {
-        $this->updatedAt = new DateTime();
+        $this->setUpdatedAt(new DateTime());
     }
 }
