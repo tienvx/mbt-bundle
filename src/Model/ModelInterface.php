@@ -3,7 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 
 interface ModelInterface
 {
@@ -21,9 +22,21 @@ interface ModelInterface
 
     public function addTag(string $tag): void;
 
-    public function setPetrinet(PetrinetInterface $petrinet): void;
+    public function getPlaces(): array;
 
-    public function getPetrinet(): PetrinetInterface;
+    public function setPlaces(array $places): void;
+
+    public function addPlace(PlaceInterface $place): void;
+
+    public function getPlace(int $index): ?PlaceInterface;
+
+    public function getTransitions(): array;
+
+    public function setTransitions(array $transitions): void;
+
+    public function addTransition(TransitionInterface $transition): void;
+
+    public function getTransition(int $index): ?TransitionInterface;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

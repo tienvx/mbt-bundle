@@ -6,13 +6,18 @@ use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 
 class ShortestPathStepsBuilder implements StepsBuilderInterface
 {
+    protected PetrinetHelperInterface $petrinetHelper;
     protected ShortestPathStrategyInterface $strategy;
 
-    public function __construct(ShortestPathStrategyInterface $strategy)
-    {
+    public function __construct(
+        PetrinetHelperInterface $petrinetHelper,
+        ShortestPathStrategyInterface $strategy
+    ) {
+        $this->petrinetHelper = $petrinetHelper;
         $this->strategy = $strategy;
     }
 
@@ -45,6 +50,6 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
             throw new OutOfRangeException('Can not create new steps using invalid range');
         }
 
-        return $this->strategy->run($bug->getModel()->getPetrinet(), $fromStep, $toStep);
+        return $this->strategy->run($this->petrinetHelper->build($bug->getModel()), $fromStep, $toStep);
     }
 }

@@ -7,7 +7,6 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 
 /**
  * @ORM\Entity
@@ -31,7 +30,7 @@ class Model extends BaseModel
     protected string $label;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="simple_array")
      * @Assert\All({
      *     @Assert\NotBlank,
      *     @Assert\Type("string")
@@ -40,11 +39,22 @@ class Model extends BaseModel
     protected array $tags = [];
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="petrinet_id", referencedColumnName="id", nullable=false)
-     * @Assert\Valid
+     * @ORM\Column(type="array")
+     * @Assert\All({
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Place")
+     *     @Assert\Valid
+     * })
      */
-    protected PetrinetInterface $petrinet;
+    protected array $places = [];
+
+    /**
+     * @ORM\Column(type="array")
+     * @Assert\All({
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Transition")
+     *     @Assert\Valid
+     * })
+     */
+    protected array $transitions = [];
 
     /**
      * @ORM\Column(name="created_at", type="datetime")

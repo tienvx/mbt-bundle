@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
+use Petrinet\Model\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
 
 interface ShortestPathStrategyInterface
 {

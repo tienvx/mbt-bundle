@@ -19,7 +19,6 @@
         "php": ">=7.4",
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/orm": "^2.7",
-        "florianv/petrinet": "dev-update as 2.0.1",
         "jmgq/a-star": "^1.1",
         "php-webdriver/webdriver": "^1.8",
         "symfony/config": "^5.2",
@@ -30,12 +29,12 @@
         "symfony/notifier": "^5.2",
         "symfony/translation": "^5.2",
         "symfony/validator": "^5.2",
-        "tienvx/single-color-petrinet": "^1.0@beta"
+        "tienvx/single-color-petrinet": "^1.0@rc"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.4"
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "rc",
     "autoload": {
         "psr-4": {
             "Tienvx\\Bundle\\MbtBundle\\": "src/"
@@ -54,12 +53,6 @@
             "dev-master": "2.0-dev"
         }
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/tienvx/petrinet.git"
-        }
-    ],
     "suggest": {
         "ext-amqp": "Needed to support amqp transport for messenger component",
         "symfony/mailer": "Support notifying bug using email",

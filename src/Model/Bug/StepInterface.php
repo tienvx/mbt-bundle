@@ -3,8 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
 
 interface StepInterface
 {
@@ -12,11 +10,17 @@ interface StepInterface
 
     public function getBug(): BugInterface;
 
-    public function getMarking(): MarkingInterface;
+    public function getColor(): string;
 
-    public function setMarking(MarkingInterface $marking): void;
+    public function setColor(string $color): void;
 
-    public function getTransition(): ?TransitionInterface;
+    public function getPlaces(): array;
 
-    public function setTransition(TransitionInterface $transition): void;
+    public function setPlaces(array $places): void;
+
+    public function addPlace(int $place, int $tokens): void;
+
+    public function getTransition(): ?int;
+
+    public function setTransition(int $transition): void;
 }

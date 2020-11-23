@@ -50,7 +50,7 @@ abstract class HandlerTemplate implements HandlerInterface
     protected function run(array $newSteps, BugInterface $bug): void
     {
         try {
-            $this->stepsRunner->run($newSteps);
+            $this->stepsRunner->run($newSteps, $bug->getModel());
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {

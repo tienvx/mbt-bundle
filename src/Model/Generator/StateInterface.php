@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Generator;
 
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use Petrinet\Model\MarkingInterface;
+use Petrinet\Model\TransitionInterface;
 
 interface StateInterface
 {

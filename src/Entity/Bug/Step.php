@@ -3,10 +3,10 @@
 namespace Tienvx\Bundle\MbtBundle\Entity\Bug;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step as StepModel;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
 
 /**
  * @ORM\Entity
@@ -26,14 +26,36 @@ class Step extends StepModel
     protected BugInterface $bug;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Marking")
-     * @ORM\JoinColumn(name="marking_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="array")
+     * @Assert\All({
+     *     @Assert\Type("integer")
+     * })
      */
-    protected MarkingInterface $marking;
+    protected array $places;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition")
-     * @ORM\JoinColumn(name="transition_id", referencedColumnName="id", nullable=true)
+     * @ORM\Column(type="text")
+     * @Assert\Type("string")
+     * @Assert\NotBlank
      */
-    protected ?TransitionInterface $transition = null;
+    protected string $color;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Type("integer")
+     */
+    protected ?int $transition = null;
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        foreach ($this->places as $place => $tokens) {
+            if (!is_int($place)) {
+                $context->buildViolation('The key of array should be of type integer.')
+                    ->addViolation();
+            }
+        }
+    }
 }
