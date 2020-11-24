@@ -26,4 +26,10 @@ class ToPlace implements ToPlaceInterface
     {
         $this->expression = $expression;
     }
+
+    public function isSame(ToPlaceInterface $toPlace): bool
+    {
+        return $this->getPlace() === $toPlace->getPlace() &&
+            $this->getExpression() === $toPlace->getExpression();
+    }
 }

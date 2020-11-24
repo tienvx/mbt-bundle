@@ -17,4 +17,6 @@ interface PlaceInterface
     public function setAssertions(array $assertions): void;
 
     public function addAssertion(CommandInterface $assertion): void;
+
+    public function isSame(self $place): bool;
 }

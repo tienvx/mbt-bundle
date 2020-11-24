@@ -46,4 +46,28 @@ class Place implements PlaceInterface
     {
         $this->assertions[] = $assertion;
     }
+
+    public function isSame(PlaceInterface $place): bool
+    {
+        return $this->getInit() === $place->getInit() && $this->isSameAssertions($place->getAssertions());
+    }
+
+    protected function isSameAssertions(array $assertions): bool
+    {
+        if (count($this->assertions) !== count($assertions)) {
+            return false;
+        }
+        foreach ($assertions as $index => $assertion) {
+            $selfAssertion = $this->assertions[$index] ?? null;
+            if (
+                !$selfAssertion instanceof CommandInterface ||
+                !$assertion instanceof CommandInterface ||
+                !$selfAssertion->isSame($assertion)
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

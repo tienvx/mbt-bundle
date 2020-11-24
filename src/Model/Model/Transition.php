@@ -86,4 +86,50 @@ class Transition implements TransitionInterface
     {
         $this->toPlaces[] = $toPlace;
     }
+
+    public function isSame(TransitionInterface $transition): bool
+    {
+        return $this->getGuard() === $transition->getGuard() &&
+            $this->getFromPlaces() === $transition->getFromPlaces() &&
+            $this->isSameToPlaces($transition->getToPlaces()) &&
+            $this->isSameActions($transition->getActions());
+    }
+
+    protected function isSameActions(array $actions): bool
+    {
+        if (count($this->actions) !== count($actions)) {
+            return false;
+        }
+        foreach ($actions as $index => $action) {
+            $selfAction = $this->actions[$index] ?? null;
+            if (
+                !$selfAction instanceof CommandInterface ||
+                !$action instanceof CommandInterface ||
+                !$selfAction->isSame($action)
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function isSameToPlaces(array $toPlaces): bool
+    {
+        if (count($this->toPlaces) !== count($toPlaces)) {
+            return false;
+        }
+        foreach ($toPlaces as $index => $toPlace) {
+            $selfToPlace = $this->toPlaces[$index] ?? null;
+            if (
+                !$selfToPlace instanceof ToPlaceInterface ||
+                !$toPlace instanceof ToPlaceInterface ||
+                $selfToPlace->isSame($toPlace)
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -15,4 +15,6 @@ interface CommandInterface
     public function getValue(): ?string;
 
     public function setValue(?string $value): void;
+
+    public function isSame(self $command): bool;
 }
