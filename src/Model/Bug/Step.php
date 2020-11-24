@@ -2,11 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-
 class Step implements StepInterface
 {
-    protected BugInterface $bug;
     protected string $color;
     protected array $places;
     protected ?int $transition = null;
@@ -16,16 +13,6 @@ class Step implements StepInterface
         $this->setPlaces($tokensCount);
         $this->setColor($color);
         $this->setTransition($transition);
-    }
-
-    public function setBug(BugInterface $bug): void
-    {
-        $this->bug = $bug;
-    }
-
-    public function getBug(): BugInterface
-    {
-        return $this->bug;
     }
 
     public function setColor(string $color): void

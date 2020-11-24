@@ -80,6 +80,6 @@ class HandlerTestCase extends TestCase
         $this->messageBus->expects($this->once())->method('dispatch')->with($this->isInstanceOf(ReduceBugMessage::class))->willReturn(new Envelope(new \stdClass()));
         $this->stepsRunner->expects($this->once())->method('run')->with($this->newSteps)->willThrowException(new Exception('Something wrong'));
         $this->handler->handle($this->bug, 1, 2);
-        $this->assertSame($this->newSteps, $this->bug->getSteps()->toArray());
+        $this->assertSame($this->newSteps, $this->bug->getSteps());
     }
 }

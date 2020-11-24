@@ -38,7 +38,7 @@ class BugHelperTest extends TestCase
         $bugHelper = new BugHelper($this->translator);
         $bug = $bugHelper->create($steps, $message, $model);
         $this->assertSame('New bug was found during testing model "Test shopping cart"', $bug->getTitle());
-        $this->assertSame($steps, $bug->getSteps()->toArray());
+        $this->assertSame($steps, $bug->getSteps());
         $this->assertSame($message, $bug->getMessage());
         $this->assertSame($model, $bug->getModel());
         $this->assertSame(123, $bug->getModelVersion());

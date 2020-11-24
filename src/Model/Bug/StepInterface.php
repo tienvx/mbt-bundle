@@ -2,14 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-
 interface StepInterface
 {
-    public function setBug(BugInterface $bug): void;
-
-    public function getBug(): BugInterface;
-
     public function getColor(): string;
 
     public function setColor(string $color): void;

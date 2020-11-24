@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -20,27 +19,27 @@ abstract class DispatcherTemplate implements DispatcherInterface
     {
         $steps = $bug->getSteps();
 
-        if ($steps->count() <= 2) {
+        if (count($steps) <= 2) {
             return 0;
         }
 
         $pairs = $this->getPairs($steps);
 
         foreach ($pairs as $pair) {
-            $message = new ReduceStepsMessage($bug->getId(), $steps->count(), $pair[0], $pair[1]);
+            $message = new ReduceStepsMessage($bug->getId(), count($steps), $pair[0], $pair[1]);
             $this->messageBus->dispatch($message);
         }
 
         return count($pairs);
     }
 
-    protected function getPairs(Collection $steps): array
+    protected function getPairs(array $steps): array
     {
         return [];
     }
 
-    protected function maxPairs(Collection $steps): int
+    protected function maxPairs(array $steps): int
     {
-        return floor(sqrt($steps->count()));
+        return floor(sqrt(count($steps)));
     }
 }

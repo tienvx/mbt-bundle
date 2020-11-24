@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 interface StepRunnerInterface
 {
@@ -12,5 +13,5 @@ interface StepRunnerInterface
 
     public function canRun(): bool;
 
-    public function run(StepInterface $step): void;
+    public function run(StepInterface $step, ModelInterface $model): void;
 }

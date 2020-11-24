@@ -57,7 +57,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             return;
         }
 
-        if ($bug->getSteps()->count() !== $length) {
+        if (count($bug->getSteps()) !== $length) {
             // The bug has been reduced.
             return;
         }

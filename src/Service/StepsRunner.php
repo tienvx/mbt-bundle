@@ -50,7 +50,7 @@ class StepsRunner implements StepsRunnerInterface
                     $this->transitionService->isEnabled($transition, $marking)
                 ) {
                     $this->transitionService->fire($transition, $marking);
-                    $this->stepRunner->run($step);
+                    $this->stepRunner->run($step, $model);
                 } else {
                     throw new RuntimeException(sprintf('Transition %d is not enabled', $step->getTransition()));
                 }

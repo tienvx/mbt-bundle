@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step as StepModel;
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 /**
  * @ORM\Entity
@@ -14,19 +13,6 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 class Step extends StepModel
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    protected ?int $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug", inversedBy="steps")
-     */
-    protected BugInterface $bug;
-
-    /**
-     * @ORM\Column(type="array")
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
@@ -34,14 +20,12 @@ class Step extends StepModel
     protected array $places;
 
     /**
-     * @ORM\Column(type="text")
      * @Assert\Type("string")
      * @Assert\NotBlank
      */
     protected string $color;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
      * @Assert\Type("integer")
      */
     protected ?int $transition = null;

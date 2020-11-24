@@ -37,7 +37,7 @@ abstract class HandlerTemplate implements HandlerInterface
     public function handle(BugInterface $bug, int $from, int $to): void
     {
         $newSteps = [...$this->stepsBuilder->create($bug, $from, $to)];
-        if (count($newSteps) >= $bug->getSteps()->count()) {
+        if (count($newSteps) >= count($bug->getSteps())) {
             return;
         }
 
@@ -67,7 +67,7 @@ abstract class HandlerTemplate implements HandlerInterface
             // Refresh the bug for the latest steps's length.
             $this->entityManager->refresh($bug);
 
-            if (count($newSteps) <= $bug->getSteps()->count()) {
+            if (count($newSteps) <= count($bug->getSteps())) {
                 $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
                 $bug->setSteps($newSteps);
             }

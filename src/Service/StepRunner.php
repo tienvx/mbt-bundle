@@ -6,6 +6,7 @@ use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
 class StepRunner implements StepRunnerInterface
@@ -36,17 +37,17 @@ class StepRunner implements StepRunnerInterface
         return (bool) $this->helper;
     }
 
-    public function run(StepInterface $step): void
+    public function run(StepInterface $step, ModelInterface $model): void
     {
         if (!$this->canRun()) {
             throw new RuntimeException('Need to set up before running step');
         }
-        $transition = $step->getBug()->getModel()->getTransition($step->getTransition());
+        $transition = $model->getTransition($step->getTransition());
         if ($transition instanceof TransitionInterface) {
             $this->executeTransitionActions($transition);
         }
         foreach ($step->getPlaces() as $place => $tokens) {
-            $place = $step->getBug()->getModel()->getPlace($place);
+            $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
                 $this->executePlaceAssertions($place);
             }

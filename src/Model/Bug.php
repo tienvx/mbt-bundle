@@ -3,8 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
 class Bug implements BugInterface
@@ -13,7 +11,7 @@ class Bug implements BugInterface
 
     protected string $title;
 
-    protected Collection $steps;
+    protected array $steps = [];
 
     protected ModelInterface $model;
 
@@ -32,7 +30,6 @@ class Bug implements BugInterface
     public function __construct()
     {
         $this->progress = new Progress();
-        $this->steps = new ArrayCollection();
     }
 
     public function setId(int $id)
@@ -55,14 +52,15 @@ class Bug implements BugInterface
         $this->title = $title;
     }
 
-    public function getSteps(): Collection
+    public function getSteps(): array
     {
         return $this->steps;
     }
 
-    public function setSteps(iterable $steps): void
+    public function setSteps(array $steps): void
     {
-        $this->steps = new ArrayCollection();
+        $this->steps = [];
+
         foreach ($steps as $step) {
             $this->addStep($step);
         }
@@ -70,16 +68,7 @@ class Bug implements BugInterface
 
     public function addStep(StepInterface $step): void
     {
-        if (!$this->steps->contains($step)) {
-            $this->steps->add($step);
-        }
-    }
-
-    public function removeStep(StepInterface $step): void
-    {
-        if ($this->steps->contains($step)) {
-            $this->steps->removeElement($step);
-        }
+        $this->steps[] = $step;
     }
 
     public function getModel(): ModelInterface
