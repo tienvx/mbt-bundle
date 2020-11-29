@@ -82,7 +82,7 @@ class Transition implements TransitionInterface
         }
     }
 
-    public function addToPlace(int $toPlace): void
+    public function addToPlace(ToPlaceInterface $toPlace): void
     {
         $this->toPlaces[] = $toPlace;
     }
@@ -124,7 +124,7 @@ class Transition implements TransitionInterface
             if (
                 !$selfToPlace instanceof ToPlaceInterface ||
                 !$toPlace instanceof ToPlaceInterface ||
-                $selfToPlace->isSame($toPlace)
+                !$selfToPlace->isSame($toPlace)
             ) {
                 return false;
             }

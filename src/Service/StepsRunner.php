@@ -2,11 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
+use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
@@ -41,12 +41,14 @@ class StepsRunner implements StepsRunnerInterface
         $this->stepRunner->setUp();
         $petrinet = $this->petrinetHelper->build($model);
         foreach ($steps as $step) {
+            if (!$step instanceof StepInterface) {
+                continue;
+            }
             try {
                 $transition = $petrinet->getTransitions()[$step->getTransition()];
-                $marking = $this->markingHelper->getMarking($petrinet, $step->getPlaces());
+                $marking = $this->markingHelper->getMarking($petrinet, $step->getPlaces(), $step->getColor());
                 if (
                     $transition instanceof TransitionInterface &&
-                    $step instanceof StepInterface &&
                     $this->transitionService->isEnabled($transition, $marking)
                 ) {
                     $this->transitionService->fire($transition, $marking);

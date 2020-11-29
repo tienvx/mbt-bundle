@@ -34,7 +34,11 @@ class BugHelperTest extends TestCase
         $model = $this->createMock(ModelInterface::class);
         $model->expects($this->once())->method('getLabel')->willReturn('Test shopping cart');
         $model->expects($this->once())->method('getVersion')->willReturn(123);
-        $this->translator->expects($this->once())->method('trans')->with('mbt.default_bug_title', ['model' => 'Test shopping cart'])->willReturn('New bug was found during testing model "Test shopping cart"');
+        $this->translator
+            ->expects($this->once())
+            ->method('trans')
+            ->with('mbt.default_bug_title', ['model' => 'Test shopping cart'])
+            ->willReturn('New bug was found during testing model "Test shopping cart"');
         $bugHelper = new BugHelper($this->translator);
         $bug = $bugHelper->create($steps, $message, $model);
         $this->assertSame('New bug was found during testing model "Test shopping cart"', $bug->getTitle());

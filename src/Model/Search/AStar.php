@@ -46,7 +46,7 @@ class AStar extends AbstractAStar
             $tokensDiff[$place] = abs($tokens - ($start->getPlaces()[$place] ?? 0));
         }
         // Estimate it will took N transitions to move N tokens if color is the same, twice if color is not the same.
-        return array_sum($tokensDiff) * (($start->getColor() != $end->getColor()) + 1);
+        return array_sum($tokensDiff) * (($start->getColor()->getValues() != $end->getColor()->getValues()) + 1);
     }
 
     /**
@@ -68,13 +68,17 @@ class AStar extends AbstractAStar
         }
 
         $adjacents = [];
-        $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces());
+        $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
         foreach ($this->transitionService->getEnabledTransitions($this->petrinet, $marking) as $transition) {
             // Create new marking.
-            $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces());
+            $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
             if ($transition instanceof TransitionInterface && $marking instanceof ColorfulMarkingInterface) {
                 $this->transitionService->fire($transition, $marking);
-                $adjacents[] = new Node($this->markingHelper->getPlaces($marking), $marking->getColor()->getColor(), $transition->getId());
+                $adjacents[] = new Node(
+                    $this->markingHelper->getPlaces($marking),
+                    $marking->getColor(),
+                    $transition->getId()
+                );
             }
         }
 

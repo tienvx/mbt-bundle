@@ -8,7 +8,6 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
@@ -39,6 +38,7 @@ class ExecuteTaskMessageHandlerTest extends TestCase
     protected TaskProgressInterface $taskProgress;
     protected BugHelperInterface $bugHelper;
     protected Connection $connection;
+    protected ExecuteTaskMessageHandler $handler;
 
     protected function setUp(): void
     {
@@ -49,6 +49,14 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->taskProgress = $this->createMock(TaskProgressInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->connection = $this->createMock(Connection::class);
+        $this->handler = new ExecuteTaskMessageHandler(
+            $this->generatorManager,
+            $this->entityManager,
+            $this->stepsRunner,
+            $this->configLoader,
+            $this->taskProgress,
+            $this->bugHelper
+        );
     }
 
     public function testInvokeNoTask(): void
@@ -57,20 +65,17 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->expectExceptionMessage('Can not execute task 123: task not found');
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn(null);
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvoke(): void
     {
-        $petrinet = new Petrinet();
         $model = new Model();
-        $model->setPetrinet($petrinet);
         $task = new Task();
         $task->setModel($model);
         $steps = array_fill(0, 4, $this->createMock(StepInterface::class));
         $generator = $this->createMock(GeneratorInterface::class);
-        $generator->expects($this->once())->method('generate')->with($petrinet)->willReturnCallback(
+        $generator->expects($this->once())->method('generate')->with($model)->willReturnCallback(
             function () use ($steps): iterable {
                 foreach ($steps as $step) {
                     yield $step;
@@ -88,15 +93,12 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->bugHelper->expects($this->never())->method('create');
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeFoundBug(): void
     {
-        $petrinet = new Petrinet();
         $model = new Model();
-        $model->setPetrinet($petrinet);
         $task = new Task();
         $task->setModel($model);
         $steps = [
@@ -108,7 +110,7 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setSteps($steps);
         $generator = $this->createMock(GeneratorInterface::class);
-        $generator->expects($this->once())->method('generate')->with($petrinet)->willReturnCallback(
+        $generator->expects($this->once())->method('generate')->with($model)->willReturnCallback(
             function () use ($steps): iterable {
                 foreach ($steps as $step) {
                     yield $step;
@@ -137,10 +139,13 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('flush');
         $this->connection->expects($this->once())->method('connect');
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
-        $this->bugHelper->expects($this->once())->method('create')->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model)->willReturn($bug);
+        $this->bugHelper
+            ->expects($this->once())
+            ->method('create')
+            ->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model)
+            ->willReturn($bug);
 
         $message = new ExecuteTaskMessage(123);
-        $handler = new ExecuteTaskMessageHandler($this->generatorManager, $this->entityManager, $this->stepsRunner, $this->configLoader, $this->taskProgress, $this->bugHelper);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 }

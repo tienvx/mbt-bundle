@@ -62,21 +62,20 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
      */
     protected function execute(TaskInterface $task): void
     {
-        $recorded = [];
+        $steps = [];
         $generator = $this->generatorManager->get($this->configLoader->getGenerator());
         $this->taskProgress->setTotal($task, $this->configLoader->getMaxSteps());
         try {
-            $steps = $generator->generate($task->getModel());
-            foreach ($this->stepsRunner->run($steps, $task->getModel()) as $step) {
+            foreach ($this->stepsRunner->run($generator->generate($task->getModel()), $task->getModel()) as $step) {
                 if ($step instanceof StepInterface) {
-                    $recorded[] = $step;
+                    $steps[] = $step;
                     $this->taskProgress->increaseProcessed($task, 1);
                 }
             }
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $bug = $this->bugHelper->create($recorded, $throwable->getMessage(), $task->getModel());
+            $bug = $this->bugHelper->create($steps, $throwable->getMessage(), $task->getModel());
             $this->entityManager->persist($bug);
         } finally {
             // Executing task take long time. Reconnect to flush changes.

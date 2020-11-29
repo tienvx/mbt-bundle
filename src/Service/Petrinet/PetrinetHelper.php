@@ -66,8 +66,11 @@ class PetrinetHelper implements PetrinetHelperInterface
         return $transitions;
     }
 
-    protected function connectPlacesToTransition(array $places, PetrinetTransitionInterface $transition, SingleColorPetrinetBuilder $builder): void
-    {
+    protected function connectPlacesToTransition(
+        array $places,
+        PetrinetTransitionInterface $transition,
+        SingleColorPetrinetBuilder $builder
+    ): void {
         foreach ($places as $place) {
             if ($place instanceof PetrinetPlaceInterface) {
                 $builder->connect($place, $transition, 1);
@@ -75,8 +78,12 @@ class PetrinetHelper implements PetrinetHelperInterface
         }
     }
 
-    protected function connectTransitionToPlaces(PetrinetTransitionInterface $transition, array $toPlaces, array $places, SingleColorPetrinetBuilder $builder): void
-    {
+    protected function connectTransitionToPlaces(
+        PetrinetTransitionInterface $transition,
+        array $toPlaces,
+        array $places,
+        SingleColorPetrinetBuilder $builder
+    ): void {
         foreach ($toPlaces as $toPlace) {
             if ($toPlace instanceof ToPlaceInterface) {
                 $builder->connect($transition, $places[$toPlace->getPlace()], 1, $toPlace->getExpression());

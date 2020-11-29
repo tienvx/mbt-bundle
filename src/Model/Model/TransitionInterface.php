@@ -28,7 +28,7 @@ interface TransitionInterface
 
     public function setToPlaces(array $toPlaces): void;
 
-    public function addToPlace(int $toPlace): void;
+    public function addToPlace(ToPlaceInterface $toPlace): void;
 
     public function isSame(self $transition): bool;
 }

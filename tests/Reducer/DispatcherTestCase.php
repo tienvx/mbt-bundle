@@ -30,7 +30,11 @@ class DispatcherTestCase extends TestCase
 
     public function testDispatch(): void
     {
-        $this->messageBus->expects($this->exactly(3))->method('dispatch')->with($this->assertMessage())->willReturn(new Envelope(new \stdClass()));
+        $this->messageBus
+            ->expects($this->exactly(3))
+            ->method('dispatch')
+            ->with($this->assertMessage())
+            ->willReturn(new Envelope(new \stdClass()));
         $this->assertSame(3, $this->dispatcher->dispatch($this->bug));
         $this->assertPairs();
     }
@@ -41,7 +45,11 @@ class DispatcherTestCase extends TestCase
             if (!$message instanceof ReduceStepsMessage) {
                 return false;
             }
-            if ($message->getBugId() !== $this->bug->getId() || $message->getFrom() >= $message->getTo() || 11 !== $message->getLength()) {
+            if (
+                $message->getBugId() !== $this->bug->getId()
+                || $message->getFrom() >= $message->getTo()
+                || 11 !== $message->getLength()
+            ) {
                 return false;
             }
             $pair = [$message->getFrom(), $message->getTo()];

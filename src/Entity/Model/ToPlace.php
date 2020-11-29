@@ -15,5 +15,5 @@ class ToPlace extends ToPlaceModel
     /**
      * @Assert\Type("string")
      */
-    protected ?string $expression;
+    protected ?string $expression = null;
 }

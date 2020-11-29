@@ -17,6 +17,11 @@ class SplitHandlerTest extends HandlerTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->handler = new SplitHandler($this->entityManager, $this->messageBus, $this->stepsRunner, $this->stepsBuilder);
+        $this->handler = new SplitHandler(
+            $this->entityManager,
+            $this->messageBus,
+            $this->stepsRunner,
+            $this->stepsBuilder
+        );
     }
 }

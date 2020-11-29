@@ -40,8 +40,8 @@ class Command implements CommandInterface
 
     public function isSame(CommandInterface $command): bool
     {
-        return $this->getCommand() === $command->getCommand() ||
-            $this->getTarget() === $command->getTarget() ||
+        return $this->getCommand() === $command->getCommand() &&
+            $this->getTarget() === $command->getTarget() &&
             $this->getValue() === $command->getValue();
     }
 }

@@ -2,9 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Generator;
 
-use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\TransitionInterface;
-
 class State implements StateInterface
 {
     protected int $stepsCount = 1;
@@ -18,38 +15,20 @@ class State implements StateInterface
     protected float $transitionCoverage = 0;
     protected float $placeCoverage = 0;
 
-    public function __construct(int $maxSteps, array $visitedPlaces, int $totalPlaces, int $totalTransitions, float $maxTransitionCoverage, float $maxPlaceCoverage)
-    {
+    public function __construct(
+        int $maxSteps,
+        array $visitedPlaces,
+        int $totalPlaces,
+        int $totalTransitions,
+        float $maxTransitionCoverage,
+        float $maxPlaceCoverage
+    ) {
         $this->maxSteps = $maxSteps;
         $this->visitedPlaces = $visitedPlaces;
         $this->totalPlaces = $totalPlaces;
         $this->totalTransitions = $totalTransitions;
         $this->maxTransitionCoverage = $maxTransitionCoverage;
         $this->maxPlaceCoverage = $maxPlaceCoverage;
-    }
-
-    public function canStop(): bool
-    {
-        return ($this->transitionCoverage >= $this->maxTransitionCoverage && $this->placeCoverage >= $this->maxPlaceCoverage) || $this->stepsCount >= $this->maxSteps;
-    }
-
-    public function update(MarkingInterface $marking, TransitionInterface $transition): void
-    {
-        ++$this->stepsCount;
-
-        // Update visited places and transitions.
-        foreach ($marking->getPlaceMarkings() as $placeMarking) {
-            if (count($placeMarking->getTokens()) > 0 && !in_array($placeMarking->getPlace()->getId(), $this->visitedPlaces)) {
-                $this->visitedPlaces[] = $placeMarking->getPlace()->getId();
-            }
-        }
-        if (!in_array($transition->getId(), $this->visitedTransitions)) {
-            $this->visitedTransitions[] = $transition->getId();
-        }
-
-        // Update current coverage.
-        $this->transitionCoverage = count($this->visitedTransitions) / $this->totalTransitions * 100;
-        $this->placeCoverage = count($this->visitedPlaces) / $this->totalPlaces * 100;
     }
 
     public function getStepsCount(): int
@@ -79,7 +58,18 @@ class State implements StateInterface
 
     public function setVisitedPlaces(array $visitedPlaces): void
     {
-        $this->visitedPlaces = $visitedPlaces;
+        $this->visitedPlaces = [];
+
+        foreach ($visitedPlaces as $visitedPlace) {
+            $this->addVisitedPlace($visitedPlace);
+        }
+    }
+
+    public function addVisitedPlace(int $placeId)
+    {
+        if (!in_array($placeId, $this->visitedPlaces)) {
+            $this->visitedPlaces[] = $placeId;
+        }
     }
 
     public function getTotalPlaces(): int
@@ -99,7 +89,18 @@ class State implements StateInterface
 
     public function setVisitedTransitions(array $visitedTransitions): void
     {
-        $this->visitedTransitions = $visitedTransitions;
+        $this->visitedTransitions = [];
+
+        foreach ($visitedTransitions as $visitedTransition) {
+            $this->addVisitedTransition($visitedTransition);
+        }
+    }
+
+    public function addVisitedTransition(int $transitionId)
+    {
+        if (!in_array($transitionId, $this->visitedTransitions)) {
+            $this->visitedTransitions[] = $transitionId;
+        }
     }
 
     public function getTotalTransitions(): int

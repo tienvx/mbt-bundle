@@ -2,11 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
+use SingleColorPetrinet\Model\ColorInterface;
+
 interface StepInterface
 {
-    public function getColor(): string;
+    public function getColor(): ColorInterface;
 
-    public function setColor(string $color): void;
+    public function setColor(ColorInterface $color): void;
 
     public function getPlaces(): array;
 
@@ -16,5 +18,5 @@ interface StepInterface
 
     public function getTransition(): ?int;
 
-    public function setTransition(int $transition): void;
+    public function setTransition(?int $transition): void;
 }

@@ -15,7 +15,9 @@ class ExpressionLanguageTest extends TestCase
     {
         $expressionLanguage = new ExpressionLanguage();
         $this->expectException(SyntaxError::class);
-        $this->expectExceptionMessage('The function "constant" does not exist around position 1 for expression `constant("PHP_VERSION ")`.');
+        $this->expectExceptionMessage(
+            'The function "constant" does not exist around position 1 for expression `constant("PHP_VERSION ")`.'
+        );
         $expressionLanguage->evaluate('constant("PHP_VERSION ")');
     }
 }

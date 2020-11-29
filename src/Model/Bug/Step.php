@@ -2,25 +2,27 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
+use SingleColorPetrinet\Model\ColorInterface;
+
 class Step implements StepInterface
 {
-    protected string $color;
+    protected ColorInterface $color;
     protected array $places;
     protected ?int $transition = null;
 
-    public function __construct(array $tokensCount, string $color, ?int $transition = null)
+    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
     {
-        $this->setPlaces($tokensCount);
+        $this->setPlaces($places);
         $this->setColor($color);
         $this->setTransition($transition);
     }
 
-    public function setColor(string $color): void
+    public function setColor(ColorInterface $color): void
     {
         $this->color = $color;
     }
 
-    public function getColor(): string
+    public function getColor(): ColorInterface
     {
         return $this->color;
     }
@@ -49,7 +51,7 @@ class Step implements StepInterface
         return $this->transition;
     }
 
-    public function setTransition(int $transition): void
+    public function setTransition(?int $transition): void
     {
         $this->transition = $transition;
     }

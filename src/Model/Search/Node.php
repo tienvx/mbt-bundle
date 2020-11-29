@@ -3,14 +3,15 @@
 namespace Tienvx\Bundle\MbtBundle\Model\Search;
 
 use JMGQ\AStar\AbstractNode;
+use SingleColorPetrinet\Model\ColorInterface;
 
 class Node extends AbstractNode
 {
     protected array $places;
-    protected string $color;
+    protected ColorInterface $color;
     protected ?int $transition = null;
 
-    public function __construct(array $places, string $color, ?int $transition = null)
+    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
     {
         $this->setPlaces($places);
         $this->setColor($color);
@@ -20,10 +21,12 @@ class Node extends AbstractNode
     public function getID(): string
     {
         ksort($this->places);
+        $colorValues = $this->color->getValues();
+        ksort($colorValues);
 
         return md5(serialize([
             'places' => $this->places,
-            'color' => $this->color,
+            'color' => $colorValues,
         ]));
     }
 
@@ -46,12 +49,12 @@ class Node extends AbstractNode
         $this->places[$place] = $tokens;
     }
 
-    public function setColor(string $color): void
+    public function setColor(ColorInterface $color): void
     {
         $this->color = $color;
     }
 
-    public function getColor(): string
+    public function getColor(): ColorInterface
     {
         return $this->color;
     }

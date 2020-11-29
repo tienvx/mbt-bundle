@@ -64,7 +64,9 @@ class ModelDumper implements ModelDumperInterface
 
     protected function getTransitionLabel(TransitionInterface $transition): string
     {
-        return $transition->getGuard() ? sprintf('%s - (%s)', $transition->getLabel(), $transition->getGuard()) : $transition->getLabel();
+        return $transition->getGuard() ?
+            sprintf('%s - (%s)', $transition->getLabel(), $transition->getGuard()) :
+            $transition->getLabel();
     }
 
     protected function dumpArcs(ModelInterface $model): string

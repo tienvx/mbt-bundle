@@ -97,7 +97,7 @@ class Model implements ModelInterface
         $this->transitions = [];
 
         foreach ($transitions as $transition) {
-            $this->addPlace($transition);
+            $this->addTransition($transition);
         }
     }
 

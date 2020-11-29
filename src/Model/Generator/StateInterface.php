@@ -2,15 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Generator;
 
-use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\TransitionInterface;
-
 interface StateInterface
 {
-    public function canStop(): bool;
-
-    public function update(MarkingInterface $marking, TransitionInterface $transition): void;
-
     public function getStepsCount(): int;
 
     public function setStepsCount(int $stepsCount): void;
@@ -23,6 +16,8 @@ interface StateInterface
 
     public function setVisitedPlaces(array $visitedPlaces): void;
 
+    public function addVisitedPlace(int $placeId);
+
     public function getTotalPlaces(): int;
 
     public function setTotalPlaces(int $totalPlaces): void;
@@ -30,6 +25,8 @@ interface StateInterface
     public function getVisitedTransitions(): array;
 
     public function setVisitedTransitions(array $visitedTransitions): void;
+
+    public function addVisitedTransition(int $transitionId);
 
     public function getTotalTransitions(): int;
 

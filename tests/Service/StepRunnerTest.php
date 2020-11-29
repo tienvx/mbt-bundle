@@ -3,30 +3,29 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
+use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
-use Tienvx\Bundle\MbtBundle\Entity\Selenium\Command;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Place;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Transition;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Command;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 use Tienvx\Bundle\MbtBundle\Service\SeleniumInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
-use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Factory;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\StepRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Petrinet\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Petrinet\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
  */
 class StepRunnerTest extends TestCase
 {
-    protected TransitionInterface $transition;
-    protected MarkingInterface $marking;
-    protected PlaceInterface $place1;
-    protected PlaceInterface $place2;
+    protected ModelInterface $model;
     protected StepInterface $step;
     protected array $commands = [];
     protected Helper $helper;
@@ -34,19 +33,23 @@ class StepRunnerTest extends TestCase
 
     protected function setUp(): void
     {
-        $factory = Factory::createColorfulFactory();
-        $this->transition = $factory->createTransition();
-        $this->transition->setActions([
+        $this->model = new Model();
+        $this->model->setPlaces([
+            $place1 = new Place(),
+            $place2 = new Place(),
+        ]);
+        $this->model->setTransitions([
+            $transition = new Transition(),
+        ]);
+        $transition->setActions([
             $command1 = new Command(),
             $command2 = new Command(),
         ]);
-        $this->place1 = $factory->createPlace();
-        $this->place1->setAssertions([
+        $place1->setAssertions([
             $command3 = new Command(),
             $command4 = new Command(),
         ]);
-        $this->place2 = $factory->createPlace();
-        $this->place2->setAssertions([
+        $place2->setAssertions([
             $command5 = new Command(),
         ]);
         $this->commands = [
@@ -56,13 +59,7 @@ class StepRunnerTest extends TestCase
             [$command4],
             [$command5],
         ];
-        $placeMarking1 = $factory->createPlaceMarking();
-        $placeMarking1->setPlace($this->place1);
-        $placeMarking2 = $factory->createPlaceMarking();
-        $placeMarking2->setPlace($this->place2);
-        $this->marking = $factory->createMarking();
-        $this->marking->setPlaceMarkings([$placeMarking1, $placeMarking2]);
-        $this->step = new Step($this->marking, $this->transition);
+        $this->step = new Step([0 => 1, 1 => 1], new Color(), 0);
 
         $this->helper = $this->createMock(Helper::class);
         $this->selenium = $this->createMock(SeleniumInterface::class);
@@ -107,7 +104,7 @@ class StepRunnerTest extends TestCase
         $stepRunner = new StepRunner($this->selenium);
         $stepRunner->setUp();
         $stepRunner->tearDown();
-        $stepRunner->run($this->step);
+        $stepRunner->run($this->step, $this->model);
     }
 
     public function testRun(): void
@@ -117,7 +114,7 @@ class StepRunnerTest extends TestCase
         $this->helper->expects($this->exactly(5))->method('replay')->withConsecutive(...$this->commands);
         $stepRunner = new StepRunner($this->selenium);
         $stepRunner->setUp();
-        $stepRunner->run($this->step);
+        $stepRunner->run($this->step, $this->model);
         $stepRunner->tearDown();
     }
 }

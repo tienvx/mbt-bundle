@@ -44,7 +44,10 @@ class EntitySubscriber implements EventSubscriber
             $updateVersion = !$this->isSamePlaces($args->getOldValue('places'), $args->getNewValue('places'));
         }
         if ($args->hasChangedField('transitions')) {
-            $updateVersion = !$this->isSameTransitions($args->getOldValue('transitions'), $args->getNewValue('transitions'));
+            $updateVersion = !$this->isSameTransitions(
+                $args->getOldValue('transitions'),
+                $args->getNewValue('transitions')
+            );
         }
         if ($updateVersion) {
             $model->setVersion($model->getVersion() + 1);

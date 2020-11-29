@@ -35,11 +35,14 @@ class BugProgressTest extends TestCase
     {
         $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
         $this->entityManager->expects($this->once())->method('lock')->with($this->bug, LockMode::PESSIMISTIC_WRITE);
-        $this->entityManager->expects($this->once())->method('transactional')->with($this->callback(function ($callback) {
-            $callback();
+        $this->entityManager
+            ->expects($this->once())
+            ->method('transactional')
+            ->with($this->callback(function ($callback) {
+                $callback();
 
-            return true;
-        }));
+                return true;
+            }));
         $bugProgress = new BugProgress($this->entityManager);
         $bugProgress->increaseProcessed($this->bug, 2);
         $this->assertSame(7, $this->bug->getProgress()->getProcessed());
@@ -50,11 +53,14 @@ class BugProgressTest extends TestCase
     {
         $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
         $this->entityManager->expects($this->once())->method('lock')->with($this->bug, LockMode::PESSIMISTIC_WRITE);
-        $this->entityManager->expects($this->once())->method('transactional')->with($this->callback(function ($callback) {
-            $callback();
+        $this->entityManager
+            ->expects($this->once())
+            ->method('transactional')
+            ->with($this->callback(function ($callback) {
+                $callback();
 
-            return true;
-        }));
+                return true;
+            }));
         $bugProgress = new BugProgress($this->entityManager);
         $bugProgress->increaseProcessed($this->bug, 6);
         $this->assertSame(10, $this->bug->getProgress()->getProcessed());
@@ -65,11 +71,14 @@ class BugProgressTest extends TestCase
     {
         $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
         $this->entityManager->expects($this->once())->method('lock')->with($this->bug, LockMode::PESSIMISTIC_WRITE);
-        $this->entityManager->expects($this->once())->method('transactional')->with($this->callback(function ($callback) {
-            $callback();
+        $this->entityManager
+            ->expects($this->once())
+            ->method('transactional')
+            ->with($this->callback(function ($callback) {
+                $callback();
 
-            return true;
-        }));
+                return true;
+            }));
         $bugProgress = new BugProgress($this->entityManager);
         $bugProgress->increaseTotal($this->bug, 3);
         $this->assertSame(5, $this->bug->getProgress()->getProcessed());
