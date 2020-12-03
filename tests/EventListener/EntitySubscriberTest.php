@@ -85,10 +85,11 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturn(false);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(1, $model->getVersion());
     }
 
@@ -97,6 +98,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', true],
             ['transitions', false],
@@ -105,7 +107,7 @@ class EntitySubscriberTest extends TestCase
         $args->expects($this->once())->method('getNewValue')->with('places')->willReturn('new places');
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -114,6 +116,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', true],
             ['transitions', false],
@@ -129,7 +132,7 @@ class EntitySubscriberTest extends TestCase
         ]);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -138,6 +141,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', true],
             ['transitions', false],
@@ -152,7 +156,7 @@ class EntitySubscriberTest extends TestCase
         ]);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -161,6 +165,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', true],
             ['transitions', false],
@@ -177,7 +182,7 @@ class EntitySubscriberTest extends TestCase
         $place2->expects($this->never())->method('isSame');
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -186,6 +191,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', true],
             ['transitions', false],
@@ -202,7 +208,7 @@ class EntitySubscriberTest extends TestCase
         $place2->expects($this->once())->method('isSame')->with($place4)->willReturn(true);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(1, $model->getVersion());
     }
 
@@ -211,6 +217,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', false],
             ['transitions', true],
@@ -219,7 +226,7 @@ class EntitySubscriberTest extends TestCase
         $args->expects($this->once())->method('getNewValue')->with('transitions')->willReturn('new transitions');
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -228,6 +235,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', false],
             ['transitions', true],
@@ -243,7 +251,7 @@ class EntitySubscriberTest extends TestCase
         ]);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -252,6 +260,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', false],
             ['transitions', true],
@@ -266,7 +275,7 @@ class EntitySubscriberTest extends TestCase
         ]);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -275,6 +284,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', false],
             ['transitions', true],
@@ -291,7 +301,7 @@ class EntitySubscriberTest extends TestCase
         $transition2->expects($this->never())->method('isSame');
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(2, $model->getVersion());
     }
 
@@ -300,6 +310,7 @@ class EntitySubscriberTest extends TestCase
         $model = new Model();
         $model->setVersion(1);
         $args = $this->createMock(PreUpdateEventArgs::class);
+        $args->expects($this->once())->method('getEntity')->willReturn($model);
         $args->expects($this->exactly(2))->method('hasChangedField')->willReturnMap([
             ['places', false],
             ['transitions', true],
@@ -316,7 +327,7 @@ class EntitySubscriberTest extends TestCase
         $transition2->expects($this->once())->method('isSame')->with($transition4)->willReturn(true);
         $messageBus = $this->createMock(MessageBusInterface::class);
         $subscriber = new EntitySubscriber($messageBus);
-        $subscriber->preUpdate($model, $args);
+        $subscriber->preUpdate($args);
         $this->assertSame(1, $model->getVersion());
     }
 }
