@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Selenium;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\Constant\Actions;
 use Tienvx\Bundle\MbtBundle\Constant\Assertions;
-use Tienvx\Bundle\MbtBundle\Model\Selenium\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class Helper
 {
@@ -46,16 +46,25 @@ class Helper
                 $this->driver->findElement($webDriverBy)->clear();
                 break;
             case Assertions::ASSERT_ALERT:
-                $this->assert($this->driver->switchTo()->alert()->getText() === $command->getTarget(), sprintf('Alert is not equal to "%s"', $command->getTarget()));
+                $this->assert(
+                    $this->driver->switchTo()->alert()->getText() === $command->getTarget(),
+                    sprintf('Alert is not equal to "%s"', $command->getTarget())
+                );
                 break;
             case Assertions::ASSERT_TEXT:
                 $webDriverBy = $this->getSelector($command->getTarget());
-                $this->assert($this->driver->findElement($webDriverBy)->getText() === $command->getValue(), sprintf('Element "%s" does not have text "%s"', $command->getTarget(), $command->getValue()));
+                $this->assert(
+                    $this->driver->findElement($webDriverBy)->getText() === $command->getValue(),
+                    sprintf('Element "%s" does not have text "%s"', $command->getTarget(), $command->getValue())
+                );
                 break;
             case Assertions::ASSERT_EDITABLE:
                 $webDriverBy = $this->getSelector($command->getTarget());
                 $element = $this->driver->findElement($webDriverBy);
-                $this->assert($element->isEnabled() && null === $element->getAttribute('readonly'), sprintf('Element "%s" is not editable', $command->getTarget()));
+                $this->assert(
+                    $element->isEnabled() && null === $element->getAttribute('readonly'),
+                    sprintf('Element "%s" is not editable', $command->getTarget())
+                );
                 break;
         }
     }

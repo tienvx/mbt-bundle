@@ -6,17 +6,25 @@ use Exception;
 use JMGQ\AStar\AStar as AbstractAStar;
 use JMGQ\AStar\Node as NodeInterface;
 use Petrinet\Model\PetrinetInterface;
+use Petrinet\Model\TransitionInterface;
+use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 class AStar extends AbstractAStar
 {
     protected GuardedTransitionServiceInterface $transitionService;
+    protected MarkingHelperInterface $markingHelper;
     protected PetrinetInterface $petrinet;
 
     public function setTransitionService(GuardedTransitionServiceInterface $transitionService): void
     {
         $this->transitionService = $transitionService;
+    }
+
+    public function setMarkingHelper(MarkingHelperInterface $markingHelper): void
+    {
+        $this->markingHelper = $markingHelper;
     }
 
     public function setPetrinet(PetrinetInterface $petrinet): void
@@ -33,13 +41,12 @@ class AStar extends AbstractAStar
             throw new Exception('The provided nodes are invalid');
         }
 
-        $tokensCountByPlace = $start->countTokensByPlace();
-        $tokensCountDiff = [];
-        foreach ($end->countTokensByPlace() as $place => $tokens) {
-            $tokensCountDiff[$place] = abs($tokens - ($tokensCountByPlace[$place] ?? 0));
+        $tokensDiff = [];
+        foreach ($end->getPlaces() as $place => $tokens) {
+            $tokensDiff[$place] = abs($tokens - ($start->getPlaces()[$place] ?? 0));
         }
         // Estimate it will took N transitions to move N tokens if color is the same, twice if color is not the same.
-        return array_sum($tokensCountDiff) * (($start->getMarking()->getColor()->toArray() != $end->getMarking()->getColor()->toArray()) + 1);
+        return array_sum($tokensDiff) * (($start->getColor()->getValues() != $end->getColor()->getValues()) + 1);
     }
 
     /**
@@ -61,11 +68,17 @@ class AStar extends AbstractAStar
         }
 
         $adjacents = [];
-        foreach ($this->transitionService->getEnabledTransitions($this->petrinet, $node->getMarking()) as $transition) {
-            if ($transition instanceof TransitionInterface) {
-                $marking = clone $node->getMarking();
+        $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
+        foreach ($this->transitionService->getEnabledTransitions($this->petrinet, $marking) as $transition) {
+            // Create new marking.
+            $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
+            if ($transition instanceof TransitionInterface && $marking instanceof ColorfulMarkingInterface) {
                 $this->transitionService->fire($transition, $marking);
-                $adjacents[] = new Node($marking, $transition);
+                $adjacents[] = new Node(
+                    $this->markingHelper->getPlaces($marking),
+                    $marking->getColor(),
+                    $transition->getId()
+                );
             }
         }
 

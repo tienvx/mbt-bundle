@@ -13,12 +13,12 @@ use Facebook\WebDriver\WebDriverWindow;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Constant\Actions;
 use Tienvx\Bundle\MbtBundle\Constant\Assertions;
-use Tienvx\Bundle\MbtBundle\Entity\Selenium\Command;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Command;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Selenium\Helper
- * @covers \Tienvx\Bundle\MbtBundle\Model\Selenium\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class HelperTest extends TestCase
 {
@@ -44,7 +44,9 @@ class HelperTest extends TestCase
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('click');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'id' === $selector->getMechanism() && 'add-to-cart' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'add-to-cart' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -67,7 +69,9 @@ class HelperTest extends TestCase
         $command->setTarget('1280x800');
         $window = $this->createMock(WebDriverWindow::class);
         $window->expects($this->once())->method('setSize')->with($this->callback(function ($dimention) {
-            return $dimention instanceof WebDriverDimension && 1280 === $dimention->getWidth() && 800 === $dimention->getHeight();
+            return $dimention instanceof WebDriverDimension
+                && 1280 === $dimention->getWidth()
+                && 800 === $dimention->getHeight();
         }));
         $options = $this->createMock(WebDriverOptions::class);
         $options->expects($this->once())->method('window')->willReturn($window);
@@ -85,7 +89,9 @@ class HelperTest extends TestCase
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('sendKeys')->with('20 years old');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'name' === $selector->getMechanism() && 'age' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'name' === $selector->getMechanism()
+                && 'age' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -99,7 +105,9 @@ class HelperTest extends TestCase
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('clear');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'css selector' === $selector->getMechanism() && '.quantity' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'css selector' === $selector->getMechanism()
+                && '.quantity' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -144,7 +152,9 @@ class HelperTest extends TestCase
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('getText')->willReturn('Welcome to our store');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'xpath' === $selector->getMechanism() && '//h4[@href="#"]' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'xpath' === $selector->getMechanism()
+                && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -161,7 +171,9 @@ class HelperTest extends TestCase
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('getText')->willReturn('Goodbye! See you again');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'xpath' === $selector->getMechanism() && '//h4[@href="#"]' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'xpath' === $selector->getMechanism()
+                && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -176,7 +188,9 @@ class HelperTest extends TestCase
         $element->expects($this->once())->method('isEnabled')->willReturn(true);
         $element->expects($this->once())->method('getAttribute')->with('readonly')->willReturn(null);
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'name' === $selector->getMechanism() && 'username' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'name' === $selector->getMechanism()
+                && 'username' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);
@@ -193,7 +207,9 @@ class HelperTest extends TestCase
         $element->expects($this->once())->method('isEnabled')->willReturn(false);
         $element->expects($this->never())->method('getAttribute');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
-            return $selector instanceof WebDriverBy && 'name' === $selector->getMechanism() && 'username' === $selector->getValue();
+            return $selector instanceof WebDriverBy
+                && 'name' === $selector->getMechanism()
+                && 'username' === $selector->getValue();
         }))->willReturn($element);
         $helper = new Helper($this->driver);
         $helper->replay($command);

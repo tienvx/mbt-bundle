@@ -4,8 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
 class StepRunner implements StepRunnerInterface
@@ -36,28 +37,31 @@ class StepRunner implements StepRunnerInterface
         return (bool) $this->helper;
     }
 
-    public function run(StepInterface $step): void
+    public function run(StepInterface $step, ModelInterface $model): void
     {
         if (!$this->canRun()) {
             throw new RuntimeException('Need to set up before running step');
         }
-        $this->executeTransitionCommands($step->getTransition());
-        foreach ($step->getMarking()->getPlaceMarkings() as $placeMarking) {
-            $place = $placeMarking->getPlace();
+        $transition = $model->getTransition($step->getTransition());
+        if ($transition instanceof TransitionInterface) {
+            $this->executeTransitionActions($transition);
+        }
+        foreach ($step->getPlaces() as $place => $tokens) {
+            $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executePlaceCommands($place);
+                $this->executePlaceAssertions($place);
             }
         }
     }
 
-    protected function executeTransitionCommands(TransitionInterface $transition): void
+    protected function executeTransitionActions(TransitionInterface $transition): void
     {
         foreach ($transition->getActions() as $action) {
             $this->helper->replay($action);
         }
     }
 
-    protected function executePlaceCommands(PlaceInterface $place): void
+    protected function executePlaceAssertions(PlaceInterface $place): void
     {
         foreach ($place->getAssertions() as $assertion) {
             $this->helper->replay($assertion);

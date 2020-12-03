@@ -2,48 +2,56 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 
 class Step implements StepInterface
 {
-    protected BugInterface $bug;
-    protected MarkingInterface $marking;
-    protected ?TransitionInterface $transition = null;
+    protected ColorInterface $color;
+    protected array $places;
+    protected ?int $transition = null;
 
-    public function __construct(MarkingInterface $marking, ?TransitionInterface $transition = null)
+    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
     {
-        $this->marking = $marking;
-        $this->transition = $transition;
+        $this->setPlaces($places);
+        $this->setColor($color);
+        $this->setTransition($transition);
     }
 
-    public function setBug(BugInterface $bug): void
+    public function setColor(ColorInterface $color): void
     {
-        $this->bug = $bug;
+        $this->color = $color;
     }
 
-    public function getBug(): BugInterface
+    public function getColor(): ColorInterface
     {
-        return $this->bug;
+        return $this->color;
     }
 
-    public function setMarking(MarkingInterface $marking): void
+    public function getPlaces(): array
     {
-        $this->marking = $marking;
+        return $this->places;
     }
 
-    public function getMarking(): MarkingInterface
+    public function setPlaces(array $places): void
     {
-        return $this->marking;
+        $this->places = [];
+
+        foreach ($places as $place => $tokens) {
+            $this->addPlace($place, $tokens);
+        }
     }
 
-    public function getTransition(): ?TransitionInterface
+    public function addPlace(int $place, int $tokens): void
+    {
+        $this->places[$place] = $tokens;
+    }
+
+    public function getTransition(): ?int
     {
         return $this->transition;
     }
 
-    public function setTransition(TransitionInterface $transition): void
+    public function setTransition(?int $transition): void
     {
         $this->transition = $transition;
     }

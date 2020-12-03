@@ -2,10 +2,8 @@
 
 use Doctrine\ORM\EntityManagerInterface;
 use Petrinet\Builder\MarkingBuilder;
-use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Model\Expression;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
 use SingleColorPetrinet\Service\GuardedTransitionService;
@@ -21,14 +19,6 @@ use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
 use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\InputArc;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Marking;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\OutputArc;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Petrinet;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\PlaceMarking;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Token;
-use Tienvx\Bundle\MbtBundle\Entity\Petrinet\Transition;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
@@ -51,7 +41,16 @@ use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugSubscriberInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
-use Tienvx\Bundle\MbtBundle\Service\ModelDumper;
+use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelper;
+use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
+use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
+use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Selenium;
 use Tienvx\Bundle\MbtBundle\Service\SeleniumInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
@@ -80,7 +79,15 @@ return static function (ContainerConfigurator $container): void {
             ])
 
         ->set(GeneratorManager::class)
+
         ->set(RandomGenerator::class)
+            ->args([
+                new Reference(PetrinetHelperInterface::class),
+                new Reference(MarkingHelperInterface::class),
+                new Reference(ModelHelperInterface::class),
+                new Reference(GuardedTransitionServiceInterface::class),
+                new Reference(StateHelperInterface::class),
+            ])
 
         ->set(ExecuteTaskMessageHandler::class)
             ->args([
@@ -154,6 +161,85 @@ return static function (ContainerConfigurator $container): void {
                 new Reference(SplitHandler::class),
             ])
 
+        // Services
+        ->set(BugSubscriberInterface::class)
+        ->set(ConfigLoaderInterface::class)
+        ->set(ExpressionLanguage::class)
+
+        ->set(ModelDumper::class)
+            ->alias(ModelDumperInterface::class, ModelDumper::class)
+        ->set(ModelHelper::class)
+            ->alias(ModelHelperInterface::class, ModelHelper::class)
+
+        ->set(BugHelper::class)
+            ->args([
+                new Reference(TranslatorInterface::class),
+            ])
+            ->alias(BugHelperInterface::class, BugHelper::class)
+
+        ->set(BugProgress::class)
+            ->args([
+                new Reference(EntityManagerInterface::class),
+            ])
+            ->alias(BugProgressInterface::class, BugProgress::class)
+
+        ->set(Selenium::class)
+            ->args([
+                new Reference(ConfigLoaderInterface::class),
+            ])
+            ->alias(SeleniumInterface::class, Selenium::class)
+
+        ->set(ShortestPathStepsBuilder::class)
+            ->args([
+                new Reference(PetrinetHelperInterface::class),
+                new Reference(ShortestPathStrategyInterface::class),
+            ])
+            ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
+
+        ->set(AStarStrategy::class)
+            ->args([
+                new Reference(GuardedTransitionServiceInterface::class),
+                new Reference(MarkingHelperInterface::class),
+            ])
+            ->alias(ShortestPathStrategyInterface::class, AStarStrategy::class)
+
+        ->set(StepRunner::class)
+            ->args([
+                new Reference(SeleniumInterface::class),
+            ])
+            ->alias(StepRunnerInterface::class, StepRunner::class)
+
+        ->set(StepsRunner::class)
+            ->args([
+                new Reference(PetrinetHelperInterface::class),
+                new Reference(MarkingHelperInterface::class),
+                new Reference(GuardedTransitionServiceInterface::class),
+                new Reference(StepRunnerInterface::class),
+            ])
+            ->alias(StepsRunnerInterface::class, StepsRunner::class)
+
+        ->set(TaskProgress::class)
+            ->alias(TaskProgressInterface::class, TaskProgress::class)
+
+        ->set(MarkingHelper::class)
+            ->args([
+                new Reference(ColorfulFactoryInterface::class),
+            ])
+            ->alias(MarkingHelperInterface::class, MarkingHelper::class)
+
+        ->set(PetrinetHelper::class)
+            ->args([
+                new Reference(ColorfulFactoryInterface::class),
+            ])
+            ->alias(PetrinetHelperInterface::class, PetrinetHelper::class)
+
+        ->set(StateHelper::class)
+            ->args([
+                new Reference(ConfigLoaderInterface::class),
+            ])
+            ->alias(StateHelperInterface::class, StateHelper::class)
+
+        // Single Color Petrinet services
         ->set(ExpressionLanguageEvaluator::class)
             ->args([
                 new Reference(ExpressionLanguage::class),
@@ -161,18 +247,6 @@ return static function (ContainerConfigurator $container): void {
             ->alias(ExpressionEvaluatorInterface::class, ExpressionLanguageEvaluator::class)
 
         ->set(ColorfulFactory::class)
-            ->args([
-                Color::class,
-                Expression::class,
-                Petrinet::class,
-                Place::class,
-                Transition::class,
-                InputArc::class,
-                OutputArc::class,
-                PlaceMarking::class,
-                Token::class,
-                Marking::class,
-            ])
             ->alias(ColorfulFactoryInterface::class, ColorfulFactory::class)
 
         ->set(GuardedTransitionService::class)
@@ -186,61 +260,5 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 new Reference(ColorfulFactoryInterface::class),
             ])
-
-        ->set(BugHelper::class)
-            ->args([
-                new Reference(EntityManagerInterface::class),
-                new Reference(ConfigLoaderInterface::class),
-                new Reference(TranslatorInterface::class),
-            ])
-            ->alias(BugHelperInterface::class, BugHelper::class)
-
-        ->set(BugProgress::class)
-            ->args([
-                new Reference(EntityManagerInterface::class),
-            ])
-            ->alias(BugProgressInterface::class, BugProgress::class)
-
-        ->set(BugSubscriberInterface::class)
-        ->set(ConfigLoaderInterface::class)
-        ->set(ExpressionLanguage::class)
-        ->set(ModelDumper::class)
-
-        ->set(Selenium::class)
-            ->args([
-                new Reference(ConfigLoaderInterface::class),
-            ])
-            ->alias(SeleniumInterface::class, Selenium::class)
-
-        ->set(ShortestPathStepsBuilder::class)
-            ->args([
-                new Reference(ShortestPathStrategyInterface::class),
-            ])
-            ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
-
-        ->set(AStarStrategy::class)
-            ->args([
-                new Reference(GuardedTransitionServiceInterface::class),
-            ])
-            ->alias(ShortestPathStrategyInterface::class, AStarStrategy::class)
-
-        ->set(StepRunner::class)
-            ->args([
-                new Reference(SeleniumInterface::class),
-            ])
-            ->alias(StepRunnerInterface::class, StepRunner::class)
-
-        ->set(StepsRunner::class)
-            ->args([
-                new Reference(GuardedTransitionServiceInterface::class),
-                new Reference(StepRunnerInterface::class),
-            ])
-            ->alias(StepsRunnerInterface::class, StepsRunner::class)
-
-        ->set(TaskProgress::class)
-            ->args([
-                new Reference(EntityManagerInterface::class),
-            ])
-            ->alias(TaskProgressInterface::class, TaskProgress::class)
     ;
 };

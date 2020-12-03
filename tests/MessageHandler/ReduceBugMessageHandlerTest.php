@@ -32,6 +32,7 @@ class ReduceBugMessageHandlerTest extends TestCase
     protected MessageBusInterface $messageBus;
     protected ConfigLoaderInterface $configLoader;
     protected BugProgressInterface $bugProgress;
+    protected ReduceBugMessageHandler $handler;
 
     protected function setUp(): void
     {
@@ -40,6 +41,13 @@ class ReduceBugMessageHandlerTest extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
+        $this->handler = new ReduceBugMessageHandler(
+            $this->reducerManager,
+            $this->entityManager,
+            $this->messageBus,
+            $this->configLoader,
+            $this->bugProgress
+        );
     }
 
     public function testInvokeNoBug(): void
@@ -48,8 +56,7 @@ class ReduceBugMessageHandlerTest extends TestCase
         $this->expectExceptionMessage('Can not reduce bug 123: bug not found');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn(null);
         $message = new ReduceBugMessage(123);
-        $handler = new ReduceBugMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeIncreaseTotalProgress(): void
@@ -67,8 +74,7 @@ class ReduceBugMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseTotal')->with($bug, 5);
         $message = new ReduceBugMessage(123);
-        $handler = new ReduceBugMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeReportBug(): void
@@ -83,11 +89,15 @@ class ReduceBugMessageHandlerTest extends TestCase
         $reducer->expects($this->once())->method('dispatch')->with($bug)->willReturn(0);
         $this->configLoader->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('get')->with('random')->willReturn($reducer);
-        $this->messageBus->expects($this->once())->method('dispatch')->with($this->callback(fn ($message) => $message instanceof ReportBugMessage && 123 === $message->getBugId()))->willReturn(new Envelope(new \stdClass()));
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(fn ($message) => $message instanceof ReportBugMessage
+                && 123 === $message->getBugId()))
+            ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->never())->method('increaseTotal');
         $message = new ReduceBugMessage(123);
-        $handler = new ReduceBugMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 }

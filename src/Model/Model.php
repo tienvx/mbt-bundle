@@ -3,7 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 
 class Model implements ModelInterface
 {
@@ -13,7 +14,9 @@ class Model implements ModelInterface
 
     protected array $tags = [];
 
-    protected PetrinetInterface $petrinet;
+    protected array $places = [];
+
+    protected array $transitions = [];
 
     protected int $version;
 
@@ -60,14 +63,52 @@ class Model implements ModelInterface
         $this->tags[] = $tag;
     }
 
-    public function setPetrinet(PetrinetInterface $petrinet): void
+    public function getPlaces(): array
     {
-        $this->petrinet = $petrinet;
+        return $this->places;
     }
 
-    public function getPetrinet(): PetrinetInterface
+    public function setPlaces(array $places): void
     {
-        return $this->petrinet;
+        $this->places = [];
+
+        foreach ($places as $place) {
+            $this->addPlace($place);
+        }
+    }
+
+    public function addPlace(PlaceInterface $place): void
+    {
+        $this->places[] = $place;
+    }
+
+    public function getPlace(int $index): ?PlaceInterface
+    {
+        return $this->places[$index] ?? null;
+    }
+
+    public function getTransitions(): array
+    {
+        return $this->transitions;
+    }
+
+    public function setTransitions(array $transitions): void
+    {
+        $this->transitions = [];
+
+        foreach ($transitions as $transition) {
+            $this->addTransition($transition);
+        }
+    }
+
+    public function addTransition(TransitionInterface $transition): void
+    {
+        $this->transitions[] = $transition;
+    }
+
+    public function getTransition(int $index): ?TransitionInterface
+    {
+        return $this->transitions[$index] ?? null;
     }
 
     public function getVersion(): int

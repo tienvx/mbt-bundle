@@ -14,8 +14,16 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('selenium_dsn')->isRequired()->cannotBeEmpty()->defaultValue('http://localhost:4444/wd/hub')->end()
-                ->scalarNode('bug_url')->isRequired()->cannotBeEmpty()->defaultValue('http://localhost/bug/%d')->end()
+                ->scalarNode('selenium_dsn')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->defaultValue('http://localhost:4444/wd/hub')
+                ->end()
+                ->scalarNode('bug_url')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->defaultValue('http://localhost/bug/%d')
+                ->end()
             ->end()
         ;
 

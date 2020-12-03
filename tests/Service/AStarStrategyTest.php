@@ -2,55 +2,53 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
+use Petrinet\Model\Petrinet;
 use PHPUnit\Framework\TestCase;
+use SingleColorPetrinet\Model\Color;
+use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
 use Tienvx\Bundle\MbtBundle\Model\Search\Node;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
-use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Factory;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\AStarStrategy
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Petrinet\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Model\Search\Node
  */
 class AStarStrategyTest extends TestCase
 {
     public function testRun()
     {
-        $factory = Factory::createColorfulFactory();
-        $petrinet = $factory->createPetrinet();
-        $transition1 = $factory->createTransition();
-        $transition2 = $factory->createTransition();
-        $transition3 = $factory->createTransition();
-        $transition4 = $factory->createTransition();
-        $marking = $factory->createMarking();
-        $fromStep = new Step($marking, $transition1);
-        $toStep = new Step($marking, $transition2);
+        $petrinet = new Petrinet();
+        $fromStep = new Step([], new Color(), 1);
+        $toStep = new Step([], new Color(), 2);
         $nodes = [
-            new Node($marking, $transition3),
-            new Node($marking, $transition4),
+            new Node([], new Color(), 3),
+            new Node([], new Color(), 4),
         ];
         $transitionService = $this->createMock(GuardedTransitionServiceInterface::class);
+        $markingHelper = $this->createMock(MarkingHelperInterface::class);
         $aStar = $this->createMock(AStar::class);
-        $aStar->expects($this->once())->method('run')->with($this->isInstanceOf(Node::class), $this->isInstanceOf(Node::class))->willReturn($nodes);
+        $aStar
+            ->expects($this->once())
+            ->method('run')
+            ->with($this->isInstanceOf(Node::class), $this->isInstanceOf(Node::class))
+            ->willReturn($nodes);
         $aStar->expects($this->once())->method('setTransitionService')->with($transitionService);
         $aStar->expects($this->once())->method('setPetrinet')->with($petrinet);
-        $starStrategy = new AStarStrategy($transitionService, $aStar);
+        $starStrategy = new AStarStrategy($transitionService, $markingHelper, $aStar);
         $newSteps = $starStrategy->run($petrinet, $fromStep, $toStep);
         $count = 0;
         foreach ($newSteps as $key => $step) {
             $this->assertInstanceOf(StepInterface::class, $step);
-            $this->assertSame($marking, $step->getMarking());
-            if (0 === $key) {
-                $this->assertSame($transition3, $step->getTransition());
-            }
-            if (1 === $key) {
-                $this->assertSame($transition4, $step->getTransition());
-            }
+            /** @var StepInterface $step */
+            $this->assertSame([], $step->getPlaces());
+            $this->assertInstanceOf(ColorInterface::class, $step->getColor());
+            $this->assertSame($key === 0 ? 3 : 4, $step->getTransition());
             ++$count;
         }
         $this->assertSame(2, $count);

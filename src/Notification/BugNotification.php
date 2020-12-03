@@ -12,7 +12,10 @@ use Symfony\Component\Notifier\Notification\SmsNotificationInterface;
 use Symfony\Component\Notifier\Recipient\RecipientInterface;
 use Symfony\Component\Notifier\Recipient\SmsRecipientInterface;
 
-class BugNotification extends Notification implements ChatNotificationInterface, EmailNotificationInterface, SmsNotificationInterface
+class BugNotification extends Notification implements
+    ChatNotificationInterface,
+    EmailNotificationInterface,
+    SmsNotificationInterface
 {
     protected string $bugUrl;
 

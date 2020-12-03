@@ -22,7 +22,10 @@ class BugProgress implements BugProgressInterface
             $this->entityManager->refresh($bug);
 
             $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
-            $bug->getProgress()->setProcessed(min($bug->getProgress()->getTotal(), $bug->getProgress()->getProcessed() + $processed));
+            $bug->getProgress()->setProcessed(min(
+                $bug->getProgress()->getTotal(),
+                $bug->getProgress()->getProcessed() + $processed
+            ));
         };
 
         $this->entityManager->transactional($callback);

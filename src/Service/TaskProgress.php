@@ -8,7 +8,10 @@ class TaskProgress implements TaskProgressInterface
 {
     public function increaseProcessed(TaskInterface $task, int $processed = 1): void
     {
-        $task->getProgress()->setProcessed(min($task->getProgress()->getTotal(), $task->getProgress()->getProcessed() + $processed));
+        $task->getProgress()->setProcessed(min(
+            $task->getProgress()->getTotal(),
+            $task->getProgress()->getProcessed() + $processed
+        ));
     }
 
     public function setTotal(TaskInterface $task, int $total): void

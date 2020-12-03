@@ -21,7 +21,7 @@ class GeneratorManagerTest extends TestCase
     {
         $this->generator = $this->createMock(GeneratorInterface::class);
         $this->locator = $this->createMock(ServiceLocator::class);
-        $plugins = ['random', 'all-places', 'all-transitions'];
+        $plugins = ['random'];
         $this->generatorManager = new GeneratorManager($this->locator, $plugins);
     }
 
@@ -34,25 +34,13 @@ class GeneratorManagerTest extends TestCase
 
     public function testAll()
     {
-        $this->assertSame(['random', 'all-places', 'all-transitions'], $this->generatorManager->all());
+        $this->assertSame(['random'], $this->generatorManager->all());
     }
 
-    public function testHasSelenium()
+    public function testHasRandom()
     {
         $this->locator->expects($this->once())->method('has')->with('random')->willReturn(true);
         $this->assertTrue($this->generatorManager->has('random'));
-    }
-
-    public function testHasAllPlaces()
-    {
-        $this->locator->expects($this->once())->method('has')->with('all-places')->willReturn(true);
-        $this->assertTrue($this->generatorManager->has('all-places'));
-    }
-
-    public function testHasAllTransitions()
-    {
-        $this->locator->expects($this->once())->method('has')->with('all-transitions')->willReturn(true);
-        $this->assertTrue($this->generatorManager->has('all-transitions'));
     }
 
     public function testDoesNotHaveOther()

@@ -2,21 +2,21 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 
 interface StepInterface
 {
-    public function setBug(BugInterface $bug): void;
+    public function getColor(): ColorInterface;
 
-    public function getBug(): BugInterface;
+    public function setColor(ColorInterface $color): void;
 
-    public function getMarking(): MarkingInterface;
+    public function getPlaces(): array;
 
-    public function setMarking(MarkingInterface $marking): void;
+    public function setPlaces(array $places): void;
 
-    public function getTransition(): ?TransitionInterface;
+    public function addPlace(int $place, int $tokens): void;
 
-    public function setTransition(TransitionInterface $transition): void;
+    public function getTransition(): ?int;
+
+    public function setTransition(?int $transition): void;
 }

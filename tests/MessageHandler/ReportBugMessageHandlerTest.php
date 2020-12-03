@@ -31,6 +31,7 @@ class ReportBugMessageHandlerTest extends TestCase
     protected BugSubscriberInterface $bugSubscriber;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
+    protected ReportBugMessageHandler $handler;
 
     protected function setUp(): void
     {
@@ -40,6 +41,14 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->bugSubscriber = $this->createMock(BugSubscriberInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->handler = new ReportBugMessageHandler(
+            $this->entityManager,
+            $this->notifier,
+            $this->configLoader,
+            $this->bugSubscriber,
+            $this->bugHelper,
+            $this->translator
+        );
     }
 
     public function testInvokeNoBug(): void
@@ -48,8 +57,7 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->expectExceptionMessage('Can not report bug 123: bug not found');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn(null);
         $message = new ReportBugMessage(123);
-        $handler = new ReportBugMessageHandler($this->entityManager, $this->notifier, $this->configLoader, $this->bugSubscriber, $this->bugHelper, $this->translator);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeSendNotification(): void
@@ -61,8 +69,15 @@ class ReportBugMessageHandlerTest extends TestCase
         $recipient1 = new Recipient('test@example.com');
         $recipient2 = new Recipient('example@test.com', '1234567890');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
-        $this->configLoader->expects($this->once())->method('getNotifyChannels')->willReturn(['email', 'chat/slack', 'sms/nexmo']);
-        $this->bugHelper->expects($this->once())->method('buildBugUrl')->with($bug)->willReturn('http://localhost/bug/123');
+        $this->configLoader
+            ->expects($this->once())
+            ->method('getNotifyChannels')
+            ->willReturn(['email', 'chat/slack', 'sms/nexmo']);
+        $this->bugHelper
+            ->expects($this->once())
+            ->method('buildBugUrl')
+            ->with($bug)
+            ->willReturn('http://localhost/bug/123');
         $this->bugSubscriber->expects($this->once())->method('getRecipies')->willReturn([
             $recipient1,
             $recipient2,
@@ -76,9 +91,11 @@ class ReportBugMessageHandlerTest extends TestCase
             'Bug message',
             'More info'
         );
-        $this->notifier->expects($this->once())->method('send')->with($this->isInstanceOf(BugNotification::class), $recipient1, $recipient2);
+        $this->notifier
+            ->expects($this->once())
+            ->method('send')
+            ->with($this->isInstanceOf(BugNotification::class), $recipient1, $recipient2);
         $message = new ReportBugMessage(123);
-        $handler = new ReportBugMessageHandler($this->entityManager, $this->notifier, $this->configLoader, $this->bugSubscriber, $this->bugHelper, $this->translator);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 }

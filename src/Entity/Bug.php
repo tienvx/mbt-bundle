@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
@@ -31,14 +30,13 @@ class Bug extends BugModel
     protected string $title;
 
     /**
-     * @ORM\OneToMany(
-     *   targetEntity="Tienvx\Bundle\MbtBundle\Entity\Bug\Step",
-     *   mappedBy="bug",
-     *   orphanRemoval=true,
-     *   cascade={"persist", "remove"}
-     * )
+     * @ORM\Column(type="array")
+     * @Assert\All({
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Bug\Step")
+     *     @Assert\Valid
+     * })
      */
-    protected Collection $steps;
+    protected array $steps = [];
 
     /**
      * @ORM\OneToOne(targetEntity="Model")

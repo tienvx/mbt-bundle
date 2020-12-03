@@ -3,56 +3,69 @@
 namespace Tienvx\Bundle\MbtBundle\Model\Search;
 
 use JMGQ\AStar\AbstractNode;
-use Petrinet\Model\PlaceMarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 
 class Node extends AbstractNode
 {
-    protected MarkingInterface $marking;
-    protected ?TransitionInterface $transition = null;
+    protected array $places;
+    protected ColorInterface $color;
+    protected ?int $transition = null;
 
-    public function __construct(MarkingInterface $marking, ?TransitionInterface $transition = null)
+    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
     {
-        $this->marking = $marking;
-        $this->transition = $transition;
+        $this->setPlaces($places);
+        $this->setColor($color);
+        $this->setTransition($transition);
     }
 
     public function getID(): string
     {
-        $tokensCountByPlace = $this->countTokensByPlace();
-        ksort($tokensCountByPlace);
-
-        $color = $this->marking->getColor()->toArray();
-        ksort($color);
+        ksort($this->places);
+        $colorValues = $this->color->getValues();
+        ksort($colorValues);
 
         return md5(serialize([
-            'color' => $color,
-            'tokens' => $tokensCountByPlace,
+            'places' => $this->places,
+            'color' => $colorValues,
         ]));
     }
 
-    public function getMarking(): MarkingInterface
+    public function getPlaces(): array
     {
-        return $this->marking;
+        return $this->places;
     }
 
-    public function getTransition(): ?TransitionInterface
+    public function setPlaces(array $places): void
+    {
+        $this->places = [];
+
+        foreach ($places as $place => $tokens) {
+            $this->addPlace($place, $tokens);
+        }
+    }
+
+    public function addPlace(int $place, int $tokens): void
+    {
+        $this->places[$place] = $tokens;
+    }
+
+    public function setColor(ColorInterface $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function getColor(): ColorInterface
+    {
+        return $this->color;
+    }
+
+    public function setTransition(?int $transition): void
+    {
+        $this->transition = $transition;
+    }
+
+    public function getTransition(): ?int
     {
         return $this->transition;
-    }
-
-    public function countTokensByPlace()
-    {
-        return array_filter(array_combine(
-            array_map(
-                fn (PlaceMarkingInterface $placeMarking) => $placeMarking->getPlace()->getId(),
-                $this->marking->getPlaceMarkings()->toArray()
-            ),
-            array_map(
-                fn (PlaceMarkingInterface $placeMarking) => count($placeMarking->getTokens()),
-                $this->marking->getPlaceMarkings()->toArray()
-            ),
-        ));
     }
 }

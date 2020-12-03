@@ -2,13 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
+use Petrinet\Model\Petrinet;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
-use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Factory;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder
@@ -20,7 +21,6 @@ class ShortestPathStepsBuilderTest extends TestCase
 {
     public function testCreate()
     {
-        $factory = Factory::createColorfulFactory();
         $bug = new Bug();
         $steps = [
             $step1 = $this->createMock(StepInterface::class),
@@ -32,17 +32,18 @@ class ShortestPathStepsBuilderTest extends TestCase
             $step7 = $this->createMock(StepInterface::class),
         ];
         $bug->setSteps($steps);
-        $petrinet = $factory->createPetrinet();
+        $petrinet = new Petrinet();
         $model = new Model();
-        $model->setPetrinet($petrinet);
         $bug->setModel($model);
         $shortestSteps = [
             $step8 = $this->createMock(StepInterface::class),
             $step9 = $this->createMock(StepInterface::class),
         ];
+        $petrinetHelper = $this->createMock(PetrinetHelperInterface::class);
+        $petrinetHelper->expects($this->once())->method('build')->with($model)->willReturn($petrinet);
         $strategy = $this->createMock(ShortestPathStrategyInterface::class);
         $strategy->expects($this->once())->method('run')->with($petrinet, $step2, $step3)->willReturn($shortestSteps);
-        $stepsBuilder = new ShortestPathStepsBuilder($strategy);
+        $stepsBuilder = new ShortestPathStepsBuilder($petrinetHelper, $strategy);
         $newSteps = $stepsBuilder->create($bug, 1, 5);
         $this->assertSame([
             $step1,

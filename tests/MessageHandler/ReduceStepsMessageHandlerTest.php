@@ -28,7 +28,6 @@ use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Petrinet\Petrinet
  */
 class ReduceStepsMessageHandlerTest extends TestCase
 {
@@ -38,6 +37,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
     protected ConfigLoaderInterface $configLoader;
     protected BugProgressInterface $bugProgress;
     protected ModelInterface $model;
+    protected ReduceStepsMessageHandler $handler;
 
     protected function setUp(): void
     {
@@ -48,6 +48,13 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
         $this->model = new Model();
         $this->model->setVersion(1);
+        $this->handler = new ReduceStepsMessageHandler(
+            $this->reducerManager,
+            $this->entityManager,
+            $this->messageBus,
+            $this->configLoader,
+            $this->bugProgress
+        );
     }
 
     public function testInvokeNoBug(): void
@@ -56,8 +63,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->expectExceptionMessage('Can not reduce steps for bug 123: bug not found');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn(null);
         $message = new ReduceStepsMessage(123, 6, 1, 2);
-        $handler = new ReduceStepsMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeBugWithModifiedModel(): void
@@ -71,8 +77,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->reducerManager->expects($this->never())->method('get');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $message = new ReduceStepsMessage(123, 6, 1, 2);
-        $handler = new ReduceStepsMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeReducedBug(): void
@@ -85,8 +90,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->reducerManager->expects($this->never())->method('get');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $message = new ReduceStepsMessage(123, 6, 1, 2);
-        $handler = new ReduceStepsMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeIncreaseProcessedProgress(): void
@@ -107,8 +111,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($bug, 1);
         $message = new ReduceStepsMessage(123, 6, 1, 2);
-        $handler = new ReduceStepsMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 
     public function testInvokeReportBug(): void
@@ -126,11 +129,15 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
         $this->configLoader->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('get')->with('random')->willReturn($reducer);
-        $this->messageBus->expects($this->once())->method('dispatch')->with($this->callback(fn ($message) => $message instanceof ReportBugMessage && 123 === $message->getBugId()))->willReturn(new Envelope(new \stdClass()));
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(fn ($message) => $message instanceof ReportBugMessage
+                && 123 === $message->getBugId()))
+            ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($bug, 1);
         $message = new ReduceStepsMessage(123, 6, 1, 2);
-        $handler = new ReduceStepsMessageHandler($this->reducerManager, $this->entityManager, $this->messageBus, $this->configLoader, $this->bugProgress);
-        $handler($message);
+        call_user_func($this->handler, $message);
     }
 }

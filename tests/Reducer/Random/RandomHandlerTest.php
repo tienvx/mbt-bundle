@@ -17,6 +17,11 @@ class RandomHandlerTest extends HandlerTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->handler = new RandomHandler($this->entityManager, $this->messageBus, $this->stepsRunner, $this->stepsBuilder);
+        $this->handler = new RandomHandler(
+            $this->entityManager,
+            $this->messageBus,
+            $this->stepsRunner,
+            $this->stepsBuilder
+        );
     }
 }

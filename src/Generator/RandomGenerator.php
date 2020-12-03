@@ -2,31 +2,37 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Petrinet\Builder\MarkingBuilder;
-use SingleColorPetrinet\Model\ColorfulFactoryInterface;
+use Petrinet\Model\MarkingInterface;
+use Petrinet\Model\PetrinetInterface;
+use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
-use Tienvx\Bundle\MbtBundle\Model\Generator\State;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\MarkingInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PetrinetInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Petrinet\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
+use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 
 class RandomGenerator extends AbstractGenerator
 {
+    protected PetrinetHelperInterface $petrinetHelper;
+    protected MarkingHelperInterface $markingHelper;
+    protected ModelHelperInterface $modelHelper;
     protected GuardedTransitionServiceInterface $transitionService;
-    protected ColorfulFactoryInterface $colorfulFactory;
-    protected ConfigLoaderInterface $configLoader;
+    protected StateHelperInterface $stateHelper;
 
     public function __construct(
+        PetrinetHelperInterface $petrinetHelper,
+        MarkingHelperInterface $markingHelper,
+        ModelHelperInterface $modelHelper,
         GuardedTransitionServiceInterface $transitionService,
-        ColorfulFactoryInterface $colorfulFactory,
-        ConfigLoaderInterface $configLoader
+        StateHelperInterface $stateHelper
     ) {
+        $this->petrinetHelper = $petrinetHelper;
+        $this->markingHelper = $markingHelper;
+        $this->modelHelper = $modelHelper;
         $this->transitionService = $transitionService;
-        $this->colorfulFactory = $colorfulFactory;
-        $this->configLoader = $configLoader;
+        $this->stateHelper = $stateHelper;
     }
 
     public static function getName(): string
@@ -34,42 +40,22 @@ class RandomGenerator extends AbstractGenerator
         return 'random';
     }
 
-    public function generate(PetrinetInterface $petrinet): iterable
+    public function generate(ModelInterface $model): iterable
     {
-        $markingBuilder = new MarkingBuilder($this->colorfulFactory);
-        $this->markInitPlaces($petrinet, $markingBuilder);
-        $marking = $markingBuilder->getMarking();
-        $state = new State(
-            $this->configLoader->getMaxSteps(),
-            $this->getInitPlaceIds($petrinet->getPlaces()),
-            count($petrinet->getPlaces()),
-            count($petrinet->getTransitions()),
-            $this->configLoader->getMaxTransitionCoverage(),
-            $this->configLoader->getMaxPlaceCoverage(),
-        );
+        $petrinet = $this->petrinetHelper->build($model);
+        $places = $this->modelHelper->getInitPlaces($model);
+        $marking = $this->markingHelper->getMarking($petrinet, $places);
+        $state = $this->stateHelper->initState($petrinet, $places);
 
-        if (!$marking instanceof MarkingInterface) {
-            return;
-        }
-
-        while (!$state->canStop()) {
+        while (!$this->stateHelper->canStop($state)) {
             $transition = $this->nextTransition($petrinet, $marking);
             if (is_null($transition)) {
                 break;
             }
 
-            yield new Step(clone $marking, $transition);
+            yield new Step($this->markingHelper->getPlaces($marking), $marking->getColor(), $transition->getId());
 
-            $state->update($marking, $transition);
-        }
-    }
-
-    protected function markInitPlaces(PetrinetInterface $petrinet, MarkingBuilder $markingBuilder): void
-    {
-        foreach ($petrinet->getPlaces() as $place) {
-            if ($place instanceof PlaceInterface && true === $place->getInit()) {
-                $markingBuilder->mark($place, 1);
-            }
+            $this->stateHelper->update($state, $marking, $transition);
         }
     }
 
@@ -83,17 +69,5 @@ class RandomGenerator extends AbstractGenerator
         }
 
         return null;
-    }
-
-    protected function getInitPlaceIds(iterable $places): array
-    {
-        $ids = [];
-        foreach ($places as $place) {
-            if ($place instanceof PlaceInterface && $place->getInit()) {
-                $ids[] = $place->getId();
-            }
-        }
-
-        return $ids;
     }
 }
