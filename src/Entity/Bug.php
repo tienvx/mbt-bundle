@@ -32,9 +32,9 @@ class Bug extends BugModel
     /**
      * @ORM\Column(type="array")
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step")
      * })
+     * @Assert\Valid
      */
     protected array $steps = [];
 

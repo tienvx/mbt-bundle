@@ -20,9 +20,9 @@ class Place extends PlaceModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
      * })
+     * @Assert\Valid
      */
     protected array $assertions = [];
 }

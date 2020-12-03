@@ -20,9 +20,9 @@ class Transition extends TransitionModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
      * })
+     * @Assert\Valid
      */
     protected array $actions = [];
 
@@ -35,9 +35,9 @@ class Transition extends TransitionModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace")
      * })
+     * @Assert\Valid
      */
     protected array $toPlaces = [];
 }

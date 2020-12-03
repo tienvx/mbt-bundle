@@ -41,18 +41,18 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="array")
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Place"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Place")
      * })
+     * @Assert\Valid
      */
     protected array $places = [];
 
     /**
      * @ORM\Column(type="array")
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition")
      * })
+     * @Assert\Valid
      */
     protected array $transitions = [];
 
