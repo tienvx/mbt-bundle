@@ -9,10 +9,10 @@ use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Command;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Model\ToPlace;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Transition;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 
 /**

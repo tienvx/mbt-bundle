@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity\Model;
+namespace Tienvx\Bundle\MbtBundle\ValueObject\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command as CommandModel;

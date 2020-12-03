@@ -13,7 +13,7 @@ use Facebook\WebDriver\WebDriverWindow;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Constant\Actions;
 use Tienvx\Bundle\MbtBundle\Constant\Assertions;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Command;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
 /**

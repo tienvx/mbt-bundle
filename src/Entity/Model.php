@@ -41,7 +41,7 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="array")
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Place"),
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Place"),
      *     @Assert\Valid
      * })
      */
@@ -50,7 +50,7 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="array")
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Transition"),
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition"),
      *     @Assert\Valid
      * })
      */

@@ -6,7 +6,7 @@ use Petrinet\Model\MarkingInterface;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;

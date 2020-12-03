@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity\Model;
+namespace Tienvx\Bundle\MbtBundle\ValueObject\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model\Place as PlaceModel;
@@ -20,7 +20,7 @@ class Place extends PlaceModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Command"),
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command"),
      *     @Assert\Valid
      * })
      */

@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Petrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
 use Tienvx\Bundle\MbtBundle\Model\Search\Node;

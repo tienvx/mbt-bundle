@@ -4,17 +4,17 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Transition;
-use Tienvx\Bundle\MbtBundle\Entity\Model\ToPlace;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\ToPlace
+ * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Place
+ * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
