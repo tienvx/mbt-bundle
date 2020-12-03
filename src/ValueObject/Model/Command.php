@@ -9,18 +9,13 @@ class Command extends CommandModel
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Type("string")
      */
     protected string $command;
 
     /**
      * @Assert\NotBlank
-     * @Assert\Type("string")
      */
     protected string $target;
 
-    /**
-     * @Assert\Type("string")
-     */
     protected ?string $value = null;
 }

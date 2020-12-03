@@ -9,13 +9,9 @@ class Place extends PlaceModel
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Type("string")
      */
     protected string $label;
 
-    /**
-     * @Assert\Type("bool")
-     */
     protected bool $init = false;
 
     /**
