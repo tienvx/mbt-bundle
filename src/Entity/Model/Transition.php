@@ -20,7 +20,7 @@ class Transition extends TransitionModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Command")
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Command"),
      *     @Assert\Valid
      * })
      */
@@ -35,7 +35,7 @@ class Transition extends TransitionModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\ToPlace")
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\ToPlace"),
      *     @Assert\Valid
      * })
      */

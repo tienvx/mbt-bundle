@@ -20,7 +20,7 @@ class Place extends PlaceModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Command")
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\Entity\Model\Command"),
      *     @Assert\Valid
      * })
      */
