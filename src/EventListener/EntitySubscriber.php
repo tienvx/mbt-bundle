@@ -8,12 +8,12 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class EntitySubscriber implements EventSubscriber
 {
@@ -37,20 +37,23 @@ class EntitySubscriber implements EventSubscriber
         }
     }
 
-    public function preUpdate(ModelInterface $model, PreUpdateEventArgs $args): void
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
-        $updateVersion = false;
-        if ($args->hasChangedField('places')) {
-            $updateVersion = !$this->isSamePlaces($args->getOldValue('places'), $args->getNewValue('places'));
-        }
-        if ($args->hasChangedField('transitions')) {
-            $updateVersion = !$this->isSameTransitions(
-                $args->getOldValue('transitions'),
-                $args->getNewValue('transitions')
-            );
-        }
-        if ($updateVersion) {
-            $model->setVersion($model->getVersion() + 1);
+        $entity = $args->getEntity();
+        if ($entity instanceof Model) {
+            $updateVersion = false;
+            if ($args->hasChangedField('places')) {
+                $updateVersion = !$this->isSamePlaces($args->getOldValue('places'), $args->getNewValue('places'));
+            }
+            if ($args->hasChangedField('transitions')) {
+                $updateVersion = !$this->isSameTransitions(
+                    $args->getOldValue('transitions'),
+                    $args->getNewValue('transitions')
+                );
+            }
+            if ($updateVersion) {
+                $entity->setVersion($entity->getVersion() + 1);
+            }
         }
     }
 
