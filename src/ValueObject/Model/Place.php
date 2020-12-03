@@ -9,20 +9,16 @@ class Place extends PlaceModel
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Type("string")
      */
     protected string $label;
 
-    /**
-     * @Assert\Type("bool")
-     */
     protected bool $init = false;
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
      * })
+     * @Assert\Valid
      */
     protected array $assertions = [];
 }

@@ -9,20 +9,16 @@ class Transition extends TransitionModel
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Type("string")
      */
     protected string $label;
 
-    /**
-     * @Assert\Type("string")
-     */
     protected ?string $guard = null;
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
      * })
+     * @Assert\Valid
      */
     protected array $actions = [];
 
@@ -30,14 +26,16 @@ class Transition extends TransitionModel
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
+     * @Assert\Count(min=1)
      */
     protected array $fromPlaces = [];
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace"),
-     *     @Assert\Valid
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace")
      * })
+     * @Assert\Valid
+     * @Assert\Count(min=1)
      */
     protected array $toPlaces = [];
 }
