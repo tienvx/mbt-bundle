@@ -10,7 +10,7 @@ use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;

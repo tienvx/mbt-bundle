@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity\Bug;
+namespace Tienvx\Bundle\MbtBundle\ValueObject\Bug;
 
 use SingleColorPetrinet\Model\ColorInterface;
 use Symfony\Component\Validator\Constraints as Assert;

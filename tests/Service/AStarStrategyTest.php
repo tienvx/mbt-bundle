@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
 use Tienvx\Bundle\MbtBundle\Model\Search\Node;

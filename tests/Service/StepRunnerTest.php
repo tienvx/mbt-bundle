@@ -4,11 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
-use Tienvx\Bundle\MbtBundle\Entity\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Place;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Transition;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Command;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
