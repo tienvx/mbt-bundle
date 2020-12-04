@@ -18,6 +18,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\ToPlace
+ * @covers \Tienvx\Bundle\MbtBundle\Validator\TagsValidator
  */
 class ModelTest extends TestCase
 {
@@ -43,6 +44,7 @@ class ModelTest extends TestCase
     {
         $model = new Model();
         $model->setLabel('');
+        $model->setTags('tag1,tag1,tag2,,tag3');
         $model->setPlaces([
             $p1 = new Place(),
             $p2 = new Place(),
@@ -88,9 +90,11 @@ class ModelTest extends TestCase
 
         $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(9, $violations);
+        $this->assertCount(10, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
+    The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:

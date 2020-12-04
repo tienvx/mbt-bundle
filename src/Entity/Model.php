@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
+use Tienvx\Bundle\MbtBundle\Validator\Tags;
 
 /**
  * @ORM\Entity
@@ -29,13 +30,10 @@ class Model extends BaseModel
     protected string $label;
 
     /**
-     * @ORM\Column(type="simple_array")
-     * @Assert\All({
-     *     @Assert\NotBlank,
-     *     @Assert\Type("string")
-     * })
+     * @ORM\Column(type="string")
+     * @Tags
      */
-    protected array $tags = [];
+    protected string $tags = '';
 
     /**
      * @ORM\Column(type="array")
