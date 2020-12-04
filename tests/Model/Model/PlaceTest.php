@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Constant\Assertions;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Place;
@@ -34,10 +33,10 @@ class PlaceTest extends TestCase
     {
         $this->assertion1 = new Command();
         $this->assertion2 = new Command();
-        $this->assertion1->setCommand(Assertions::ASSERT_TEXT);
+        $this->assertion1->setCommand(CommandInterface::ASSERT_TEXT);
         $this->assertion1->setTarget('css=.title');
         $this->assertion1->setValue('Hello');
-        $this->assertion2->setCommand(Assertions::ASSERT_ALERT);
+        $this->assertion2->setCommand(CommandInterface::ASSERT_ALERT);
         $this->assertion2->setTarget('css=.warning');
         $this->assertion2->setValue('Are you sure?');
     }
@@ -68,7 +67,7 @@ class PlaceTest extends TestCase
     {
         $this->setUpAssertions();
         $assertion = new Command();
-        $assertion->setCommand(Assertions::ASSERT_ALERT);
+        $assertion->setCommand(CommandInterface::ASSERT_ALERT);
         $assertion->setTarget('css=.warning');
         $assertion->setValue('Are you sure about this?');
 

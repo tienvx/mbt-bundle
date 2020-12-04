@@ -11,8 +11,7 @@ use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWindow;
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Constant\Actions;
-use Tienvx\Bundle\MbtBundle\Constant\Assertions;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
@@ -39,7 +38,7 @@ class HelperTest extends TestCase
     public function testClick(): void
     {
         $command = new Command();
-        $command->setCommand(Actions::CLICK);
+        $command->setCommand(CommandInterface::CLICK);
         $command->setTarget('id=add-to-cart');
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('click');
@@ -55,7 +54,7 @@ class HelperTest extends TestCase
     public function testOpen(): void
     {
         $command = new Command();
-        $command->setCommand(Actions::OPEN);
+        $command->setCommand(CommandInterface::OPEN);
         $command->setTarget('https://demo.sylius.com/en_US/');
         $this->driver->expects($this->once())->method('get')->with('https://demo.sylius.com/en_US/');
         $helper = new Helper($this->driver);
@@ -65,7 +64,7 @@ class HelperTest extends TestCase
     public function testSetWindowSize(): void
     {
         $command = new Command();
-        $command->setCommand(Actions::SET_WINDOW_SIZE);
+        $command->setCommand(CommandInterface::SET_WINDOW_SIZE);
         $command->setTarget('1280x800');
         $window = $this->createMock(WebDriverWindow::class);
         $window->expects($this->once())->method('setSize')->with($this->callback(function ($dimention) {
@@ -83,7 +82,7 @@ class HelperTest extends TestCase
     public function testType(): void
     {
         $command = new Command();
-        $command->setCommand(Actions::TYPE);
+        $command->setCommand(CommandInterface::TYPE);
         $command->setTarget('name=age');
         $command->setValue('20 years old');
         $element = $this->createMock(WebDriverElement::class);
@@ -100,7 +99,7 @@ class HelperTest extends TestCase
     public function testClear(): void
     {
         $command = new Command();
-        $command->setCommand(Actions::CLEAR);
+        $command->setCommand(CommandInterface::CLEAR);
         $command->setTarget('css=.quantity');
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('clear');
@@ -116,7 +115,7 @@ class HelperTest extends TestCase
     public function testAssertAlertPassed(): void
     {
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_ALERT);
+        $command->setCommand(CommandInterface::ASSERT_ALERT);
         $command->setTarget('Are you sure you want to close this window?');
         $alert = $this->createMock(WebDriverAlert::class);
         $alert->expects($this->once())->method('getText')->willReturn('Are you sure you want to close this window?');
@@ -132,7 +131,7 @@ class HelperTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Alert is not equal to "Are you sure you want to close this window?"');
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_ALERT);
+        $command->setCommand(CommandInterface::ASSERT_ALERT);
         $command->setTarget('Are you sure you want to close this window?');
         $alert = $this->createMock(WebDriverAlert::class);
         $alert->expects($this->once())->method('getText')->willReturn('You have no items in cart!');
@@ -146,7 +145,7 @@ class HelperTest extends TestCase
     public function testAssertTextPassed(): void
     {
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_TEXT);
+        $command->setCommand(CommandInterface::ASSERT_TEXT);
         $command->setTarget('xpath=//h4[@href="#"]');
         $command->setValue('Welcome to our store');
         $element = $this->createMock(WebDriverElement::class);
@@ -165,7 +164,7 @@ class HelperTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Element "xpath=//h4[@href="#"]" does not have text "Welcome to our store"');
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_TEXT);
+        $command->setCommand(CommandInterface::ASSERT_TEXT);
         $command->setTarget('xpath=//h4[@href="#"]');
         $command->setValue('Welcome to our store');
         $element = $this->createMock(WebDriverElement::class);
@@ -182,7 +181,7 @@ class HelperTest extends TestCase
     public function testAssertEditablePassed(): void
     {
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_EDITABLE);
+        $command->setCommand(CommandInterface::ASSERT_EDITABLE);
         $command->setTarget('name=username');
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('isEnabled')->willReturn(true);
@@ -201,7 +200,7 @@ class HelperTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Element "name=username" is not editable');
         $command = new Command();
-        $command->setCommand(Assertions::ASSERT_EDITABLE);
+        $command->setCommand(CommandInterface::ASSERT_EDITABLE);
         $command->setTarget('name=username');
         $element = $this->createMock(WebDriverElement::class);
         $element->expects($this->once())->method('isEnabled')->willReturn(false);

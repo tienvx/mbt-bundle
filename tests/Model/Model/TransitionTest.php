@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Constant\Actions;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\ToPlace;
@@ -45,10 +44,10 @@ class TransitionTest extends TestCase
     {
         $this->action1 = new Command();
         $this->action2 = new Command();
-        $this->action1->setCommand(Actions::CLEAR);
+        $this->action1->setCommand(CommandInterface::CLEAR);
         $this->action1->setTarget('css=.email');
         $this->action1->setValue(null);
-        $this->action2->setCommand(Actions::CLICK);
+        $this->action2->setCommand(CommandInterface::CLICK);
         $this->action2->setTarget('css=.link');
         $this->action2->setValue(null);
     }
@@ -97,7 +96,7 @@ class TransitionTest extends TestCase
         $this->setUpActions();
         $this->setUpToPlaces();
         $action = new Command();
-        $action->setCommand(Actions::TYPE);
+        $action->setCommand(CommandInterface::TYPE);
         $action->setTarget('css=.name');
         $action->setValue('My name');
 
