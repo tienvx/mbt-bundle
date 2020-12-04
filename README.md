@@ -1,6 +1,6 @@
 # MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link] [![Version][version-image]][version-url]
 
-This Bundle is a core library for [Sicope Model](sicope-model), a Model-Based Testing tool.
+This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Testing tool.
 
 ## Requirements
 

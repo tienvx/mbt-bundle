@@ -111,11 +111,11 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].target:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:
-    This collection should contain 1 element or more. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+    This transition should connect at least 1 place to other places. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
-    This collection should contain 1 element or more. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+    This transition should connect some places to at least 1 place. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
     }

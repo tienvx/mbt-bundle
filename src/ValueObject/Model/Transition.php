@@ -26,7 +26,7 @@ class Transition extends TransitionModel
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
-     * @Assert\Count(min=1)
+     * @Assert\Count(min=1, minMessage="This transition should connect at least 1 place to other places.")
      */
     protected array $fromPlaces = [];
 
@@ -35,7 +35,7 @@ class Transition extends TransitionModel
      *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace")
      * })
      * @Assert\Valid
-     * @Assert\Count(min=1)
+     * @Assert\Count(min=1, minMessage="This transition should connect some places to at least 1 place.")
      */
     protected array $toPlaces = [];
 }
