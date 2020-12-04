@@ -1,6 +1,6 @@
-# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link]
+# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link] [![Version][version-image]][version-url]
 
-This Bundle provides ability to test your application using Model Based Testing techique.
+This Bundle is a core library for [Sicope Model](sicope-model), a Model-Based Testing tool.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ $ vendor/bin/phpunit
 ## Validate code with coding standards
 
 ```console
-$ php-cs-fixer fix --diff --dry-run
+$ phpcs --standard=PSR12 src tests
 $ phpstan analyse src tests
 ```
 
@@ -61,6 +61,9 @@ This package is available under the [MIT license](LICENSE).
 [coveralls_badge]: https://coveralls.io/repos/tienvx/mbt-bundle/badge.svg?branch=master&service=github
 [coveralls_link]: https://coveralls.io/github/tienvx/mbt-bundle?branch=master
 
+[version-url]: https://packagist.org/packages/tienvx/mbt-bundle
+[version-image]: http://img.shields.io/packagist/v/tienvx/mbt-bundle.svg?style=flat
+
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls
 [issues]: https://github.com/tienvx/mbt-bundle/issues
@@ -70,3 +73,4 @@ This package is available under the [MIT license](LICENSE).
 [a-star]: https://github.com/jmgq/php-a-star
 [petrinet]: https://github.com/florianv/petrinet
 [single-color-petrinet]: https://github.com/tienvx/single-color-petrinet
+[sicope-model]: http://sicope-model.github.io/

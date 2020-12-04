@@ -30,10 +30,10 @@ class Model extends BaseModel
     protected string $label;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @Tags
      */
-    protected string $tags = '';
+    protected ?string $tags = null;
 
     /**
      * @ORM\Column(type="array")
