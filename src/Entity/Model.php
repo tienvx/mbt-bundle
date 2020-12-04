@@ -75,6 +75,7 @@ class Model extends BaseModel
     {
         $this->setCreatedAt(new DateTime());
         $this->setUpdatedAt(new DateTime());
+        $this->version = 1;
     }
 
     /**
