@@ -51,7 +51,7 @@ class Model implements ModelInterface
 
     public function setTags(string $tags): void
     {
-        $this->tags = '';
+        $this->tags = $tags;
     }
 
     public function getPlaces(): array
