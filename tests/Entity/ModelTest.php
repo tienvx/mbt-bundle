@@ -28,6 +28,7 @@ class ModelTest extends TestCase
         $model->prePersist();
         $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
+        $this->assertSame(1, $model->getVersion());
     }
 
     public function testPreUpdate(): void
