@@ -4,7 +4,7 @@ This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Te
 
 ## Requirements
 
-* PHP 7.4
+* PHP 7.4, 8.0
 * Symfony 5.2
 * See also the `require` section of [composer.json](composer.json)
 
