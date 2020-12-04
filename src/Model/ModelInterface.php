@@ -16,9 +16,9 @@ interface ModelInterface
 
     public function setLabel(string $label): void;
 
-    public function getTags(): string;
+    public function getTags(): ?string;
 
-    public function setTags(string $tags): void;
+    public function setTags(?string $tags): void;
 
     public function getPlaces(): array;
 

@@ -12,7 +12,7 @@ class Model implements ModelInterface
 
     protected string $label;
 
-    protected string $tags = '';
+    protected ?string $tags = null;
 
     protected array $places = [];
 
@@ -44,12 +44,12 @@ class Model implements ModelInterface
         $this->label = $label;
     }
 
-    public function getTags(): string
+    public function getTags(): ?string
     {
         return $this->tags;
     }
 
-    public function setTags(string $tags): void
+    public function setTags(?string $tags): void
     {
         $this->tags = $tags;
     }
