@@ -90,7 +90,7 @@ class ModelTest extends TestCase
 
         $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(10, $violations);
+        $this->assertCount(12, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
@@ -99,10 +99,14 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
+    The value you selected is not a valid choice. (code 8e179f1b-97aa-4560-a02f-2a8b42e49df7)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[1].target:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
+    The value you selected is not a valid choice. (code 8e179f1b-97aa-4560-a02f-2a8b42e49df7)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].target:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:
