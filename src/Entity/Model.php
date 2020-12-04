@@ -29,13 +29,10 @@ class Model extends BaseModel
     protected string $label;
 
     /**
-     * @ORM\Column(type="simple_array")
-     * @Assert\All({
-     *     @Assert\NotBlank,
-     *     @Assert\Type("string")
-     * })
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
      */
-    protected array $tags = [];
+    protected string $tag = '';
 
     /**
      * @ORM\Column(type="array")
