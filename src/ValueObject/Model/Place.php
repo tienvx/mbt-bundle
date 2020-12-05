@@ -10,7 +10,7 @@ class Place extends PlaceModel
     /**
      * @Assert\NotBlank
      */
-    protected string $label;
+    protected string $label = '';
 
     protected bool $init = false;
 

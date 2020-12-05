@@ -26,20 +26,21 @@ class ModelDumperTest extends TestCase
     {
         $model = new Model();
         $model->setId(1);
-        $model->setPlaces([
+        $places = [
             $p1 = new Place(),
             $p2 = new Place(),
             $p3 = new Place(),
             $p4 = new Place(),
-        ]);
+        ];
         $p1->setLabel('p1');
         $p2->setLabel('p2');
         $p3->setLabel('p3');
         $p4->setLabel('p4');
-        $model->setTransitions([
+        $model->setPlaces($places);
+        $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
-        ]);
+        ];
         $t1->setLabel('t1');
         $t1->setFromPlaces([0]);
         $t1->setToPlaces([
@@ -57,6 +58,7 @@ class ModelDumperTest extends TestCase
         ]);
         $tp3->setPlace(3);
         $t2->setGuard('count > 1');
+        $model->setTransitions($transitions);
 
         $graph = 'digraph "1" {
 "place-0" [label="p1"]

@@ -35,6 +35,8 @@ class StepsRunner implements StepsRunnerInterface
      * @var ModelInterface
      *
      * @throws Throwable
+     *
+     * @return iterable
      */
     public function run(iterable $steps, ModelInterface $model): iterable
     {
