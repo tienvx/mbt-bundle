@@ -4,8 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 
 class Place implements PlaceInterface
 {
-    protected string $label;
-    protected bool $int = false;
+    protected string $label = '';
+    protected bool $init = false;
     protected array $assertions = [];
 
     public function getLabel(): string
@@ -20,12 +20,12 @@ class Place implements PlaceInterface
 
     public function getInit(): bool
     {
-        return $this->int;
+        return $this->init;
     }
 
     public function setInit(bool $init): void
     {
-        $this->int = $init;
+        $this->init = $init;
     }
 
     public function getAssertions(): array

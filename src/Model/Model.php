@@ -6,11 +6,11 @@ use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 
-class Model implements ModelInterface
+abstract class Model implements ModelInterface
 {
     protected ?int $id;
 
-    protected string $label;
+    protected string $label = '';
 
     protected ?string $tags = null;
 
@@ -54,53 +54,17 @@ class Model implements ModelInterface
         $this->tags = $tags;
     }
 
-    public function getPlaces(): array
-    {
-        return $this->places;
-    }
+    abstract public function getPlaces(): array;
 
-    public function setPlaces(array $places): void
-    {
-        $this->places = [];
+    abstract public function setPlaces(array $places): void;
 
-        foreach ($places as $place) {
-            $this->addPlace($place);
-        }
-    }
+    abstract public function getPlace(int $index): ?PlaceInterface;
 
-    public function addPlace(PlaceInterface $place): void
-    {
-        $this->places[] = $place;
-    }
+    abstract public function getTransitions(): array;
 
-    public function getPlace(int $index): ?PlaceInterface
-    {
-        return $this->places[$index] ?? null;
-    }
+    abstract public function setTransitions(array $transitions): void;
 
-    public function getTransitions(): array
-    {
-        return $this->transitions;
-    }
-
-    public function setTransitions(array $transitions): void
-    {
-        $this->transitions = [];
-
-        foreach ($transitions as $transition) {
-            $this->addTransition($transition);
-        }
-    }
-
-    public function addTransition(TransitionInterface $transition): void
-    {
-        $this->transitions[] = $transition;
-    }
-
-    public function getTransition(int $index): ?TransitionInterface
-    {
-        return $this->transitions[$index] ?? null;
-    }
+    abstract public function getTransition(int $index): ?TransitionInterface;
 
     public function getVersion(): int
     {

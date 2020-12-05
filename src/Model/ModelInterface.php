@@ -24,15 +24,11 @@ interface ModelInterface
 
     public function setPlaces(array $places): void;
 
-    public function addPlace(PlaceInterface $place): void;
-
     public function getPlace(int $index): ?PlaceInterface;
 
     public function getTransitions(): array;
 
     public function setTransitions(array $transitions): void;
-
-    public function addTransition(TransitionInterface $transition): void;
 
     public function getTransition(int $index): ?TransitionInterface;
 

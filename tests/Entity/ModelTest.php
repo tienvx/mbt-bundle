@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Validator\Validation;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
@@ -46,10 +45,10 @@ class ModelTest extends TestCase
         $model = new Model();
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
-        $model->setPlaces([
+        $places = [
             $p1 = new Place(),
             $p2 = new Place(),
-        ]);
+        ];
         $p1->setLabel('');
         $p1->setInit(true);
         $p1->setAssertions([
@@ -63,17 +62,18 @@ class ModelTest extends TestCase
         $c2->setTarget('');
         $c2->setValue('test');
         $p2->setLabel('p2');
-        $p1->setInit(false);
+        $p2->setInit(false);
         $p2->setAssertions([
             $c3 = new Command(),
         ]);
         $c3->setCommand('');
         $c3->setTarget('');
         $c3->setValue(null);
-        $model->setTransitions([
+        $model->setPlaces($places);
+        $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
-        ]);
+        ];
         $t1->setLabel('t1');
         $t1->setFromPlaces([]);
         $t1->setToPlaces([
@@ -88,11 +88,16 @@ class ModelTest extends TestCase
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
         $t2->setGuard('count > 1');
+        $model->setTransitions($transitions);
 
         $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(12, $violations);
-        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
+        $this->assertCount(14, $violations);
+        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
+    To places are invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
+    From places are invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)

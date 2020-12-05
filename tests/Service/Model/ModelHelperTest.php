@@ -20,16 +20,17 @@ class ModelHelperTest extends TestCase
     {
         $model = new Model();
         $model->setId(1);
-        $model->setPlaces([
+        $places = [
             $p1 = new Place(),
             $p2 = new Place(),
             $p3 = new Place(),
             $p4 = new Place(),
-        ]);
+        ];
         $p1->setInit(false);
         $p2->setInit(true);
         $p3->setInit(true);
         $p4->setInit(false);
+        $model->setPlaces($places);
 
         $this->assertSame([
             1 => 1,

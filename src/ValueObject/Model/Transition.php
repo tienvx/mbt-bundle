@@ -10,7 +10,7 @@ class Transition extends TransitionModel
     /**
      * @Assert\NotBlank
      */
-    protected string $label;
+    protected string $label = '';
 
     protected ?string $guard = null;
 

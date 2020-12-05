@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 
 class Transition implements TransitionInterface
 {
-    protected string $label;
+    protected string $label = '';
     protected ?string $guard = null;
     protected array $actions = [];
     protected array $fromPlaces = [];

@@ -17,7 +17,7 @@ class Command extends CommandModel
     /**
      * @Assert\NotBlank
      */
-    protected string $target;
+    protected string $target = '';
 
     protected ?string $value = null;
 }
