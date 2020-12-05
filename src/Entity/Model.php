@@ -172,7 +172,7 @@ class Model extends BaseModel
         foreach ($this->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 $fromPlaces = $transition->getFromPlaces();
-                if ($fromPlaces && (array_diff($places, $fromPlaces) || array_diff($fromPlaces, $places))) {
+                if ($fromPlaces && array_diff($fromPlaces, $places)) {
                     $context->buildViolation('From places are invalid')
                         ->atPath(sprintf('transitions[%d].fromPlaces', $index))
                         ->addViolation();
@@ -181,7 +181,7 @@ class Model extends BaseModel
                     fn (ToPlaceInterface $toPlace) => $toPlace->getPlace(),
                     $transition->getToPlaces()
                 );
-                if ($toPlaces && (array_diff($places, $toPlaces) || array_diff($toPlaces, $places))) {
+                if ($toPlaces && array_diff($toPlaces, $places)) {
                     $context->buildViolation('To places are invalid')
                         ->atPath(sprintf('transitions[%d].toPlaces', $index))
                         ->addViolation();
