@@ -6,14 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Recipient\Recipient;
+use Symfony\Component\Security\Core\User\User;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugSubscriberInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 
 /**
@@ -21,6 +22,8 @@ use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Notification\BugNotification
  */
 class ReportBugMessageHandlerTest extends TestCase
@@ -28,7 +31,6 @@ class ReportBugMessageHandlerTest extends TestCase
     protected EntityManagerInterface $entityManager;
     protected NotifierInterface $notifier;
     protected ConfigLoaderInterface $configLoader;
-    protected BugSubscriberInterface $bugSubscriber;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
     protected ReportBugMessageHandler $handler;
@@ -38,14 +40,12 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->notifier = $this->createMock(NotifierInterface::class);
         $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
-        $this->bugSubscriber = $this->createMock(BugSubscriberInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->handler = new ReportBugMessageHandler(
             $this->entityManager,
             $this->notifier,
             $this->configLoader,
-            $this->bugSubscriber,
             $this->bugHelper,
             $this->translator
         );
@@ -62,12 +62,15 @@ class ReportBugMessageHandlerTest extends TestCase
 
     public function testInvokeSendNotification(): void
     {
+        $user = new User('test@example.com', null);
+        $task = new Task();
+        $task->setSendEmail(true);
+        $task->setUser($user);
         $bug = new Bug();
         $bug->setTitle('New bug found');
         $bug->setId(123);
         $bug->setMessage('Something wrong');
-        $recipient1 = new Recipient('test@example.com');
-        $recipient2 = new Recipient('example@test.com', '1234567890');
+        $bug->setTask($task);
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->configLoader
             ->expects($this->once())
@@ -78,10 +81,6 @@ class ReportBugMessageHandlerTest extends TestCase
             ->method('buildBugUrl')
             ->with($bug)
             ->willReturn('http://localhost/bug/123');
-        $this->bugSubscriber->expects($this->once())->method('getRecipies')->willReturn([
-            $recipient1,
-            $recipient2,
-        ]);
         $this->translator->expects($this->exactly(3))->method('trans')->withConsecutive(
             ['mbt.notify.bug_id', ['id' => $bug->getId()]],
             ['mbt.notify.bug_message', ['message' => $bug->getMessage()]],
@@ -94,7 +93,9 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->notifier
             ->expects($this->once())
             ->method('send')
-            ->with($this->isInstanceOf(BugNotification::class), $recipient1, $recipient2);
+            ->with($this->isInstanceOf(BugNotification::class), $this->callback(function ($recipient) {
+                return $recipient instanceof Recipient && $recipient->getEmail() === 'test@example.com';
+            }));
         $message = new ReportBugMessage(123);
         call_user_func($this->handler, $message);
     }

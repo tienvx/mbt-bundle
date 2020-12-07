@@ -10,7 +10,6 @@ interface ConfigLoaderInterface
     public const MAX_PLACE_COVERAGE = 'max_place_coverage';
     public const REDUCER = 'reducer';
     public const NOTIFY_CHANNELS = 'notify_channels';
-    public const CAPABILITIES = 'capabilities';
 
     public function getGenerator(): string;
 
@@ -23,6 +22,4 @@ interface ConfigLoaderInterface
     public function getReducer(): string;
 
     public function getNotifyChannels(): array;
-
-    public function getCapabilities(): array;
 }

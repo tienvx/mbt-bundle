@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Exception;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Petrinet\Model\TransitionInterface;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
@@ -10,6 +11,10 @@ use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
@@ -22,6 +27,8 @@ use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\StepsRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  */
 class StepsRunnerTest extends TestCase
 {
@@ -36,10 +43,15 @@ class StepsRunnerTest extends TestCase
     protected GuardedTransitionServiceInterface $transitionService;
     protected StepRunnerInterface $stepRunner;
     protected StepsRunnerInterface $stepsRunner;
+    protected ProviderManager $providerManager;
+    protected TaskInterface $task;
+    protected RemoteWebDriver $driver;
 
     protected function setUp(): void
     {
         $this->model = $this->createMock(ModelInterface::class);
+        $this->task = new Task();
+        $this->task->setModel($this->model);
         $factory = new ColorfulFactory();
         $builder = new SingleColorPetrinetBuilder($factory);
 
@@ -65,11 +77,20 @@ class StepsRunnerTest extends TestCase
             ->willReturnOnConsecutiveCalls($this->marking1, $this->marking2);
         $this->transitionService = $this->createMock(GuardedTransitionServiceInterface::class);
         $this->stepRunner = $this->createMock(StepRunnerInterface::class);
+
+        $this->driver = $this->createMock(RemoteWebDriver::class);
+        $this->driver->expects($this->once())->method('quit');
+        $provider = $this->createMock(ProviderInterface::class);
+        $provider->expects($this->once())->method('createDriver')->with($this->task, null)->willReturn($this->driver);
+        $this->providerManager = $this->createMock(ProviderManager::class);
+        $this->providerManager->expects($this->once())->method('getProvider')->willReturn($provider);
+
         $this->stepsRunner = new StepsRunner(
             $this->petrinetHelper,
             $this->markingHelper,
             $this->transitionService,
-            $this->stepRunner
+            $this->stepRunner,
+            $this->providerManager
         );
     }
 
@@ -84,13 +105,11 @@ class StepsRunnerTest extends TestCase
             ->expects($this->exactly(2))
             ->method('fire')
             ->withConsecutive([$this->transition1, $this->marking1], [$this->transition2, $this->marking2]);
-        $this->stepRunner->expects($this->once())->method('setUp');
-        $this->stepRunner->expects($this->once())->method('tearDown');
         $this->stepRunner
             ->expects($this->exactly(2))
             ->method('run')
             ->withConsecutive([$this->steps[0]], [$this->steps[1]]);
-        iterator_to_array($this->stepsRunner->run($this->steps, $this->model));
+        iterator_to_array($this->stepsRunner->run($this->steps, $this->task));
     }
 
     public function testRunDisabledTransition(): void
@@ -106,10 +125,8 @@ class StepsRunnerTest extends TestCase
             ->expects($this->exactly(1))
             ->method('fire')
             ->withConsecutive([$this->transition1, $this->marking1], [$this->transition2, $this->marking2]);
-        $this->stepRunner->expects($this->once())->method('setUp');
-        $this->stepRunner->expects($this->once())->method('tearDown');
         $this->stepRunner->expects($this->exactly(1))->method('run')->withConsecutive([$this->steps[0]]);
-        iterator_to_array($this->stepsRunner->run($this->steps, $this->model));
+        iterator_to_array($this->stepsRunner->run($this->steps, $this->task));
     }
 
     public function testRunFailedExecutingCommands(): void
@@ -125,8 +142,6 @@ class StepsRunnerTest extends TestCase
             ->expects($this->exactly(2))
             ->method('fire')
             ->withConsecutive([$this->transition1, $this->marking1], [$this->transition2, $this->marking2]);
-        $this->stepRunner->expects($this->once())->method('setUp');
-        $this->stepRunner->expects($this->once())->method('tearDown');
         $this->stepRunner
             ->expects($this->exactly(2))
             ->method('run')
@@ -135,6 +150,6 @@ class StepsRunnerTest extends TestCase
                 null,
                 $this->throwException(new Exception('Can not execute commands'))
             );
-        iterator_to_array($this->stepsRunner->run($this->steps, $this->model));
+        iterator_to_array($this->stepsRunner->run($this->steps, $this->task));
     }
 }

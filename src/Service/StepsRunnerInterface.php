@@ -2,9 +2,9 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 interface StepsRunnerInterface
 {
-    public function run(iterable $steps, ModelInterface $model): iterable;
+    public function run(iterable $steps, TaskInterface $task, ?int $recordVideoBugId = null): iterable;
 }

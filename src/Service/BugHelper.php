@@ -10,16 +10,16 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 class BugHelper implements BugHelperInterface
 {
     protected TranslatorInterface $translator;
-    protected string $bugUrl;
+    protected string $adminUrl;
 
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
-    public function setBugUrl(string $bugUrl): void
+    public function setAdminUrl(string $adminUrl): void
     {
-        $this->bugUrl = $bugUrl;
+        $this->adminUrl = $adminUrl;
     }
 
     public function create(array $steps, string $message, ModelInterface $model): BugInterface
@@ -36,6 +36,6 @@ class BugHelper implements BugHelperInterface
 
     public function buildBugUrl(BugInterface $bug): string
     {
-        return sprintf($this->bugUrl, $bug->getId());
+        return sprintf("{$this->adminUrl}/bug/%d", $bug->getId());
     }
 }

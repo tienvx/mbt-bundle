@@ -9,11 +9,13 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
@@ -27,6 +29,7 @@ class HandlerTestCase extends TestCase
     protected StepsBuilderInterface $stepsBuilder;
     protected array $newSteps;
     protected BugInterface $bug;
+    protected TaskInterface $task;
 
     protected function setUp(): void
     {
@@ -35,11 +38,15 @@ class HandlerTestCase extends TestCase
         $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
         $this->newSteps = array_map(fn () => $this->createMock(StepInterface::class), range(1, 4));
+        $model = $this->createMock(ModelInterface::class);
+        $this->task = new Task();
+        $this->task->setModel($model);
         $this->bug = new Bug();
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
         $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
-        $this->bug->setModel($this->createMock(ModelInterface::class));
+        $this->bug->setModel($model);
+        $this->bug->setTask($this->task);
         $this->stepsBuilder
             ->expects($this->once())
             ->method('create')
@@ -59,7 +66,7 @@ class HandlerTestCase extends TestCase
         $this->stepsRunner
             ->expects($this->once())
             ->method('run')
-            ->with($this->newSteps, $this->bug->getModel())
+            ->with($this->newSteps, $this->bug->getTask())
             ->willReturnCallback(
                 function (): iterable {
                     foreach ($this->newSteps as $step) {

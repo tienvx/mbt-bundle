@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Selenium;
+namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Facebook\WebDriver\Remote\RemoteTargetLocator;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -12,27 +12,24 @@ use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWindow;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Service\Selenium\Helper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
-use Tienvx\Bundle\MbtBundle\Selenium\Helper;
+use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Selenium\Helper
+ * @covers \Tienvx\Bundle\MbtBundle\Service\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Selenium\Helper
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
-class HelperTest extends TestCase
+class CommandRunnerTest extends TestCase
 {
     protected RemoteWebDriver $driver;
+    protected Helper $helper;
 
     protected function setUp(): void
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
-    }
-
-    public function testQuit(): void
-    {
-        $this->driver->expects($this->once())->method('quit');
-        $helper = new Helper($this->driver);
-        $helper->quit();
+        $this->helper = new Helper();
     }
 
     public function testClick(): void
@@ -47,8 +44,8 @@ class HelperTest extends TestCase
                 && 'id' === $selector->getMechanism()
                 && 'add-to-cart' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testOpen(): void
@@ -57,8 +54,8 @@ class HelperTest extends TestCase
         $command->setCommand(CommandInterface::OPEN);
         $command->setTarget('https://demo.sylius.com/en_US/');
         $this->driver->expects($this->once())->method('get')->with('https://demo.sylius.com/en_US/');
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testSetWindowSize(): void
@@ -75,8 +72,8 @@ class HelperTest extends TestCase
         $options = $this->createMock(WebDriverOptions::class);
         $options->expects($this->once())->method('window')->willReturn($window);
         $this->driver->expects($this->once())->method('manage')->willReturn($options);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testType(): void
@@ -92,8 +89,8 @@ class HelperTest extends TestCase
                 && 'name' === $selector->getMechanism()
                 && 'age' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testClear(): void
@@ -108,8 +105,8 @@ class HelperTest extends TestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.quantity' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertAlertPassed(): void
@@ -122,8 +119,8 @@ class HelperTest extends TestCase
         $locator = $this->createMock(RemoteTargetLocator::class);
         $locator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($locator);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertAlertFailed(): void
@@ -138,8 +135,8 @@ class HelperTest extends TestCase
         $locator = $this->createMock(RemoteTargetLocator::class);
         $locator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($locator);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertTextPassed(): void
@@ -155,8 +152,8 @@ class HelperTest extends TestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertTextFailed(): void
@@ -174,8 +171,8 @@ class HelperTest extends TestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertEditablePassed(): void
@@ -191,8 +188,8 @@ class HelperTest extends TestCase
                 && 'name' === $selector->getMechanism()
                 && 'username' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 
     public function testAssertEditableFailed(): void
@@ -210,7 +207,7 @@ class HelperTest extends TestCase
                 && 'name' === $selector->getMechanism()
                 && 'username' === $selector->getValue();
         }))->willReturn($element);
-        $helper = new Helper($this->driver);
-        $helper->replay($command);
+        $helper = new CommandRunner($this->helper);
+        $helper->run($command, $this->driver);
     }
 }

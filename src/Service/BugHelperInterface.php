@@ -7,7 +7,7 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 interface BugHelperInterface
 {
-    public function setBugUrl(string $bugUrl): void;
+    public function setAdminUrl(string $adminUrl): void;
 
     public function create(array $steps, string $message, ModelInterface $model): BugInterface;
 

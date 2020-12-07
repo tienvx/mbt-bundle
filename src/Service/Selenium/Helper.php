@@ -1,14 +1,15 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Selenium;
+namespace Tienvx\Bundle\MbtBundle\Service\Selenium;
 
+use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverDimension;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 
-trait DriverHelper
+class Helper implements HelperInterface
 {
-    protected function getSelector(string $target): WebDriverBy
+    public function getSelector(string $target): WebDriverBy
     {
         $match = preg_match('/^(id|name|linkText|partialLinkText|css|xpath)=(.*)/i', $target, $matches);
         if (!$match) {
@@ -34,7 +35,7 @@ trait DriverHelper
         throw new UnexpectedValueException('Invalid target mechanism');
     }
 
-    protected function getDimension(string $target): WebDriverDimension
+    public function getDimension(string $target): WebDriverDimension
     {
         $match = preg_match('/^(\d+)x(\d+)/i', $target, $matches);
         if (!$match) {
@@ -44,5 +45,12 @@ trait DriverHelper
         list(, $width, $height) = $matches;
 
         return new WebDriverDimension($width, $height);
+    }
+
+    public function assert(bool $assertion, string $message): void
+    {
+        if (!$assertion) {
+            throw new Exception($message);
+        }
     }
 }

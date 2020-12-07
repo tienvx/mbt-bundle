@@ -8,6 +8,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
+use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -67,6 +68,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
 
         $this->bugProgress->increaseProcessed($bug, 1);
         if ($bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
+            $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
             $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
         }
     }
