@@ -35,6 +35,41 @@ class Task extends TaskModel
     protected ModelInterface $model;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected bool $sendEmail;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $provider;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $platform;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $browser;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $browserVersion;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $resolution;
+
+    /**
      * @ORM\Embedded(class="Progress")
      */
     protected ProgressInterface $progress;
@@ -60,8 +95,8 @@ class Task extends TaskModel
      */
     public function prePersist(): void
     {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->setCreatedAt(new DateTime());
+        $this->setUpdatedAt(new DateTime());
     }
 
     /**
@@ -69,6 +104,6 @@ class Task extends TaskModel
      */
     public function preUpdate(): void
     {
-        $this->updatedAt = new DateTime();
+        $this->setUpdatedAt(new DateTime());
     }
 }

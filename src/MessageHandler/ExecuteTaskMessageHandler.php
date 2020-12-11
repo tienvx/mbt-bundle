@@ -66,7 +66,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         $generator = $this->generatorManager->get($this->configLoader->getGenerator());
         $this->taskProgress->setTotal($task, $this->configLoader->getMaxSteps());
         try {
-            foreach ($this->stepsRunner->run($generator->generate($task->getModel()), $task->getModel()) as $step) {
+            foreach ($this->stepsRunner->run($generator->generate($task->getModel()), $task) as $step) {
                 if ($step instanceof StepInterface) {
                     $steps[] = $step;
                     $this->taskProgress->increaseProcessed($task, 1);

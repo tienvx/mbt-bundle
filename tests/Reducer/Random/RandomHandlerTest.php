@@ -10,6 +10,8 @@ use Tienvx\Bundle\MbtBundle\Tests\Reducer\HandlerTestCase;
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\HandlerTemplate
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage
  */
 class RandomHandlerTest extends HandlerTestCase

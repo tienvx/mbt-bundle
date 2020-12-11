@@ -5,15 +5,16 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugSubscriberInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 
 /**
@@ -24,7 +25,6 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     protected EntityManagerInterface $entityManager;
     protected NotifierInterface $notifier;
     protected ConfigLoaderInterface $configLoader;
-    protected BugSubscriberInterface $bugSubscriber;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
 
@@ -32,14 +32,12 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         EntityManagerInterface $entityManager,
         NotifierInterface $notifier,
         ConfigLoaderInterface $configLoader,
-        BugSubscriberInterface $bugSubscriber,
         BugHelperInterface $bugHelper,
         TranslatorInterface $translator
     ) {
         $this->entityManager = $entityManager;
         $this->notifier = $notifier;
         $this->configLoader = $configLoader;
-        $this->bugSubscriber = $bugSubscriber;
         $this->bugHelper = $bugHelper;
         $this->translator = $translator;
     }
@@ -71,6 +69,17 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         ]));
         $notification->emoji(':bug:');
 
-        $this->notifier->send($notification, ...$this->bugSubscriber->getRecipies());
+        $this->notifier->send($notification, ...$this->getRecipients($bug->getTask()));
+    }
+
+    protected function getRecipients(TaskInterface $task): array
+    {
+        $recipients = [];
+        $email = $task->getUser()->getUsername();
+        if ($task->getSendEmail() && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $recipients[] = new Recipient($email);
+        }
+
+        return $recipients;
     }
 }

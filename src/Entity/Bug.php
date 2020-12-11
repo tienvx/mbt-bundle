@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 /**
  * @ORM\Entity
@@ -42,6 +43,11 @@ class Bug extends BugModel
      * @ORM\OneToOne(targetEntity="Model")
      */
     protected ModelInterface $model;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Task")
+     */
+    protected TaskInterface $task;
 
     /**
      * @ORM\Column(type="text")
@@ -84,8 +90,8 @@ class Bug extends BugModel
      */
     public function prePersist(): void
     {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->setCreatedAt(new DateTime());
+        $this->setUpdatedAt(new DateTime());
     }
 
     /**
@@ -93,6 +99,6 @@ class Bug extends BugModel
      */
     public function preUpdate(): void
     {
-        $this->updatedAt = new DateTime();
+        $this->setUpdatedAt(new DateTime());
     }
 }

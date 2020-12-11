@@ -15,6 +15,8 @@ class Bug implements BugInterface
 
     protected ModelInterface $model;
 
+    protected TaskInterface $task;
+
     protected string $message;
 
     protected ProgressInterface $progress;
@@ -79,6 +81,16 @@ class Bug implements BugInterface
     public function setModel(ModelInterface $model): void
     {
         $this->model = $model;
+    }
+
+    public function getTask(): TaskInterface
+    {
+        return $this->task;
+    }
+
+    public function setTask(TaskInterface $task): void
+    {
+        $this->task = $task;
     }
 
     public function getMessage(): string

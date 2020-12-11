@@ -53,7 +53,7 @@ class BugHelperTest extends TestCase
         $bug = new Bug();
         $bug->setId(123);
         $bugHelper = new BugHelper($this->translator);
-        $bugHelper->setBugUrl('http://localhost/bug/%s');
+        $bugHelper->setAdminUrl('http://localhost');
         $this->assertSame('http://localhost/bug/123', $bugHelper->buildBugUrl($bug));
     }
 }

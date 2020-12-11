@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Factory\Model\CommandFactory;
@@ -10,12 +11,9 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
-use Tienvx\Bundle\MbtBundle\Selenium\Helper;
-use Tienvx\Bundle\MbtBundle\Service\SeleniumInterface;
+use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 
 /**
@@ -33,11 +31,12 @@ class StepRunnerTest extends TestCase
     protected ModelInterface $model;
     protected StepInterface $step;
     protected array $commands = [];
-    protected Helper $helper;
-    protected SeleniumInterface $selenium;
+    protected CommandRunner $commandRunner;
+    protected RemoteWebDriver $driver;
 
     protected function setUp(): void
     {
+        $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->model = new Model();
         $transitions = [
             $transition = new Transition(),
@@ -60,68 +59,21 @@ class StepRunnerTest extends TestCase
         ]);
         $this->model->setPlaces($places);
         $this->commands = [
-            [$command1],
-            [$command2],
-            [$command3],
-            [$command4],
-            [$command5],
+            [$command1, $this->driver],
+            [$command2, $this->driver],
+            [$command3, $this->driver],
+            [$command4, $this->driver],
+            [$command5, $this->driver],
         ];
         $this->step = new Step([0 => 1, 1 => 1], new Color(), 0);
 
-        $this->helper = $this->createMock(Helper::class);
-        $this->selenium = $this->createMock(SeleniumInterface::class);
-    }
-
-    public function testCanNotRunByDefault(): void
-    {
-        $stepRunner = new StepRunner($this->selenium);
-        $this->assertFalse($stepRunner->canRun());
-    }
-
-    public function testSetUp(): void
-    {
-        $this->selenium->expects($this->once())->method('createHelper')->willReturn($this->helper);
-        $stepRunner = new StepRunner($this->selenium);
-        $stepRunner->setUp();
-        $this->assertTrue($stepRunner->canRun());
-    }
-
-    public function testTearDown(): void
-    {
-        $this->helper->expects($this->never())->method('quit');
-        $stepRunner = new StepRunner($this->selenium);
-        $stepRunner->tearDown();
-        $this->assertFalse($stepRunner->canRun());
-    }
-
-    public function testTearDownAfterSetUp(): void
-    {
-        $this->selenium->expects($this->once())->method('createHelper')->willReturn($this->helper);
-        $this->helper->expects($this->once())->method('quit');
-        $stepRunner = new StepRunner($this->selenium);
-        $stepRunner->setUp();
-        $stepRunner->tearDown();
-        $this->assertFalse($stepRunner->canRun());
-    }
-
-    public function testRunWithoutSetUp(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Need to set up before running step');
-        $stepRunner = new StepRunner($this->selenium);
-        $stepRunner->setUp();
-        $stepRunner->tearDown();
-        $stepRunner->run($this->step, $this->model);
+        $this->commandRunner = $this->createMock(CommandRunner::class);
     }
 
     public function testRun(): void
     {
-        $this->selenium->expects($this->once())->method('createHelper')->willReturn($this->helper);
-        $this->helper->expects($this->once())->method('quit');
-        $this->helper->expects($this->exactly(5))->method('replay')->withConsecutive(...$this->commands);
-        $stepRunner = new StepRunner($this->selenium);
-        $stepRunner->setUp();
-        $stepRunner->run($this->step, $this->model);
-        $stepRunner->tearDown();
+        $this->commandRunner->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
+        $stepRunner = new StepRunner($this->commandRunner);
+        $stepRunner->run($this->step, $this->model, $this->driver);
     }
 }

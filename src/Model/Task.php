@@ -3,19 +3,22 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class Task implements TaskInterface
 {
     protected ?int $id;
-
     protected string $title;
-
     protected ModelInterface $model;
-
+    protected UserInterface $user;
+    protected bool $sendEmail;
+    protected string $provider;
+    protected string $platform;
+    protected string $browser;
+    protected string $browserVersion;
+    protected string $resolution;
     protected ProgressInterface $progress;
-
     protected DateTimeInterface $updatedAt;
-
     protected DateTimeInterface $createdAt;
 
     public function __construct()
@@ -51,6 +54,76 @@ class Task implements TaskInterface
     public function setModel(ModelInterface $model): void
     {
         $this->model = $model;
+    }
+
+    public function getUser(): UserInterface
+    {
+        return $this->user;
+    }
+
+    public function setUser(UserInterface $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getSendEmail(): bool
+    {
+        return $this->sendEmail;
+    }
+
+    public function setSendEmail(bool $sendEmail): void
+    {
+        $this->sendEmail = $sendEmail;
+    }
+
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    public function setProvider(string $provider): void
+    {
+        $this->provider = $provider;
+    }
+
+    public function getPlatform(): string
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform(string $platform): void
+    {
+        $this->platform = $platform;
+    }
+
+    public function getBrowser(): string
+    {
+        return $this->browser;
+    }
+
+    public function setBrowser(string $browser): void
+    {
+        $this->browser = $browser;
+    }
+
+    public function getBrowserVersion(): string
+    {
+        return $this->browser;
+    }
+
+    public function setBrowserVersion(string $browserVersion): void
+    {
+        $this->browserVersion = $browserVersion;
+    }
+
+    public function getResolution(): string
+    {
+        return $this->resolution;
+    }
+
+    public function setResolution(string $resolution): void
+    {
+        $this->resolution = $resolution;
     }
 
     public function getProgress(): ProgressInterface

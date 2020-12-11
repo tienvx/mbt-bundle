@@ -2,69 +2,46 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
-use Tienvx\Bundle\MbtBundle\Selenium\Helper;
 
 class StepRunner implements StepRunnerInterface
 {
-    protected SeleniumInterface $selenium;
-    protected ?Helper $helper = null;
+    protected CommandRunner $commandRunner;
 
-    public function __construct(SeleniumInterface $selenium)
+    public function __construct(CommandRunner $commandRunner)
     {
-        $this->selenium = $selenium;
+        $this->commandRunner = $commandRunner;
     }
 
-    public function setUp(): void
+    public function run(StepInterface $step, ModelInterface $model, RemoteWebDriver $driver): void
     {
-        $this->helper = $this->selenium->createHelper();
-    }
-
-    public function tearDown(): void
-    {
-        if ($this->helper) {
-            $this->helper->quit();
-            $this->helper = null;
-        }
-    }
-
-    public function canRun(): bool
-    {
-        return (bool) $this->helper;
-    }
-
-    public function run(StepInterface $step, ModelInterface $model): void
-    {
-        if (!$this->canRun()) {
-            throw new RuntimeException('Need to set up before running step');
-        }
         $transition = $model->getTransition($step->getTransition());
         if ($transition instanceof TransitionInterface) {
-            $this->executeTransitionActions($transition);
+            $this->executeTransitionActions($transition, $driver);
         }
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executePlaceAssertions($place);
+                $this->executePlaceAssertions($place, $driver);
             }
         }
     }
 
-    protected function executeTransitionActions(TransitionInterface $transition): void
+    protected function executeTransitionActions(TransitionInterface $transition, RemoteWebDriver $driver): void
     {
         foreach ($transition->getActions() as $action) {
-            $this->helper->replay($action);
+            $this->commandRunner->run($action, $driver);
         }
     }
 
-    protected function executePlaceAssertions(PlaceInterface $place): void
+    protected function executePlaceAssertions(PlaceInterface $place, RemoteWebDriver $driver): void
     {
         foreach ($place->getAssertions() as $assertion) {
-            $this->helper->replay($assertion);
+            $this->commandRunner->run($assertion, $driver);
         }
     }
 }

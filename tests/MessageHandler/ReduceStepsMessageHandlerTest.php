@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
+use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
@@ -24,6 +25,7 @@ use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
+ * @covers \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
@@ -130,10 +132,15 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->configLoader->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('get')->with('random')->willReturn($reducer);
         $this->messageBus
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('dispatch')
-            ->with($this->callback(fn ($message) => $message instanceof ReportBugMessage
-                && 123 === $message->getBugId()))
+            ->with($this->callback(function ($message) {
+                return (
+                    $message instanceof RecordVideoMessage
+                    || $message instanceof ReportBugMessage
+                )
+                && 123 === $message->getBugId();
+            }))
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($bug, 1);

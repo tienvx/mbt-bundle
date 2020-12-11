@@ -25,6 +25,10 @@ interface BugInterface
 
     public function setModel(ModelInterface $workflow): void;
 
+    public function getTask(): TaskInterface;
+
+    public function setTask(TaskInterface $task): void;
+
     public function getMessage(): string;
 
     public function setMessage(string $bugMessage): void;
