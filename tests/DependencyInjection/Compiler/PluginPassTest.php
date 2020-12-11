@@ -19,9 +19,6 @@ use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin\Plugin22;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass
  * @covers \Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager
- * @covers \Tienvx\Bundle\MbtBundle\Provider\AbstractProvider
- * @covers \Tienvx\Bundle\MbtBundle\Provider\ProviderManager
- * @covers \Tienvx\Bundle\MbtBundle\Provider\Selenoid
  */
 class PluginPassTest extends TestCase
 {
@@ -37,12 +34,6 @@ class PluginPassTest extends TestCase
         $container->register(Plugin12::class, Plugin12::class)->addTag(PluginInterface::TAG);
         $container->register(Plugin21::class, Plugin21::class)->addTag(PluginInterface::TAG);
         $container->register(Plugin22::class, Plugin22::class)->addTag(PluginInterface::TAG);
-
-        $container->register(ProviderManager::class, ProviderManager::class);
-        $container->register(Selenoid::class, Selenoid::class)->addTag(PluginInterface::TAG);
-
-        $container->setParameter('%env(PROVIDER_NAME)%', 'selenoid');
-        $container->setParameter('%env(SELENIUM_SERVER)%', 'http://localhost:4444');
 
         (new PluginPass())->process($container);
 
@@ -67,13 +58,5 @@ class PluginPassTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Plugin "plugin12" does not exist.');
         $this->container->get(Manager1::class)->get('plugin12');
-    }
-
-    public function testParameters(): void
-    {
-        $this->assertSame(
-            'http://localhost:4444/wd/hub',
-            $this->container->get(Selenoid::class)->getSeleniumServerUrl()
-        );
     }
 }

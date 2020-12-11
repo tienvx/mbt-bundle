@@ -46,7 +46,7 @@ class StepsRunner implements StepsRunnerInterface
      */
     public function run(iterable $steps, TaskInterface $task, ?int $recordVideoBugId = null): iterable
     {
-        $driver = $this->providerManager->getProvider()->createDriver($task, $recordVideoBugId);
+        $driver = $this->providerManager->createDriver($task, $recordVideoBugId);
         $petrinet = $this->petrinetHelper->build($task->getModel());
         foreach ($steps as $step) {
             if (!$step instanceof StepInterface) {

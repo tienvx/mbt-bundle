@@ -59,7 +59,10 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
             throw $exception;
         } finally {
             $provider = $this->providerManager->get($bug->getTask()->getProvider());
-            $this->messageBus->dispatch(new DownloadVideoMessage($bug->getId(), $provider->getVideoUrl($bug->getId())));
+            $this->messageBus->dispatch(new DownloadVideoMessage(
+                $bug->getId(),
+                $provider->getVideoUrl($this->providerManager->getSeleniumServer(), $bug->getId())
+            ));
         }
     }
 }

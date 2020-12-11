@@ -93,7 +93,6 @@ return static function (ContainerConfigurator $container): void {
             ])
 
         ->set(ProviderManager::class)
-            ->call('setProviderName', [param('env(PROVIDER_NAME)')])
         ->set(Selenoid::class)
 
         ->set(ExecuteTaskMessageHandler::class)
@@ -180,7 +179,6 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(TranslatorInterface::class),
             ])
-            ->call('setAdminUrl', [param('env(ADMIN_URL)')])
             ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(BugProgress::class)
