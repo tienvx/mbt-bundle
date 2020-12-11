@@ -80,10 +80,12 @@ class StepsRunnerTest extends TestCase
 
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->driver->expects($this->once())->method('quit');
-        $provider = $this->createMock(ProviderInterface::class);
-        $provider->expects($this->once())->method('createDriver')->with($this->task, null)->willReturn($this->driver);
         $this->providerManager = $this->createMock(ProviderManager::class);
-        $this->providerManager->expects($this->once())->method('getProvider')->willReturn($provider);
+        $this->providerManager
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->task, null)
+            ->willReturn($this->driver);
 
         $this->stepsRunner = new StepsRunner(
             $this->petrinetHelper,

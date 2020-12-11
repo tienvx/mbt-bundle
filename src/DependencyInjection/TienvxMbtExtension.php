@@ -8,6 +8,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\BugHelper;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -27,7 +29,19 @@ class TienvxMbtExtension extends Extension
         $loader->load('services.php');
 
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->findDefinition(ProviderManager::class)
+            ->addMethodCall('setSeleniumServer', [$config['selenium_server']])
+        ;
+
+        $container->findDefinition(ProviderManager::class)
+            ->addMethodCall('setProviderName', [$config['provider_name']])
+        ;
+
+        $container->findDefinition(BugHelper::class)
+            ->addMethodCall('setAdminUrl', [$config['admin_url']])
+        ;
 
         $this->registerForAutoconfiguration($container);
     }

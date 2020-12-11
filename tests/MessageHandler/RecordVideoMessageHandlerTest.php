@@ -67,15 +67,23 @@ class RecordVideoMessageHandlerTest extends TestCase
         $bug->setTask($task);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
         $provider = $this->createMock(ProviderInterface::class);
-        $provider->expects($this->once())->method('getVideoUrl')->with(123)->willReturn('http://path.to/video.mp4');
+        $provider
+            ->expects($this->once())
+            ->method('getVideoUrl')
+            ->with('http://localhost:4444', 123)
+            ->willReturn('http://localhost:4444/video.mp4');
         $this->providerManager->expects($this->once())->method('get')->with('current-provider')->willReturn($provider);
+        $this->providerManager
+            ->expects($this->once())
+            ->method('getSeleniumServer')
+            ->willReturn('http://localhost:4444');
         $this->messageBus
             ->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(function ($message) {
                 return $message instanceof DownloadVideoMessage
                     && 123 === $message->getBugId()
-                    && 'http://path.to/video.mp4' === $message->getVideoUrl();
+                    && 'http://localhost:4444/video.mp4' === $message->getVideoUrl();
             }))
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);

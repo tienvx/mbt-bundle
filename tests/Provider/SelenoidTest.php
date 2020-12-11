@@ -31,15 +31,16 @@ class SelenoidTest extends TestCase
     public function testGetSeleniumServerUrl(): void
     {
         $selenoid = new Selenoid();
-        $selenoid->setSeleniumServer('http://localhost:4444');
-        $this->assertSame('http://localhost:4444/wd/hub', $selenoid->getSeleniumServerUrl());
+        $this->assertSame('http://localhost:4444/wd/hub', $selenoid->getSeleniumServerUrl('http://localhost:4444'));
     }
 
     public function testGetVideoUrl(): void
     {
         $selenoid = new Selenoid();
-        $selenoid->setSeleniumServer('http://localhost:4444');
-        $this->assertSame('http://localhost:4444/video/bug-123.mp4', $selenoid->getVideoUrl(123));
+        $this->assertSame(
+            'http://localhost:4444/video/bug-123.mp4',
+            $selenoid->getVideoUrl('http://localhost:4444', 123)
+        );
     }
 
     public function testGetCapabilities(): void
@@ -51,7 +52,6 @@ class SelenoidTest extends TestCase
         $task->setBrowser(WebDriverBrowserType::CHROME);
         $task->setBrowserVersion('56.0');
         $selenoid = new Selenoid();
-        $selenoid->setSeleniumServer('http://localhost:4444');
         $capabilities = $selenoid->getCapabilities($task, 123);
         $this->assertInstanceOf(DesiredCapabilities::class, $capabilities);
         $this->assertSame([
@@ -76,7 +76,6 @@ class SelenoidTest extends TestCase
         $task->setBrowser(WebDriverBrowserType::ANDROID);
         $task->setBrowserVersion('11.0');
         $selenoid = new Selenoid();
-        $selenoid->setSeleniumServer('http://localhost:4444');
         $capabilities = $selenoid->getCapabilities($task, 123);
         $this->assertInstanceOf(DesiredCapabilities::class, $capabilities);
         $this->assertSame([

@@ -9,8 +9,6 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 abstract class AbstractProvider implements ProviderInterface
 {
-    protected string $seleniumServer;
-
     public static function getManager(): string
     {
         return ProviderManager::class;
@@ -21,25 +19,12 @@ abstract class AbstractProvider implements ProviderInterface
         return true;
     }
 
-    public function setSeleniumServer(string $seleniumServer): void
-    {
-        $this->seleniumServer = $seleniumServer;
-    }
-
     /**
      * @throws ExceptionInterface
      */
-    public function createDriver(TaskInterface $task, ?int $recordVideoBugId = null): RemoteWebDriver
+    public function getSeleniumServerUrl(string $seleniumServer): string
     {
-        return RemoteWebDriver::create($this->getSeleniumServerUrl(), $this->getCapabilities($task, $recordVideoBugId));
-    }
-
-    /**
-     * @throws ExceptionInterface
-     */
-    public function getSeleniumServerUrl(): string
-    {
-        return $this->seleniumServer . '/wd/hub';
+        return $seleniumServer . '/wd/hub';
     }
 
     public function getCapabilities(TaskInterface $task, ?int $recordVideoBugId = null): DesiredCapabilities

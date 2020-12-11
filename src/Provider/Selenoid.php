@@ -18,9 +18,9 @@ class Selenoid extends AbstractProvider
     /**
      * @throws ExceptionInterface
      */
-    public function getVideoUrl(int $bugId): string
+    public function getVideoUrl(string $seleniumServer, int $bugId): string
     {
-        return sprintf('%s/video/bug-%s.mp4', $this->seleniumServer, $bugId);
+        return sprintf('%s/video/bug-%s.mp4', $seleniumServer, $bugId);
     }
 
     public function getCapabilities(TaskInterface $task, ?int $recordVideoBugId = null): DesiredCapabilities
