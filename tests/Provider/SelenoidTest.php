@@ -96,7 +96,7 @@ class SelenoidTest extends TestCase
         $this->assertSame([
             WebDriverPlatform::LINUX,
             WebDriverPlatform::ANDROID,
-        ], Selenoid::getOperatingSystems());
+        ], Selenoid::getPlatforms());
     }
 
     public function testGetBrowsers(): void

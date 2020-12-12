@@ -53,7 +53,7 @@ class Selenoid extends AbstractProvider
         return new DesiredCapabilities($caps);
     }
 
-    protected static function loadConfig(): array
+    protected function loadConfig(): array
     {
         return require __DIR__ . '/../Resources/providers/selenoid.php';
     }

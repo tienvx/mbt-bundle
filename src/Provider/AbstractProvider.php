@@ -3,12 +3,13 @@
 namespace Tienvx\Bundle\MbtBundle\Provider;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 abstract class AbstractProvider implements ProviderInterface
 {
+    protected ?array $config = null;
+
     public static function getManager(): string
     {
         return ProviderManager::class;
@@ -32,22 +33,35 @@ abstract class AbstractProvider implements ProviderInterface
         return new DesiredCapabilities();
     }
 
-    public static function getOperatingSystems(): array
+    public function getPlatforms(): array
     {
-        return array_keys(static::loadConfig());
+        return array_keys($this->getConfig());
     }
 
-    public static function getBrowsers(string $platform): array
+    public function getBrowsers(string $platform): array
     {
-        return static::loadConfig()[$platform][ProviderInterface::BROWSERS] ?? [];
+        return array_keys($this->getConfig()[$platform][ProviderInterface::BROWSERS] ?? []);
     }
 
-    public static function getResolutions(string $platform): array
+    public function getBrowserVersions(string $platform, string $browser): array
     {
-        return static::loadConfig()[$platform][ProviderInterface::RESOLUTIONS] ?? [];
+        return $this->getConfig()[$platform][ProviderInterface::BROWSERS][$browser] ?? [];
     }
 
-    protected static function loadConfig(): array
+    public function getResolutions(string $platform): array
+    {
+        return $this->getConfig()[$platform][ProviderInterface::RESOLUTIONS] ?? [];
+    }
+
+    public function getConfig(): array
+    {
+        if (!isset($this->config)) {
+            $this->config = $this->loadConfig();
+        }
+        return $this->config;
+    }
+
+    protected function loadConfig(): array
     {
         return [];
     }
