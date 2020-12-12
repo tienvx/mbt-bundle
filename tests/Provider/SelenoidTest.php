@@ -6,6 +6,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
 use Facebook\WebDriver\WebDriverPlatform;
 use PHPUnit\Framework\TestCase;
+use Tienvx\Bundle\MbtBundle\Entity\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
@@ -15,6 +16,7 @@ use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
  * @covers \Tienvx\Bundle\MbtBundle\Provider\AbstractProvider
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\SeleniumConfig
  */
 class SelenoidTest extends TestCase
 {
@@ -47,10 +49,12 @@ class SelenoidTest extends TestCase
     {
         $task = new Task();
         $task->setId(321);
-        $task->setPlatform(WebDriverPlatform::VISTA);
-        $task->setResolution('1024x768');
-        $task->setBrowser(WebDriverBrowserType::CHROME);
-        $task->setBrowserVersion('56.0');
+        $seleniumConfig = new SeleniumConfig();
+        $seleniumConfig->setPlatform(WebDriverPlatform::VISTA);
+        $seleniumConfig->setResolution('1024x768');
+        $seleniumConfig->setBrowser(WebDriverBrowserType::CHROME);
+        $seleniumConfig->setBrowserVersion('56.0');
+        $task->setSeleniumConfig($seleniumConfig);
         $selenoid = new Selenoid();
         $capabilities = $selenoid->getCapabilities($task, 123);
         $this->assertInstanceOf(DesiredCapabilities::class, $capabilities);
@@ -60,7 +64,7 @@ class SelenoidTest extends TestCase
             'name' => 'Recording video for bug 123',
             'screenResolution' => '1024x768x24',
             'browserName' => 'chrome',
-            'version' => 'chrome',
+            'version' => '56.0',
             'platform' => 'VISTA',
             'enableVNC' => true,
             'enableLog' => true,
@@ -71,10 +75,12 @@ class SelenoidTest extends TestCase
     {
         $task = new Task();
         $task->setId(321);
-        $task->setPlatform(WebDriverPlatform::ANDROID);
-        $task->setResolution('240x320');
-        $task->setBrowser(WebDriverBrowserType::ANDROID);
-        $task->setBrowserVersion('11.0');
+        $seleniumConfig = new SeleniumConfig();
+        $seleniumConfig->setPlatform(WebDriverPlatform::ANDROID);
+        $seleniumConfig->setResolution('240x320');
+        $seleniumConfig->setBrowser(WebDriverBrowserType::ANDROID);
+        $seleniumConfig->setBrowserVersion('11.0');
+        $task->setSeleniumConfig($seleniumConfig);
         $selenoid = new Selenoid();
         $capabilities = $selenoid->getCapabilities($task, 123);
         $this->assertInstanceOf(DesiredCapabilities::class, $capabilities);
@@ -84,7 +90,7 @@ class SelenoidTest extends TestCase
             'name' => 'Recording video for bug 123',
             'skin' => '240x320',
             'browserName' => 'android',
-            'version' => 'android',
+            'version' => '11.0',
             'platform' => 'ANDROID',
             'enableVNC' => true,
             'enableLog' => true,
@@ -93,29 +99,32 @@ class SelenoidTest extends TestCase
 
     public function testGetOperatingSystems(): void
     {
+        $selenoid = new Selenoid();
         $this->assertSame([
             WebDriverPlatform::LINUX,
             WebDriverPlatform::ANDROID,
-        ], Selenoid::getOperatingSystems());
+        ], $selenoid->getPlatforms());
     }
 
     public function testGetBrowsers(): void
     {
+        $selenoid = new Selenoid();
         $this->assertSame([
             WebDriverBrowserType::CHROME,
             WebDriverBrowserType::FIREFOX,
             WebDriverBrowserType::MICROSOFT_EDGE,
             WebDriverBrowserType::OPERA,
-        ], array_keys(Selenoid::getBrowsers(WebDriverPlatform::LINUX)));
+        ], $selenoid->getBrowsers(WebDriverPlatform::LINUX));
         $this->assertSame([
             WebDriverBrowserType::ANDROID,
             WebDriverBrowserType::CHROME,
-        ], array_keys(Selenoid::getBrowsers(WebDriverPlatform::ANDROID)));
+        ], $selenoid->getBrowsers(WebDriverPlatform::ANDROID));
     }
 
     public function testGetResolutions(): void
     {
-        $this->assertCount(9, Selenoid::getResolutions(WebDriverPlatform::LINUX));
-        $this->assertCount(10, Selenoid::getResolutions(WebDriverPlatform::ANDROID));
+        $selenoid = new Selenoid();
+        $this->assertCount(9, $selenoid->getResolutions(WebDriverPlatform::LINUX));
+        $this->assertCount(10, $selenoid->getResolutions(WebDriverPlatform::ANDROID));
     }
 }

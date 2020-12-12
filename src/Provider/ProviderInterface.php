@@ -17,9 +17,13 @@ interface ProviderInterface extends PluginInterface
 
     public function getVideoUrl(string $seleniumServer, int $bugId): string;
 
-    public static function getOperatingSystems(): array;
+    public function getPlatforms(): array;
 
-    public static function getBrowsers(string $platform): array;
+    public function getBrowsers(string $platform): array;
 
-    public static function getResolutions(string $platform): array;
+    public function getBrowserVersions(string $platform, string $browser): array;
+
+    public function getResolutions(string $platform): array;
+
+    public function getConfig(): array;
 }

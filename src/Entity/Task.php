@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
+use Tienvx\Bundle\MbtBundle\Model\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
 
 /**
@@ -40,34 +41,10 @@ class Task extends TaskModel
     protected bool $sendEmail;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
+     * @ORM\Embedded(class="SeleniumConfig")
+     * @Assert\Valid
      */
-    protected string $provider;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    protected string $platform;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    protected string $browser;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    protected string $browserVersion;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    protected string $resolution;
+    protected SeleniumConfigInterface $seleniumConfig;
 
     /**
      * @ORM\Embedded(class="Progress")

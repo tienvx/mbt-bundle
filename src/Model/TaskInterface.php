@@ -27,25 +27,9 @@ interface TaskInterface
 
     public function setSendEmail(bool $sendEmail): void;
 
-    public function getProvider(): string;
+    public function getSeleniumConfig(): SeleniumConfigInterface;
 
-    public function setProvider(string $provider): void;
-
-    public function getPlatform(): string;
-
-    public function setPlatform(string $operatingSystem): void;
-
-    public function getBrowser(): string;
-
-    public function setBrowser(string $browser): void;
-
-    public function getBrowserVersion(): string;
-
-    public function setBrowserVersion(string $browserVersion): void;
-
-    public function getResolution(): string;
-
-    public function setResolution(string $resolution): void;
+    public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void;
 
     public function getProgress(): ProgressInterface;
 
