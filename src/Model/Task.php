@@ -12,11 +12,7 @@ class Task implements TaskInterface
     protected ModelInterface $model;
     protected UserInterface $user;
     protected bool $sendEmail;
-    protected string $provider;
-    protected string $platform;
-    protected string $browser;
-    protected string $browserVersion;
-    protected string $resolution;
+    protected SeleniumConfigInterface $seleniumConfig;
     protected ProgressInterface $progress;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
@@ -76,54 +72,14 @@ class Task implements TaskInterface
         $this->sendEmail = $sendEmail;
     }
 
-    public function getProvider(): string
+    public function getSeleniumConfig(): SeleniumConfigInterface
     {
-        return $this->provider;
+        return $this->seleniumConfig;
     }
 
-    public function setProvider(string $provider): void
+    public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void
     {
-        $this->provider = $provider;
-    }
-
-    public function getPlatform(): string
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform(string $platform): void
-    {
-        $this->platform = $platform;
-    }
-
-    public function getBrowser(): string
-    {
-        return $this->browser;
-    }
-
-    public function setBrowser(string $browser): void
-    {
-        $this->browser = $browser;
-    }
-
-    public function getBrowserVersion(): string
-    {
-        return $this->browser;
-    }
-
-    public function setBrowserVersion(string $browserVersion): void
-    {
-        $this->browserVersion = $browserVersion;
-    }
-
-    public function getResolution(): string
-    {
-        return $this->resolution;
-    }
-
-    public function setResolution(string $resolution): void
-    {
-        $this->resolution = $resolution;
+        $this->seleniumConfig = $seleniumConfig;
     }
 
     public function getProgress(): ProgressInterface

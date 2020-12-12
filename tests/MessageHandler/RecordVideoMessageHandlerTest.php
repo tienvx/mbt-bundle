@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\DownloadVideoMessage;
@@ -25,6 +26,7 @@ use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\SeleniumConfig
  */
 class RecordVideoMessageHandlerTest extends TestCase
 {
@@ -60,7 +62,9 @@ class RecordVideoMessageHandlerTest extends TestCase
     public function testInvokeRecordVideo(): void
     {
         $task = new Task();
-        $task->setProvider('current-provider');
+        $seleniumConfig = new SeleniumConfig();
+        $seleniumConfig->setProvider('current-provider');
+        $task->setSeleniumConfig($seleniumConfig);
         $bug = new Bug();
         $bug->setId(123);
         $bug->setModelVersion(1);

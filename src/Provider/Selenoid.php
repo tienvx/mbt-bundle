@@ -33,19 +33,19 @@ class Selenoid extends AbstractProvider
                 'name' => sprintf("Recording video for bug %d", $recordVideoBugId),
             ];
         }
-        if ($task->getPlatform() === WebDriverPlatform::ANDROID) {
+        if ($task->getSeleniumConfig()->getPlatform() === WebDriverPlatform::ANDROID) {
             $caps += [
-                'skin' => $task->getResolution(),
+                'skin' => $task->getSeleniumConfig()->getResolution(),
             ];
         } else {
             $caps += [
-                'screenResolution' => "{$task->getResolution()}x24",
+                'screenResolution' => "{$task->getSeleniumConfig()->getResolution()}x24",
             ];
         }
         $caps += [
-            WebDriverCapabilityType::BROWSER_NAME => $task->getBrowser(),
-            WebDriverCapabilityType::VERSION => $task->getBrowserVersion(),
-            WebDriverCapabilityType::PLATFORM => $task->getPlatform(),
+            WebDriverCapabilityType::BROWSER_NAME => $task->getSeleniumConfig()->getBrowser(),
+            WebDriverCapabilityType::VERSION => $task->getSeleniumConfig()->getBrowserVersion(),
+            WebDriverCapabilityType::PLATFORM => $task->getSeleniumConfig()->getPlatform(),
             'enableVNC' => true,
             'enableLog' => true,
             'name' => sprintf("Executing task %d", $task->getId()),
