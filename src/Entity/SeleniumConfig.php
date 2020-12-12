@@ -17,29 +17,29 @@ class SeleniumConfig extends SeleniumConfigModel
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $provider;
+    protected string $provider = '';
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $platform;
+    protected string $platform = '';
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $browser;
+    protected string $browser = '';
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $browserVersion;
+    protected string $browserVersion = '';
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $resolution;
+    protected string $resolution = '';
 }
