@@ -70,10 +70,15 @@ return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set(ChannelManager::class)
         ->set(EmailChannel::class)
+            ->autoconfigure(true)
         ->set(NexmoChannel::class)
+            ->autoconfigure(true)
         ->set(SlackChannel::class)
+            ->autoconfigure(true)
         ->set(TelegramChannel::class)
+            ->autoconfigure(true)
         ->set(TwilioChannel::class)
+            ->autoconfigure(true)
 
         ->set(EntitySubscriber::class)
             ->tag('doctrine.event_subscriber')
@@ -91,9 +96,11 @@ return static function (ContainerConfigurator $container): void {
                 service(GuardedTransitionServiceInterface::class),
                 service(StateHelperInterface::class),
             ])
+            ->autoconfigure(true)
 
         ->set(ProviderManager::class)
         ->set(Selenoid::class)
+            ->autoconfigure(true)
 
         ->set(ExecuteTaskMessageHandler::class)
             ->args([
@@ -149,6 +156,7 @@ return static function (ContainerConfigurator $container): void {
                 service(RandomDispatcher::class),
                 service(RandomHandler::class),
             ])
+            ->autoconfigure(true)
         ->set(SplitDispatcher::class)
             ->args([
                 service(MessageBusInterface::class),
@@ -165,6 +173,7 @@ return static function (ContainerConfigurator $container): void {
                 service(SplitDispatcher::class),
                 service(SplitHandler::class),
             ])
+            ->autoconfigure(true)
 
         // Services
         ->set(ConfigLoaderInterface::class)
