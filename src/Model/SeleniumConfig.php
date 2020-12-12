@@ -4,11 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 class SeleniumConfig implements SeleniumConfigInterface
 {
-    protected string $provider;
-    protected string $platform;
-    protected string $browser;
-    protected string $browserVersion;
-    protected string $resolution;
+    protected string $provider = '';
+    protected string $platform = '';
+    protected string $browser = '';
+    protected string $browserVersion = '';
+    protected string $resolution = '';
 
     public function getProvider(): string
     {
