@@ -65,6 +65,8 @@ use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
+use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
+use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -174,6 +176,15 @@ return static function (ContainerConfigurator $container): void {
                 service(SplitHandler::class),
             ])
             ->autoconfigure(true)
+
+        ->set(TagsValidator::class)
+        ->set(ValidSeleniumConfigValidator::class)
+            ->args([
+                service(ProviderManager::class),
+            ])
+            ->tag('validator.constraint_validator', [
+                'alias' => ValidSeleniumConfigValidator::class,
+            ])
 
         // Services
         ->set(ConfigLoaderInterface::class)
