@@ -42,7 +42,7 @@ class SeleniumConfig implements SeleniumConfigInterface
 
     public function getBrowserVersion(): string
     {
-        return $this->browser;
+        return $this->browserVersion;
     }
 
     public function setBrowserVersion(string $browserVersion): void

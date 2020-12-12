@@ -9,10 +9,10 @@ $pointZero = fn ($version) => "$version.0";
 return [
     WebDriverPlatform::LINUX => [
         ProviderInterface::BROWSERS => [
-            WebDriverBrowserType::CHROME => [array_map($pointZero, [...range(48, 81), ...range(83, 87)])],
-            WebDriverBrowserType::FIREFOX => [array_map($pointZero, range(48, 83))],
+            WebDriverBrowserType::CHROME => array_map($pointZero, [...range(48, 81), ...range(83, 87)]),
+            WebDriverBrowserType::FIREFOX => array_map($pointZero, range(48, 83)),
             WebDriverBrowserType::MICROSOFT_EDGE => ['88.0'],
-            WebDriverBrowserType::OPERA => [array_map($pointZero, [...range(33, 58), 60, ...range(62, 72)])],
+            WebDriverBrowserType::OPERA => array_map($pointZero, [...range(33, 58), 60, ...range(62, 72)]),
         ],
         ProviderInterface::RESOLUTIONS => [
             '1024x768',
@@ -29,7 +29,7 @@ return [
     WebDriverPlatform::ANDROID => [
         ProviderInterface::BROWSERS => [
             WebDriverBrowserType::ANDROID => ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1', '8.0', '8.1', '9.0', '10.0'],
-            WebDriverBrowserType::CHROME => [array_map($pointZero, [...range(73, 81), ...range(83, 86)])],
+            WebDriverBrowserType::CHROME => array_map($pointZero, [...range(73, 81), ...range(83, 86)]),
         ],
         ProviderInterface::RESOLUTIONS => [
             '240x320',
