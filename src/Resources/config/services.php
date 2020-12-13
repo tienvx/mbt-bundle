@@ -264,6 +264,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MarkingHelperInterface::class),
                 service(GuardedTransitionServiceInterface::class),
                 service(StepRunnerInterface::class),
+                service(ProviderManager::class),
             ])
             ->alias(StepsRunnerInterface::class, StepsRunner::class)
 
