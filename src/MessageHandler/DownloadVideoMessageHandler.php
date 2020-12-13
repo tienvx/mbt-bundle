@@ -3,31 +3,32 @@
 namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use League\Flysystem\FilesystemException;
-use League\Flysystem\FilesystemWriter;
-use League\Flysystem\UnableToWriteFile;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\DownloadVideoMessage;
 
 class DownloadVideoMessageHandler implements MessageHandlerInterface
 {
-    protected FilesystemWriter $filesystem;
+    protected FilesystemOperator $defaultStorage;
 
-    public function __construct(FilesystemWriter $filesystem)
+    public function __construct(FilesystemOperator $defaultStorage)
     {
-        $this->filesystem = $filesystem;
+        $this->defaultStorage = $defaultStorage;
     }
 
     /**
-     * @throws FilesystemException
+     * @throws ExceptionInterface
      */
     public function __invoke(DownloadVideoMessage $message): void
     {
         $stream = fopen($message->getVideoUrl(), 'r');
         try {
-            $this->filesystem->writeStream(sprintf('/bug/%d.mp4', $message->getBugId()), $stream);
-        } catch (FilesystemException | UnableToWriteFile $exception) {
+            $this->defaultStorage->writeStream(sprintf('/bug/%d.mp4', $message->getBugId()), $stream);
+        } catch (FilesystemException $exception) {
             // Video file is not available at this time, try later.
-            throw $exception;
+            throw new RuntimeException(sprintf('Can not download video for bug %d', $message->getBugId()));
         }
     }
 }

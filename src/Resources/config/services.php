@@ -3,7 +3,6 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemWriter;
 use Petrinet\Builder\MarkingBuilder;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
@@ -108,10 +107,8 @@ return static function (ContainerConfigurator $container): void {
             ->autoconfigure(true)
 
         ->set(DownloadVideoMessageHandler::class)
-            ->args([
-                service(FilesystemWriter::class),
-            ])
             ->autoconfigure(true)
+            ->autowire(true)
 
         ->set(ExecuteTaskMessageHandler::class)
             ->args([

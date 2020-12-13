@@ -2,9 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
-use League\Flysystem\FilesystemWriter;
+use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToWriteFile;
 use PHPUnit\Framework\TestCase;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\DownloadVideoMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\DownloadVideoMessageHandler;
 
@@ -14,20 +15,21 @@ use Tienvx\Bundle\MbtBundle\MessageHandler\DownloadVideoMessageHandler;
  */
 class DownloadVideoMessageHandlerTest extends TestCase
 {
-    protected FilesystemWriter $filesystemWriter;
+    protected FilesystemOperator $defaultStorage;
     protected DownloadVideoMessageHandler $handler;
 
     protected function setUp(): void
     {
-        $this->filesystemWriter = $this->createMock(FilesystemWriter::class);
-        $this->handler = new DownloadVideoMessageHandler($this->filesystemWriter);
+        $this->defaultStorage = $this->createMock(FilesystemOperator::class);
+        $this->handler = new DownloadVideoMessageHandler($this->defaultStorage);
     }
 
     public function testInvokeFailedToWrite(): void
     {
         $exception = UnableToWriteFile::atLocation(__DIR__ . '/../Fixtures/video.mp4', 'not valid video file');
-        $this->expectException(UnableToWriteFile::class);
-        $this->filesystemWriter
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can not download video for bug 123');
+        $this->defaultStorage
             ->expects($this->once())
             ->method('writeStream')
             ->with('/bug/123.mp4', $this->callback(fn ($stream) => is_resource($stream)))
@@ -38,7 +40,7 @@ class DownloadVideoMessageHandlerTest extends TestCase
 
     public function testInvokeDownloadedVideoAndWriteSuccess(): void
     {
-        $this->filesystemWriter
+        $this->defaultStorage
             ->expects($this->once())
             ->method('writeStream')
             ->with('/bug/123.mp4', $this->callback(fn ($stream) => is_resource($stream)));
