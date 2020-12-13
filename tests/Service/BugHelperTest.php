@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugHelper;
@@ -13,6 +14,8 @@ use Tienvx\Bundle\MbtBundle\Service\BugHelper;
  * @covers \Tienvx\Bundle\MbtBundle\Service\BugHelper
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  */
 class BugHelperTest extends TestCase
 {
@@ -34,17 +37,19 @@ class BugHelperTest extends TestCase
         $model = $this->createMock(ModelInterface::class);
         $model->expects($this->once())->method('getLabel')->willReturn('Test shopping cart');
         $model->expects($this->once())->method('getVersion')->willReturn(123);
+        $task = new Task();
+        $task->setModel($model);
         $this->translator
             ->expects($this->once())
             ->method('trans')
             ->with('mbt.default_bug_title', ['model' => 'Test shopping cart'])
             ->willReturn('New bug was found during testing model "Test shopping cart"');
         $bugHelper = new BugHelper($this->translator);
-        $bug = $bugHelper->create($steps, $message, $model);
+        $bug = $bugHelper->create($steps, $message, $task);
         $this->assertSame('New bug was found during testing model "Test shopping cart"', $bug->getTitle());
         $this->assertSame($steps, $bug->getSteps());
         $this->assertSame($message, $bug->getMessage());
-        $this->assertSame($model, $bug->getModel());
+        $this->assertSame($task, $bug->getTask());
         $this->assertSame(123, $bug->getModelVersion());
     }
 

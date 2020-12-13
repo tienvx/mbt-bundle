@@ -6,6 +6,7 @@ use Petrinet\Model\Petrinet;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
@@ -16,6 +17,8 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  */
 class ShortestPathStepsBuilderTest extends TestCase
 {
@@ -34,7 +37,9 @@ class ShortestPathStepsBuilderTest extends TestCase
         $bug->setSteps($steps);
         $petrinet = new Petrinet();
         $model = new Model();
-        $bug->setModel($model);
+        $task = new Task();
+        $task->setModel($model);
+        $bug->setTask($task);
         $shortestSteps = [
             $step8 = $this->createMock(StepInterface::class),
             $step9 = $this->createMock(StepInterface::class),

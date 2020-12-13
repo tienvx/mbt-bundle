@@ -142,7 +142,7 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->bugHelper
             ->expects($this->once())
             ->method('create')
-            ->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $model)
+            ->with([$steps[0], $steps[1], $steps[2]], 'Can not run the third step', $task)
             ->willReturn($bug);
 
         $message = new ExecuteTaskMessage(123);

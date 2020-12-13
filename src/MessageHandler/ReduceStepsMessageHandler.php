@@ -53,7 +53,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             throw new UnexpectedValueException(sprintf('Can not reduce steps for bug %d: bug not found', $bugId));
         }
 
-        if ($bug->getModelVersion() !== $bug->getModel()->getVersion()) {
+        if ($bug->getModelVersion() !== $bug->getTask()->getModel()->getVersion()) {
             // The model has been modified.
             return;
         }

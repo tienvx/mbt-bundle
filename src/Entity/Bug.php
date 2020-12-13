@@ -7,7 +7,6 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
@@ -38,11 +37,6 @@ class Bug extends BugModel
      * @Assert\Valid
      */
     protected array $steps = [];
-
-    /**
-     * @ORM\OneToOne(targetEntity="Model")
-     */
-    protected ModelInterface $model;
 
     /**
      * @ORM\OneToOne(targetEntity="Task")

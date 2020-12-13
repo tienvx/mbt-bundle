@@ -45,7 +45,6 @@ class HandlerTestCase extends TestCase
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
         $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
-        $this->bug->setModel($model);
         $this->bug->setTask($this->task);
         $this->stepsBuilder
             ->expects($this->once())

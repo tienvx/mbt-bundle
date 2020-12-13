@@ -75,7 +75,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $bug = $this->bugHelper->create($steps, $throwable->getMessage(), $task->getModel());
+            $bug = $this->bugHelper->create($steps, $throwable->getMessage(), $task);
             $this->entityManager->persist($bug);
         } finally {
             // Executing task take long time. Reconnect to flush changes.
