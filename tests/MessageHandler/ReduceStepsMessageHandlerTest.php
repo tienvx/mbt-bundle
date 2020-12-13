@@ -9,6 +9,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
@@ -16,6 +17,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
@@ -30,6 +32,8 @@ use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  */
 class ReduceStepsMessageHandlerTest extends TestCase
 {
@@ -38,7 +42,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
     protected MessageBusInterface $messageBus;
     protected ConfigLoaderInterface $configLoader;
     protected BugProgressInterface $bugProgress;
-    protected ModelInterface $model;
+    protected TaskInterface $task;
     protected ReduceStepsMessageHandler $handler;
 
     protected function setUp(): void
@@ -48,8 +52,10 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
-        $this->model = new Model();
-        $this->model->setVersion(1);
+        $model = new Model();
+        $model->setVersion(1);
+        $this->task = new Task();
+        $this->task->setModel($model);
         $this->handler = new ReduceStepsMessageHandler(
             $this->reducerManager,
             $this->entityManager,
@@ -70,10 +76,10 @@ class ReduceStepsMessageHandlerTest extends TestCase
 
     public function testInvokeBugWithModifiedModel(): void
     {
-        $this->model->setVersion(2);
+        $this->task->getModel()->setVersion(2);
         $bug = new Bug();
         $bug->setModelVersion(1);
-        $bug->setModel($this->model);
+        $bug->setTask($this->task);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
         $this->configLoader->expects($this->never())->method('getReducer');
         $this->reducerManager->expects($this->never())->method('get');
@@ -86,7 +92,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
     {
         $bug = new Bug();
         $bug->setModelVersion(1);
-        $bug->setModel($this->model);
+        $bug->setTask($this->task);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
         $this->configLoader->expects($this->never())->method('getReducer');
         $this->reducerManager->expects($this->never())->method('get');
@@ -103,7 +109,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setProgress($progress);
         $bug->setModelVersion(1);
-        $bug->setModel($this->model);
+        $bug->setTask($this->task);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
@@ -125,7 +131,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug->setProgress($progress);
         $bug->setId(123);
         $bug->setModelVersion(1);
-        $bug->setModel($this->model);
+        $bug->setTask($this->task);
         $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);

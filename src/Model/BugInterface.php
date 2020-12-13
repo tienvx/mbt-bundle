@@ -21,10 +21,6 @@ interface BugInterface
 
     public function addStep(StepInterface $step): void;
 
-    public function getModel(): ModelInterface;
-
-    public function setModel(ModelInterface $workflow): void;
-
     public function getTask(): TaskInterface;
 
     public function setTask(TaskInterface $task): void;

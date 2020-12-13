@@ -13,8 +13,6 @@ class Bug implements BugInterface
 
     protected array $steps = [];
 
-    protected ModelInterface $model;
-
     protected TaskInterface $task;
 
     protected string $message;
@@ -71,16 +69,6 @@ class Bug implements BugInterface
     public function addStep(StepInterface $step): void
     {
         $this->steps[] = $step;
-    }
-
-    public function getModel(): ModelInterface
-    {
-        return $this->model;
-    }
-
-    public function setModel(ModelInterface $model): void
-    {
-        $this->model = $model;
     }
 
     public function getTask(): TaskInterface

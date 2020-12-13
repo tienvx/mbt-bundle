@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Provider;
 
-use Facebook\WebDriver\Exception\WebDriverCurlException;
+use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -97,7 +97,7 @@ class ProviderManagerTest extends TestCase
             ->method('getCapabilities')
             ->with($task, $bugId)
             ->willReturn($capabilities);
-        $this->expectException(WebDriverCurlException::class);
+        $this->expectException(WebDriverException::class);
         $this->providerManager->createDriver($task, $bugId);
     }
 }
