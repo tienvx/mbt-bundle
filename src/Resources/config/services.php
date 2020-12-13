@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemWriter;
 use Petrinet\Builder\MarkingBuilder;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
@@ -22,7 +23,9 @@ use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\MessageHandler\DownloadVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
@@ -104,6 +107,12 @@ return static function (ContainerConfigurator $container): void {
         ->set(Selenoid::class)
             ->autoconfigure(true)
 
+        ->set(DownloadVideoMessageHandler::class)
+            ->args([
+                service(FilesystemWriter::class),
+            ])
+            ->autoconfigure(true)
+
         ->set(ExecuteTaskMessageHandler::class)
             ->args([
                 service(GeneratorManager::class),
@@ -113,6 +122,16 @@ return static function (ContainerConfigurator $container): void {
                 service(TaskProgressInterface::class),
                 service(BugHelperInterface::class),
             ])
+            ->autoconfigure(true)
+
+        ->set(RecordVideoMessageHandler::class)
+            ->args([
+                service(ProviderManager::class),
+                service(EntityManagerInterface::class),
+                service(StepsRunnerInterface::class),
+                service(MessageBusInterface::class),
+            ])
+            ->autoconfigure(true)
 
         ->set(ReduceBugMessageHandler::class)
             ->args([
@@ -122,6 +141,7 @@ return static function (ContainerConfigurator $container): void {
                 service(ConfigLoaderInterface::class),
                 service(BugProgressInterface::class),
             ])
+            ->autoconfigure(true)
 
         ->set(ReduceStepsMessageHandler::class)
             ->args([
@@ -131,6 +151,7 @@ return static function (ContainerConfigurator $container): void {
                 service(ConfigLoaderInterface::class),
                 service(BugProgressInterface::class),
             ])
+            ->autoconfigure(true)
 
         ->set(ReportBugMessageHandler::class)
             ->args([
@@ -140,6 +161,7 @@ return static function (ContainerConfigurator $container): void {
                 service(BugHelperInterface::class),
                 service(TranslatorInterface::class),
             ])
+            ->autoconfigure(true)
 
         ->set(ReducerManager::class)
         ->set(RandomDispatcher::class)
@@ -242,6 +264,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MarkingHelperInterface::class),
                 service(GuardedTransitionServiceInterface::class),
                 service(StepRunnerInterface::class),
+                service(ProviderManager::class),
             ])
             ->alias(StepsRunnerInterface::class, StepsRunner::class)
 
