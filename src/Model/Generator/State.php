@@ -4,51 +4,21 @@ namespace Tienvx\Bundle\MbtBundle\Model\Generator;
 
 class State implements StateInterface
 {
-    protected int $stepsCount = 1;
-    protected int $maxSteps;
     protected array $visitedPlaces = [];
     protected int $totalPlaces;
     protected array $visitedTransitions = [];
     protected int $totalTransitions;
-    protected float $maxTransitionCoverage = 100;
-    protected float $maxPlaceCoverage = 100;
     protected float $transitionCoverage = 0;
     protected float $placeCoverage = 0;
 
     public function __construct(
-        int $maxSteps,
         array $visitedPlaces,
         int $totalPlaces,
-        int $totalTransitions,
-        float $maxTransitionCoverage,
-        float $maxPlaceCoverage
+        int $totalTransitions
     ) {
-        $this->maxSteps = $maxSteps;
         $this->visitedPlaces = $visitedPlaces;
         $this->totalPlaces = $totalPlaces;
         $this->totalTransitions = $totalTransitions;
-        $this->maxTransitionCoverage = $maxTransitionCoverage;
-        $this->maxPlaceCoverage = $maxPlaceCoverage;
-    }
-
-    public function getStepsCount(): int
-    {
-        return $this->stepsCount;
-    }
-
-    public function setStepsCount(int $stepsCount): void
-    {
-        $this->stepsCount = $stepsCount;
-    }
-
-    public function getMaxSteps(): int
-    {
-        return $this->maxSteps;
-    }
-
-    public function setMaxSteps(int $maxSteps): void
-    {
-        $this->maxSteps = $maxSteps;
     }
 
     public function getVisitedPlaces(): array
@@ -111,26 +81,6 @@ class State implements StateInterface
     public function setTotalTransitions(int $totalTransitions): void
     {
         $this->totalTransitions = $totalTransitions;
-    }
-
-    public function getMaxTransitionCoverage(): float
-    {
-        return $this->maxTransitionCoverage;
-    }
-
-    public function setMaxTransitionCoverage(float $maxTransitionCoverage): void
-    {
-        $this->maxTransitionCoverage = $maxTransitionCoverage;
-    }
-
-    public function getMaxPlaceCoverage(): float
-    {
-        return $this->maxPlaceCoverage;
-    }
-
-    public function setMaxPlaceCoverage(float $maxPlaceCoverage): void
-    {
-        $this->maxPlaceCoverage = $maxPlaceCoverage;
     }
 
     public function getTransitionCoverage(): float

@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
-use Tienvx\Bundle\MbtBundle\Entity\SeleniumConfig;
-use Tienvx\Bundle\MbtBundle\Model\SeleniumConfigInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig;
+use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfig;
@@ -18,7 +18,7 @@ use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator
- * @covers \Tienvx\Bundle\MbtBundle\Model\SeleniumConfig
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfig
  * @covers \Tienvx\Bundle\MbtBundle\Provider\AbstractProvider
  * @covers \Tienvx\Bundle\MbtBundle\Provider\Selenoid
  */
@@ -70,10 +70,10 @@ class ValidSeleniumConfigValidatorTest extends ConstraintValidatorTestCase
         $constraint = new ValidSeleniumConfig([
             'message' => 'myMessage',
         ]);
-        $validSeleniumConfig = new SeleniumConfig();
-        $validSeleniumConfig->setProvider('invalid');
+        $seleniumConfig = new SeleniumConfig();
+        $seleniumConfig->setProvider('invalid');
 
-        $this->validator->validate($validSeleniumConfig, $constraint);
+        $this->validator->validate($seleniumConfig, $constraint);
 
         $this->buildViolation('myMessage')
             ->setCode(ValidSeleniumConfig::IS_SELENIUM_CONFIG_INVALID_ERROR)

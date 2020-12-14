@@ -34,6 +34,7 @@ class TienvxMbtExtensionTest extends TestCase
             ['selenium_server'],
             ['admin_url'],
             ['provider_name'],
+            ['max_steps'],
         ];
     }
 
@@ -58,6 +59,7 @@ class TienvxMbtExtensionTest extends TestCase
             'selenium_server' => 'http://localhost:4444',
             'admin_url' => 'http://localhost',
             'provider_name' => 'selenoid',
+            'max_steps' => 150,
         ];
     }
 

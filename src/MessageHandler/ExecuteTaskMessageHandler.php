@@ -13,7 +13,6 @@ use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
@@ -22,24 +21,27 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected GeneratorManager $generatorManager;
     protected EntityManagerInterface $entityManager;
     protected StepsRunnerInterface $stepsRunner;
-    protected ConfigLoaderInterface $configLoader;
     protected TaskProgressInterface $taskProgress;
     protected BugHelperInterface $bugHelper;
+    protected int $maxSteps;
 
     public function __construct(
         GeneratorManager $generatorManager,
         EntityManagerInterface $entityManager,
         StepsRunnerInterface $stepsRunner,
-        ConfigLoaderInterface $configLoader,
         TaskProgressInterface $taskProgress,
         BugHelperInterface $bugHelper
     ) {
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->stepsRunner = $stepsRunner;
-        $this->configLoader = $configLoader;
         $this->taskProgress = $taskProgress;
         $this->bugHelper = $bugHelper;
+    }
+
+    public function setMaxSteps(int $maxSteps): void
+    {
+        $this->maxSteps = $maxSteps;
     }
 
     /**
@@ -63,13 +65,16 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected function execute(TaskInterface $task): void
     {
         $steps = [];
-        $generator = $this->generatorManager->get($this->configLoader->getGenerator());
-        $this->taskProgress->setTotal($task, $this->configLoader->getMaxSteps());
+        $generator = $this->generatorManager->get($task->getTaskConfig()->getGenerator());
+        $this->taskProgress->setTotal($task, $this->maxSteps);
         try {
-            foreach ($this->stepsRunner->run($generator->generate($task->getModel()), $task) as $step) {
+            foreach ($this->stepsRunner->run($generator->generate($task), $task) as $step) {
                 if ($step instanceof StepInterface) {
                     $steps[] = $step;
                     $this->taskProgress->increaseProcessed($task, 1);
+                }
+                if (count($steps) === $this->maxSteps) {
+                    break;
                 }
             }
         } catch (ExceptionInterface $exception) {

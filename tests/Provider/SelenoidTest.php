@@ -6,7 +6,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
 use Facebook\WebDriver\WebDriverPlatform;
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Entity\SeleniumConfig;
+use Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
@@ -16,7 +16,7 @@ use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
  * @covers \Tienvx\Bundle\MbtBundle\Provider\AbstractProvider
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\SeleniumConfig
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfig
  */
 class SelenoidTest extends TestCase
 {

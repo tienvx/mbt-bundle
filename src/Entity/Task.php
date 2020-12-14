@@ -8,8 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
-use Tienvx\Bundle\MbtBundle\Model\SeleniumConfigInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
+use Tienvx\Bundle\MbtBundle\ValueObject\Progress;
+use Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig;
+use Tienvx\Bundle\MbtBundle\ValueObject\Task\TaskConfig;
+use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 /**
  * @ORM\Entity
@@ -47,6 +51,12 @@ class Task extends TaskModel
     protected SeleniumConfigInterface $seleniumConfig;
 
     /**
+     * @ORM\Embedded(class="TaskConfig")
+     * @Assert\Valid
+     */
+    protected TaskConfigInterface $taskConfig;
+
+    /**
      * @ORM\Embedded(class="Progress")
      */
     protected ProgressInterface $progress;
@@ -65,6 +75,8 @@ class Task extends TaskModel
     {
         parent::__construct();
         $this->progress = new Progress();
+        $this->seleniumConfig = new SeleniumConfig();
+        $this->taskConfig = new TaskConfig();
     }
 
     /**

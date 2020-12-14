@@ -15,7 +15,6 @@ use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler
@@ -24,13 +23,13 @@ use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Notification\BugNotification
  */
 class ReportBugMessageHandlerTest extends TestCase
 {
     protected EntityManagerInterface $entityManager;
     protected NotifierInterface $notifier;
-    protected ConfigLoaderInterface $configLoader;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
     protected ReportBugMessageHandler $handler;
@@ -39,13 +38,11 @@ class ReportBugMessageHandlerTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->notifier = $this->createMock(NotifierInterface::class);
-        $this->configLoader = $this->createMock(ConfigLoaderInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->handler = new ReportBugMessageHandler(
             $this->entityManager,
             $this->notifier,
-            $this->configLoader,
             $this->bugHelper,
             $this->translator
         );
@@ -66,16 +63,13 @@ class ReportBugMessageHandlerTest extends TestCase
         $task = new Task();
         $task->setSendEmail(true);
         $task->setUser($user);
+        $task->getTaskConfig()->setNotifyChannels(['email', 'chat/slack', 'sms/nexmo']);
         $bug = new Bug();
         $bug->setTitle('New bug found');
         $bug->setId(123);
         $bug->setMessage('Something wrong');
         $bug->setTask($task);
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
-        $this->configLoader
-            ->expects($this->once())
-            ->method('getNotifyChannels')
-            ->willReturn(['email', 'chat/slack', 'sms/nexmo']);
         $this->bugHelper
             ->expects($this->once())
             ->method('buildBugUrl')

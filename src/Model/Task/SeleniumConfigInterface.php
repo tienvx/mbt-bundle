@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Task;
 
 interface SeleniumConfigInterface
 {

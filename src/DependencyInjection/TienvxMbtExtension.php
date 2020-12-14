@@ -7,6 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Service\BugHelper;
@@ -41,6 +42,10 @@ class TienvxMbtExtension extends Extension
 
         $container->findDefinition(BugHelper::class)
             ->addMethodCall('setAdminUrl', [$config['admin_url']])
+        ;
+
+        $container->findDefinition(ExecuteTaskMessageHandler::class)
+            ->addMethodCall('setMaxSteps', [$config['max_steps']])
         ;
 
         $this->registerForAutoconfiguration($container);
