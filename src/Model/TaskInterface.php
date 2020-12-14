@@ -4,6 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 interface TaskInterface
 {
@@ -30,6 +32,10 @@ interface TaskInterface
     public function getSeleniumConfig(): SeleniumConfigInterface;
 
     public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void;
+
+    public function getTaskConfig(): TaskConfigInterface;
+
+    public function setTaskConfig(TaskConfigInterface $taskConfig): void;
 
     public function getProgress(): ProgressInterface;
 

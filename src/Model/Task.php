@@ -4,6 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 class Task implements TaskInterface
 {
@@ -13,6 +15,7 @@ class Task implements TaskInterface
     protected UserInterface $user;
     protected bool $sendEmail;
     protected SeleniumConfigInterface $seleniumConfig;
+    protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
@@ -80,6 +83,16 @@ class Task implements TaskInterface
     public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void
     {
         $this->seleniumConfig = $seleniumConfig;
+    }
+
+    public function getTaskConfig(): TaskConfigInterface
+    {
+        return $this->taskConfig;
+    }
+
+    public function setTaskConfig(TaskConfigInterface $taskConfig): void
+    {
+        $this->taskConfig = $taskConfig;
     }
 
     public function getProgress(): ProgressInterface

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Entity;
+namespace Tienvx\Bundle\MbtBundle\ValueObject\Task;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Model\SeleniumConfig as SeleniumConfigModel;
+use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfig as SeleniumConfigModel;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfig;
 
 /**

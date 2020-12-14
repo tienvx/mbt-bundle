@@ -29,6 +29,11 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('http://localhost')
                 ->end()
+                ->scalarNode('max_steps')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->defaultValue(150)
+                ->end()
             ->end()
         ;
 

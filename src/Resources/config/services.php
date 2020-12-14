@@ -40,10 +40,7 @@ use Tienvx\Bundle\MbtBundle\Service\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugProgress;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
-use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
-use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelper;
-use Tienvx\Bundle\MbtBundle\Service\Generator\StateHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
@@ -98,7 +95,6 @@ return static function (ContainerConfigurator $container): void {
                 service(MarkingHelperInterface::class),
                 service(ModelHelperInterface::class),
                 service(GuardedTransitionServiceInterface::class),
-                service(StateHelperInterface::class),
             ])
             ->autoconfigure(true)
 
@@ -115,7 +111,6 @@ return static function (ContainerConfigurator $container): void {
                 service(GeneratorManager::class),
                 service(EntityManagerInterface::class),
                 service(StepsRunnerInterface::class),
-                service(ConfigLoaderInterface::class),
                 service(TaskProgressInterface::class),
                 service(BugHelperInterface::class),
             ])
@@ -135,7 +130,6 @@ return static function (ContainerConfigurator $container): void {
                 service(ReducerManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
-                service(ConfigLoaderInterface::class),
                 service(BugProgressInterface::class),
             ])
             ->autoconfigure(true)
@@ -145,7 +139,6 @@ return static function (ContainerConfigurator $container): void {
                 service(ReducerManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
-                service(ConfigLoaderInterface::class),
                 service(BugProgressInterface::class),
             ])
             ->autoconfigure(true)
@@ -154,7 +147,6 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(EntityManagerInterface::class),
                 service(NotifierInterface::class),
-                service(ConfigLoaderInterface::class),
                 service(BugHelperInterface::class),
                 service(TranslatorInterface::class),
             ])
@@ -206,7 +198,6 @@ return static function (ContainerConfigurator $container): void {
             ])
 
         // Services
-        ->set(ConfigLoaderInterface::class)
         ->set(ExpressionLanguage::class)
 
         ->set(ModelDumper::class)
@@ -279,12 +270,6 @@ return static function (ContainerConfigurator $container): void {
                 service(ColorfulFactoryInterface::class),
             ])
             ->alias(PetrinetHelperInterface::class, PetrinetHelper::class)
-
-        ->set(StateHelper::class)
-            ->args([
-                service(ConfigLoaderInterface::class),
-            ])
-            ->alias(StateHelperInterface::class, StateHelper::class)
 
         // Single Color Petrinet services
         ->set(ExpressionLanguageEvaluator::class)

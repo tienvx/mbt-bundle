@@ -15,7 +15,6 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\ConfigLoaderInterface;
 
 /**
  * Override this service to customize notification.
@@ -24,20 +23,17 @@ class ReportBugMessageHandler implements MessageHandlerInterface
 {
     protected EntityManagerInterface $entityManager;
     protected NotifierInterface $notifier;
-    protected ConfigLoaderInterface $configLoader;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         NotifierInterface $notifier,
-        ConfigLoaderInterface $configLoader,
         BugHelperInterface $bugHelper,
         TranslatorInterface $translator
     ) {
         $this->entityManager = $entityManager;
         $this->notifier = $notifier;
-        $this->configLoader = $configLoader;
         $this->bugHelper = $bugHelper;
         $this->translator = $translator;
     }
@@ -60,7 +56,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
 
     protected function sendNotification(BugInterface $bug): void
     {
-        $notification = new BugNotification($bug->getTitle(), $this->configLoader->getNotifyChannels());
+        $notification = new BugNotification($bug->getTitle(), $bug->getTask()->getTaskConfig()->getNotifyChannels());
         $notification->setBugUrl($this->bugHelper->buildBugUrl($bug));
         $notification->content(implode("\n", [
             $this->translator->trans('mbt.notify.bug_id', ['id' => $bug->getId()]),
