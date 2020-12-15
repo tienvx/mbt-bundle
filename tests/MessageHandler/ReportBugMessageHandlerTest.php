@@ -61,8 +61,8 @@ class ReportBugMessageHandlerTest extends TestCase
     {
         $user = new User('test@example.com', null);
         $task = new Task();
-        $task->setSendEmail(true);
         $task->setUser($user);
+        $task->getTaskConfig()->setSendEmail(true);
         $task->getTaskConfig()->setNotifyChannels(['email', 'chat/slack', 'sms/nexmo']);
         $bug = new Bug();
         $bug->setTitle('New bug found');

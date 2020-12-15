@@ -39,11 +39,6 @@ class Task extends TaskModel
     protected ModelInterface $model;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    protected bool $sendEmail;
-
-    /**
      * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig")
      * @Assert\Valid
      */

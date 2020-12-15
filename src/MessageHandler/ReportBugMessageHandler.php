@@ -72,7 +72,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     {
         $recipients = [];
         $email = $task->getUser()->getUsername();
-        if ($task->getSendEmail() && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($task->getTaskConfig()->getSendEmail() && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $recipients[] = new Recipient($email);
         }
 

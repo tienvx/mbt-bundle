@@ -13,7 +13,6 @@ class Task implements TaskInterface
     protected string $title;
     protected ModelInterface $model;
     protected UserInterface $user;
-    protected bool $sendEmail;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;
@@ -63,16 +62,6 @@ class Task implements TaskInterface
     public function setUser(UserInterface $user): void
     {
         $this->user = $user;
-    }
-
-    public function getSendEmail(): bool
-    {
-        return $this->sendEmail;
-    }
-
-    public function setSendEmail(bool $sendEmail): void
-    {
-        $this->sendEmail = $sendEmail;
     }
 
     public function getSeleniumConfig(): SeleniumConfigInterface

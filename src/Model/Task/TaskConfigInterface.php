@@ -16,6 +16,10 @@ interface TaskConfigInterface
 
     public function setReducer(string $reducer): void;
 
+    public function getSendEmail(): bool;
+
+    public function setSendEmail(bool $sendEmail): void;
+
     public function getNotifyChannels(): array;
 
     public function setNotifyChannels(array $notifyChannels): void;
