@@ -66,6 +66,7 @@ use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
+use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -195,6 +196,15 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->tag('validator.constraint_validator', [
                 'alias' => ValidSeleniumConfigValidator::class,
+            ])
+        ->set(ValidTaskConfigValidator::class)
+            ->args([
+                service(GeneratorManager::class),
+                service(ReducerManager::class),
+                service(ChannelManager::class),
+            ])
+            ->tag('validator.constraint_validator', [
+                'alias' => ValidTaskConfigValidator::class,
             ])
 
         // Services
