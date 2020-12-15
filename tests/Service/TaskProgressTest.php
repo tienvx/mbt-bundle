@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\ValueObject\Progress;
+use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgress;

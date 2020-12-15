@@ -10,9 +10,8 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
-use Tienvx\Bundle\MbtBundle\ValueObject\Progress;
-use Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig;
-use Tienvx\Bundle\MbtBundle\ValueObject\Task\TaskConfig;
+use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
+use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 /**
@@ -45,19 +44,19 @@ class Task extends TaskModel
     protected bool $sendEmail;
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig")
+     * @ORM\Embedded(class="Task\SeleniumConfig")
      * @Assert\Valid
      */
     protected SeleniumConfigInterface $seleniumConfig;
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Task\TaskConfig")
+     * @ORM\Embedded(class="Task\TaskConfig")
      * @Assert\Valid
      */
     protected TaskConfigInterface $taskConfig;
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Progress")
+     * @ORM\Embedded(class="Progress")
      */
     protected ProgressInterface $progress;
 

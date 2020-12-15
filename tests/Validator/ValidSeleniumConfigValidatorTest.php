@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
-use Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig;
+use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
