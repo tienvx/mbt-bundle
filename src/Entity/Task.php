@@ -45,19 +45,19 @@ class Task extends TaskModel
     protected bool $sendEmail;
 
     /**
-     * @ORM\Embedded(class="SeleniumConfig")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Task\SeleniumConfig")
      * @Assert\Valid
      */
     protected SeleniumConfigInterface $seleniumConfig;
 
     /**
-     * @ORM\Embedded(class="TaskConfig")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Task\TaskConfig")
      * @Assert\Valid
      */
     protected TaskConfigInterface $taskConfig;
 
     /**
-     * @ORM\Embedded(class="Progress")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Progress")
      */
     protected ProgressInterface $progress;
 

@@ -50,7 +50,7 @@ class Bug extends BugModel
     protected string $message;
 
     /**
-     * @ORM\Embedded(class="Progress")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Progress")
      */
     protected ProgressInterface $progress;
 
