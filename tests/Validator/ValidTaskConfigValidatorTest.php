@@ -15,7 +15,7 @@ use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfig;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
-use Tienvx\Bundle\MbtBundle\ValueObject\Task\TaskConfig;
+use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator

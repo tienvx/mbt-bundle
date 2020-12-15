@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\ValueObject\Progress;
 
 /**
  * @ORM\Entity
@@ -50,7 +49,7 @@ class Bug extends BugModel
     protected string $message;
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\ValueObject\Progress")
+     * @ORM\Embedded(class="Progress")
      */
     protected ProgressInterface $progress;
 
