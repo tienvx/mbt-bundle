@@ -31,6 +31,11 @@ class TaskConfig extends TaskConfigModel
     protected string $reducer = '';
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected bool $sendEmail;
+
+    /**
      * @ORM\Column(type="array")
      * @Assert\Unique
      */

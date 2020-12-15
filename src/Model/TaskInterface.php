@@ -25,10 +25,6 @@ interface TaskInterface
 
     public function setUser(UserInterface $user): void;
 
-    public function getSendEmail(): bool;
-
-    public function setSendEmail(bool $sendEmail): void;
-
     public function getSeleniumConfig(): SeleniumConfigInterface;
 
     public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void;

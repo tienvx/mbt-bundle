@@ -7,6 +7,7 @@ class TaskConfig implements TaskConfigInterface
     protected string $generator = '';
     protected array $generatorConfig = [];
     protected string $reducer = '';
+    protected bool $sendEmail;
     protected array $notifyChannels = [];
 
     public function getGenerator(): string
@@ -37,6 +38,16 @@ class TaskConfig implements TaskConfigInterface
     public function setReducer(string $reducer): void
     {
         $this->reducer = $reducer;
+    }
+
+    public function getSendEmail(): bool
+    {
+        return $this->sendEmail;
+    }
+
+    public function setSendEmail(bool $sendEmail): void
+    {
+        $this->sendEmail = $sendEmail;
     }
 
     public function getNotifyChannels(): array
