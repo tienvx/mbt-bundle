@@ -44,13 +44,13 @@ class Task extends TaskModel
     protected bool $sendEmail;
 
     /**
-     * @ORM\Embedded(class="Task\SeleniumConfig")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig")
      * @Assert\Valid
      */
     protected SeleniumConfigInterface $seleniumConfig;
 
     /**
-     * @ORM\Embedded(class="Task\TaskConfig")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig")
      * @Assert\Valid
      */
     protected TaskConfigInterface $taskConfig;
