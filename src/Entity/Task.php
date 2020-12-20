@@ -36,7 +36,7 @@ class Task extends TaskModel
     /**
      * @ORM\ManyToOne(targetEntity="Model")
      * @ORM\JoinColumn(
-     *     name="modelId",
+     *     name="model_id",
      *     referencedColumnName="id",
      *     nullable=false
      * )
