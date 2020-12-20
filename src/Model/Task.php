@@ -12,7 +12,7 @@ class Task implements TaskInterface
     protected ?int $id;
     protected string $title;
     protected ModelInterface $model;
-    protected UserInterface $user;
+    protected ?int $author;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;
@@ -54,14 +54,14 @@ class Task implements TaskInterface
         $this->model = $model;
     }
 
-    public function getUser(): UserInterface
+    public function getAuthor(): ?int
     {
-        return $this->user;
+        return $this->author;
     }
 
-    public function setUser(UserInterface $user): void
+    public function setAuthor(?int $author): void
     {
-        $this->user = $user;
+        $this->author = $author;
     }
 
     public function getSeleniumConfig(): SeleniumConfigInterface

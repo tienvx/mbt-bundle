@@ -33,6 +33,11 @@ class Model extends BaseModel
     protected ?int $id;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected ?int $author;
+
+    /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */

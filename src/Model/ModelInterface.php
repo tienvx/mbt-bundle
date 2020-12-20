@@ -12,6 +12,10 @@ interface ModelInterface
 
     public function getId(): ?int;
 
+    public function getAuthor(): ?int;
+
+    public function setAuthor(?int $author): void;
+
     public function getLabel(): string;
 
     public function setLabel(string $label): void;

@@ -33,7 +33,7 @@ class TaskConfig extends TaskConfigModel
     /**
      * @ORM\Column(type="boolean")
      */
-    protected bool $sendEmail;
+    protected bool $notifyAuthor;
 
     /**
      * @ORM\Column(type="array")
