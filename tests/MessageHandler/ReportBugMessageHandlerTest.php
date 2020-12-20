@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Recipient\Recipient;
-use Symfony\Component\Security\Core\User\User;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -15,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\UserNotifierInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler
@@ -32,6 +32,7 @@ class ReportBugMessageHandlerTest extends TestCase
     protected NotifierInterface $notifier;
     protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
+    protected UserNotifierInterface $userNotifier;
     protected ReportBugMessageHandler $handler;
 
     protected function setUp(): void
@@ -40,11 +41,13 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->notifier = $this->createMock(NotifierInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->userNotifier = $this->createMock(UserNotifierInterface::class);
         $this->handler = new ReportBugMessageHandler(
             $this->entityManager,
             $this->notifier,
             $this->bugHelper,
-            $this->translator
+            $this->translator,
+            $this->userNotifier
         );
     }
 
@@ -59,10 +62,9 @@ class ReportBugMessageHandlerTest extends TestCase
 
     public function testInvokeSendNotification(): void
     {
-        $user = new User('test@example.com', null);
         $task = new Task();
-        $task->setUser($user);
-        $task->getTaskConfig()->setSendEmail(true);
+        $task->setAuthor(22);
+        $task->getTaskConfig()->setNotifyAuthor(true);
         $task->getTaskConfig()->setNotifyChannels(['email', 'chat/slack', 'sms/nexmo']);
         $bug = new Bug();
         $bug->setTitle('New bug found');
@@ -84,12 +86,12 @@ class ReportBugMessageHandlerTest extends TestCase
             'Bug message',
             'More info'
         );
+        $recipient = new Recipient('test@example.com');
+        $this->userNotifier->expects($this->once())->method('getRecipient')->with(22)->willReturn($recipient);
         $this->notifier
             ->expects($this->once())
             ->method('send')
-            ->with($this->isInstanceOf(BugNotification::class), $this->callback(function ($recipient) {
-                return $recipient instanceof Recipient && $recipient->getEmail() === 'test@example.com';
-            }));
+            ->with($this->isInstanceOf(BugNotification::class), $recipient);
         $message = new ReportBugMessage(123);
         call_user_func($this->handler, $message);
     }

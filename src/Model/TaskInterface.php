@@ -21,9 +21,9 @@ interface TaskInterface
 
     public function setModel(ModelInterface $model): void;
 
-    public function getUser(): UserInterface;
+    public function getAuthor(): ?int;
 
-    public function setUser(UserInterface $user): void;
+    public function setAuthor(?int $author): void;
 
     public function getSeleniumConfig(): SeleniumConfigInterface;
 

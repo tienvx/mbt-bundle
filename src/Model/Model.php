@@ -9,19 +9,13 @@ use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 abstract class Model implements ModelInterface
 {
     protected ?int $id;
-
+    protected ?int $author;
     protected string $label = '';
-
     protected ?string $tags = null;
-
     protected array $places = [];
-
     protected array $transitions = [];
-
     protected int $version;
-
     protected DateTimeInterface $updatedAt;
-
     protected DateTimeInterface $createdAt;
 
     public function setId(int $id)
@@ -32,6 +26,16 @@ abstract class Model implements ModelInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getAuthor(): ?int
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?int $author): void
+    {
+        $this->author = $author;
     }
 
     public function getLabel(): string

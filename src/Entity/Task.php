@@ -39,6 +39,11 @@ class Task extends TaskModel
     protected ModelInterface $model;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected ?int $author;
+
+    /**
      * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig")
      * @Assert\Valid
      */
