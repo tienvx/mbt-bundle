@@ -64,6 +64,7 @@ use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
+use Tienvx\Bundle\MbtBundle\Service\UserNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
@@ -150,6 +151,7 @@ return static function (ContainerConfigurator $container): void {
                 service(NotifierInterface::class),
                 service(BugHelperInterface::class),
                 service(TranslatorInterface::class),
+                service(UserNotifierInterface::class),
             ])
             ->autoconfigure(true)
 
