@@ -34,7 +34,12 @@ class Task extends TaskModel
     protected string $title;
 
     /**
-     * @ORM\OneToOne(targetEntity="Model")
+     * @ORM\ManyToOne(targetEntity="Model")
+     * @ORM\JoinColumn(
+     *     name="modelId",
+     *     referencedColumnName="id",
+     *     nullable=false
+     * )
      */
     protected ModelInterface $model;
 
