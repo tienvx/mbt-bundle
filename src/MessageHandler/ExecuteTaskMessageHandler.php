@@ -4,15 +4,17 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
@@ -22,7 +24,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected EntityManagerInterface $entityManager;
     protected StepsRunnerInterface $stepsRunner;
     protected TaskProgressInterface $taskProgress;
-    protected BugHelperInterface $bugHelper;
+    protected TranslatorInterface $translator;
     protected int $maxSteps;
 
     public function __construct(
@@ -30,13 +32,13 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         EntityManagerInterface $entityManager,
         StepsRunnerInterface $stepsRunner,
         TaskProgressInterface $taskProgress,
-        BugHelperInterface $bugHelper
+        TranslatorInterface $translator
     ) {
         $this->generatorManager = $generatorManager;
         $this->entityManager = $entityManager;
         $this->stepsRunner = $stepsRunner;
         $this->taskProgress = $taskProgress;
-        $this->bugHelper = $bugHelper;
+        $this->translator = $translator;
     }
 
     public function setMaxSteps(int $maxSteps): void
@@ -80,12 +82,24 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $bug = $this->bugHelper->create($steps, $throwable->getMessage(), $task);
+            $bug = $this->create($steps, $throwable->getMessage(), $task);
             $this->entityManager->persist($bug);
         } finally {
             // Executing task take long time. Reconnect to flush changes.
             $this->entityManager->getConnection()->connect();
             $this->entityManager->flush();
         }
+    }
+
+    protected function create(array $steps, string $message, TaskInterface $task): BugInterface
+    {
+        $bug = new Bug();
+        $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['model' => $task->getModel()->getLabel()]));
+        $bug->setSteps($steps);
+        $bug->setMessage($message);
+        $bug->setTask($task);
+        $bug->setModelVersion($task->getModel()->getVersion());
+
+        return $bug;
     }
 }

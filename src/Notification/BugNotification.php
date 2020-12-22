@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Notification;
 
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Notifier\Message\ChatMessage;
 use Symfony\Component\Notifier\Message\EmailMessage;
 use Symfony\Component\Notifier\Message\SmsMessage;
@@ -9,6 +10,7 @@ use Symfony\Component\Notifier\Notification\ChatNotificationInterface;
 use Symfony\Component\Notifier\Notification\EmailNotificationInterface;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\Notification\SmsNotificationInterface;
+use Symfony\Component\Notifier\Recipient\EmailRecipientInterface;
 use Symfony\Component\Notifier\Recipient\RecipientInterface;
 use Symfony\Component\Notifier\Recipient\SmsRecipientInterface;
 
@@ -18,10 +20,16 @@ class BugNotification extends Notification implements
     SmsNotificationInterface
 {
     protected string $bugUrl;
+    protected Address $from;
 
-    public function setBugUrl(string $bugUrl)
+    public function setBugUrl(string $bugUrl): void
     {
         $this->bugUrl = $bugUrl;
+    }
+
+    public function setFrom(Address $from): void
+    {
+        $this->from = $from;
     }
 
     public function asChatMessage(RecipientInterface $recipient, ?string $transport = null): ?ChatMessage
@@ -34,11 +42,12 @@ class BugNotification extends Notification implements
         return new ChatMessage($this->getSubject());
     }
 
-    public function asEmailMessage(RecipientInterface $recipient, ?string $transport = null): ?EmailMessage
+    public function asEmailMessage(EmailRecipientInterface $recipient, ?string $transport = null): ?EmailMessage
     {
         $class = 'Symfony\Bridge\Twig\Mime\NotificationEmail';
         if ('email' === $transport && class_exists($class)) {
             $email = (new $class())
+                ->from($this->from)
                 ->to($recipient->getEmail())
                 ->subject($this->getSubject())
                 ->text($this->getContent())
