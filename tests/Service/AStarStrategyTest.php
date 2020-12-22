@@ -7,12 +7,12 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
 use Tienvx\Bundle\MbtBundle\Model\Search\Node;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\AStarStrategy
@@ -45,10 +45,10 @@ class AStarStrategyTest extends TestCase
         $count = 0;
         foreach ($newSteps as $key => $step) {
             $this->assertInstanceOf(StepInterface::class, $step);
-            /** @var StepInterface $step */
+            /* @var StepInterface $step */
             $this->assertSame([], $step->getPlaces());
             $this->assertInstanceOf(ColorInterface::class, $step->getColor());
-            $this->assertSame($key === 0 ? 3 : 4, $step->getTransition());
+            $this->assertSame(0 === $key ? 3 : 4, $step->getTransition());
             ++$count;
         }
         $this->assertSame(2, $count);

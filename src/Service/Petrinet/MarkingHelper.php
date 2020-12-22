@@ -50,9 +50,7 @@ class MarkingHelper implements MarkingHelperInterface
 
         $marking = $markingBuilder->getMarking();
         if (!$marking instanceof ColorfulMarkingInterface) {
-            throw new UnexpectedValueException(
-                sprintf('Marking must be instance of %s', ColorfulMarkingInterface::class)
-            );
+            throw new UnexpectedValueException(sprintf('Marking must be instance of %s', ColorfulMarkingInterface::class));
         }
         $marking->setColor($this->colorfulFactory->createColor($color ? $color->getValues() : []));
 

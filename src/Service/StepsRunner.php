@@ -7,7 +7,6 @@ use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
@@ -41,8 +40,6 @@ class StepsRunner implements StepsRunnerInterface
      * @var bool
      *
      * @throws Throwable
-     *
-     * @return iterable
      */
     public function run(iterable $steps, TaskInterface $task, ?int $recordVideoBugId = null): iterable
     {

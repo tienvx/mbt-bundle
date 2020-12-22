@@ -5,16 +5,16 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
-use Tienvx\Bundle\MbtBundle\Factory\Model\CommandFactory;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
-use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
+use Tienvx\Bundle\MbtBundle\Factory\Model\CommandFactory;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\StepRunner

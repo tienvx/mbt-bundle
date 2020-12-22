@@ -7,8 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin\Manager1;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin\Manager2;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin\Plugin11;

@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Service;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 class BugHelper implements BugHelperInterface

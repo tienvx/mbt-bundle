@@ -8,15 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\ToPlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Tags;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\ToPlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 /**
  * @ORM\Entity
@@ -94,8 +94,6 @@ class Model extends BaseModel
 
     /**
      * @Assert\Valid
-     *
-     * @return array
      */
     public function getPlaces(): array
     {
@@ -131,8 +129,6 @@ class Model extends BaseModel
 
     /**
      * @Assert\Valid
-     *
-     * @return array
      */
     public function getTransitions(): array
     {

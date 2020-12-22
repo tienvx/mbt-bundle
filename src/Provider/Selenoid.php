@@ -30,10 +30,10 @@ class Selenoid extends AbstractProvider
             $caps += [
                 'enableVideo' => true,
                 'videoName' => sprintf('bug-%d.mp4', $recordVideoBugId),
-                'name' => sprintf("Recording video for bug %d", $recordVideoBugId),
+                'name' => sprintf('Recording video for bug %d', $recordVideoBugId),
             ];
         }
-        if ($task->getSeleniumConfig()->getPlatform() === WebDriverPlatform::ANDROID) {
+        if (WebDriverPlatform::ANDROID === $task->getSeleniumConfig()->getPlatform()) {
             $caps += [
                 'skin' => $task->getSeleniumConfig()->getResolution(),
             ];
@@ -48,8 +48,9 @@ class Selenoid extends AbstractProvider
             WebDriverCapabilityType::PLATFORM => $task->getSeleniumConfig()->getPlatform(),
             'enableVNC' => true,
             'enableLog' => true,
-            'name' => sprintf("Executing task %d", $task->getId()),
+            'name' => sprintf('Executing task %d', $task->getId()),
         ];
+
         return new DesiredCapabilities($caps);
     }
 

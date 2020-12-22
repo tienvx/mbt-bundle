@@ -32,6 +32,7 @@ class ValidSeleniumConfigValidatorTest extends ConstraintValidatorTestCase
     protected function createValidator()
     {
         $this->providerManager = $this->createMock(ProviderManager::class);
+
         return new ValidSeleniumConfigValidator($this->providerManager);
     }
 
@@ -57,6 +58,7 @@ class ValidSeleniumConfigValidatorTest extends ConstraintValidatorTestCase
         $validSeleniumConfig->setBrowser(WebDriverBrowserType::FIREFOX);
         $validSeleniumConfig->setBrowserVersion('48.0');
         $validSeleniumConfig->setResolution('1024x768');
+
         return [
             [null],
             [$validSeleniumConfig],

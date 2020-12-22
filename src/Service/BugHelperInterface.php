@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 interface BugHelperInterface

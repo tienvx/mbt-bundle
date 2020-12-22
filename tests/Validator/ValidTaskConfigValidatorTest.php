@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
+use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
@@ -15,7 +16,6 @@ use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfig;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
-use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator
@@ -43,6 +43,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
         $this->generatorManager = $this->createMock(GeneratorManager::class);
         $this->reducerManager = $this->createMock(ReducerManager::class);
         $this->channelManager = $this->createMock(ChannelManager::class);
+
         return new ValidTaskConfigValidator($this->generatorManager, $this->reducerManager, $this->channelManager);
     }
 
@@ -77,6 +78,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
             'max_place_coverage' => 12.3,
             'max_transition_coverage' => 23.4,
         ]);
+
         return [
             [null],
             [$validTaskConfig],

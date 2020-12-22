@@ -58,6 +58,7 @@ abstract class AbstractProvider implements ProviderInterface
         if (!isset($this->config)) {
             $this->config = $this->loadConfig();
         }
+
         return $this->config;
     }
 

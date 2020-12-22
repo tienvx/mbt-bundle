@@ -145,7 +145,7 @@ class AStarTest extends TestCase
     {
         foreach ($nodes as $index => $node) {
             $this->assertInstanceOf(Node::class, $node);
-            /** @var Node $node */
+            /* @var Node $node */
             $this->assertSame($expectedNodes[$index]['transition'], $node->getTransition());
             $this->assertSame($expectedNodes[$index]['places'], $node->getPlaces());
             $this->assertSame($expectedNodes[$index]['color'], $node->getColor()->getValues());

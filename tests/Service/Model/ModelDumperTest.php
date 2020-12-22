@@ -4,10 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper

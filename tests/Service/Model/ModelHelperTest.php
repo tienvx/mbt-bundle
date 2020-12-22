@@ -4,8 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper
