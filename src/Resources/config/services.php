@@ -28,6 +28,8 @@ use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomReducer;
@@ -36,23 +38,22 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
-use Tienvx\Bundle\MbtBundle\Service\BugHelper;
-use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugProgress;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Service\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Selenium\Helper;
 use Tienvx\Bundle\MbtBundle\Service\Selenium\HelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Service\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
@@ -62,9 +63,6 @@ use Tienvx\Bundle\MbtBundle\Service\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
-use Tienvx\Bundle\MbtBundle\Service\UserNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
@@ -114,7 +112,7 @@ return static function (ContainerConfigurator $container): void {
                 service(EntityManagerInterface::class),
                 service(StepsRunnerInterface::class),
                 service(TaskProgressInterface::class),
-                service(BugHelperInterface::class),
+                service(TranslatorInterface::class),
             ])
             ->autoconfigure(true)
 
@@ -149,9 +147,8 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(EntityManagerInterface::class),
                 service(NotifierInterface::class),
-                service(BugHelperInterface::class),
                 service(TranslatorInterface::class),
-                service(UserNotifierInterface::class),
+                service(NotifyHelperInterface::class),
             ])
             ->autoconfigure(true)
 
@@ -216,12 +213,6 @@ return static function (ContainerConfigurator $container): void {
             ->alias(ModelDumperInterface::class, ModelDumper::class)
         ->set(ModelHelper::class)
             ->alias(ModelHelperInterface::class, ModelHelper::class)
-
-        ->set(BugHelper::class)
-            ->args([
-                service(TranslatorInterface::class),
-            ])
-            ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(BugProgress::class)
             ->args([

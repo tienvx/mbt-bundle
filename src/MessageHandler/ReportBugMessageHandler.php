@@ -13,8 +13,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
-use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\UserNotifierInterface;
+use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
 
 /**
  * Override this service to customize notification.
@@ -23,22 +22,19 @@ class ReportBugMessageHandler implements MessageHandlerInterface
 {
     protected EntityManagerInterface $entityManager;
     protected NotifierInterface $notifier;
-    protected BugHelperInterface $bugHelper;
     protected TranslatorInterface $translator;
-    protected UserNotifierInterface $userNotifier;
+    protected NotifyHelperInterface $notifyHelper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         NotifierInterface $notifier,
-        BugHelperInterface $bugHelper,
         TranslatorInterface $translator,
-        UserNotifierInterface $userNotifier
+        NotifyHelperInterface $notifyHelper
     ) {
         $this->entityManager = $entityManager;
         $this->notifier = $notifier;
-        $this->bugHelper = $bugHelper;
         $this->translator = $translator;
-        $this->userNotifier = $userNotifier;
+        $this->notifyHelper = $notifyHelper;
     }
 
     /**
@@ -60,7 +56,8 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     protected function sendNotification(BugInterface $bug): void
     {
         $notification = new BugNotification($bug->getTitle(), $bug->getTask()->getTaskConfig()->getNotifyChannels());
-        $notification->setBugUrl($this->bugHelper->buildBugUrl($bug));
+        $notification->setBugUrl($this->notifyHelper->getBugUrl($bug));
+        $notification->setFrom($this->notifyHelper->getFromAddress());
         $notification->content(implode("\n", [
             $this->translator->trans('mbt.notify.bug_id', ['id' => $bug->getId()]),
             $this->translator->trans('mbt.notify.bug_message', ['message' => $bug->getMessage()]),
@@ -74,7 +71,7 @@ class ReportBugMessageHandler implements MessageHandlerInterface
     protected function getRecipients(TaskInterface $task): array
     {
         if ($task->getTaskConfig()->getNotifyAuthor() && $task->getAuthor()) {
-            return [$this->userNotifier->getRecipient($task->getAuthor())];
+            return [$this->notifyHelper->getRecipient($task->getAuthor())];
         }
 
         return [];

@@ -12,9 +12,9 @@ use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWindow;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Service\Selenium\Helper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
-use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\CommandRunner

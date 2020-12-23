@@ -12,17 +12,16 @@ use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\StepsRunner

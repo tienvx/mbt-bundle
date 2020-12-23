@@ -60,6 +60,7 @@ class ProviderManager extends AbstractPluginManager
     public function createDriver(TaskInterface $task, ?int $recordVideoBugId = null): RemoteWebDriver
     {
         $provider = $this->get($this->getProviderName());
+
         return RemoteWebDriver::create(
             $provider->getSeleniumServerUrl($this->seleniumServer),
             $provider->getCapabilities($task, $recordVideoBugId)

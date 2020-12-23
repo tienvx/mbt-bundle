@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\BugHelper;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -38,10 +37,6 @@ class TienvxMbtExtension extends Extension
 
         $container->findDefinition(ProviderManager::class)
             ->addMethodCall('setProviderName', [$config['provider_name']])
-        ;
-
-        $container->findDefinition(BugHelper::class)
-            ->addMethodCall('setAdminUrl', [$config['admin_url']])
         ;
 
         $container->findDefinition(ExecuteTaskMessageHandler::class)

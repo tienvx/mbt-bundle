@@ -1,7 +1,7 @@
 <?php
 
-use Facebook\WebDriver\WebDriverPlatform;
 use Facebook\WebDriver\Remote\WebDriverBrowserType;
+use Facebook\WebDriver\WebDriverPlatform;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderInterface;
 
 $pointZero = fn ($version) => "$version.0";

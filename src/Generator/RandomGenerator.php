@@ -9,10 +9,10 @@ use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Generator\State;
 use Tienvx\Bundle\MbtBundle\Model\Generator\StateInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 class RandomGenerator extends AbstractGenerator
 {
@@ -64,6 +64,7 @@ class RandomGenerator extends AbstractGenerator
     {
         $maxPlaceCoverage = $config[static::MAX_PLACE_COVERAGE] ?? null;
         $maxTransitionCoverage = $config[static::MAX_TRANSITION_COVERAGE] ?? null;
+
         return
             is_float($maxPlaceCoverage) && $maxPlaceCoverage <= 100
             && is_float($maxTransitionCoverage) && $maxTransitionCoverage <= 100;
@@ -73,10 +74,11 @@ class RandomGenerator extends AbstractGenerator
     {
         $maxPlaceCoverage = $config[static::MAX_PLACE_COVERAGE] ?? 100;
         $maxTransitionCoverage = $config[static::MAX_TRANSITION_COVERAGE] ?? 100;
-        return (
+
+        return
             $state->getTransitionCoverage() >= $maxTransitionCoverage &&
             $state->getPlaceCoverage() >= $maxPlaceCoverage
-        );
+        ;
     }
 
     protected function update(StateInterface $state, MarkingInterface $marking, TransitionInterface $transition): void

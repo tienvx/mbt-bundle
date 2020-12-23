@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 

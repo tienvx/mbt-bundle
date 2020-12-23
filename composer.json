@@ -18,6 +18,7 @@
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.8",
+        "egulias/email-validator": "^2.1",
         "jmgq/a-star": "^1.1",
         "league/flysystem": "^2.0",
         "php-webdriver/webdriver": "^1.9",
@@ -26,6 +27,7 @@
         "symfony/expression-language": "^5.2",
         "symfony/http-kernel": "^5.2",
         "symfony/messenger": "^5.2",
+        "symfony/mime": "^5.2",
         "symfony/notifier": "^5.2",
         "symfony/security-core": "^5.2",
         "symfony/translation": "^5.2",

@@ -8,7 +8,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\BugHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension
@@ -32,7 +31,6 @@ class TienvxMbtExtensionTest extends TestCase
     {
         return [
             ['selenium_server'],
-            ['admin_url'],
             ['provider_name'],
             ['max_steps'],
         ];
@@ -48,16 +46,12 @@ class TienvxMbtExtensionTest extends TestCase
             ['setSeleniumServer', ['http://localhost:4444']],
             ['setProviderName', ['selenoid']],
         ], $container->findDefinition(ProviderManager::class)->getMethodCalls());
-        $this->assertSame([
-            ['setAdminUrl', ['http://localhost']],
-        ], $container->findDefinition(BugHelperInterface::class)->getMethodCalls());
     }
 
     protected function getDefaultConfig(): array
     {
         return [
             'selenium_server' => 'http://localhost:4444',
-            'admin_url' => 'http://localhost',
             'provider_name' => 'selenoid',
             'max_steps' => 150,
         ];
