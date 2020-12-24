@@ -45,7 +45,7 @@ class BugNotification extends Notification implements
     public function asEmailMessage(EmailRecipientInterface $recipient, ?string $transport = null): ?EmailMessage
     {
         $class = 'Symfony\Bridge\Twig\Mime\NotificationEmail';
-        if ('email' === $transport && class_exists($class)) {
+        if (class_exists($class)) {
             $email = (new $class())
                 ->from($this->from)
                 ->to($recipient->getEmail())
