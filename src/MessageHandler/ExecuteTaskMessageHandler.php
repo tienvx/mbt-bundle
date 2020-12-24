@@ -94,7 +94,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected function create(array $steps, string $message, TaskInterface $task): BugInterface
     {
         $bug = new Bug();
-        $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['model' => $task->getModel()->getLabel()]));
+        $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['%model%' => $task->getModel()->getLabel()]));
         $bug->setSteps($steps);
         $bug->setMessage($message);
         $bug->setTask($task);

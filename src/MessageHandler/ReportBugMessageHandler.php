@@ -59,8 +59,8 @@ class ReportBugMessageHandler implements MessageHandlerInterface
         $notification->setBugUrl($this->notifyHelper->getBugUrl($bug));
         $notification->setFrom($this->notifyHelper->getFromAddress());
         $notification->content(implode("\n", [
-            $this->translator->trans('mbt.notify.bug_id', ['id' => $bug->getId()]),
-            $this->translator->trans('mbt.notify.bug_message', ['message' => $bug->getMessage()]),
+            $this->translator->trans('mbt.notify.bug_id', ['%id%' => $bug->getId()]),
+            $this->translator->trans('mbt.notify.bug_message', ['%message%' => $bug->getMessage()]),
             $this->translator->trans('mbt.notify.more_info'),
         ]));
         $notification->emoji(':bug:');

@@ -79,8 +79,8 @@ class ReportBugMessageHandlerTest extends TestCase
             ->method('getFromAddress')
             ->willReturn(new Address('from@example.com'));
         $this->translator->expects($this->exactly(3))->method('trans')->withConsecutive(
-            ['mbt.notify.bug_id', ['id' => $bug->getId()]],
-            ['mbt.notify.bug_message', ['message' => $bug->getMessage()]],
+            ['mbt.notify.bug_id', ['%id%' => $bug->getId()]],
+            ['mbt.notify.bug_message', ['%message%' => $bug->getMessage()]],
             ['mbt.notify.more_info']
         )->willReturnOnConsecutiveCalls(
             'Bug id',
