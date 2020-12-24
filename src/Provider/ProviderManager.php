@@ -3,34 +3,19 @@
 namespace Tienvx\Bundle\MbtBundle\Provider;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Configuration;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager;
 
-class ProviderManager extends AbstractPluginManager
+class ProviderManager extends AbstractPluginManager implements ProviderManagerInterface
 {
-    protected string $seleniumServer;
-    protected string $providerName;
+    protected array $config;
 
-    public function setSeleniumServer(string $seleniumServer): void
+    public function setConfig(array $config): void
     {
-        $this->seleniumServer = $seleniumServer;
-    }
-
-    public function getSeleniumServer(): string
-    {
-        return $this->seleniumServer;
-    }
-
-    public function setProviderName(string $providerName): void
-    {
-        $this->providerName = $providerName;
-    }
-
-    public function getProviderName(): string
-    {
-        return $this->providerName;
+        $this->config = $config;
     }
 
     /**
@@ -49,21 +34,44 @@ class ProviderManager extends AbstractPluginManager
     /**
      * @throws ExceptionInterface
      */
-    public function getProvider(): ProviderInterface
-    {
-        return $this->get($this->providerName);
-    }
-
-    /**
-     * @throws ExceptionInterface
-     */
     public function createDriver(TaskInterface $task, ?int $recordVideoBugId = null): RemoteWebDriver
     {
-        $provider = $this->get($this->getProviderName());
+        $provider = $this->get($task->getSeleniumConfig()->getProvider());
 
         return RemoteWebDriver::create(
-            $provider->getSeleniumServerUrl($this->seleniumServer),
+            $provider->getSeleniumServerUrl($this->getSeleniumServer($task->getSeleniumConfig()->getProvider())),
             $provider->getCapabilities($task, $recordVideoBugId)
         );
+    }
+
+    public function getProviders(): array
+    {
+        return array_keys($this->config);
+    }
+
+    public function getSeleniumServer(string $provider): string
+    {
+        return $this->config[$provider][Configuration::SELENIUM_SERVER] ?? '';
+    }
+
+    public function getPlatforms(string $provider): array
+    {
+        return array_keys($this->config[$provider][Configuration::PLATFORMS] ?? []);
+    }
+
+    public function getBrowsers(string $provider, string $platform): array
+    {
+        return array_keys($this->config[$provider][Configuration::PLATFORMS][$platform][Configuration::BROWSERS] ?? []);
+    }
+
+    public function getBrowserVersions(string $provider, string $platform, string $browser): array
+    {
+        // phpcs:ignore Generic.Files.LineLength
+        return $this->config[$provider][Configuration::PLATFORMS][$platform][Configuration::BROWSERS][$browser][Configuration::VERSIONS] ?? [];
+    }
+
+    public function getResolutions(string $provider, string $platform): array
+    {
+        return $this->config[$provider][Configuration::PLATFORMS][$platform][Configuration::RESOLUTIONS] ?? [];
     }
 }

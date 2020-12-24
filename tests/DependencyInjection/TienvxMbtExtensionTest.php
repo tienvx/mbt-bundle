@@ -5,9 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Tienvx\Bundle\MbtBundle\DependencyInjection\Configuration;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension;
+use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Config;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension
@@ -18,21 +21,19 @@ class TienvxMbtExtensionTest extends TestCase
     /**
      * @dataProvider missingConfigProvider
      */
-    public function testExceptionMissingSeleniumServer(string $config): void
+    public function testExceptionMissingSeleniumServer(string $missingConfig): void
     {
         $this->expectException(InvalidConfigurationException::class);
         $loader = new TienvxMbtExtension();
-        $config = $this->getDefaultConfig();
-        unset($config['selenium_server']);
+        $config = Config::DEFAULT_CONFIG;
+        unset($config[$missingConfig]);
         $loader->load([$config], new ContainerBuilder());
     }
 
     public function missingConfigProvider(): array
     {
         return [
-            ['selenium_server'],
-            ['provider_name'],
-            ['max_steps'],
+            [Configuration::MAX_STEPS],
         ];
     }
 
@@ -40,28 +41,21 @@ class TienvxMbtExtensionTest extends TestCase
     {
         $container = new ContainerBuilder();
         $loader = new TienvxMbtExtension();
-        $config = $this->getDefaultConfig();
+        $config = Config::DEFAULT_CONFIG;
         $loader->load([$config], $container);
         $this->assertSame([
-            ['setSeleniumServer', ['http://localhost:4444']],
-            ['setProviderName', ['selenoid']],
+            ['setConfig', [$config[Configuration::PROVIDERS]]],
         ], $container->findDefinition(ProviderManager::class)->getMethodCalls());
-    }
-
-    protected function getDefaultConfig(): array
-    {
-        return [
-            'selenium_server' => 'http://localhost:4444',
-            'provider_name' => 'selenoid',
-            'max_steps' => 150,
-        ];
+        $this->assertSame([
+            ['setMaxSteps', [$config[Configuration::MAX_STEPS]]],
+        ], $container->findDefinition(ExecuteTaskMessageHandler::class)->getMethodCalls());
     }
 
     public function testRegisterForAutoconfiguration(): void
     {
         $container = new ContainerBuilder();
         $loader = new TienvxMbtExtension();
-        $config = $this->getDefaultConfig();
+        $config = Config::DEFAULT_CONFIG;
         $loader->load([$config], $container);
         $autoConfigured = $container->getAutoconfiguredInstanceof()[PluginInterface::class];
         $this->assertTrue($autoConfigured->hasTag(PluginInterface::TAG));

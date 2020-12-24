@@ -96,35 +96,4 @@ class SelenoidTest extends TestCase
             'enableLog' => true,
         ], $capabilities->toArray());
     }
-
-    public function testGetOperatingSystems(): void
-    {
-        $selenoid = new Selenoid();
-        $this->assertSame([
-            WebDriverPlatform::LINUX,
-            WebDriverPlatform::ANDROID,
-        ], $selenoid->getPlatforms());
-    }
-
-    public function testGetBrowsers(): void
-    {
-        $selenoid = new Selenoid();
-        $this->assertSame([
-            WebDriverBrowserType::CHROME,
-            WebDriverBrowserType::FIREFOX,
-            WebDriverBrowserType::MICROSOFT_EDGE,
-            WebDriverBrowserType::OPERA,
-        ], $selenoid->getBrowsers(WebDriverPlatform::LINUX));
-        $this->assertSame([
-            WebDriverBrowserType::ANDROID,
-            WebDriverBrowserType::CHROME,
-        ], $selenoid->getBrowsers(WebDriverPlatform::ANDROID));
-    }
-
-    public function testGetResolutions(): void
-    {
-        $selenoid = new Selenoid();
-        $this->assertCount(9, $selenoid->getResolutions(WebDriverPlatform::LINUX));
-        $this->assertCount(10, $selenoid->getResolutions(WebDriverPlatform::ANDROID));
-    }
 }
