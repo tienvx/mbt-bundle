@@ -147,7 +147,7 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->translator
             ->expects($this->once())
             ->method('trans')
-            ->with('mbt.default_bug_title', ['model' => 'Model label'])
+            ->with('mbt.default_bug_title', ['%model%' => 'Model label'])
             ->willReturn('Translated default bug title');
 
         $message = new ExecuteTaskMessage(123);
