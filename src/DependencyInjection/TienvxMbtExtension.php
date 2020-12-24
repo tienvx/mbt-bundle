@@ -32,15 +32,11 @@ class TienvxMbtExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->findDefinition(ProviderManager::class)
-            ->addMethodCall('setSeleniumServer', [$config['selenium_server']])
-        ;
-
-        $container->findDefinition(ProviderManager::class)
-            ->addMethodCall('setProviderName', [$config['provider_name']])
+            ->addMethodCall('setConfig', [$config[Configuration::PROVIDERS]])
         ;
 
         $container->findDefinition(ExecuteTaskMessageHandler::class)
-            ->addMethodCall('setMaxSteps', [$config['max_steps']])
+            ->addMethodCall('setMaxSteps', [$config[Configuration::MAX_STEPS]])
         ;
 
         $this->registerForAutoconfiguration($container);

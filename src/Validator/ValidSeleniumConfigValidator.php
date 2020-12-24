@@ -32,18 +32,26 @@ class ValidSeleniumConfigValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, SeleniumConfigInterface::class);
         }
 
-        $valid = false;
-        if ($this->providerManager->has($value->getProvider())) {
-            $provider = $this->providerManager->get($value->getProvider());
-            $valid = in_array($value->getPlatform(), $provider->getPlatforms())
-                && in_array($value->getBrowser(), $provider->getBrowsers($value->getPlatform()))
-                && in_array(
-                    $value->getBrowserVersion(),
-                    $provider->getBrowserVersions($value->getPlatform(), $value->getBrowser())
+        if (
+            !in_array($value->getProvider(), $this->providerManager->getProviders())
+            || !in_array($value->getPlatform(), $this->providerManager->getPlatforms($value->getProvider()))
+            || !in_array(
+                $value->getBrowser(),
+                $this->providerManager->getBrowsers($value->getProvider(), $value->getPlatform())
+            )
+            || !in_array(
+                $value->getBrowserVersion(),
+                $this->providerManager->getBrowserVersions(
+                    $value->getProvider(),
+                    $value->getPlatform(),
+                    $value->getBrowser()
                 )
-                && in_array($value->getResolution(), $provider->getResolutions($value->getPlatform()));
-        }
-        if (!$valid) {
+            )
+            || !in_array(
+                $value->getResolution(),
+                $this->providerManager->getResolutions($value->getProvider(), $value->getPlatform())
+            )
+        ) {
             $this->context->buildViolation($constraint->message)
                 ->setCode(ValidSeleniumConfig::IS_SELENIUM_CONFIG_INVALID_ERROR)
                 ->addViolation();
