@@ -107,6 +107,7 @@ class ProviderManagerTest extends TestCase
     public function testGetBrowsers(): void
     {
         $this->assertSame([
+            WebDriverBrowserType::SAFARI,
             WebDriverBrowserType::CHROME,
             WebDriverBrowserType::FIREFOX,
             WebDriverBrowserType::MICROSOFT_EDGE,
