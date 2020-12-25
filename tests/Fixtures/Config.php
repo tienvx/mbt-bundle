@@ -16,6 +16,9 @@ class Config
                 Configuration::PLATFORMS => [
                     WebDriverPlatform::LINUX => [
                         Configuration::BROWSERS => [
+                            WebDriverBrowserType::SAFARI => [
+                                Configuration::VERSIONS => ['13.0'],
+                            ],
                             WebDriverBrowserType::CHROME => [
                                 Configuration::VERSIONS => ['87.0'],
                             ],
