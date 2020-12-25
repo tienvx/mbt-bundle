@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
 interface BugInterface
 {
@@ -18,8 +17,6 @@ interface BugInterface
     public function getSteps(): array;
 
     public function setSteps(array $steps): void;
-
-    public function addStep(StepInterface $step): void;
 
     public function getTask(): TaskInterface;
 

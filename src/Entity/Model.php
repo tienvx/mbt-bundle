@@ -94,6 +94,8 @@ class Model extends BaseModel
 
     /**
      * @Assert\Valid
+     *
+     * @return PlaceInterface[]
      */
     public function getPlaces(): array
     {
@@ -129,6 +131,8 @@ class Model extends BaseModel
 
     /**
      * @Assert\Valid
+     *
+     * @return TransitionInterface[]
      */
     public function getTransitions(): array
     {

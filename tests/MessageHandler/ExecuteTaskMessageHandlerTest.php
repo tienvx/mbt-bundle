@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -18,6 +17,7 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
+use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler
@@ -28,8 +28,9 @@ use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
-class ExecuteTaskMessageHandlerTest extends TestCase
+class ExecuteTaskMessageHandlerTest extends StepsTestCase
 {
     protected GeneratorManager $generatorManager;
     protected EntityManagerInterface $entityManager;
@@ -133,9 +134,12 @@ class ExecuteTaskMessageHandlerTest extends TestCase
         $this->taskProgress->expects($this->exactly(3))->method('increaseProcessed')->with($task, 1);
         $this->entityManager->expects($this->once())->method('persist')->with(
             $this->callback(function ($bug) use ($steps, $task) {
-                return $bug instanceof BugInterface
-                    && $bug->getSteps() === [$steps[0], $steps[1], $steps[2]]
-                    && 'Can not run the third step' === $bug->getMessage()
+                if (!$bug instanceof BugInterface) {
+                    return false;
+                }
+                $this->assertSteps([$steps[0], $steps[1], $steps[2]], $bug->getSteps());
+
+                return 'Can not run the third step' === $bug->getMessage()
                     && $bug->getTask() === $task
                     && $bug->getModelVersion() === $task->getModel()->getVersion()
                     && 'Translated default bug title' === $bug->getTitle();

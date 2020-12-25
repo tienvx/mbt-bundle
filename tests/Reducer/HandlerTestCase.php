@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
@@ -19,8 +18,9 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
-class HandlerTestCase extends TestCase
+class HandlerTestCase extends StepsTestCase
 {
     protected HandlerInterface $handler;
     protected EntityManagerInterface $entityManager;
@@ -114,6 +114,6 @@ class HandlerTestCase extends TestCase
             ->with($this->newSteps)
             ->willThrowException(new Exception('Something wrong'));
         $this->handler->handle($this->bug, 1, 2);
-        $this->assertSame($this->newSteps, $this->bug->getSteps());
+        $this->assertSteps($this->newSteps, $this->bug->getSteps());
     }
 }
