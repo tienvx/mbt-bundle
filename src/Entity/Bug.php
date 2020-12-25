@@ -5,10 +5,13 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use SingleColorPetrinet\Model\Color;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
  * @ORM\Entity
@@ -31,10 +34,6 @@ class Bug extends BugModel
 
     /**
      * @ORM\Column(type="array")
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step")
-     * })
-     * @Assert\Valid
      */
     protected array $steps = [];
 
@@ -94,5 +93,46 @@ class Bug extends BugModel
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new DateTime());
+    }
+
+    public function setSteps(array $steps): void
+    {
+        $items = [];
+        foreach ($steps as $step) {
+            if ($step instanceof StepInterface) {
+                $item = [
+                    'transition' => $step->getTransition(),
+                    'places' => $step->getPlaces(),
+                    'color' => $step->getColor()->getValues(),
+                ];
+                $items[] = $item;
+            }
+        }
+
+        $this->steps = $items;
+    }
+
+    /**
+     * @Assert\Valid
+     *
+     * @return StepInterface[]
+     */
+    public function getSteps(): array
+    {
+        $steps = [];
+        foreach ($this->steps as $stepData) {
+            $steps[] = $this->denormalizeStep($stepData);
+        }
+
+        return $steps;
+    }
+
+    protected function denormalizeStep(array $stepData): StepInterface
+    {
+        return new Step(
+            $stepData['places'] ?? [],
+            new Color($stepData['color'] ?? []),
+            $stepData['transition'] ?? null
+        );
     }
 }

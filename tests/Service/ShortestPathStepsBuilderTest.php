@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Petrinet\Model\Petrinet;
-use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -11,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
+use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder
@@ -19,8 +19,9 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
-class ShortestPathStepsBuilderTest extends TestCase
+class ShortestPathStepsBuilderTest extends StepsTestCase
 {
     public function testCreate()
     {
@@ -47,10 +48,22 @@ class ShortestPathStepsBuilderTest extends TestCase
         $petrinetHelper = $this->createMock(PetrinetHelperInterface::class);
         $petrinetHelper->expects($this->once())->method('build')->with($model)->willReturn($petrinet);
         $strategy = $this->createMock(ShortestPathStrategyInterface::class);
-        $strategy->expects($this->once())->method('run')->with($petrinet, $step2, $step3)->willReturn($shortestSteps);
+        $strategy->expects($this->once())->method('run')->with(
+            $petrinet,
+            $this->callback(function ($step) use ($step2) {
+                $this->assertStep($step2, $step);
+
+                return true;
+            }),
+            $this->callback(function ($step) use ($step3) {
+                $this->assertStep($step3, $step);
+
+                return true;
+            })
+        )->willReturn($shortestSteps);
         $stepsBuilder = new ShortestPathStepsBuilder($petrinetHelper, $strategy);
         $newSteps = $stepsBuilder->create($bug, 1, 5);
-        $this->assertSame([
+        $this->assertSteps([
             $step1,
             $step2,
             $step8,

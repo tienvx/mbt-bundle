@@ -3,9 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
-class Bug implements BugInterface
+abstract class Bug implements BugInterface
 {
     protected ?int $id;
 
@@ -52,24 +51,9 @@ class Bug implements BugInterface
         $this->title = $title;
     }
 
-    public function getSteps(): array
-    {
-        return $this->steps;
-    }
+    abstract public function getSteps(): array;
 
-    public function setSteps(array $steps): void
-    {
-        $this->steps = [];
-
-        foreach ($steps as $step) {
-            $this->addStep($step);
-        }
-    }
-
-    public function addStep(StepInterface $step): void
-    {
-        $this->steps[] = $step;
-    }
+    abstract public function setSteps(array $steps): void;
 
     public function getTask(): TaskInterface
     {

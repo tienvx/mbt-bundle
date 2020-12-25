@@ -28,6 +28,7 @@ use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
