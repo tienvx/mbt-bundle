@@ -15,28 +15,32 @@ use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
 class ExecuteTaskMessageHandler implements MessageHandlerInterface
 {
     protected GeneratorManager $generatorManager;
+    protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
-    protected StepsRunnerInterface $stepsRunner;
+    protected StepRunnerInterface $stepRunner;
     protected TaskProgressInterface $taskProgress;
     protected TranslatorInterface $translator;
     protected int $maxSteps;
 
     public function __construct(
         GeneratorManager $generatorManager,
+        ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
-        StepsRunnerInterface $stepsRunner,
+        StepRunnerInterface $stepRunner,
         TaskProgressInterface $taskProgress,
         TranslatorInterface $translator
     ) {
         $this->generatorManager = $generatorManager;
+        $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
-        $this->stepsRunner = $stepsRunner;
+        $this->stepRunner = $stepRunner;
         $this->taskProgress = $taskProgress;
         $this->translator = $translator;
     }
@@ -68,30 +72,33 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     {
         $steps = [];
         $generator = $this->generatorManager->get($task->getTaskConfig()->getGenerator());
+        $driver = $this->providerManager->createDriver($task);
         $this->taskProgress->setTotal($task, $this->maxSteps);
         try {
-            foreach ($this->stepsRunner->run($generator->generate($task), $task) as $step) {
+            foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
                     $steps[] = $step;
                     $this->taskProgress->increaseProcessed($task, 1);
+                    $this->stepRunner->run($step, $task->getModel(), $driver);
                 }
-                if (count($steps) === $this->maxSteps) {
+                if (count($steps) >= $this->maxSteps) {
                     break;
                 }
             }
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $bug = $this->create($steps, $throwable->getMessage(), $task);
+            $bug = $this->createBug($steps, $throwable->getMessage(), $task);
             $this->entityManager->persist($bug);
         } finally {
+            $driver->quit();
             // Executing task take long time. Reconnect to flush changes.
             $this->entityManager->getConnection()->connect();
             $this->entityManager->flush();
         }
     }
 
-    protected function create(array $steps, string $message, TaskInterface $task): BugInterface
+    protected function createBug(array $steps, string $message, TaskInterface $task): BugInterface
     {
         $bug = new Bug();
         $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['%model%' => $task->getModel()->getLabel()]));

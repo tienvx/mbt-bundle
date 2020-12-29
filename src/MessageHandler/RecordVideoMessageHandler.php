@@ -12,24 +12,24 @@ use Tienvx\Bundle\MbtBundle\Message\DownloadVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 class RecordVideoMessageHandler implements MessageHandlerInterface
 {
     protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
-    protected StepsRunnerInterface $stepsRunner;
+    protected StepRunnerInterface $stepRunner;
     protected MessageBusInterface $messageBus;
 
     public function __construct(
         ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
-        StepsRunnerInterface $stepsRunner,
+        StepRunnerInterface $stepRunner,
         MessageBusInterface $messageBus
     ) {
         $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
-        $this->stepsRunner = $stepsRunner;
+        $this->stepRunner = $stepRunner;
         $this->messageBus = $messageBus;
     }
 
@@ -53,11 +53,15 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
      */
     protected function execute(BugInterface $bug): void
     {
+        $driver = $this->providerManager->createDriver($bug->getTask(), $bug->getId());
         try {
-            $this->stepsRunner->run($bug->getSteps(), $bug->getTask(), $bug->getId());
+            foreach ($bug->getSteps() as $step) {
+                $this->stepRunner->run($step, $bug->getTask()->getModel(), $driver);
+            }
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } finally {
+            $driver->quit();
             $providerName = $bug->getTask()->getSeleniumConfig()->getProvider();
             $provider = $this->providerManager->get($providerName);
             $this->messageBus->dispatch(new DownloadVideoMessage(

@@ -59,8 +59,6 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
@@ -109,8 +107,9 @@ return static function (ContainerConfigurator $container): void {
         ->set(ExecuteTaskMessageHandler::class)
             ->args([
                 service(GeneratorManager::class),
+                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
-                service(StepsRunnerInterface::class),
+                service(StepRunnerInterface::class),
                 service(TaskProgressInterface::class),
                 service(TranslatorInterface::class),
             ])
@@ -120,7 +119,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(ProviderManager::class),
                 service(EntityManagerInterface::class),
-                service(StepsRunnerInterface::class),
+                service(StepRunnerInterface::class),
                 service(MessageBusInterface::class),
             ])
             ->autoconfigure(true)
@@ -159,9 +158,10 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(RandomHandler::class)
             ->args([
+                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
-                service(StepsRunnerInterface::class),
+                service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
             ])
         ->set(RandomReducer::class)
@@ -176,9 +176,10 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(SplitHandler::class)
             ->args([
+                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
-                service(StepsRunnerInterface::class),
+                service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
             ])
         ->set(SplitReducer::class)
@@ -248,16 +249,6 @@ return static function (ContainerConfigurator $container): void {
                 service(CommandRunnerInterface::class),
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
-
-        ->set(StepsRunner::class)
-            ->args([
-                service(PetrinetHelperInterface::class),
-                service(MarkingHelperInterface::class),
-                service(GuardedTransitionServiceInterface::class),
-                service(StepRunnerInterface::class),
-                service(ProviderManager::class),
-            ])
-            ->alias(StepsRunnerInterface::class, StepsRunner::class)
 
         ->set(TaskProgress::class)
             ->alias(TaskProgressInterface::class, TaskProgress::class)

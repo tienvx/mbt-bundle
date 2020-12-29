@@ -3,10 +3,12 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -16,7 +18,7 @@ use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler
@@ -34,7 +36,7 @@ class RecordVideoMessageHandlerTest extends TestCase
     protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
-    protected StepsRunnerInterface $stepsRunner;
+    protected StepRunnerInterface $stepRunner;
     protected RecordVideoMessageHandler $handler;
 
     protected function setUp(): void
@@ -42,11 +44,11 @@ class RecordVideoMessageHandlerTest extends TestCase
         $this->providerManager = $this->createMock(ProviderManager::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
+        $this->stepRunner = $this->createMock(StepRunnerInterface::class);
         $this->handler = new RecordVideoMessageHandler(
             $this->providerManager,
             $this->entityManager,
-            $this->stepsRunner,
+            $this->stepRunner,
             $this->messageBus
         );
     }
@@ -62,7 +64,9 @@ class RecordVideoMessageHandlerTest extends TestCase
 
     public function testInvokeRecordVideo(): void
     {
+        $model = new Model();
         $task = new Task();
+        $task->setModel($model);
         $seleniumConfig = new SeleniumConfig();
         $seleniumConfig->setProvider('current-provider');
         $task->setSeleniumConfig($seleniumConfig);
@@ -82,6 +86,11 @@ class RecordVideoMessageHandlerTest extends TestCase
             ->expects($this->once())
             ->method('getSeleniumServer')
             ->willReturn('http://localhost:4444');
+        $driver = $this->createMock(RemoteWebDriver::class);
+        $driver->expects($this->once())->method('quit');
+        $this->providerManager->expects($this->once())->method('createDriver')->with($task, 123)->willReturn($driver);
+        $this->stepRunner->expects($this->exactly(6))
+            ->method('run')->with($this->isInstanceOf(StepInterface::class), $model, $driver);
         $this->messageBus
             ->expects($this->once())
             ->method('dispatch')

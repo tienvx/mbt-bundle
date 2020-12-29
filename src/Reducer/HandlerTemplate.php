@@ -9,25 +9,29 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
+    protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
-    protected StepsRunnerInterface $stepsRunner;
+    protected StepRunnerInterface $stepRunner;
     protected StepsBuilderInterface $stepsBuilder;
 
     public function __construct(
+        ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
-        StepsRunnerInterface $stepsRunner,
+        StepRunnerInterface $stepRunner,
         StepsBuilderInterface $stepsBuilder
     ) {
+        $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
-        $this->stepsRunner = $stepsRunner;
+        $this->stepRunner = $stepRunner;
         $this->stepsBuilder = $stepsBuilder;
     }
 
@@ -36,7 +40,7 @@ abstract class HandlerTemplate implements HandlerInterface
      */
     public function handle(BugInterface $bug, int $from, int $to): void
     {
-        $newSteps = [...$this->stepsBuilder->create($bug, $from, $to)];
+        $newSteps = iterator_to_array($this->stepsBuilder->create($bug, $from, $to));
         if (count($newSteps) >= count($bug->getSteps())) {
             return;
         }
@@ -49,8 +53,11 @@ abstract class HandlerTemplate implements HandlerInterface
      */
     protected function run(array $newSteps, BugInterface $bug): void
     {
+        $driver = $this->providerManager->createDriver($bug->getTask());
         try {
-            $this->stepsRunner->run($newSteps, $bug->getTask());
+            foreach ($newSteps as $step) {
+                $this->stepRunner->run($step, $bug->getTask()->getModel(), $driver);
+            }
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
@@ -58,6 +65,8 @@ abstract class HandlerTemplate implements HandlerInterface
                 $this->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
             }
+        } finally {
+            $driver->quit();
         }
     }
 

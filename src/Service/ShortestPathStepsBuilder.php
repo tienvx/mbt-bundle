@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service;
 
+use Generator;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
@@ -24,7 +25,7 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
     /**
      * @throws ExceptionInterface
      */
-    public function create(BugInterface $bug, int $from, int $to): iterable
+    public function create(BugInterface $bug, int $from, int $to): Generator
     {
         foreach ($bug->getSteps() as $index => $step) {
             if ($index <= $from) {
