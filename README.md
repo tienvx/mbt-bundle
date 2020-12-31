@@ -10,22 +10,22 @@ This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Te
 
 ## Installation
 
-```console
-$ composer require tienvx/mbt-bundle "^2.0"
+```shell
+composer require tienvx/mbt-bundle "^2.0"
 ```
 
 ## Testing
 
 You can run the tests with:
-```console
-$ vendor/bin/phpunit
+```shell
+vendor/bin/phpunit
 ```
 
 ## Validate code with coding standards
 
-```console
-$ phpcs --standard=PSR12 src tests
-$ phpstan analyse src tests
+```shell
+phpcs --standard=PSR12 src tests
+phpstan analyse src tests
 ```
 
 ## Built With
