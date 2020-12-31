@@ -45,6 +45,12 @@ class SelenoidTest extends TestCase
         );
     }
 
+    public function testGetVideoFilename(): void
+    {
+        $selenoid = new Selenoid();
+        $this->assertSame('bug-123.mp4', $selenoid->getVideoFilename(123));
+    }
+
     public function testGetCapabilities(): void
     {
         $task = new Task();

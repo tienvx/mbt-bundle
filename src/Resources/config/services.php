@@ -22,7 +22,6 @@ use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\MessageHandler\DownloadVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
@@ -99,10 +98,6 @@ return static function (ContainerConfigurator $container): void {
         ->set(ProviderManager::class)
         ->set(Selenoid::class)
             ->autoconfigure(true)
-
-        ->set(DownloadVideoMessageHandler::class)
-            ->autoconfigure(true)
-            ->autowire(true)
 
         ->set(ExecuteTaskMessageHandler::class)
             ->args([
