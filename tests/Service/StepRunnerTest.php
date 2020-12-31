@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Factory\Model\CommandFactory;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
@@ -29,8 +28,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 class StepRunnerTest extends TestCase
 {
     protected ModelInterface $model;
-    protected StepInterface $step;
     protected array $commands = [];
+    protected array $firstCommands = [];
     protected CommandRunner $commandRunner;
     protected RemoteWebDriver $driver;
 
@@ -65,15 +64,27 @@ class StepRunnerTest extends TestCase
             [$command4, $this->driver],
             [$command5, $this->driver],
         ];
-        $this->step = new Step([0 => 1, 1 => 1], new Color(), 0);
+        $this->firstCommands = [
+            [$command3, $this->driver],
+            [$command4, $this->driver],
+        ];
 
         $this->commandRunner = $this->createMock(CommandRunner::class);
     }
 
     public function testRun(): void
     {
+        $step = new Step([0 => 1, 1 => 1], new Color(), 0);
         $this->commandRunner->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
         $stepRunner = new StepRunner($this->commandRunner);
-        $stepRunner->run($this->step, $this->model, $this->driver);
+        $stepRunner->run($step, $this->model, $this->driver);
+    }
+
+    public function testRunFirstStep(): void
+    {
+        $step = new Step([0 => 1], new Color(), null);
+        $this->commandRunner->expects($this->exactly(2))->method('run')->withConsecutive(...$this->firstCommands);
+        $stepRunner = new StepRunner($this->commandRunner);
+        $stepRunner->run($step, $this->model, $this->driver);
     }
 }

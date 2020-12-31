@@ -19,7 +19,7 @@ class StepRunner implements StepRunnerInterface
 
     public function run(StepInterface $step, ModelInterface $model, RemoteWebDriver $driver): void
     {
-        $transition = $model->getTransition($step->getTransition());
+        $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
         if ($transition instanceof TransitionInterface) {
             $this->executeTransitionActions($transition, $driver);
         }
