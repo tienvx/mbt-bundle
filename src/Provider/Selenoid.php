@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Provider;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriverPlatform;
-use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 class Selenoid extends AbstractProvider
@@ -15,12 +14,14 @@ class Selenoid extends AbstractProvider
         return 'selenoid';
     }
 
-    /**
-     * @throws ExceptionInterface
-     */
     public function getVideoUrl(string $seleniumServer, int $bugId): string
     {
-        return sprintf('%s/video/bug-%s.mp4', $seleniumServer, $bugId);
+        return sprintf('%s/video/%s', $seleniumServer, $this->getVideoFilename($bugId));
+    }
+
+    public function getVideoFilename(int $bugId): string
+    {
+        return sprintf('bug-%s.mp4', $bugId);
     }
 
     public function getCapabilities(TaskInterface $task, ?int $recordVideoBugId = null): DesiredCapabilities

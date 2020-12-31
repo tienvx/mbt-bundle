@@ -4,11 +4,9 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Message\DownloadVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
@@ -19,18 +17,15 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
     protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
-    protected MessageBusInterface $messageBus;
 
     public function __construct(
         ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
-        StepRunnerInterface $stepRunner,
-        MessageBusInterface $messageBus
+        StepRunnerInterface $stepRunner
     ) {
         $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->stepRunner = $stepRunner;
-        $this->messageBus = $messageBus;
     }
 
     /**
@@ -62,12 +57,6 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
             throw $exception;
         } finally {
             $driver->quit();
-            $providerName = $bug->getTask()->getSeleniumConfig()->getProvider();
-            $provider = $this->providerManager->get($providerName);
-            $this->messageBus->dispatch(new DownloadVideoMessage(
-                $bug->getId(),
-                $provider->getVideoUrl($this->providerManager->getSeleniumServer($providerName), $bug->getId())
-            ));
         }
     }
 }

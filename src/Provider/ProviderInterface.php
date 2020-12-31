@@ -13,4 +13,6 @@ interface ProviderInterface extends PluginInterface
     public function getCapabilities(TaskInterface $task, ?int $recordVideoBugId = null): DesiredCapabilities;
 
     public function getVideoUrl(string $seleniumServer, int $bugId): string;
+
+    public function getVideoFilename(int $bugId): string;
 }
