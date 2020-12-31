@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\ToPlace;
@@ -44,10 +46,10 @@ class TransitionTest extends TestCase
     {
         $this->action1 = new Command();
         $this->action2 = new Command();
-        $this->action1->setCommand(CommandInterface::CLEAR);
+        $this->action1->setCommand(KeyboardCommandRunner::CLEAR);
         $this->action1->setTarget('css=.email');
         $this->action1->setValue(null);
-        $this->action2->setCommand(CommandInterface::CLICK);
+        $this->action2->setCommand(MouseCommandRunner::CLICK);
         $this->action2->setTarget('css=.link');
         $this->action2->setValue(null);
     }
@@ -96,7 +98,7 @@ class TransitionTest extends TestCase
         $this->setUpActions();
         $this->setUpToPlaces();
         $action = new Command();
-        $action->setCommand(CommandInterface::TYPE);
+        $action->setCommand(KeyboardCommandRunner::TYPE);
         $action->setTarget('css=.name');
         $action->setValue('My name');
 
