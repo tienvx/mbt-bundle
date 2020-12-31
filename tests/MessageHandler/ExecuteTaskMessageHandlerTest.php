@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -15,7 +16,8 @@ use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
@@ -32,9 +34,11 @@ use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
  */
 class ExecuteTaskMessageHandlerTest extends StepsTestCase
 {
+    protected array $steps;
     protected GeneratorManager $generatorManager;
+    protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
-    protected StepsRunnerInterface $stepsRunner;
+    protected StepRunnerInterface $stepRunner;
     protected TaskProgressInterface $taskProgress;
     protected TranslatorInterface $translator;
     protected Connection $connection;
@@ -42,16 +46,24 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
 
     protected function setUp(): void
     {
+        $this->steps = [
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        ];
         $this->generatorManager = $this->createMock(GeneratorManager::class);
+        $this->providerManager = $this->createMock(ProviderManager::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
+        $this->stepRunner = $this->createMock(StepRunnerInterface::class);
         $this->taskProgress = $this->createMock(TaskProgressInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->connection = $this->createMock(Connection::class);
         $this->handler = new ExecuteTaskMessageHandler(
             $this->generatorManager,
+            $this->providerManager,
             $this->entityManager,
-            $this->stepsRunner,
+            $this->stepRunner,
             $this->taskProgress,
             $this->translator
         );
@@ -73,17 +85,16 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
-        $steps = array_fill(0, 4, $this->createMock(StepInterface::class));
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
-            function () use ($steps): iterable {
-                foreach ($steps as $step) {
-                    yield $step;
-                }
-            }
+            fn () => yield from $this->steps
         );
+        $driver = $this->createMock(RemoteWebDriver::class);
+        $driver->expects($this->once())->method('quit');
         $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
-        $this->stepsRunner->expects($this->once())->method('run')->willReturnCallback(fn ($iterable) => $iterable);
+        $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
+        $this->stepRunner->expects($this->exactly(4))
+            ->method('run')->with($this->isInstanceOf(StepInterface::class), $model, $driver);
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
         $this->taskProgress->expects($this->exactly(4))->method('increaseProcessed')->with($task, 1);
@@ -102,42 +113,30 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
-        $steps = [
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-        ];
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
-            function () use ($steps): iterable {
-                foreach ($steps as $step) {
-                    yield $step;
-                }
-            }
+            fn () => yield from $this->steps
         );
+        $driver = $this->createMock(RemoteWebDriver::class);
+        $driver->expects($this->once())->method('quit');
         $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
-        $this->stepsRunner->expects($this->once())->method('run')->willReturnCallback(
-            function () use ($steps): iterable {
-                $count = 0;
-                foreach ($steps as $step) {
-                    ++$count;
-                    yield $step;
-                    if (3 === $count) {
-                        throw new Exception('Can not run the third step');
-                    }
-                }
-            }
-        );
+        $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
+        $this->stepRunner->expects($this->exactly(3))->method('run')
+            ->with($this->isInstanceOf(StepInterface::class), $model, $driver)
+            ->will($this->onConsecutiveCalls(
+                null,
+                null,
+                $this->throwException(new Exception('Can not run the third step')),
+            ));
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
         $this->taskProgress->expects($this->exactly(3))->method('increaseProcessed')->with($task, 1);
         $this->entityManager->expects($this->once())->method('persist')->with(
-            $this->callback(function ($bug) use ($steps, $task) {
+            $this->callback(function ($bug) use ($task) {
                 if (!$bug instanceof BugInterface) {
                     return false;
                 }
-                $this->assertSteps([$steps[0], $steps[1], $steps[2]], $bug->getSteps());
+                $this->assertSteps([$this->steps[0], $this->steps[1], $this->steps[2]], $bug->getSteps());
 
                 return 'Can not run the third step' === $bug->getMessage()
                     && $bug->getTask() === $task
@@ -165,17 +164,16 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
-        $steps = array_fill(0, 4, $this->createMock(StepInterface::class));
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
-            function () use ($steps): iterable {
-                foreach ($steps as $step) {
-                    yield $step;
-                }
-            }
+            fn () => yield from $this->steps
         );
+        $driver = $this->createMock(RemoteWebDriver::class);
+        $driver->expects($this->once())->method('quit');
         $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
-        $this->stepsRunner->expects($this->once())->method('run')->willReturnCallback(fn ($iterable) => $iterable);
+        $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
+        $this->stepRunner->expects($this->exactly(2))->method('run')
+            ->with($this->isInstanceOf(StepInterface::class), $model, $driver);
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
         $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 2);
         $this->taskProgress->expects($this->exactly(2))->method('increaseProcessed')->with($task, 1);

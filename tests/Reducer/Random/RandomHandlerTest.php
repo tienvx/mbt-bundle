@@ -21,9 +21,10 @@ class RandomHandlerTest extends HandlerTestCase
     {
         parent::setUp();
         $this->handler = new RandomHandler(
+            $this->providerManager,
             $this->entityManager,
             $this->messageBus,
-            $this->stepsRunner,
+            $this->stepRunner,
             $this->stepsBuilder
         );
     }

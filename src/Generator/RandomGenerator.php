@@ -47,17 +47,25 @@ class RandomGenerator extends AbstractGenerator
         $places = $this->modelHelper->getInitPlaces($task->getModel());
         $marking = $this->markingHelper->getMarking($petrinet, $places);
         $state = new State(array_keys($places), count($petrinet->getPlaces()), count($petrinet->getTransitions()));
+        $transition = null;
 
-        while (!$this->canStop($state, $task->getTaskConfig()->getGeneratorConfig())) {
-            $transition = $this->nextTransition($petrinet, $marking);
-            if (is_null($transition)) {
-                break;
+        do {
+            yield new Step(
+                $this->markingHelper->getPlaces($marking),
+                $marking->getColor(),
+                $transition ? $transition->getId() : null
+            );
+
+            if ($transition instanceof TransitionInterface) {
+                $this->transitionService->fire($transition, $marking);
+                $this->update($state, $marking, $transition);
             }
 
-            yield new Step($this->markingHelper->getPlaces($marking), $marking->getColor(), $transition->getId());
-
-            $this->update($state, $marking, $transition);
-        }
+            $transition = $this->nextTransition($petrinet, $marking);
+            if (!$transition) {
+                break;
+            }
+        } while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig()));
     }
 
     public function validate(array $config): bool
@@ -70,14 +78,14 @@ class RandomGenerator extends AbstractGenerator
             && is_float($maxTransitionCoverage) && $maxTransitionCoverage <= 100;
     }
 
-    protected function canStop(StateInterface $state, array $config): bool
+    protected function canContinue(StateInterface $state, array $config): bool
     {
         $maxPlaceCoverage = $config[static::MAX_PLACE_COVERAGE] ?? 100;
         $maxTransitionCoverage = $config[static::MAX_TRANSITION_COVERAGE] ?? 100;
 
         return
-            $state->getTransitionCoverage() >= $maxTransitionCoverage &&
-            $state->getPlaceCoverage() >= $maxPlaceCoverage
+            $state->getTransitionCoverage() < $maxTransitionCoverage
+            || $state->getPlaceCoverage() < $maxPlaceCoverage
         ;
     }
 
