@@ -60,6 +60,15 @@ abstract class CommandRunner implements CommandRunnerInterface
         return new WebDriverDimension($width, $height);
     }
 
+    protected function getHandle(string $target): string
+    {
+        if (!str_starts_with($target, 'handle=')) {
+            throw new UnexpectedValueException('Invalid handle');
+        }
+
+        return substr($target, 7);
+    }
+
     protected function assert(bool $assertion, string $message): void
     {
         if (!$assertion) {
