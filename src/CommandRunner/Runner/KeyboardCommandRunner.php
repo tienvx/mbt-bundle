@@ -28,12 +28,10 @@ class KeyboardCommandRunner extends CommandRunner
     {
         switch ($command->getCommand()) {
             case self::TYPE:
-                $webDriverBy = $this->getSelector($command->getTarget());
-                $driver->findElement($webDriverBy)->sendKeys($command->getValue());
+                $driver->findElement($this->getSelector($command->getTarget()))->sendKeys($command->getValue());
                 break;
             case self::CLEAR:
-                $webDriverBy = $this->getSelector($command->getTarget());
-                $driver->findElement($webDriverBy)->clear();
+                $driver->findElement($this->getSelector($command->getTarget()))->clear();
                 break;
         }
     }

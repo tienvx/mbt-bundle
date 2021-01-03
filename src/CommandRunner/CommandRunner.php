@@ -2,9 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\CommandRunner;
 
-use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverDimension;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
@@ -46,33 +44,5 @@ abstract class CommandRunner implements CommandRunnerInterface
         }
 
         throw new UnexpectedValueException('Invalid target mechanism');
-    }
-
-    protected function getDimension(string $target): WebDriverDimension
-    {
-        $match = preg_match('/^(\d+)x(\d+)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid dimension');
-        }
-
-        list(, $width, $height) = $matches;
-
-        return new WebDriverDimension($width, $height);
-    }
-
-    protected function getHandle(string $target): string
-    {
-        if (!str_starts_with($target, 'handle=')) {
-            throw new UnexpectedValueException('Invalid handle');
-        }
-
-        return substr($target, 7);
-    }
-
-    protected function assert(bool $assertion, string $message): void
-    {
-        if (!$assertion) {
-            throw new Exception($message);
-        }
     }
 }

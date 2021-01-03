@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
 
+use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
@@ -57,6 +58,13 @@ class AssertionRunner extends CommandRunner
                     sprintf('Element "%s" is not editable', $command->getTarget())
                 );
                 break;
+        }
+    }
+
+    protected function assert(bool $assertion, string $message): void
+    {
+        if (!$assertion) {
+            throw new Exception($message);
         }
     }
 }

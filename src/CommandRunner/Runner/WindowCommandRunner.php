@@ -3,8 +3,10 @@
 namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class WindowCommandRunner extends CommandRunner
@@ -66,5 +68,26 @@ class WindowCommandRunner extends CommandRunner
                 }
                 break;
         }
+    }
+
+    protected function getDimension(string $target): WebDriverDimension
+    {
+        $match = preg_match('/^(\d+)x(\d+)/i', $target, $matches);
+        if (!$match) {
+            throw new UnexpectedValueException('Invalid dimension');
+        }
+
+        list(, $width, $height) = $matches;
+
+        return new WebDriverDimension($width, $height);
+    }
+
+    protected function getHandle(string $target): string
+    {
+        if (!str_starts_with($target, 'handle=')) {
+            throw new UnexpectedValueException('Invalid handle');
+        }
+
+        return substr($target, 7);
     }
 }
