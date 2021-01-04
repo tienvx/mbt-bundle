@@ -9,18 +9,18 @@ use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 class KeyboardCommandRunner extends CommandRunner
 {
     public const TYPE = 'type';
-    public const CLEAR = 'clear';
+    public const SEND_KEYS = 'sendKeys';
 
     public const ALL_COMMANDS = [
         self::TYPE,
-        self::CLEAR,
+        self::SEND_KEYS,
     ];
 
     public function getActions(): array
     {
         return [
             'Type' => self::TYPE,
-            'Clear' => self::CLEAR,
+            'Send Keys' => self::SEND_KEYS,
         ];
     }
 
@@ -28,11 +28,26 @@ class KeyboardCommandRunner extends CommandRunner
     {
         switch ($command->getCommand()) {
             case self::TYPE:
-                $driver->findElement($this->getSelector($command->getTarget()))->sendKeys($command->getValue());
+                $driver
+                    ->findElement($this->getSelector($command->getTarget()))
+                    ->click()
+                    ->clear()
+                    ->sendKeys($this->sanitizeValue($command));
                 break;
-            case self::CLEAR:
-                $driver->findElement($this->getSelector($command->getTarget()))->clear();
+            case self::SEND_KEYS:
+                $driver
+                    ->findElement($this->getSelector($command->getTarget()))
+                    ->click()
+                    ->sendKeys($this->sanitizeValue($command));
                 break;
         }
+    }
+
+    /**
+     * Don't allow to upload local file.
+     */
+    protected function sanitizeValue(CommandInterface $command): array
+    {
+        return [(string) $command->getValue()];
     }
 }

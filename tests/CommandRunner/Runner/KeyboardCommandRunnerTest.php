@@ -21,7 +21,9 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
         $command->setTarget('name=age');
         $command->setValue('20 years old');
         $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('sendKeys')->with('20 years old');
+        $element->expects($this->once())->method('click')->willReturnSelf();
+        $element->expects($this->once())->method('clear')->willReturnSelf();
+        $element->expects($this->once())->method('sendKeys')->with(['20 years old']);
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
             return $selector instanceof WebDriverBy
                 && 'name' === $selector->getMechanism()
@@ -31,13 +33,15 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
         $runner->run($command, $this->driver);
     }
 
-    public function testClear(): void
+    public function testSendKeys(): void
     {
         $command = new Command();
-        $command->setCommand(KeyboardCommandRunner::CLEAR);
+        $command->setCommand(KeyboardCommandRunner::SEND_KEYS);
         $command->setTarget('css=.quantity');
+        $command->setValue('123');
         $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('clear');
+        $element->expects($this->once())->method('click')->willReturnSelf();
+        $element->expects($this->once())->method('sendKeys')->with(['123']);
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
             return $selector instanceof WebDriverBy
                 && 'css selector' === $selector->getMechanism()

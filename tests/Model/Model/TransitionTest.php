@@ -46,9 +46,9 @@ class TransitionTest extends TestCase
     {
         $this->action1 = new Command();
         $this->action2 = new Command();
-        $this->action1->setCommand(KeyboardCommandRunner::CLEAR);
+        $this->action1->setCommand(KeyboardCommandRunner::TYPE);
         $this->action1->setTarget('css=.email');
-        $this->action1->setValue(null);
+        $this->action1->setValue('test@example.com');
         $this->action2->setCommand(MouseCommandRunner::CLICK);
         $this->action2->setTarget('css=.link');
         $this->action2->setValue(null);

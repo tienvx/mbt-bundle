@@ -18,7 +18,7 @@
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.8",
-        "egulias/email-validator": "^2.1",
+        "egulias/email-validator": "^3.0",
         "jmgq/a-star": "^1.1",
         "php-webdriver/webdriver": "^1.9",
         "symfony/config": "^5.2",
