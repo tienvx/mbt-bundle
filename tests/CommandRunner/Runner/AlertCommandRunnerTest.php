@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteTargetLocator;
 use Facebook\WebDriver\WebDriverAlert;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -14,6 +15,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class AlertCommandRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new AlertCommandRunner();
+    }
+
     /**
      * @dataProvider acceptAlertCommandProvider
      */
@@ -26,8 +32,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new AlertCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     /**
@@ -42,8 +47,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new AlertCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAnswerPrompt(): void
@@ -57,8 +61,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new AlertCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function acceptAlertCommandProvider(): array
@@ -74,6 +77,14 @@ class AlertCommandRunnerTest extends RunnerTestCase
         return [
             [AlertCommandRunner::DISMISS_CONFIRMATION],
             [AlertCommandRunner::DISMISS_PROMPT],
+        ];
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], AlertCommandRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
         ];
     }
 }

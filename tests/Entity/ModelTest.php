@@ -14,9 +14,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model

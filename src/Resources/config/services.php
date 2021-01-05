@@ -21,9 +21,11 @@ use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
@@ -215,13 +217,17 @@ return static function (ContainerConfigurator $container): void {
         ->set(CommandRunnerManager::class)
             ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
 
-        ->set(WindowCommandRunner::class)
+        ->set(AlertCommandRunner::class)
             ->autoconfigure(true)
         ->set(AssertionRunner::class)
             ->autoconfigure(true)
+        ->set(KeyboardCommandRunner::class)
+            ->autoconfigure(true)
         ->set(MouseCommandRunner::class)
             ->autoconfigure(true)
-        ->set(KeyboardCommandRunner::class)
+        ->set(WaitCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(WindowCommandRunner::class)
             ->autoconfigure(true)
 
         // Services

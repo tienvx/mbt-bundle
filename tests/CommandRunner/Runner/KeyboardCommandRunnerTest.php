@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -14,6 +15,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class KeyboardCommandRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new KeyboardCommandRunner();
+    }
+
     public function testType(): void
     {
         $command = new Command();
@@ -29,8 +35,7 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
                 && 'name' === $selector->getMechanism()
                 && 'age' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new KeyboardCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSendKeys(): void
@@ -47,7 +52,14 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.quantity' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new KeyboardCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], KeyboardCommandRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
+        ];
     }
 }

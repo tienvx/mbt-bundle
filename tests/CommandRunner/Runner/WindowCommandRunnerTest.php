@@ -10,6 +10,7 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverOptions;
 use Facebook\WebDriver\WebDriverWait;
 use Facebook\WebDriver\WebDriverWindow;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -20,14 +21,18 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class WindowCommandRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new WindowCommandRunner();
+    }
+
     public function testOpen(): void
     {
         $command = new Command();
         $command->setCommand(WindowCommandRunner::OPEN);
         $command->setTarget('https://demo.sylius.com/en_US/');
         $this->driver->expects($this->once())->method('get')->with('https://demo.sylius.com/en_US/');
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSetWindowSize(): void
@@ -44,8 +49,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $options = $this->createMock(WebDriverOptions::class);
         $options->expects($this->once())->method('window')->willReturn($window);
         $this->driver->expects($this->once())->method('manage')->willReturn($options);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelectWindow(): void
@@ -56,8 +60,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('window')->with('testing');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testClose(): void
@@ -65,8 +68,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $command = new Command();
         $command->setCommand(WindowCommandRunner::CLOSE);
         $this->driver->expects($this->once())->method('close');
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelectFrameRelativeTop(): void
@@ -77,8 +79,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('defaultContent');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelectFrameRelativeParent(): void
@@ -89,8 +90,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('parent');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelectFrameIndex(): void
@@ -101,8 +101,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('frame')->with(123);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelectFrameSelector(): void
@@ -125,7 +124,14 @@ class WindowCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $runner = new WindowCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], WindowCommandRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
+        ];
     }
 }

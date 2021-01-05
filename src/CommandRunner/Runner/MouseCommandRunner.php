@@ -186,7 +186,7 @@ class MouseCommandRunner extends CommandRunner
     {
         $match = preg_match('/^(\d+),(\d+)/i', $target, $matches);
         if (!$match) {
-            throw new UnexpectedValueException('Invalid coordinate');
+            throw new UnexpectedValueException('Invalid point');
         }
 
         list(, $x, $y) = $matches;

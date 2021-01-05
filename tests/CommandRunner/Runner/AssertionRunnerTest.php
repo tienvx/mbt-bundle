@@ -7,6 +7,7 @@ use Facebook\WebDriver\WebDriverAlert;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverSelect;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -17,6 +18,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class AssertionRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new AssertionRunner();
+    }
+
     /**
      * @dataProvider alertCommandProvider
      */
@@ -30,8 +36,7 @@ class AssertionRunnerTest extends RunnerTestCase
         $locator = $this->createMock(RemoteTargetLocator::class);
         $locator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($locator);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     /**
@@ -51,8 +56,7 @@ class AssertionRunnerTest extends RunnerTestCase
         $locator = $this->createMock(RemoteTargetLocator::class);
         $locator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($locator);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertTitlePassed(): void
@@ -61,8 +65,7 @@ class AssertionRunnerTest extends RunnerTestCase
         $command->setCommand(AssertionRunner::ASSERT_TITLE);
         $command->setTarget('Welcome');
         $this->driver->expects($this->exactly(2))->method('getTitle')->willReturn('Welcome');
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertTitleFailed(): void
@@ -73,8 +76,7 @@ class AssertionRunnerTest extends RunnerTestCase
         $command->setCommand(AssertionRunner::ASSERT_TITLE);
         $command->setTarget('Welcome');
         $this->driver->expects($this->exactly(2))->method('getTitle')->willReturn('Goodbye');
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertTextPassed(): void
@@ -90,8 +92,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertTextFailed(): void
@@ -109,8 +110,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotTextFailed(): void
@@ -129,8 +129,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotTextPassed(): void
@@ -146,8 +145,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'xpath' === $selector->getMechanism()
                 && '//h4[@href="#"]' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertValuePassed(): void
@@ -163,8 +161,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.quality' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertValueFailed(): void
@@ -182,8 +179,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.quality' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertEditablePassed(): void
@@ -202,8 +198,7 @@ class AssertionRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => true, 'readonly' => false]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertEditableFailed(): void
@@ -224,8 +219,7 @@ class AssertionRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => false, 'readonly' => true]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotEditableFailed(): void
@@ -246,8 +240,7 @@ class AssertionRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => true, 'readonly' => false]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotEditablePassed(): void
@@ -266,8 +259,7 @@ class AssertionRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => false, 'readonly' => true]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertElementPresentPassed(): void
@@ -281,8 +273,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.cart' === $selector->getValue();
         }))->willReturn([$element]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertElementPresentFailed(): void
@@ -297,8 +288,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.cart' === $selector->getValue();
         }))->willReturn([]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertElementNotPresentFailed(): void
@@ -314,8 +304,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.cart' === $selector->getValue();
         }))->willReturn([$element]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertElementNotPresentPassed(): void
@@ -328,8 +317,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.cart' === $selector->getValue();
         }))->willReturn([]);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertCheckedPassed(): void
@@ -344,8 +332,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.term-and-condition' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertCheckedFailed(): void
@@ -362,8 +349,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.term-and-condition' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotCheckedFailed(): void
@@ -380,8 +366,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.term-and-condition' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertNotCheckedPassed(): void
@@ -396,8 +381,7 @@ class AssertionRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.term-and-condition' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new AssertionRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testAssertSelectedValuePassed(): void
@@ -582,6 +566,14 @@ class AssertionRunnerTest extends RunnerTestCase
             [AssertionRunner::ASSERT_ALERT, 'alert'],
             [AssertionRunner::ASSERT_CONFIRMATION, 'confirm'],
             [AssertionRunner::ASSERT_PROMPT, 'prompt'],
+        ];
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], AssertionRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
         ];
     }
 }

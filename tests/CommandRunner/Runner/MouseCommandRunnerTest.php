@@ -9,6 +9,7 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverSelect;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -19,6 +20,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class MouseCommandRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new MouseCommandRunner();
+    }
+
     public function testAddSelectionByIndex(): void
     {
         $command = new Command();
@@ -149,8 +155,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'language' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     /**
@@ -169,8 +174,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'language' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testClick(): void
@@ -185,8 +189,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'add-to-cart' === $selector->getValue();
         }))->willReturn($element);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testClickAt(): void
@@ -206,8 +209,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('click')->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testDoubleClick(): void
@@ -225,8 +227,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('doubleClick')->with($element)->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testDoubleClickAt(): void
@@ -246,8 +247,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('doubleClick')->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testDragAndDropToObject(): void
@@ -277,8 +277,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('dragAndDrop')->with($source, $target)->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseDown(): void
@@ -297,8 +296,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseDown')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseDownAt(): void
@@ -319,8 +317,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10)->willReturnSelf();
         $mouse->expects($this->once())->method('mouseDown');
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseMoveAt(): void
@@ -340,8 +337,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseOver(): void
@@ -360,8 +356,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseMove')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseUp(): void
@@ -380,8 +375,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseUp')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testMouseUpAt(): void
@@ -402,8 +396,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10)->willReturnSelf();
         $mouse->expects($this->once())->method('mouseUp');
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testSelect(): void
@@ -425,8 +418,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && 'option[value=en_US]' === $selector->getValue();
         }))->willReturn($option);
-        $runner = new MouseCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function checkDataProvider(): array
@@ -442,6 +434,14 @@ class MouseCommandRunnerTest extends RunnerTestCase
         return [
             [true, true],
             [false, false],
+        ];
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], MouseCommandRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
         ];
     }
 }

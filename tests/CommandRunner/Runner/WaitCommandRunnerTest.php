@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
@@ -18,6 +19,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
  */
 class WaitCommandRunnerTest extends RunnerTestCase
 {
+    protected function createRunner(): CommandRunner
+    {
+        return new WaitCommandRunner();
+    }
+
     public function testWaitForElementEditable(): void
     {
         $command = new Command();
@@ -41,8 +47,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => true, 'readonly' => false]);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testWaitForElementNotEditable(): void
@@ -68,8 +73,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => false, 'readonly' => true]);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testWaitForElementPresent(): void
@@ -89,8 +93,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testNoElementsPresent(): void
@@ -104,8 +107,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && 'button' === $selector->getValue();
         }))->willReturn([]);
         $this->driver->expects($this->never())->method('wait');
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testWaitForElementNotPresent(): void
@@ -129,8 +131,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testWaitForElementVisible(): void
@@ -151,8 +152,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
     }
 
     public function testWaitForElementNotVisible(): void
@@ -173,7 +173,14 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $runner = new WaitCommandRunner();
-        $runner->run($command, $this->driver);
+        $this->runner->run($command, $this->driver);
+    }
+
+    public function supportsCommandProvider(): array
+    {
+        return [
+            ...array_map(fn ($command) => [$command, true], WaitCommandRunner::ALL_COMMANDS),
+            ['invalidCommand', false],
+        ];
     }
 }
