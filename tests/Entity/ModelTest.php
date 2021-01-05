@@ -5,12 +5,22 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Entity;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Validator\CustomConstraintValidatorFactory;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
@@ -66,7 +76,7 @@ class ModelTest extends TestCase
         $p2->setAssertions([
             $c3 = new Command(),
         ]);
-        $c3->setCommand('');
+        $c3->setCommand('doNoThing');
         $c3->setTarget('');
         $c3->setValue(null);
         $model->setPlaces($places);
@@ -90,9 +100,12 @@ class ModelTest extends TestCase
         $t2->setGuard('count > 1');
         $model->setTransitions($transitions);
 
-        $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+        $validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
+            ->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(14, $violations);
+        $this->assertCount(12, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
@@ -105,14 +118,10 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
-    The value you selected is not a valid choice. (code 8e179f1b-97aa-4560-a02f-2a8b42e49df7)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[1].target:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
-    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
-    The value you selected is not a valid choice. (code 8e179f1b-97aa-4560-a02f-2a8b42e49df7)
+    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].target:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:

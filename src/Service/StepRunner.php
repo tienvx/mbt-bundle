@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
@@ -10,11 +11,11 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class StepRunner implements StepRunnerInterface
 {
-    protected CommandRunner $commandRunner;
+    protected CommandRunnerManagerInterface $commandRunnerManager;
 
-    public function __construct(CommandRunner $commandRunner)
+    public function __construct(CommandRunnerManagerInterface $commandRunnerManager)
     {
-        $this->commandRunner = $commandRunner;
+        $this->commandRunnerManager = $commandRunnerManager;
     }
 
     public function run(StepInterface $step, ModelInterface $model, RemoteWebDriver $driver): void
@@ -34,14 +35,14 @@ class StepRunner implements StepRunnerInterface
     protected function executeTransitionActions(TransitionInterface $transition, RemoteWebDriver $driver): void
     {
         foreach ($transition->getActions() as $action) {
-            $this->commandRunner->run($action, $driver);
+            $this->commandRunnerManager->run($action, $driver);
         }
     }
 
     protected function executePlaceAssertions(PlaceInterface $place, RemoteWebDriver $driver): void
     {
         foreach ($place->getAssertions() as $assertion) {
-            $this->commandRunner->run($assertion, $driver);
+            $this->commandRunnerManager->run($assertion, $driver);
         }
     }
 }

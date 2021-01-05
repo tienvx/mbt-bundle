@@ -19,6 +19,14 @@ use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
 use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
@@ -39,8 +47,6 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
 use Tienvx\Bundle\MbtBundle\Service\BugProgress;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
-use Tienvx\Bundle\MbtBundle\Service\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Service\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
@@ -51,8 +57,6 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\Selenium\Helper;
-use Tienvx\Bundle\MbtBundle\Service\Selenium\HelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
@@ -61,6 +65,7 @@ use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
+use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 
@@ -201,6 +206,29 @@ return static function (ContainerConfigurator $container): void {
             ->tag('validator.constraint_validator', [
                 'alias' => ValidTaskConfigValidator::class,
             ])
+        ->set(ValidCommandValidator::class)
+            ->args([
+                service(CommandRunnerManagerInterface::class),
+            ])
+            ->tag('validator.constraint_validator', [
+                'alias' => ValidCommandValidator::class,
+            ])
+
+        ->set(CommandRunnerManager::class)
+            ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
+
+        ->set(AlertCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(AssertionRunner::class)
+            ->autoconfigure(true)
+        ->set(KeyboardCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(MouseCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(WaitCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(WindowCommandRunner::class)
+            ->autoconfigure(true)
 
         // Services
         ->set(ExpressionLanguage::class)
@@ -215,15 +243,6 @@ return static function (ContainerConfigurator $container): void {
                 service(EntityManagerInterface::class),
             ])
             ->alias(BugProgressInterface::class, BugProgress::class)
-
-        ->set(Helper::class)
-            ->alias(HelperInterface::class, Helper::class)
-
-        ->set(CommandRunner::class)
-            ->args([
-                service(HelperInterface::class),
-            ])
-            ->alias(CommandRunnerInterface::class, CommandRunner::class)
 
         ->set(ShortestPathStepsBuilder::class)
             ->args([
@@ -241,7 +260,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(StepRunner::class)
             ->args([
-                service(CommandRunnerInterface::class),
+                service(CommandRunnerManagerInterface::class),
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
 
