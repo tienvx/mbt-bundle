@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
@@ -83,15 +82,5 @@ class WaitCommandRunner extends CommandRunner
                 );
                 break;
         }
-    }
-
-    protected function isElementEditable(RemoteWebDriver $driver, WebDriverElement $element): bool
-    {
-        $result = $driver->executeScript(
-            'return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };',
-            [$element]
-        );
-
-        return $result->enabled && !$result->readonly;
     }
 }

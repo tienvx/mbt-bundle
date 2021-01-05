@@ -2,7 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\CommandRunner;
 
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverElement;
+use Facebook\WebDriver\WebDriverSelect;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
@@ -44,5 +47,20 @@ abstract class CommandRunner implements CommandRunnerInterface
         }
 
         throw new UnexpectedValueException('Invalid target mechanism');
+    }
+
+    protected function isElementEditable(RemoteWebDriver $driver, WebDriverElement $element): bool
+    {
+        $result = $driver->executeScript(
+            'return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };',
+            [$element]
+        );
+
+        return $result->enabled && !$result->readonly;
+    }
+
+    protected function getSelect(WebDriverElement $element): WebDriverSelect
+    {
+        return new WebDriverSelect($element);
     }
 }

@@ -3,9 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverPoint;
-use Facebook\WebDriver\WebDriverSelect;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
@@ -182,11 +180,6 @@ class MouseCommandRunner extends CommandRunner
                     ->click();
                 break;
         }
-    }
-
-    protected function getSelect(WebDriverElement $element): WebDriverSelect
-    {
-        return new WebDriverSelect($element);
     }
 
     protected function getPoint(string $target): WebDriverPoint
