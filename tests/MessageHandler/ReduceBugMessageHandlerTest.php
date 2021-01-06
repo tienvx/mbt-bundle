@@ -15,7 +15,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
-use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 
 /**
@@ -32,7 +32,7 @@ use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
  */
 class ReduceBugMessageHandlerTest extends TestCase
 {
-    protected ReducerManager $reducerManager;
+    protected ReducerManagerInterface $reducerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
     protected BugProgressInterface $bugProgress;
@@ -40,7 +40,7 @@ class ReduceBugMessageHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->reducerManager = $this->createMock(ReducerManager::class);
+        $this->reducerManager = $this->createMock(ReducerManagerInterface::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
@@ -73,7 +73,7 @@ class ReduceBugMessageHandlerTest extends TestCase
         $bug->setTask($task);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($bug)->willReturn(5);
-        $this->reducerManager->expects($this->once())->method('get')->with('random')->willReturn($reducer);
+        $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseTotal')->with($bug, 5);
@@ -94,7 +94,7 @@ class ReduceBugMessageHandlerTest extends TestCase
         $bug->setTask($task);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($bug)->willReturn(0);
-        $this->reducerManager->expects($this->once())->method('get')->with('random')->willReturn($reducer);
+        $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(2))
             ->method('dispatch')

@@ -57,11 +57,11 @@ class ProviderManagerTest extends TestCase
 
     public function testDoesNotHaveOther(): void
     {
-        $this->locator->expects($this->once())->method('has')->with('other')->willReturn(null);
+        $this->locator->expects($this->never())->method('has');
         $this->assertFalse($this->providerManager->has('other'));
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Provider "other" does not exist.');
-        $this->providerManager->get('other');
+        $this->providerManager->getProvider('other');
     }
 
     public function testCreateDriver(): void
@@ -70,7 +70,7 @@ class ProviderManagerTest extends TestCase
         $task->getSeleniumConfig()->setProvider('selenoid');
         $bugId = 123;
         $capabilities = new DesiredCapabilities();
-        $this->locator->expects($this->once())->method('has')->with('selenoid')->willReturn(true);
+        $this->locator->expects($this->exactly(2))->method('has')->with('selenoid')->willReturn(true);
         $this->locator->expects($this->once())->method('get')->with('selenoid')->willReturn($this->provider);
         $this->provider
             ->expects($this->once())

@@ -6,21 +6,21 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
-use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 
 class ValidTaskConfigValidator extends ConstraintValidator
 {
-    protected GeneratorManager $generatorManager;
-    protected ReducerManager $reducerManager;
-    protected ChannelManager $channelManager;
+    protected GeneratorManagerInterface $generatorManager;
+    protected ReducerManagerInterface $reducerManager;
+    protected ChannelManagerInterface $channelManager;
 
     public function __construct(
-        GeneratorManager $generatorManager,
-        ReducerManager $reducerManager,
-        ChannelManager $channelManager
+        GeneratorManagerInterface $generatorManager,
+        ReducerManagerInterface $reducerManager,
+        ChannelManagerInterface $channelManager
     ) {
         $this->generatorManager = $generatorManager;
         $this->reducerManager = $reducerManager;
@@ -47,7 +47,7 @@ class ValidTaskConfigValidator extends ConstraintValidator
             && $this->reducerManager->has($value->getReducer())
             && !array_diff($value->getNotifyChannels(), $this->channelManager->all())
         ) {
-            $generator = $this->generatorManager->get($value->getGenerator());
+            $generator = $this->generatorManager->getGenerator($value->getGenerator());
             $valid = $generator->validate($value->getGeneratorConfig());
         }
         if (!$valid) {

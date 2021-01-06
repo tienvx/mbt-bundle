@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Generator;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 
@@ -43,9 +44,12 @@ class GeneratorManagerTest extends TestCase
         $this->assertTrue($this->generatorManager->has('random'));
     }
 
-    public function testDoesNotHaveOther()
+    public function testDoesNotHaveOther(): void
     {
         $this->locator->expects($this->never())->method('has');
         $this->assertFalse($this->generatorManager->has('other'));
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Generator "other" does not exist.');
+        $this->generatorManager->getGenerator('other');
     }
 }

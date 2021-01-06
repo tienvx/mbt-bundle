@@ -7,13 +7,13 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
-use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
+use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
-use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfig;
 use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 
@@ -24,25 +24,25 @@ use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
 {
     /**
-     * @var GeneratorManager|MockObject
+     * @var GeneratorManagerInterface|MockObject
      */
-    protected GeneratorManager $generatorManager;
+    protected GeneratorManagerInterface $generatorManager;
 
     /**
-     * @var ReducerManager|MockObject
+     * @var ReducerManagerInterface|MockObject
      */
-    protected ReducerManager $reducerManager;
+    protected ReducerManagerInterface $reducerManager;
 
     /**
-     * @var ChannelManager|MockObject
+     * @var ChannelManagerInterface|MockObject
      */
-    protected ChannelManager $channelManager;
+    protected ChannelManagerInterface $channelManager;
 
     protected function createValidator()
     {
-        $this->generatorManager = $this->createMock(GeneratorManager::class);
-        $this->reducerManager = $this->createMock(ReducerManager::class);
-        $this->channelManager = $this->createMock(ChannelManager::class);
+        $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
+        $this->reducerManager = $this->createMock(ReducerManagerInterface::class);
+        $this->channelManager = $this->createMock(ChannelManagerInterface::class);
 
         return new ValidTaskConfigValidator($this->generatorManager, $this->reducerManager, $this->channelManager);
     }
@@ -55,7 +55,11 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
         if ($value) {
             $this->generatorManager->expects($this->once())->method('has')->with('random')->willReturn(true);
             $generator = $this->createMock(GeneratorInterface::class);
-            $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
+            $this->generatorManager
+                ->expects($this->once())
+                ->method('getGenerator')
+                ->with('random')
+                ->willReturn($generator);
             $this->reducerManager->expects($this->once())->method('has')->with('random')->willReturn(true);
             $this->channelManager->expects($this->once())->method('all')->willReturn(['chat/slack']);
             $generator->expects($this->once())->method('validate')->with([
@@ -88,7 +92,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
     public function testInvalidGenerator()
     {
         $this->generatorManager->expects($this->once())->method('has')->with('invalid')->willReturn(false);
-        $this->generatorManager->expects($this->never())->method('get')->with('invalid');
+        $this->generatorManager->expects($this->never())->method('getGenerator')->with('invalid');
         $constraint = new ValidTaskConfig([
             'message' => 'myMessage',
         ]);
@@ -105,7 +109,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
     public function testInvalidReducer()
     {
         $this->generatorManager->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->generatorManager->expects($this->never())->method('get')->with('random');
+        $this->generatorManager->expects($this->never())->method('getGenerator')->with('random');
         $this->reducerManager->expects($this->once())->method('has')->with('invalid')->willReturn(false);
         $constraint = new ValidTaskConfig([
             'message' => 'myMessage',
@@ -124,7 +128,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
     public function testInvalidChannels()
     {
         $this->generatorManager->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->generatorManager->expects($this->never())->method('get')->with('random');
+        $this->generatorManager->expects($this->never())->method('getGenerator')->with('random');
         $this->reducerManager->expects($this->once())->method('has')->with('random')->willReturn(true);
         $this->channelManager->expects($this->once())->method('all')->willReturn([]);
         $constraint = new ValidTaskConfig([
@@ -146,7 +150,7 @@ class ValidTaskConfigValidatorTest extends ConstraintValidatorTestCase
     {
         $this->generatorManager->expects($this->once())->method('has')->with('random')->willReturn(true);
         $generator = $this->createMock(RandomGenerator::class);
-        $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
+        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->reducerManager->expects($this->once())->method('has')->with('random')->willReturn(true);
         $this->channelManager->expects($this->once())->method('all')->willReturn(['chat/slack']);
         $constraint = new ValidTaskConfig([

@@ -12,18 +12,18 @@ use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 
 class ReduceBugMessageHandler implements MessageHandlerInterface
 {
-    protected ReducerManager $reducerManager;
+    protected ReducerManagerInterface $reducerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
     protected BugProgressInterface $bugProgress;
 
     public function __construct(
-        ReducerManager $reducerManager,
+        ReducerManagerInterface $reducerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         BugProgressInterface $bugProgress
@@ -46,7 +46,7 @@ class ReduceBugMessageHandler implements MessageHandlerInterface
             throw new UnexpectedValueException(sprintf('Can not reduce bug %d: bug not found', $bugId));
         }
 
-        $reducer = $this->reducerManager->get($bug->getTask()->getTaskConfig()->getReducer());
+        $reducer = $this->reducerManager->getReducer($bug->getTask()->getTaskConfig()->getReducer());
         $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
             $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));

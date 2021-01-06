@@ -12,18 +12,18 @@ use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
 
 class ReduceStepsMessageHandler implements MessageHandlerInterface
 {
-    protected ReducerManager $reducerManager;
+    protected ReducerManagerInterface $reducerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
     protected BugProgressInterface $bugProgress;
 
     public function __construct(
-        ReducerManager $reducerManager,
+        ReducerManagerInterface $reducerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         BugProgressInterface $bugProgress
@@ -59,7 +59,7 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
             return;
         }
 
-        $reducer = $this->reducerManager->get($bug->getTask()->getTaskConfig()->getReducer());
+        $reducer = $this->reducerManager->getReducer($bug->getTask()->getTaskConfig()->getReducer());
         $reducer->handle($bug, $from, $to);
 
         $this->bugProgress->increaseProcessed($bug, 1);

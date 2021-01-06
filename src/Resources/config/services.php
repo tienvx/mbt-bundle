@@ -14,6 +14,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
+use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
 use Tienvx\Bundle\MbtBundle\Channel\EmailChannel;
 use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
 use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
@@ -29,6 +30,7 @@ use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
@@ -36,11 +38,13 @@ use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomReducer;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
@@ -72,6 +76,8 @@ use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set(ChannelManager::class)
+            ->alias(ChannelManagerInterface::class, ChannelManager::class)
+
         ->set(EmailChannel::class)
             ->autoconfigure(true)
         ->set(NexmoChannel::class)
@@ -90,6 +96,7 @@ return static function (ContainerConfigurator $container): void {
             ])
 
         ->set(GeneratorManager::class)
+            ->alias(GeneratorManagerInterface::class, GeneratorManager::class)
 
         ->set(RandomGenerator::class)
             ->args([
@@ -101,6 +108,8 @@ return static function (ContainerConfigurator $container): void {
             ->autoconfigure(true)
 
         ->set(ProviderManager::class)
+            ->alias(ProviderManagerInterface::class, ProviderManager::class)
+
         ->set(Selenoid::class)
             ->autoconfigure(true)
 
@@ -152,6 +161,8 @@ return static function (ContainerConfigurator $container): void {
             ->autoconfigure(true)
 
         ->set(ReducerManager::class)
+            ->alias(ReducerManagerInterface::class, ReducerManager::class)
+
         ->set(RandomDispatcher::class)
             ->args([
                 service(MessageBusInterface::class),
