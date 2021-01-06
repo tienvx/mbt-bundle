@@ -20,6 +20,7 @@ use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
 use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
+use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
@@ -226,6 +227,7 @@ return static function (ContainerConfigurator $container): void {
             ])
 
         ->set(CommandRunnerManager::class)
+            ->args([tagged_iterator(CommandRunnerInterface::TAG)])
             ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
 
         ->set(AlertCommandRunner::class)
