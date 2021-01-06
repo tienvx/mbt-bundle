@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 
@@ -53,5 +54,8 @@ class ReducerManagerTest extends TestCase
     {
         $this->locator->expects($this->never())->method('has');
         $this->assertFalse($this->reducerManager->has('other'));
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Reducer "other" does not exist.');
+        $this->reducerManager->getReducer('other');
     }
 }

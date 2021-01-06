@@ -2,19 +2,14 @@
 
 namespace Tienvx\Bundle\MbtBundle\Reducer;
 
-use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager;
 
-class ReducerManager extends AbstractPluginManager
+class ReducerManager extends AbstractPluginManager implements ReducerManagerInterface
 {
-    /**
-     * @throws ExceptionInterface
-     */
-    public function get(string $name): ReducerInterface
+    public function getReducer(string $name): ReducerInterface
     {
-        $reducer = $this->locator->has($name) ? $this->locator->get($name) : null;
-        if ($reducer instanceof ReducerInterface) {
+        if ($this->has($name) && ($reducer = $this->get($name)) && $reducer instanceof ReducerInterface) {
             return $reducer;
         }
 

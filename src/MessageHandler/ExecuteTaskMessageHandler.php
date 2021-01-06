@@ -10,19 +10,19 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
 class ExecuteTaskMessageHandler implements MessageHandlerInterface
 {
-    protected GeneratorManager $generatorManager;
-    protected ProviderManager $providerManager;
+    protected GeneratorManagerInterface $generatorManager;
+    protected ProviderManagerInterface $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
     protected TaskProgressInterface $taskProgress;
@@ -30,8 +30,8 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected int $maxSteps;
 
     public function __construct(
-        GeneratorManager $generatorManager,
-        ProviderManager $providerManager,
+        GeneratorManagerInterface $generatorManager,
+        ProviderManagerInterface $providerManager,
         EntityManagerInterface $entityManager,
         StepRunnerInterface $stepRunner,
         TaskProgressInterface $taskProgress,
@@ -71,7 +71,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected function execute(TaskInterface $task): void
     {
         $steps = [];
-        $generator = $this->generatorManager->get($task->getTaskConfig()->getGenerator());
+        $generator = $this->generatorManager->getGenerator($task->getTaskConfig()->getGenerator());
         $driver = $this->providerManager->createDriver($task);
         $this->taskProgress->setTotal($task, $this->maxSteps);
         try {

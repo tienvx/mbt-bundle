@@ -11,12 +11,12 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
-use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
@@ -35,8 +35,8 @@ use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 class ExecuteTaskMessageHandlerTest extends StepsTestCase
 {
     protected array $steps;
-    protected GeneratorManager $generatorManager;
-    protected ProviderManager $providerManager;
+    protected GeneratorManagerInterface $generatorManager;
+    protected ProviderManagerInterface $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
     protected TaskProgressInterface $taskProgress;
@@ -52,8 +52,8 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ];
-        $this->generatorManager = $this->createMock(GeneratorManager::class);
-        $this->providerManager = $this->createMock(ProviderManager::class);
+        $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
+        $this->providerManager = $this->createMock(ProviderManagerInterface::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->stepRunner = $this->createMock(StepRunnerInterface::class);
         $this->taskProgress = $this->createMock(TaskProgressInterface::class);
@@ -91,7 +91,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         );
         $driver = $this->createMock(RemoteWebDriver::class);
         $driver->expects($this->once())->method('quit');
-        $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
+        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
         $this->stepRunner->expects($this->exactly(4))
             ->method('run')->with($this->isInstanceOf(StepInterface::class), $model, $driver);
@@ -119,7 +119,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         );
         $driver = $this->createMock(RemoteWebDriver::class);
         $driver->expects($this->once())->method('quit');
-        $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
+        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
         $this->stepRunner->expects($this->exactly(3))->method('run')
             ->with($this->isInstanceOf(StepInterface::class), $model, $driver)
@@ -170,7 +170,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         );
         $driver = $this->createMock(RemoteWebDriver::class);
         $driver->expects($this->once())->method('quit');
-        $this->generatorManager->expects($this->once())->method('get')->with('random')->willReturn($generator);
+        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->providerManager->expects($this->once())->method('createDriver')->with($task)->willReturn($driver);
         $this->stepRunner->expects($this->exactly(2))->method('run')
             ->with($this->isInstanceOf(StepInterface::class), $model, $driver);

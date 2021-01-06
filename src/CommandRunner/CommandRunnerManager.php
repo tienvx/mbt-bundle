@@ -7,9 +7,9 @@ use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class CommandRunnerManager implements CommandRunnerManagerInterface
 {
-    protected array $runners;
+    protected iterable $runners;
 
-    public function __construct(array $runners)
+    public function __construct(iterable $runners)
     {
         $this->runners = $runners;
     }

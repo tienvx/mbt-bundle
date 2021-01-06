@@ -7,6 +7,8 @@ use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 interface CommandRunnerInterface
 {
+    public const TAG = 'mbt_bundle.command_runner';
+
     public function getActions(): array;
 
     public function getAssertions(): array;
