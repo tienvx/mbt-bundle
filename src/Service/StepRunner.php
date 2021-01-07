@@ -23,6 +23,9 @@ class StepRunner implements StepRunnerInterface
         $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
         if ($transition instanceof TransitionInterface) {
             $this->executeTransitionActions($transition, $driver);
+        } else {
+            // First step: go to starting url
+            $driver->get($model->getStartingUrl());
         }
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);

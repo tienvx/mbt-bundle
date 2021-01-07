@@ -39,6 +39,7 @@ class StepRunnerTest extends TestCase
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->model = new Model();
+        $this->model->setStartingUrl('http://example.com');
         $transitions = [
             $transition = new Transition(),
         ];
@@ -78,6 +79,7 @@ class StepRunnerTest extends TestCase
     {
         $step = new Step([0 => 1, 1 => 1], new Color(), 0);
         $this->commandRunnerManager->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
+        $this->driver->expects($this->never())->method('get');
         $stepRunner = new StepRunner($this->commandRunnerManager);
         $stepRunner->run($step, $this->model, $this->driver);
     }
@@ -89,6 +91,7 @@ class StepRunnerTest extends TestCase
             ->expects($this->exactly(2))
             ->method('run')
             ->withConsecutive(...$this->firstCommands);
+        $this->driver->expects($this->once())->method('get')->with('http://example.com');
         $stepRunner = new StepRunner($this->commandRunnerManager);
         $stepRunner->run($step, $this->model, $this->driver);
     }

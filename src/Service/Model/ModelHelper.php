@@ -10,11 +10,11 @@ class ModelHelper implements ModelHelperInterface
     /**
      * {@inheritdoc}
      */
-    public function getInitPlaces(ModelInterface $model): array
+    public function getStartingPlaces(ModelInterface $model): array
     {
         $places = [];
         foreach ($model->getPlaces() as $index => $place) {
-            if ($place instanceof PlaceInterface && true === $place->getInit()) {
+            if ($place instanceof PlaceInterface && true === $place->getStart()) {
                 $places[$index] = 1;
             }
         }

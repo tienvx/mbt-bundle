@@ -55,12 +55,13 @@ class ModelTest extends TestCase
         $model = new Model();
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
+        $model->setStartingUrl('');
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
         ];
         $p1->setLabel('');
-        $p1->setInit(true);
+        $p1->setStart(false);
         $p1->setAssertions([
             $c1 = new Command(),
             $c2 = new Command(),
@@ -72,7 +73,7 @@ class ModelTest extends TestCase
         $c2->setTarget('');
         $c2->setValue('test');
         $p2->setLabel('p2');
-        $p2->setInit(false);
+        $p2->setStart(false);
         $p2->setAssertions([
             $c3 = new Command(),
         ]);
@@ -105,15 +106,19 @@ class ModelTest extends TestCase
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(12, $violations);
+        $this->assertCount(14, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
     From places are invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places:
+    You must select at least 1 place as starting place
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).startingUrl:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:

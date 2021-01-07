@@ -56,7 +56,7 @@ class RandomGeneratorTest extends TestCase
             $place2 = new Place(),
             $place3 = new Place(),
         ];
-        $place1->setInit(true);
+        $place1->setStart(true);
         $model->setPlaces($places);
         $transitions = [
             $transition1 = new Transition(),

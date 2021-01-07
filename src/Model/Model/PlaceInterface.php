@@ -8,9 +8,9 @@ interface PlaceInterface
 
     public function setLabel(string $label): void;
 
-    public function getInit(): bool;
+    public function getStart(): bool;
 
-    public function setInit(bool $init): void;
+    public function setStart(bool $start): void;
 
     public function getAssertions(): array;
 
