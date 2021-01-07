@@ -23,7 +23,7 @@ class PlaceTest extends TestCase
     {
         $this->setUpAssertions();
         $this->place = new Place();
-        $this->place->setInit(true);
+        $this->place->setStart(true);
         $this->place->setAssertions([
             $this->assertion1,
             $this->assertion2,
@@ -45,10 +45,10 @@ class PlaceTest extends TestCase
     /**
      * @dataProvider placeProvider
      */
-    public function testIsNotSame(bool $init, array $assertions): void
+    public function testIsNotSame(bool $start, array $assertions): void
     {
         $place = new Place();
-        $place->setInit($init);
+        $place->setStart($start);
         $place->setAssertions($assertions);
         $this->assertFalse($place->isSame($this->place));
     }
@@ -56,7 +56,7 @@ class PlaceTest extends TestCase
     public function testIsSame(): void
     {
         $place = new Place();
-        $place->setInit(true);
+        $place->setStart(true);
         $place->setAssertions([
             $this->assertion1,
             $this->assertion2,

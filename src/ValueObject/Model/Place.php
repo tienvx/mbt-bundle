@@ -12,7 +12,7 @@ class Place extends PlaceModel
      */
     protected string $label = '';
 
-    protected bool $init = false;
+    protected bool $start = false;
 
     /**
      * @Assert\All({

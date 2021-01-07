@@ -16,7 +16,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
  */
 class ModelHelperTest extends TestCase
 {
-    public function testGetInitPlaces(): void
+    public function testGetStartingPlaces(): void
     {
         $model = new Model();
         $model->setId(1);
@@ -26,15 +26,15 @@ class ModelHelperTest extends TestCase
             $p3 = new Place(),
             $p4 = new Place(),
         ];
-        $p1->setInit(false);
-        $p2->setInit(true);
-        $p3->setInit(true);
-        $p4->setInit(false);
+        $p1->setStart(false);
+        $p2->setStart(true);
+        $p3->setStart(true);
+        $p4->setStart(false);
         $model->setPlaces($places);
 
         $this->assertSame([
             1 => 1,
             2 => 1,
-        ], (new ModelHelper())->getInitPlaces($model));
+        ], (new ModelHelper())->getStartingPlaces($model));
     }
 }

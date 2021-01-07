@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 class Place implements PlaceInterface
 {
     protected string $label = '';
-    protected bool $init = false;
+    protected bool $start = false;
     protected array $assertions = [];
 
     public function getLabel(): string
@@ -18,14 +18,14 @@ class Place implements PlaceInterface
         $this->label = $label;
     }
 
-    public function getInit(): bool
+    public function getStart(): bool
     {
-        return $this->init;
+        return $this->start;
     }
 
-    public function setInit(bool $init): void
+    public function setStart(bool $start): void
     {
-        $this->init = $init;
+        $this->start = $start;
     }
 
     public function getAssertions(): array
@@ -49,7 +49,7 @@ class Place implements PlaceInterface
 
     public function isSame(PlaceInterface $place): bool
     {
-        return $this->getInit() === $place->getInit() && $this->isSameAssertions($place->getAssertions());
+        return $this->getStart() === $place->getStart() && $this->isSameAssertions($place->getAssertions());
     }
 
     protected function isSameAssertions(array $assertions): bool

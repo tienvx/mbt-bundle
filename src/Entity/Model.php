@@ -50,6 +50,12 @@ class Model extends BaseModel
     protected ?string $tags = null;
 
     /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
+     */
+    protected string $startingUrl = '';
+
+    /**
      * @ORM\Column(type="array")
      */
     protected array $places = [];
@@ -114,7 +120,7 @@ class Model extends BaseModel
             if ($place instanceof PlaceInterface) {
                 $item = [
                     'label' => $place->getLabel(),
-                    'init' => $place->getInit(),
+                    'start' => $place->getStart(),
                     'assertions' => $this->normalizeCommands($place->getAssertions()),
                 ];
                 $items[] = $item;
@@ -195,6 +201,19 @@ class Model extends BaseModel
         }
     }
 
+    /**
+     * @Assert\Callback
+     */
+    public function validateInitPlaces(ExecutionContextInterface $context, $payload): void
+    {
+        $startingPlaces = array_filter($this->places, fn (array $place) => $place['start'] ?? false);
+        if (0 === count($startingPlaces)) {
+            $context->buildViolation('You must select at least 1 place as starting place')
+                ->atPath('places')
+                ->addViolation();
+        }
+    }
+
     protected function normalizeCommands(array $commands): array
     {
         $items = [];
@@ -257,7 +276,7 @@ class Model extends BaseModel
     {
         $place = new Place();
         $place->setLabel($placeData['label'] ?? '');
-        $place->setInit($placeData['init'] ?? '');
+        $place->setStart($placeData['start'] ?? '');
         $place->setAssertions($this->denormalizeCommands($placeData['assertions'] ?? []));
 
         return $place;
