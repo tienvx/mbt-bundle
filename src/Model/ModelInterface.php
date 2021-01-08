@@ -24,9 +24,13 @@ interface ModelInterface
 
     public function setTags(?string $tags): void;
 
-    public function getStartingUrl(): string;
+    public function getStartUrl(): string;
 
-    public function setStartingUrl(string $startingUrl): void;
+    public function setStartUrl(string $startUrl): void;
+
+    public function getStartExpression(): ?string;
+
+    public function setStartExpression(?string $startExpression): void;
 
     public function getPlaces(): array;
 

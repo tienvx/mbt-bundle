@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\ToPlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
@@ -58,15 +57,8 @@ class ModelDumper implements ModelDumperInterface
         return sprintf(
             "\"%s\" [label=\"%s\" shape=box]\n",
             "transition-$index",
-            $this->getTransitionLabel($transition)
+            $transition->getLabel()
         );
-    }
-
-    protected function getTransitionLabel(TransitionInterface $transition): string
-    {
-        return $transition->getGuard() ?
-            sprintf('%s - (%s)', $transition->getLabel(), $transition->getGuard()) :
-            $transition->getLabel();
     }
 
     protected function dumpArcs(ModelInterface $model): string
@@ -78,23 +70,19 @@ class ModelDumper implements ModelDumperInterface
             if ($transition instanceof TransitionInterface) {
                 foreach ($transition->getFromPlaces() as $place) {
                     $arcs .= sprintf(
-                        '"%s" -> "%s" [label="%s"]',
+                        '"%s" -> "%s"',
                         "place-$place",
-                        "transition-$index",
-                        ''
+                        "transition-$index"
                     );
                     $arcs .= "\n";
                 }
                 foreach ($transition->getToPlaces() as $toPlace) {
-                    if ($toPlace instanceof ToPlaceInterface) {
-                        $arcs .= sprintf(
-                            '"%s" -> "%s" [label="%s"]',
-                            "transition-$index",
-                            "place-{$toPlace->getPlace()}",
-                            $toPlace->getExpression() ? sprintf('(%s)', $toPlace->getExpression()) : ''
-                        );
-                        $arcs .= "\n";
-                    }
+                    $arcs .= sprintf(
+                        '"%s" -> "%s"',
+                        "transition-$index",
+                        "place-$toPlace"
+                    );
+                    $arcs .= "\n";
                 }
             }
         }

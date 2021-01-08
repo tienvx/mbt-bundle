@@ -16,7 +16,6 @@ use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
@@ -29,7 +28,6 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\ToPlace
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
@@ -63,15 +61,9 @@ class RandomGeneratorTest extends TestCase
             $transition2 = new Transition(),
         ];
         $transition1->setFromPlaces([0]);
-        $transition1->setToPlaces([
-            $toPlace1 = new ToPlace(),
-        ]);
-        $toPlace1->setPlace(1);
+        $transition1->setToPlaces([1]);
         $transition2->setFromPlaces([1]);
-        $transition2->setToPlaces([
-            $toPlace2 = new ToPlace(),
-        ]);
-        $toPlace2->setPlace(2);
+        $transition2->setToPlaces([2]);
         $model->setTransitions($transitions);
         $this->task = new Task();
         $this->task->setModel($model);

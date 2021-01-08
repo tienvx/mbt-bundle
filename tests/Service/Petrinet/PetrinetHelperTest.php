@@ -5,12 +5,10 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Petrinet;
 use Petrinet\Model\PlaceInterface;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\ColorfulFactory;
-use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
@@ -19,7 +17,6 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\ToPlace
  */
 class PetrinetHelperTest extends TestCase
 {
@@ -40,17 +37,11 @@ class PetrinetHelperTest extends TestCase
         ];
         $transition1->setGuard('count > 0');
         $transition1->setFromPlaces([0, 1]);
-        $transition1->setToPlaces([
-            $toPlace1 = new ToPlace(),
-        ]);
-        $toPlace1->setPlace(2);
-        $toPlace1->setExpression('{count: 0}');
+        $transition1->setToPlaces([2]);
+        $transition1->setExpression('{count: 0}');
         $transition2->setFromPlaces([2]);
-        $transition2->setToPlaces([
-            $toPlace2 = new ToPlace(),
-        ]);
-        $toPlace2->setPlace(1);
-        $toPlace2->setExpression('{count: count + 1}');
+        $transition2->setToPlaces([1]);
+        $transition2->setExpression('{count: count + 1}');
         $model->setTransitions($transitions);
         $petrinet = $helper->build($model);
         $this->assertCount(3, $petrinet->getPlaces());
@@ -68,26 +59,12 @@ class PetrinetHelperTest extends TestCase
             $this->assertInstanceOf(GuardedTransitionInterface::class, $place);
         }
         $this->assertSame('count > 0', $petrinet->getTransitions()[0]->getGuard()->getExpression());
+        $this->assertSame('{count: 0}', $petrinet->getTransitions()[0]->getExpression()->getExpression());
         $this->assertNull($petrinet->getTransitions()[1]->getGuard());
+        $this->assertSame('{count: count + 1}', $petrinet->getTransitions()[1]->getExpression()->getExpression());
         $this->assertCount(2, $petrinet->getTransitions()[0]->getInputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[0]->getOutputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[1]->getInputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[1]->getOutputArcs());
-        $this->assertInstanceOf(
-            ExpressionalOutputArcInterface::class,
-            $petrinet->getTransitions()[0]->getOutputArcs()[0]
-        );
-        $this->assertSame(
-            '{count: 0}',
-            $petrinet->getTransitions()[0]->getOutputArcs()[0]->getExpression()->getExpression()
-        );
-        $this->assertInstanceOf(
-            ExpressionalOutputArcInterface::class,
-            $petrinet->getTransitions()[1]->getOutputArcs()[0]
-        );
-        $this->assertSame(
-            '{count: count + 1}',
-            $petrinet->getTransitions()[1]->getOutputArcs()[0]->getExpression()->getExpression()
-        );
     }
 }

@@ -12,6 +12,10 @@ interface TransitionInterface
 
     public function setGuard(?string $guard): void;
 
+    public function getExpression(): ?string;
+
+    public function setExpression(?string $expression): void;
+
     public function getActions(): array;
 
     public function setActions(array $actions): void;
@@ -28,7 +32,7 @@ interface TransitionInterface
 
     public function setToPlaces(array $toPlaces): void;
 
-    public function addToPlace(ToPlaceInterface $toPlace): void;
+    public function addToPlace(int $toPlace): void;
 
     public function isSame(self $transition): bool;
 }

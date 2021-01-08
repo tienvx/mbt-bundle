@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 class Command implements CommandInterface
 {
     protected string $command;
-    protected string $target;
+    protected ?string $target = null;
     protected ?string $value = null;
 
     public function getCommand(): string
@@ -18,12 +18,12 @@ class Command implements CommandInterface
         $this->command = $command;
     }
 
-    public function getTarget(): string
+    public function getTarget(): ?string
     {
         return $this->target;
     }
 
-    public function setTarget(string $target): void
+    public function setTarget(?string $target): void
     {
         $this->target = $target;
     }

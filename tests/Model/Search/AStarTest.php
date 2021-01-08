@@ -51,19 +51,23 @@ class AStarTest extends TestCase
         $this->transitionService = new GuardedTransitionService($this->factory, $expressionEvaluator);
         $this->markingHelper = new MarkingHelper($this->factory);
         $builder = new SingleColorPetrinetBuilder($this->factory);
+        $this->clearCart = $builder->transition(null, '{products: 0}');
+        $this->removeLastProduct = $builder->transition('products === 1', '{products: 0}');
+        $this->removeProduct = $builder->transition('products > 1', '{products: products - 1}');
+        $this->addMoreProduct = $builder->transition(null, '{products: products + 1}');
         $this->petrinet = $builder
-            ->connect($this->cartHasProducts = $builder->place(), $this->clearCart = $builder->transition())
-            ->connect($this->clearCart, $this->cartEmpty = $builder->place(), 1, '{products: 0}')
+            ->connect($this->cartHasProducts = $builder->place(), $this->clearCart)
+            ->connect($this->clearCart, $this->cartEmpty = $builder->place(), 1)
             ->connect($this->cartHasProducts, $this->goToCheckout = $builder->transition())
             ->connect($this->goToCheckout, $this->checkout = $builder->place())
-            ->connect($this->cartHasProducts, $this->removeLastProduct = $builder->transition('products === 1'))
-            ->connect($this->removeLastProduct, $this->cartEmpty, 1, '{products: 0}')
-            ->connect($this->cartHasProducts, $this->removeProduct = $builder->transition('products > 1'))
-            ->connect($this->removeProduct, $this->cartHasProducts, 1, '{products: products - 1}')
-            ->connect($this->cartEmpty, $this->addFirstProduct = $builder->transition())
-            ->connect($this->addFirstProduct, $this->cartHasProducts, 1, '{products: 1}')
-            ->connect($this->cartHasProducts, $this->addMoreProduct = $builder->transition())
-            ->connect($this->addMoreProduct, $this->cartHasProducts, 1, '{products: products + 1}')
+            ->connect($this->cartHasProducts, $this->removeLastProduct)
+            ->connect($this->removeLastProduct, $this->cartEmpty, 1)
+            ->connect($this->cartHasProducts, $this->removeProduct)
+            ->connect($this->removeProduct, $this->cartHasProducts, 1)
+            ->connect($this->cartEmpty, $this->addFirstProduct = $builder->transition(null, '{products: 1}'))
+            ->connect($this->addFirstProduct, $this->cartHasProducts, 1)
+            ->connect($this->cartHasProducts, $this->addMoreProduct)
+            ->connect($this->addMoreProduct, $this->cartHasProducts, 1)
             ->connect($this->cartHasProducts, $this->updateCart = $builder->transition())
             ->connect($this->updateCart, $this->cartHasProducts)
             ->getPetrinet();

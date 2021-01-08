@@ -10,12 +10,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\ToPlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Tags;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
@@ -52,8 +50,15 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
+     * @Assert\Url
      */
-    protected string $startingUrl = '';
+    protected string $startUrl = '';
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\ExpressionLanguageSyntax
+     */
+    protected ?string $startExpression = null;
 
     /**
      * @ORM\Column(type="array")
@@ -158,9 +163,10 @@ class Model extends BaseModel
                 $item = [
                     'label' => $transition->getLabel(),
                     'guard' => $transition->getGuard(),
+                    'expression' => $transition->getExpression(),
                     'actions' => $this->normalizeCommands($transition->getActions()),
                     'fromPlaces' => $transition->getFromPlaces(),
-                    'toPlaces' => $this->normalizeToPlaces($transition->getToPlaces()),
+                    'toPlaces' => $transition->getToPlaces(),
                 ];
                 $items[] = $item;
             }
@@ -188,10 +194,7 @@ class Model extends BaseModel
                         ->atPath(sprintf('transitions[%d].fromPlaces', $index))
                         ->addViolation();
                 }
-                $toPlaces = array_map(
-                    fn (ToPlaceInterface $toPlace) => $toPlace->getPlace(),
-                    $transition->getToPlaces()
-                );
+                $toPlaces = $transition->getToPlaces();
                 if ($toPlaces && array_diff($toPlaces, $places)) {
                     $context->buildViolation('To places are invalid')
                         ->atPath(sprintf('transitions[%d].toPlaces', $index))
@@ -204,11 +207,11 @@ class Model extends BaseModel
     /**
      * @Assert\Callback
      */
-    public function validateInitPlaces(ExecutionContextInterface $context, $payload): void
+    public function validateStartPlaces(ExecutionContextInterface $context, $payload): void
     {
         $startingPlaces = array_filter($this->places, fn (array $place) => $place['start'] ?? false);
         if (0 === count($startingPlaces)) {
-            $context->buildViolation('You must select at least 1 place as starting place')
+            $context->buildViolation('You must select at least 1 start place')
                 ->atPath('places')
                 ->addViolation();
         }
@@ -230,46 +233,18 @@ class Model extends BaseModel
         return $items;
     }
 
-    protected function normalizeToPlaces(array $toPlaces): array
-    {
-        $items = [];
-        foreach ($toPlaces as $toPlace) {
-            if ($toPlace instanceof ToPlaceInterface) {
-                $items[] = [
-                    'place' => $toPlace->getPlace(),
-                    'expression' => $toPlace->getExpression(),
-                ];
-            }
-        }
-
-        return $items;
-    }
-
     protected function denormalizeCommands(array $commandsData): array
     {
         $commands = [];
         foreach ($commandsData as $commandData) {
             $command = new Command();
             $command->setCommand($commandData['command'] ?? '');
-            $command->setTarget($commandData['target'] ?? '');
+            $command->setTarget($commandData['target'] ?? null);
             $command->setValue($commandData['value'] ?? null);
             $commands[] = $command;
         }
 
         return $commands;
-    }
-
-    protected function denormalizeToPlaces(array $toPlacesData): array
-    {
-        $toPlaces = [];
-        foreach ($toPlacesData as $toPlaceData) {
-            $toPlace = new ToPlace();
-            $toPlace->setPlace($toPlaceData['place'] ?? -1);
-            $toPlace->setExpression($toPlaceData['expression'] ?? null);
-            $toPlaces[] = $toPlace;
-        }
-
-        return $toPlaces;
     }
 
     protected function denormalizePlace(array $placeData): PlaceInterface
@@ -287,9 +262,10 @@ class Model extends BaseModel
         $transition = new Transition();
         $transition->setLabel($transitionData['label'] ?? '');
         $transition->setGuard($transitionData['guard'] ?? null);
+        $transition->setExpression($transitionData['expression'] ?? null);
         $transition->setActions($this->denormalizeCommands($transitionData['actions'] ?? []));
         $transition->setFromPlaces($transitionData['fromPlaces'] ?? []);
-        $transition->setToPlaces($this->denormalizeToPlaces($transitionData['toPlaces'] ?? []));
+        $transition->setToPlaces($transitionData['toPlaces'] ?? []);
 
         return $transition;
     }
