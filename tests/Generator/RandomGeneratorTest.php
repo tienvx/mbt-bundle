@@ -27,6 +27,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
@@ -44,11 +45,12 @@ class RandomGeneratorTest extends TestCase
         $factory = new ColorfulFactory();
         $petrinetHelper = new PetrinetHelper($factory);
         $markingHelper = new MarkingHelper($factory);
-        $modelHelper = new ModelHelper();
         $expressionLanguage = new ExpressionLanguage();
         $expressionEvaluator = new ExpressionLanguageEvaluator($expressionLanguage);
+        $modelHelper = new ModelHelper($factory, $expressionEvaluator);
         $transitionService = new GuardedTransitionService($factory, $expressionEvaluator);
         $model = new Model();
+        $model->setStartExpression('{count: 0}');
         $places = [
             $place1 = new Place(),
             $place2 = new Place(),
@@ -62,8 +64,10 @@ class RandomGeneratorTest extends TestCase
         ];
         $transition1->setFromPlaces([0]);
         $transition1->setToPlaces([1]);
+        $transition1->setExpression('{count: count + 1}');
         $transition2->setFromPlaces([1]);
         $transition2->setToPlaces([2]);
+        $transition2->setExpression('{count: count - 1}');
         $model->setTransitions($transitions);
         $this->task = new Task();
         $this->task->setModel($model);

@@ -44,8 +44,12 @@ class RandomGenerator extends AbstractGenerator
     public function generate(TaskInterface $task): iterable
     {
         $petrinet = $this->petrinetHelper->build($task->getModel());
-        $places = $this->modelHelper->getStartingPlaces($task->getModel());
-        $marking = $this->markingHelper->getMarking($petrinet, $places);
+        $places = $this->modelHelper->getStartPlaces($task->getModel());
+        $marking = $this->markingHelper->getMarking(
+            $petrinet,
+            $places,
+            $this->modelHelper->getStartColor($task->getModel())
+        );
         $state = new State(array_keys($places), count($petrinet->getPlaces()), count($petrinet->getTransitions()));
         $transition = null;
 
