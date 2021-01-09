@@ -12,7 +12,15 @@ class Transition extends TransitionModel
      */
     protected string $label = '';
 
+    /**
+     * @Assert\ExpressionLanguageSyntax
+     */
     protected ?string $guard = null;
+
+    /**
+     * @Assert\ExpressionLanguageSyntax
+     */
+    protected ?string $expression = null;
 
     /**
      * @Assert\All({
@@ -32,9 +40,8 @@ class Transition extends TransitionModel
 
     /**
      * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\ToPlace")
+     *     @Assert\Type("integer")
      * })
-     * @Assert\Valid
      * @Assert\Count(min=1, minMessage="This transition should connect some places to at least 1 place.")
      */
     protected array $toPlaces = [];

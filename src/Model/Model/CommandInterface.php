@@ -8,9 +8,9 @@ interface CommandInterface
 
     public function setCommand(string $command): void;
 
-    public function getTarget(): string;
+    public function getTarget(): ?string;
 
-    public function setTarget(string $target): void;
+    public function setTarget(?string $target): void;
 
     public function getValue(): ?string;
 

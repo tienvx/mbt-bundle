@@ -2,15 +2,29 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
+use SingleColorPetrinet\Model\ColorfulFactoryInterface;
+use SingleColorPetrinet\Model\ColorInterface;
+use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class ModelHelper implements ModelHelperInterface
 {
+    protected ColorfulFactoryInterface $colorfulFactory;
+    protected ExpressionEvaluatorInterface $expressionEvaluator;
+
+    public function __construct(
+        ColorfulFactoryInterface $colorfulFactory,
+        ExpressionEvaluatorInterface $expressionEvaluator
+    ) {
+        $this->colorfulFactory = $colorfulFactory;
+        $this->expressionEvaluator = $expressionEvaluator;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function getStartingPlaces(ModelInterface $model): array
+    public function getStartPlaces(ModelInterface $model): array
     {
         $places = [];
         foreach ($model->getPlaces() as $index => $place) {
@@ -20,5 +34,16 @@ class ModelHelper implements ModelHelperInterface
         }
 
         return $places;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStartColor(ModelInterface $model): ColorInterface
+    {
+        $color = $this->colorfulFactory->createColor([]);
+        $expression = $this->colorfulFactory->createExpression($model->getStartExpression(), false);
+
+        return $this->colorfulFactory->createColor($this->expressionEvaluator->evaluate($expression, $color));
     }
 }

@@ -39,7 +39,7 @@ class StepRunnerTest extends TestCase
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->model = new Model();
-        $this->model->setStartingUrl('http://example.com');
+        $this->model->setStartUrl('http://example.com');
         $transitions = [
             $transition = new Transition(),
         ];

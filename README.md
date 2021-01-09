@@ -1,4 +1,4 @@
-# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link] [![Version][version-image]][version-url]
+# MBT Bundle [![Build Status][actions_badge]][actions_link] [![Coverage Status][coveralls_badge]][coveralls_link] [![Version][version-image]][version-url] [![PHP Version][php-version-image]][php-version-url]
 
 This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Testing tool.
 
@@ -63,6 +63,9 @@ This package is available under the [MIT license](LICENSE).
 
 [version-url]: https://packagist.org/packages/tienvx/mbt-bundle
 [version-image]: http://img.shields.io/packagist/v/tienvx/mbt-bundle.svg?style=flat
+
+[php-version-url]: https://packagist.org/packages/tienvx/coloured-petrinet
+[php-version-image]: http://img.shields.io/badge/php-7.4.0+-ff69b4.svg
 
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls

@@ -6,6 +6,7 @@ class Transition implements TransitionInterface
 {
     protected string $label = '';
     protected ?string $guard = null;
+    protected ?string $expression = null;
     protected array $actions = [];
     protected array $fromPlaces = [];
     protected array $toPlaces = [];
@@ -28,6 +29,16 @@ class Transition implements TransitionInterface
     public function setGuard(?string $guard): void
     {
         $this->guard = $guard;
+    }
+
+    public function getExpression(): ?string
+    {
+        return $this->expression;
+    }
+
+    public function setExpression(?string $expression): void
+    {
+        $this->expression = $expression;
     }
 
     public function getActions(): array
@@ -82,7 +93,7 @@ class Transition implements TransitionInterface
         }
     }
 
-    public function addToPlace(ToPlaceInterface $toPlace): void
+    public function addToPlace(int $toPlace): void
     {
         $this->toPlaces[] = $toPlace;
     }
@@ -91,7 +102,7 @@ class Transition implements TransitionInterface
     {
         return $this->getGuard() === $transition->getGuard() &&
             $this->getFromPlaces() === $transition->getFromPlaces() &&
-            $this->isSameToPlaces($transition->getToPlaces()) &&
+            $this->getToPlaces() === $transition->getToPlaces() &&
             $this->isSameActions($transition->getActions());
     }
 
@@ -106,25 +117,6 @@ class Transition implements TransitionInterface
                 !$selfAction instanceof CommandInterface ||
                 !$action instanceof CommandInterface ||
                 !$selfAction->isSame($action)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected function isSameToPlaces(array $toPlaces): bool
-    {
-        if (count($this->toPlaces) !== count($toPlaces)) {
-            return false;
-        }
-        foreach ($toPlaces as $index => $toPlace) {
-            $selfToPlace = $this->toPlaces[$index] ?? null;
-            if (
-                !$selfToPlace instanceof ToPlaceInterface ||
-                !$toPlace instanceof ToPlaceInterface ||
-                !$selfToPlace->isSame($toPlace)
             ) {
                 return false;
             }

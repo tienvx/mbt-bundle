@@ -248,7 +248,12 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(ModelDumper::class)
             ->alias(ModelDumperInterface::class, ModelDumper::class)
+
         ->set(ModelHelper::class)
+            ->args([
+                service(ColorfulFactoryInterface::class),
+                service(ExpressionEvaluatorInterface::class),
+            ])
             ->alias(ModelHelperInterface::class, ModelHelper::class)
 
         ->set(BugProgress::class)

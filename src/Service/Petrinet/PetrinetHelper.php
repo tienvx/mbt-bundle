@@ -8,7 +8,6 @@ use Petrinet\Model\TransitionInterface as PetrinetTransitionInterface;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\ToPlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
@@ -58,7 +57,7 @@ class PetrinetHelper implements PetrinetHelperInterface
         $transitions = [];
         foreach ($model->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
-                $transitions[$index] = $builder->transition($transition->getGuard());
+                $transitions[$index] = $builder->transition($transition->getGuard(), $transition->getExpression());
                 $transitions[$index]->setId($index);
             }
         }
@@ -85,9 +84,7 @@ class PetrinetHelper implements PetrinetHelperInterface
         SingleColorPetrinetBuilder $builder
     ): void {
         foreach ($toPlaces as $toPlace) {
-            if ($toPlace instanceof ToPlaceInterface) {
-                $builder->connect($transition, $places[$toPlace->getPlace()], 1, $toPlace->getExpression());
-            }
+            $builder->connect($transition, $places[$toPlace], 1);
         }
     }
 }

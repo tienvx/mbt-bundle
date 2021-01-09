@@ -3,12 +3,16 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
+use SingleColorPetrinet\Model\ColorfulFactory;
+use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper
+ * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
@@ -16,7 +20,17 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
  */
 class ModelHelperTest extends TestCase
 {
-    public function testGetStartingPlaces(): void
+    protected ModelHelper $modelHelper;
+
+    protected function setUp(): void
+    {
+        $factory = new ColorfulFactory();
+        $expressionLanguage = new ExpressionLanguage();
+        $expressionEvaluator = new ExpressionLanguageEvaluator($expressionLanguage);
+        $this->modelHelper = new ModelHelper($factory, $expressionEvaluator);
+    }
+
+    public function testGetStartPlaces(): void
     {
         $model = new Model();
         $model->setId(1);
@@ -35,6 +49,17 @@ class ModelHelperTest extends TestCase
         $this->assertSame([
             1 => 1,
             2 => 1,
-        ], (new ModelHelper())->getStartingPlaces($model));
+        ], $this->modelHelper->getStartPlaces($model));
+    }
+
+    public function testGetStartColor(): void
+    {
+        $model = new Model();
+        $model->setStartExpression('{count: 8, product: "car"}');
+        $color = $this->modelHelper->getStartColor($model);
+        $this->assertSame([
+            'count' => '8',
+            'product' => 'car',
+        ], $color->getValues());
     }
 }
