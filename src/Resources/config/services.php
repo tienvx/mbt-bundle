@@ -67,8 +67,6 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\TaskProgress;
-use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
@@ -120,7 +118,6 @@ return static function (ContainerConfigurator $container): void {
                 service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(StepRunnerInterface::class),
-                service(TaskProgressInterface::class),
                 service(TranslatorInterface::class),
             ])
             ->autoconfigure(true)
@@ -281,9 +278,6 @@ return static function (ContainerConfigurator $container): void {
                 service(CommandRunnerManagerInterface::class),
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
-
-        ->set(TaskProgress::class)
-            ->alias(TaskProgressInterface::class, TaskProgress::class)
 
         ->set(MarkingHelper::class)
             ->args([

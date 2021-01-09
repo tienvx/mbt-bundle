@@ -11,4 +11,6 @@ interface ProgressInterface
     public function getProcessed(): int;
 
     public function setProcessed(int $processed): void;
+
+    public function increase(int $processed = 1): void;
 }

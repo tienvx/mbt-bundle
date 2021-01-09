@@ -17,7 +17,6 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 
 class ExecuteTaskMessageHandler implements MessageHandlerInterface
 {
@@ -25,7 +24,6 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     protected ProviderManagerInterface $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
-    protected TaskProgressInterface $taskProgress;
     protected TranslatorInterface $translator;
     protected int $maxSteps;
 
@@ -34,14 +32,12 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         ProviderManagerInterface $providerManager,
         EntityManagerInterface $entityManager,
         StepRunnerInterface $stepRunner,
-        TaskProgressInterface $taskProgress,
         TranslatorInterface $translator
     ) {
         $this->generatorManager = $generatorManager;
         $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->stepRunner = $stepRunner;
-        $this->taskProgress = $taskProgress;
         $this->translator = $translator;
     }
 
@@ -73,12 +69,12 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         $steps = [];
         $generator = $this->generatorManager->getGenerator($task->getTaskConfig()->getGenerator());
         $driver = $this->providerManager->createDriver($task);
-        $this->taskProgress->setTotal($task, $this->maxSteps);
+        $task->getProgress()->setTotal($this->maxSteps);
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
                     $steps[] = $step;
-                    $this->taskProgress->increaseProcessed($task, 1);
+                    $task->getProgress()->increase();
                     $this->stepRunner->run($step, $task->getModel(), $driver);
                 }
                 if (count($steps) >= $this->maxSteps) {
@@ -92,6 +88,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
             $this->entityManager->persist($bug);
         } finally {
             $driver->quit();
+            $task->getProgress()->setTotal(count($steps));
             // Executing task take long time. Reconnect to flush changes.
             $this->entityManager->getConnection()->connect();
             $this->entityManager->flush();

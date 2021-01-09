@@ -8,6 +8,7 @@ use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
@@ -18,7 +19,6 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Service\TaskProgressInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
@@ -31,6 +31,7 @@ use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
  */
 class ExecuteTaskMessageHandlerTest extends StepsTestCase
 {
@@ -39,7 +40,6 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
     protected ProviderManagerInterface $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
-    protected TaskProgressInterface $taskProgress;
     protected TranslatorInterface $translator;
     protected Connection $connection;
     protected ExecuteTaskMessageHandler $handler;
@@ -56,7 +56,6 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $this->providerManager = $this->createMock(ProviderManagerInterface::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->stepRunner = $this->createMock(StepRunnerInterface::class);
-        $this->taskProgress = $this->createMock(TaskProgressInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->connection = $this->createMock(Connection::class);
         $this->handler = new ExecuteTaskMessageHandler(
@@ -64,7 +63,6 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
             $this->providerManager,
             $this->entityManager,
             $this->stepRunner,
-            $this->taskProgress,
             $this->translator
         );
         $this->handler->setMaxSteps(150);
@@ -85,6 +83,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
+        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -96,13 +95,13 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $this->stepRunner->expects($this->exactly(4))
             ->method('run')->with($this->isInstanceOf(StepInterface::class), $model, $driver);
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
-        $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
-        $this->taskProgress->expects($this->exactly(4))->method('increaseProcessed')->with($task, 1);
         $this->connection->expects($this->once())->method('connect');
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->entityManager->expects($this->never())->method('persist');
         $message = new ExecuteTaskMessage(123);
         call_user_func($this->handler, $message);
+        $this->assertSame(4, $task->getProgress()->getProcessed());
+        $this->assertSame(4, $task->getProgress()->getTotal());
     }
 
     public function testInvokeFoundBug(): void
@@ -113,6 +112,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
+        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -129,8 +129,6 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
                 $this->throwException(new Exception('Can not run the third step')),
             ));
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
-        $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 150);
-        $this->taskProgress->expects($this->exactly(3))->method('increaseProcessed')->with($task, 1);
         $this->entityManager->expects($this->once())->method('persist')->with(
             $this->callback(function ($bug) use ($task) {
                 if (!$bug instanceof BugInterface) {
@@ -155,6 +153,8 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
 
         $message = new ExecuteTaskMessage(123);
         call_user_func($this->handler, $message);
+        $this->assertSame(3, $task->getProgress()->getProcessed());
+        $this->assertSame(3, $task->getProgress()->getTotal());
     }
 
     public function testInvokeReachMaxSteps(): void
@@ -164,6 +164,7 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $task = new Task();
         $task->setModel($model);
         $task->getTaskConfig()->setGenerator('random');
+        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -175,12 +176,12 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
         $this->stepRunner->expects($this->exactly(2))->method('run')
             ->with($this->isInstanceOf(StepInterface::class), $model, $driver);
         $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
-        $this->taskProgress->expects($this->once())->method('setTotal')->with($task, 2);
-        $this->taskProgress->expects($this->exactly(2))->method('increaseProcessed')->with($task, 1);
         $this->connection->expects($this->once())->method('connect');
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->entityManager->expects($this->never())->method('persist');
         $message = new ExecuteTaskMessage(123);
         call_user_func($this->handler, $message);
+        $this->assertSame(2, $task->getProgress()->getProcessed());
+        $this->assertSame(2, $task->getProgress()->getTotal());
     }
 }
