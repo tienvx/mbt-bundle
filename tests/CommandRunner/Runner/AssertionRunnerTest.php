@@ -568,12 +568,4 @@ class AssertionRunnerTest extends RunnerTestCase
             [AssertionRunner::ASSERT_PROMPT, 'prompt'],
         ];
     }
-
-    public function supportsCommandProvider(): array
-    {
-        return [
-            ...array_map(fn ($command) => [$command, true], AssertionRunner::ALL_COMMANDS),
-            ['invalidCommand', false],
-        ];
-    }
 }

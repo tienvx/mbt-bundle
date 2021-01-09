@@ -11,16 +11,9 @@ use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 abstract class CommandRunner implements CommandRunnerInterface
 {
-    public const ALL_COMMANDS = [];
-
-    public function getAssertions(): array
-    {
-        return [];
-    }
-
     public function supports(CommandInterface $command): bool
     {
-        return in_array($command->getCommand(), static::ALL_COMMANDS);
+        return in_array($command->getCommand(), $this->getAllCommands());
     }
 
     protected function getSelector(string $target): WebDriverBy

@@ -16,16 +16,7 @@ class WaitCommandRunner extends CommandRunner
     public const WAIT_FOR_ELEMENT_VISIBLE = 'waitForElementVisible';
     public const WAIT_FOR_ELEMENT_NOT_VISIBLE = 'waitForElementNotVisible';
 
-    public const ALL_COMMANDS = [
-        self::WAIT_FOR_ELEMENT_EDITABLE,
-        self::WAIT_FOR_ELEMENT_NOT_EDITABLE,
-        self::WAIT_FOR_ELEMENT_PRESENT,
-        self::WAIT_FOR_ELEMENT_NOT_PRESENT,
-        self::WAIT_FOR_ELEMENT_VISIBLE,
-        self::WAIT_FOR_ELEMENT_NOT_VISIBLE,
-    ];
-
-    public function getActions(): array
+    public function getAllCommands(): array
     {
         return [
             'Wait For Element Editable' => self::WAIT_FOR_ELEMENT_EDITABLE,
@@ -35,6 +26,16 @@ class WaitCommandRunner extends CommandRunner
             'Wait For Element Visible' => self::WAIT_FOR_ELEMENT_VISIBLE,
             'Wait For Element Not Visible' => self::WAIT_FOR_ELEMENT_NOT_VISIBLE,
         ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return array_values($this->getAllCommands());
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return array_values($this->getAllCommands());
     }
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void

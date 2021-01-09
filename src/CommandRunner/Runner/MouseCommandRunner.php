@@ -28,26 +28,7 @@ class MouseCommandRunner extends CommandRunner
     public const MOUSE_UP_AT = 'mouseUpAt';
     public const SELECT = 'select';
 
-    public const ALL_COMMANDS = [
-        self::ADD_SELECTION,
-        self::REMOVE_SELECTION,
-        self::CHECK,
-        self::UNCHECK,
-        self::CLICK,
-        self::CLICK_AT,
-        self::DOUBLE_CLICK,
-        self::DOUBLE_CLICK_AT,
-        self::DRAG_AND_DROP_TO_OBJECT,
-        self::MOUSE_DOWN,
-        self::MOUSE_DOWN_AT,
-        self::MOUSE_MOVE_AT,
-        self::MOUSE_OVER,
-        self::MOUSE_UP,
-        self::MOUSE_UP_AT,
-        self::SELECT,
-    ];
-
-    public function getActions(): array
+    public function getAllCommands(): array
     {
         return [
             'Add Selection' => self::ADD_SELECTION,
@@ -66,6 +47,26 @@ class MouseCommandRunner extends CommandRunner
             'Mouse Up' => self::MOUSE_UP,
             'Mouse Up At' => self::MOUSE_UP_AT,
             'Select' => self::SELECT,
+        ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return array_values($this->getAllCommands());
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return [
+            self::ADD_SELECTION,
+            self::REMOVE_SELECTION,
+            self::CLICK_AT,
+            self::DOUBLE_CLICK_AT,
+            self::DRAG_AND_DROP_TO_OBJECT,
+            self::MOUSE_DOWN_AT,
+            self::MOUSE_MOVE_AT,
+            self::MOUSE_UP_AT,
+            self::SELECT,
         ];
     }
 

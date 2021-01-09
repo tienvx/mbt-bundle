@@ -126,12 +126,4 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
         $this->runner->run($command, $this->driver);
     }
-
-    public function supportsCommandProvider(): array
-    {
-        return [
-            ...array_map(fn ($command) => [$command, true], WindowCommandRunner::ALL_COMMANDS),
-            ['invalidCommand', false],
-        ];
-    }
 }

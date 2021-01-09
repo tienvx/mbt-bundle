@@ -15,5 +15,12 @@ class ValidCommand extends Constraint
         self::IS_COMMAND_INVALID_ERROR => 'IS_COMMAND_INVALID_ERROR',
     ];
 
-    public string $message = 'The command is not valid.';
+    public string $commandMessage = 'The command is not valid.';
+    public string $targetMessage = 'The target is not valid.';
+    public string $valueMessage = 'The value is not valid.';
+
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

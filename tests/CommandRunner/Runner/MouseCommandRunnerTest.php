@@ -436,12 +436,4 @@ class MouseCommandRunnerTest extends RunnerTestCase
             [false, false],
         ];
     }
-
-    public function supportsCommandProvider(): array
-    {
-        return [
-            ...array_map(fn ($command) => [$command, true], MouseCommandRunner::ALL_COMMANDS),
-            ['invalidCommand', false],
-        ];
-    }
 }

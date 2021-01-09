@@ -14,15 +14,7 @@ class AlertCommandRunner extends CommandRunner
     public const DISMISS_CONFIRMATION = 'dismissConfirmation';
     public const DISMISS_PROMPT = 'dismissPrompt';
 
-    public const ALL_COMMANDS = [
-        self::ACCEPT_ALERT,
-        self::ACCEPT_CONFIRMATION,
-        self::ANSWER_PROMPT,
-        self::DISMISS_CONFIRMATION,
-        self::DISMISS_PROMPT,
-    ];
-
-    public function getActions(): array
+    public function getAllCommands(): array
     {
         return [
             'Accept Alert' => self::ACCEPT_ALERT,
@@ -31,6 +23,18 @@ class AlertCommandRunner extends CommandRunner
             'Dismiss Confirmation' => self::DISMISS_CONFIRMATION,
             'Dismiss Prompt' => self::DISMISS_PROMPT,
         ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return [
+            self::ANSWER_PROMPT,
+        ];
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return [];
     }
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void

@@ -17,15 +17,7 @@ class WindowCommandRunner extends CommandRunner
     public const CLOSE = 'close';
     public const SELECT_FRAME = 'selectFrame';
 
-    public const ALL_COMMANDS = [
-        self::OPEN,
-        self::SET_WINDOW_SIZE,
-        self::SELECT_WINDOW,
-        self::CLOSE,
-        self::SELECT_FRAME,
-    ];
-
-    public function getActions(): array
+    public function getAllCommands(): array
     {
         return [
             'Open' => self::OPEN,
@@ -34,6 +26,21 @@ class WindowCommandRunner extends CommandRunner
             'Close' => self::CLOSE,
             'Select Frame' => self::SELECT_FRAME,
         ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return [
+            self::OPEN,
+            self::SET_WINDOW_SIZE,
+            self::SELECT_WINDOW,
+            self::SELECT_FRAME,
+        ];
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return [];
     }
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void

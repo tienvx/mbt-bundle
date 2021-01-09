@@ -26,6 +26,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Validator\TagsValidator
+ * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommand
  * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Command
  */
 class ModelTest extends TestCase
@@ -104,7 +105,7 @@ class ModelTest extends TestCase
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(17, $violations);
+        $this->assertCount(18, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
@@ -122,13 +123,15 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).startExpression:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
+    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[1].target:
-    Command click need target
+    The target is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
     The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[1].value:
-    Command clickAt need value
+    The value is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:

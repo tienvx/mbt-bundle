@@ -11,17 +11,22 @@ class KeyboardCommandRunner extends CommandRunner
     public const TYPE = 'type';
     public const SEND_KEYS = 'sendKeys';
 
-    public const ALL_COMMANDS = [
-        self::TYPE,
-        self::SEND_KEYS,
-    ];
-
-    public function getActions(): array
+    public function getAllCommands(): array
     {
         return [
             'Type' => self::TYPE,
             'Send Keys' => self::SEND_KEYS,
         ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return array_values($this->getAllCommands());
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return [];
     }
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void
