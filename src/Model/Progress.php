@@ -27,4 +27,9 @@ class Progress implements ProgressInterface
     {
         $this->processed = $processed;
     }
+
+    public function increase(int $processed = 1): void
+    {
+        $this->processed = min($this->total, $this->processed + $processed);
+    }
 }
