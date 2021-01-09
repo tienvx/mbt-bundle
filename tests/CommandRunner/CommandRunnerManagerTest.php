@@ -29,36 +29,54 @@ class CommandRunnerManagerTest extends TestCase
         $this->manager = new CommandRunnerManager($this->runners);
     }
 
-    public function testGetActions(): void
+    public function testGetAllCommands(): void
     {
-        $this->runners[0]->expects($this->once())->method('getActions')->willReturn([
+        $this->runners[0]->expects($this->once())->method('getAllCommands')->willReturn([
             'Action 1' => 'action1',
             'Action 2' => 'action2',
         ]);
-        $this->runners[1]->expects($this->once())->method('getActions')->willReturn([
+        $this->runners[1]->expects($this->once())->method('getAllCommands')->willReturn([
             'Action 3' => 'action3',
         ]);
         $this->assertSame([
             'Action 1' => 'action1',
             'Action 2' => 'action2',
             'Action 3' => 'action3',
-        ], $this->manager->getActions());
+        ], $this->manager->getAllCommands());
     }
 
-    public function testGetAssertions(): void
+    public function testGetCommandsRequireTarget(): void
     {
-        $this->runners[0]->expects($this->once())->method('getAssertions')->willReturn([
-            'Assertion 1' => 'assertion1',
+        $this->runners[0]->expects($this->once())->method('getCommandsRequireTarget')->willReturn([
+            'Action 1' => 'action1',
         ]);
-        $this->runners[1]->expects($this->once())->method('getAssertions')->willReturn([
-            'Assertion 2' => 'assertion2',
-            'Assertion 3' => 'assertion3',
+        $this->runners[1]->expects($this->once())->method('getCommandsRequireTarget')->willReturn([
+            'Action 2' => 'action2',
+            'Action 3' => 'action3',
         ]);
         $this->assertSame([
-            'Assertion 1' => 'assertion1',
-            'Assertion 2' => 'assertion2',
-            'Assertion 3' => 'assertion3',
-        ], $this->manager->getAssertions());
+            'Action 1' => 'action1',
+            'Action 2' => 'action2',
+            'Action 3' => 'action3',
+        ], $this->manager->getCommandsRequireTarget());
+    }
+
+    public function testGetCommandsRequireValue(): void
+    {
+        $this->runners[0]->expects($this->once())->method('getCommandsRequireValue')->willReturn([
+            'Action 1' => 'action1',
+            'Action 4' => 'action4',
+        ]);
+        $this->runners[1]->expects($this->once())->method('getCommandsRequireValue')->willReturn([
+            'Action 2' => 'action2',
+            'Action 3' => 'action3',
+        ]);
+        $this->assertSame([
+            'Action 1' => 'action1',
+            'Action 4' => 'action4',
+            'Action 2' => 'action2',
+            'Action 3' => 'action3',
+        ], $this->manager->getCommandsRequireValue());
     }
 
     public function testRunCommandInSecondRunner(): void

@@ -32,6 +32,9 @@ abstract class RunnerTestCase extends TestCase
 
     public function supportsCommandProvider(): array
     {
-        return [];
+        return [
+            ...array_map(fn ($command) => [$command, true], array_values($this->createRunner()->getAllCommands())),
+            ['invalidCommand', false],
+        ];
     }
 }

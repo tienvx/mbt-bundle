@@ -7,6 +7,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 class ValidCommandValidator extends ConstraintValidator
 {
@@ -23,20 +24,38 @@ class ValidCommandValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, ValidCommand::class);
         }
 
-        if (null === $value || '' === $value) {
+        if (null === $value) {
             return;
         }
 
-        if (!is_string($value)) {
-            throw new UnexpectedValueException($value, 'string');
+        if (!$value instanceof Command) {
+            throw new UnexpectedValueException($value, Command::class);
+        }
+
+        if (!in_array($value->getCommand(), $this->commandRunnerManager->getAllCommands())) {
+            $this->context->buildViolation($constraint->commandMessage)
+                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('command')
+                ->addViolation();
         }
 
         if (
-            !in_array($value, $this->commandRunnerManager->getActions())
-            && !in_array($value, $this->commandRunnerManager->getAssertions())
+            in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireTarget())
+            && is_null($value->getTarget())
         ) {
-            $this->context->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->targetMessage)
                 ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('target')
+                ->addViolation();
+        }
+
+        if (
+            in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireValue())
+            && is_null($value->getValue())
+        ) {
+            $this->context->buildViolation($constraint->valueMessage)
+                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('value')
                 ->addViolation();
         }
     }

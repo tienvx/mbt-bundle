@@ -15,6 +15,7 @@ use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommand;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
@@ -26,6 +27,7 @@ use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class ValidCommandValidatorTest extends ConstraintValidatorTestCase
 {
@@ -42,35 +44,76 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
     }
 
     /**
-     * @dataProvider getValidValues
+     * @dataProvider validCommandsProvider
      */
-    public function testValidValues($value)
+    public function testValidCommand($command)
     {
-        $this->validator->validate($value, new ValidCommand());
+        $this->validator->validate($command, new ValidCommand());
 
         $this->assertNoViolation();
     }
 
-    public function getValidValues(): array
+    public function validCommandsProvider(): array
     {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::CLICK_AT);
+        $command->setTarget('css=.button');
+        $command->setValue('123,234');
+
         return [
             [null],
-            [''],
-            ['click'],
-            ['assertTitle'],
+            [$command],
         ];
     }
 
     public function testInvalidCommand()
     {
         $constraint = new ValidCommand([
-            'message' => 'myMessage',
+            'commandMessage' => 'invalid command',
         ]);
 
-        $this->validator->validate('notValidCommand', $constraint);
+        $command = new Command();
+        $command->setCommand('notValidCommand');
+        $this->validator->validate($command, $constraint);
 
-        $this->buildViolation('myMessage')
+        $this->buildViolation('invalid command')
             ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+            ->atPath('property.path.command')
+            ->assertRaised();
+    }
+
+    public function testInvalidTarget()
+    {
+        $constraint = new ValidCommand([
+            'targetMessage' => 'invalid target',
+        ]);
+
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::CLICK);
+        $command->setTarget(null);
+        $this->validator->validate($command, $constraint);
+
+        $this->buildViolation('invalid target')
+            ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+            ->atPath('property.path.target')
+            ->assertRaised();
+    }
+
+    public function testInvalidValue()
+    {
+        $constraint = new ValidCommand([
+            'valueMessage' => 'invalid value',
+        ]);
+
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::CLICK_AT);
+        $command->setTarget('css=.button');
+        $command->setValue(null);
+        $this->validator->validate($command, $constraint);
+
+        $this->buildViolation('invalid value')
+            ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+            ->atPath('property.path.value')
             ->assertRaised();
     }
 
@@ -86,7 +129,9 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
     public function testUnexpectedValue(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf('Expected argument of type "%s", "%s" given', 'string', 'stdClass'));
+        $this->expectExceptionMessage(
+            sprintf('Expected argument of type "%s", "%s" given', Command::class, 'stdClass')
+        );
         $this->validator->validate(new \stdClass(), new ValidCommand());
     }
 }

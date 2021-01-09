@@ -14,28 +14,19 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
         $this->runners = $runners;
     }
 
-    public function getActions(): array
+    public function getAllCommands(): array
     {
-        $actions = [];
-        foreach ($this->runners as $runner) {
-            if ($runner instanceof CommandRunnerInterface) {
-                $actions += $runner->getActions();
-            }
-        }
-
-        return $actions;
+        return $this->getCommands();
     }
 
-    public function getAssertions(): array
+    public function getCommandsRequireTarget(): array
     {
-        $assertions = [];
-        foreach ($this->runners as $runner) {
-            if ($runner instanceof CommandRunnerInterface) {
-                $assertions += $runner->getAssertions();
-            }
-        }
+        return $this->getCommands('getCommandsRequireTarget');
+    }
 
-        return $assertions;
+    public function getCommandsRequireValue(): array
+    {
+        return $this->getCommands('getCommandsRequireValue');
     }
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void
@@ -46,5 +37,17 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
                 break;
             }
         }
+    }
+
+    protected function getCommands(string $method = 'getAllCommands'): array
+    {
+        $actions = [];
+        foreach ($this->runners as $runner) {
+            if ($runner instanceof CommandRunnerInterface) {
+                $actions = array_merge($actions, call_user_func([$runner, $method]));
+            }
+        }
+
+        return $actions;
     }
 }

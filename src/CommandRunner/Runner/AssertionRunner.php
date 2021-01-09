@@ -28,32 +28,7 @@ class AssertionRunner extends CommandRunner
     public const ASSERT_SELECTED_LABEL = 'assertSelectedLabel';
     public const ASSERT_NOT_SELECTED_LABEL = 'assertNotSelectedLabel';
 
-    public const ALL_COMMANDS = [
-        self::ASSERT_ALERT,
-        self::ASSERT_CONFIRMATION,
-        self::ASSERT_PROMPT,
-        self::ASSERT_TITLE,
-        self::ASSERT_TEXT,
-        self::ASSERT_NOT_TEXT,
-        self::ASSERT_VALUE,
-        self::ASSERT_EDITABLE,
-        self::ASSERT_NOT_EDITABLE,
-        self::ASSERT_ELEMENT_PRESENT,
-        self::ASSERT_ELEMENT_NOT_PRESENT,
-        self::ASSERT_CHECKED,
-        self::ASSERT_NOT_CHECKED,
-        self::ASSERT_SELECTED_VALUE,
-        self::ASSERT_NOT_SELECTED_VALUE,
-        self::ASSERT_SELECTED_LABEL,
-        self::ASSERT_NOT_SELECTED_LABEL,
-    ];
-
-    public function getActions(): array
-    {
-        return [];
-    }
-
-    public function getAssertions(): array
+    public function getAllCommands(): array
     {
         return [
             'Assert Alert' => self::ASSERT_ALERT,
@@ -73,6 +48,24 @@ class AssertionRunner extends CommandRunner
             'Assert Not Selected Value' => self::ASSERT_NOT_SELECTED_VALUE,
             'Assert Selected Label' => self::ASSERT_SELECTED_LABEL,
             'Assert Not Selected Label' => self::ASSERT_NOT_SELECTED_LABEL,
+        ];
+    }
+
+    public function getCommandsRequireTarget(): array
+    {
+        return array_values($this->getAllCommands());
+    }
+
+    public function getCommandsRequireValue(): array
+    {
+        return [
+            self::ASSERT_TEXT,
+            self::ASSERT_NOT_TEXT,
+            self::ASSERT_VALUE,
+            self::ASSERT_SELECTED_VALUE,
+            self::ASSERT_NOT_SELECTED_VALUE,
+            self::ASSERT_SELECTED_LABEL,
+            self::ASSERT_NOT_SELECTED_LABEL,
         ];
     }
 

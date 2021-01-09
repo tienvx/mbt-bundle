@@ -54,12 +54,4 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
         }))->willReturn($element);
         $this->runner->run($command, $this->driver);
     }
-
-    public function supportsCommandProvider(): array
-    {
-        return [
-            ...array_map(fn ($command) => [$command, true], KeyboardCommandRunner::ALL_COMMANDS),
-            ['invalidCommand', false],
-        ];
-    }
 }

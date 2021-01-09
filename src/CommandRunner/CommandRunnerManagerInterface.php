@@ -7,9 +7,11 @@ use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 interface CommandRunnerManagerInterface
 {
-    public function getActions(): array;
+    public function getAllCommands(): array;
 
-    public function getAssertions(): array;
+    public function getCommandsRequireTarget(): array;
+
+    public function getCommandsRequireValue(): array;
 
     public function run(CommandInterface $command, RemoteWebDriver $driver): void;
 }

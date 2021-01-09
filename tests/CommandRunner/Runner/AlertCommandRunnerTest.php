@@ -79,12 +79,4 @@ class AlertCommandRunnerTest extends RunnerTestCase
             [AlertCommandRunner::DISMISS_PROMPT],
         ];
     }
-
-    public function supportsCommandProvider(): array
-    {
-        return [
-            ...array_map(fn ($command) => [$command, true], AlertCommandRunner::ALL_COMMANDS),
-            ['invalidCommand', false],
-        ];
-    }
 }

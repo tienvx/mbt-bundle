@@ -9,9 +9,11 @@ interface CommandRunnerInterface
 {
     public const TAG = 'mbt_bundle.command_runner';
 
-    public function getActions(): array;
+    public function getAllCommands(): array;
 
-    public function getAssertions(): array;
+    public function getCommandsRequireTarget(): array;
+
+    public function getCommandsRequireValue(): array;
 
     public function supports(CommandInterface $command): bool;
 
