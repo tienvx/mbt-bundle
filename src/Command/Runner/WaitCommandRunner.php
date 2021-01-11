@@ -36,7 +36,7 @@ class WaitCommandRunner extends CommandRunner
 
     public function getCommandsRequireValue(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getCommandsRequireTarget();
     }
 
     public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
