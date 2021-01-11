@@ -1,11 +1,11 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 

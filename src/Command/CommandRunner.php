@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner;
+namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;

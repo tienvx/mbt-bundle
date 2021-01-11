@@ -3,8 +3,10 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use SingleColorPetrinet\Model\ColorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;

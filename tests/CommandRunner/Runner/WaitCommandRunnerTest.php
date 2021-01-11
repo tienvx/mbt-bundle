@@ -8,13 +8,13 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class WaitCommandRunnerTest extends RunnerTestCase

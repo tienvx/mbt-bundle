@@ -7,7 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;

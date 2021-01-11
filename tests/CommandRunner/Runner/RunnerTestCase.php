@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 abstract class RunnerTestCase extends TestCase

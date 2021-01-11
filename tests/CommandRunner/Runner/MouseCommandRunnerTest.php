@@ -9,13 +9,13 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverSelect;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class MouseCommandRunnerTest extends RunnerTestCase

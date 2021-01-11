@@ -4,13 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteTargetLocator;
 use Facebook\WebDriver\WebDriverAlert;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class AlertCommandRunnerTest extends RunnerTestCase

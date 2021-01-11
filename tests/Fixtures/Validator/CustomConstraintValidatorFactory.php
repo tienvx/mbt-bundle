@@ -4,13 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Fixtures\Validator;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 
 class CustomConstraintValidatorFactory extends ConstraintValidatorFactory

@@ -5,12 +5,12 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
  */
 class CommandRunnerManagerTest extends TestCase
 {

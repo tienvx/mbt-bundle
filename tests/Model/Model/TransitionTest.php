@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Transition;

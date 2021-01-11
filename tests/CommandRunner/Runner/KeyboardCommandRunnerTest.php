@@ -4,13 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class KeyboardCommandRunnerTest extends RunnerTestCase

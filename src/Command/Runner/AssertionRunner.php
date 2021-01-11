@@ -1,10 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class AssertionRunner extends CommandRunner

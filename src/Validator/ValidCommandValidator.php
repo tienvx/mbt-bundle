@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 class ValidCommandValidator extends ConstraintValidator
