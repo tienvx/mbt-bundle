@@ -185,13 +185,8 @@ class MouseCommandRunner extends CommandRunner
 
     protected function getPoint(string $target): WebDriverPoint
     {
-        $match = preg_match('/^(\d+),(\d+)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid point');
-        }
+        list($x, $y) = explode(',', $target);
 
-        list(, $x, $y) = $matches;
-
-        return new WebDriverPoint($x, $y);
+        return new WebDriverPoint((int) $x, (int) $y);
     }
 }

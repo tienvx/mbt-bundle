@@ -79,14 +79,9 @@ class WindowCommandRunner extends CommandRunner
 
     protected function getDimension(string $target): WebDriverDimension
     {
-        $match = preg_match('/^(\d+)x(\d+)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid dimension');
-        }
+        list($width, $height) = explode('x', $target);
 
-        list(, $width, $height) = $matches;
-
-        return new WebDriverDimension($width, $height);
+        return new WebDriverDimension((int) $width, (int) $height);
     }
 
     protected function getHandle(string $target): string
