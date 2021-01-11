@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
@@ -43,7 +44,7 @@ class WindowCommandRunner extends CommandRunner
         return [];
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::OPEN:

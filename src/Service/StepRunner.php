@@ -23,8 +23,9 @@ class StepRunner implements StepRunnerInterface
     public function run(StepInterface $step, ModelInterface $model, RemoteWebDriver $driver): void
     {
         $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
+        $color = $step->getColor();
         if ($transition instanceof TransitionInterface) {
-            $this->executeTransitionActions($transition, $driver);
+            $this->executeCommands($transition->getActions(), $color, $driver);
         } else {
             // First step: go to starting url
             $driver->get($model->getStartUrl());
@@ -32,22 +33,17 @@ class StepRunner implements StepRunnerInterface
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executePlaceAssertions($place, $driver);
+                $this->executeCommands($place->getAssertions(), $color, $driver);
             }
         }
     }
 
-    protected function executeTransitionActions(TransitionInterface $transition, RemoteWebDriver $driver): void
+    protected function executeCommands(array $commands, ColorInterface $color, RemoteWebDriver $driver): void
     {
-        foreach ($transition->getActions() as $action) {
-            $this->commandRunnerManager->run($action, $driver);
-        }
-    }
-
-    protected function executePlaceAssertions(PlaceInterface $place, RemoteWebDriver $driver): void
-    {
-        foreach ($place->getAssertions() as $assertion) {
-            $this->commandRunnerManager->run($assertion, $driver);
+        foreach ($commands as $command) {
+            if ($command instanceof CommandInterface) {
+                $this->commandRunnerManager->run($command, $color, $driver);
+            }
         }
     }
 }

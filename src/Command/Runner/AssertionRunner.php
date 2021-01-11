@@ -4,12 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class AssertionRunner extends CommandRunner
 {
-    // Assertions.
+    public const ASSERT = 'assert';
     public const ASSERT_ALERT = 'assertAlert';
     public const ASSERT_CONFIRMATION = 'assertConfirmation';
     public const ASSERT_PROMPT = 'assertPrompt';
@@ -31,6 +32,7 @@ class AssertionRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
+            'Assert' => self::ASSERT,
             'Assert Alert' => self::ASSERT_ALERT,
             'Assert Confirmation' => self::ASSERT_CONFIRMATION,
             'Assert Prompt' => self::ASSERT_PROMPT,
@@ -59,6 +61,7 @@ class AssertionRunner extends CommandRunner
     public function getCommandsRequireValue(): array
     {
         return [
+            self::ASSERT,
             self::ASSERT_TEXT,
             self::ASSERT_NOT_TEXT,
             self::ASSERT_VALUE,
@@ -69,9 +72,16 @@ class AssertionRunner extends CommandRunner
         ];
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
+            case self::ASSERT:
+                $actual = $color->getValue($command->getTarget());
+                $this->assert(
+                    $actual === $command->getValue(),
+                    sprintf('Actual value "%s" did not match "%s"', $actual, $command->getValue())
+                );
+                break;
             case self::ASSERT_ALERT:
             case self::ASSERT_CONFIRMATION:
             case self::ASSERT_PROMPT:

@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
@@ -38,7 +39,7 @@ class WaitCommandRunner extends CommandRunner
         return array_values($this->getAllCommands());
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::WAIT_FOR_ELEMENT_EDITABLE:

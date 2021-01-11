@@ -3,15 +3,18 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class CommandRunnerManager implements CommandRunnerManagerInterface
 {
     protected iterable $runners;
+    protected CommandPreprocessorInterface $commandPreprocessor;
 
-    public function __construct(iterable $runners)
+    public function __construct(iterable $runners, CommandPreprocessorInterface $commandPreprocessor)
     {
         $this->runners = $runners;
+        $this->commandPreprocessor = $commandPreprocessor;
     }
 
     public function getAllCommands(): array
@@ -29,11 +32,11 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
         return $this->getCommands('getCommandsRequireValue');
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         foreach ($this->runners as $runner) {
             if ($runner instanceof CommandRunnerInterface && $runner->supports($command)) {
-                $runner->run($command, $driver);
+                $runner->run($this->commandPreprocessor->process($command, $color), $color, $driver);
                 break;
             }
         }
