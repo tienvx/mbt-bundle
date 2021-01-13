@@ -18,11 +18,6 @@ class Transition extends TransitionModel
     protected ?string $guard = null;
 
     /**
-     * @Assert\ExpressionLanguageSyntax
-     */
-    protected ?string $expression = null;
-
-    /**
      * @Assert\All({
      *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
      * })

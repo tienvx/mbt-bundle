@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 interface ModelHelperInterface
@@ -11,9 +10,4 @@ interface ModelHelperInterface
      * Get starting places and their tokens count (1).
      */
     public function getStartPlaces(ModelInterface $model): array;
-
-    /**
-     * Evaluate start expression into color.
-     */
-    public function getStartColor(ModelInterface $model): ColorInterface;
 }

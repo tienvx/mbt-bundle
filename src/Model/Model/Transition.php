@@ -6,7 +6,6 @@ class Transition implements TransitionInterface
 {
     protected string $label = '';
     protected ?string $guard = null;
-    protected ?string $expression = null;
     protected array $actions = [];
     protected array $fromPlaces = [];
     protected array $toPlaces = [];
@@ -29,16 +28,6 @@ class Transition implements TransitionInterface
     public function setGuard(?string $guard): void
     {
         $this->guard = $guard;
-    }
-
-    public function getExpression(): ?string
-    {
-        return $this->expression;
-    }
-
-    public function setExpression(?string $expression): void
-    {
-        $this->expression = $expression;
     }
 
     public function getActions(): array

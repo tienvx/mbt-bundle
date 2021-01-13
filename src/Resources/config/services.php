@@ -20,15 +20,17 @@ use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
 use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
 use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerInterface;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
+use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
@@ -223,8 +225,14 @@ return static function (ContainerConfigurator $container): void {
                 'alias' => ValidCommandValidator::class,
             ])
 
+        ->set(CommandPreprocessor::class)
+            ->alias(CommandPreprocessorInterface::class, CommandPreprocessor::class)
+
         ->set(CommandRunnerManager::class)
-            ->args([tagged_iterator(CommandRunnerInterface::TAG)])
+            ->args([
+                tagged_iterator(CommandRunnerInterface::TAG),
+                service(CommandPreprocessorInterface::class),
+            ])
             ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
 
         ->set(AlertCommandRunner::class)

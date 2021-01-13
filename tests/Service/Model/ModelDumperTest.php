@@ -41,7 +41,6 @@ class ModelDumperTest extends TestCase
         $t1->setLabel('t1');
         $t1->setFromPlaces([0]);
         $t1->setToPlaces([1, 2]);
-        $t1->setExpression('{count: count + 1, product: "Galaxy Note"}');
         $t2->setLabel('t2');
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([3]);

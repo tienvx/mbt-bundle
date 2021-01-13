@@ -38,10 +38,8 @@ class PetrinetHelperTest extends TestCase
         $transition1->setGuard('count > 0');
         $transition1->setFromPlaces([0, 1]);
         $transition1->setToPlaces([2]);
-        $transition1->setExpression('{count: 0}');
         $transition2->setFromPlaces([2]);
         $transition2->setToPlaces([1]);
-        $transition2->setExpression('{count: count + 1}');
         $model->setTransitions($transitions);
         $petrinet = $helper->build($model);
         $this->assertCount(3, $petrinet->getPlaces());
@@ -59,9 +57,7 @@ class PetrinetHelperTest extends TestCase
             $this->assertInstanceOf(GuardedTransitionInterface::class, $place);
         }
         $this->assertSame('count > 0', $petrinet->getTransitions()[0]->getGuard()->getExpression());
-        $this->assertSame('{count: 0}', $petrinet->getTransitions()[0]->getExpression()->getExpression());
         $this->assertNull($petrinet->getTransitions()[1]->getGuard());
-        $this->assertSame('{count: count + 1}', $petrinet->getTransitions()[1]->getExpression()->getExpression());
         $this->assertCount(2, $petrinet->getTransitions()[0]->getInputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[0]->getOutputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[1]->getInputArcs());

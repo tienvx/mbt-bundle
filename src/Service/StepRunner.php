@@ -3,8 +3,10 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManagerInterface;
+use SingleColorPetrinet\Model\ColorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
@@ -22,7 +24,7 @@ class StepRunner implements StepRunnerInterface
     {
         $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
         if ($transition instanceof TransitionInterface) {
-            $this->executeTransitionActions($transition, $driver);
+            $this->executeCommands($transition->getActions(), $step->getColor(), $driver);
         } else {
             // First step: go to starting url
             $driver->get($model->getStartUrl());
@@ -30,22 +32,17 @@ class StepRunner implements StepRunnerInterface
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executePlaceAssertions($place, $driver);
+                $this->executeCommands($place->getAssertions(), $step->getColor(), $driver);
             }
         }
     }
 
-    protected function executeTransitionActions(TransitionInterface $transition, RemoteWebDriver $driver): void
+    protected function executeCommands(array $commands, ColorInterface $color, RemoteWebDriver $driver): void
     {
-        foreach ($transition->getActions() as $action) {
-            $this->commandRunnerManager->run($action, $driver);
-        }
-    }
-
-    protected function executePlaceAssertions(PlaceInterface $place, RemoteWebDriver $driver): void
-    {
-        foreach ($place->getAssertions() as $assertion) {
-            $this->commandRunnerManager->run($assertion, $driver);
+        foreach ($commands as $command) {
+            if ($command instanceof CommandInterface) {
+                $this->commandRunnerManager->run($command, $color, $driver);
+            }
         }
     }
 }

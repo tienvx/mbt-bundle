@@ -6,41 +6,51 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommand;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunnerManager
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AssertionRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WindowCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class ValidCommandValidatorTest extends ConstraintValidatorTestCase
 {
     protected function createValidator()
     {
-        return new ValidCommandValidator(new CommandRunnerManager([
-            new AlertCommandRunner(),
-            new AssertionRunner(),
-            new KeyboardCommandRunner(),
-            new MouseCommandRunner(),
-            new WaitCommandRunner(),
-            new WindowCommandRunner(),
-        ]));
+        return new ValidCommandValidator(new CommandRunnerManager(
+            [
+                new AlertCommandRunner(),
+                new AssertionRunner(),
+                new KeyboardCommandRunner(),
+                new MouseCommandRunner(),
+                new ScriptCommandRunner(),
+                new StoreCommandRunner(),
+                new WaitCommandRunner(),
+                new WindowCommandRunner(),
+            ],
+            new CommandPreprocessor()
+        ));
     }
 
     /**

@@ -4,13 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
 
 use Facebook\WebDriver\Remote\RemoteTargetLocator;
 use Facebook\WebDriver\WebDriverAlert;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\AlertCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class AlertCommandRunnerTest extends RunnerTestCase
@@ -32,7 +32,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     /**
@@ -47,7 +47,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testAnswerPrompt(): void
@@ -61,7 +61,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function acceptAlertCommandProvider(): array

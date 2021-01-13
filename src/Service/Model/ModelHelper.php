@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
@@ -34,16 +33,5 @@ class ModelHelper implements ModelHelperInterface
         }
 
         return $places;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartColor(ModelInterface $model): ColorInterface
-    {
-        $color = $this->colorfulFactory->createColor([]);
-        $expression = $this->colorfulFactory->createExpression($model->getStartExpression(), false);
-
-        return $this->colorfulFactory->createColor($this->expressionEvaluator->evaluate($expression, $color));
     }
 }

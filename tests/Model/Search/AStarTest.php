@@ -96,22 +96,22 @@ class AStarTest extends TestCase
             [
                 'transition' => null,
                 'places' => [$this->cartEmpty->getId() => 1],
-                'color' => ['products' => '0'],
+                'color' => ['products' => 0],
             ],
             [
                 'transition' => $this->addFirstProduct->getId(),
                 'places' => [$this->cartHasProducts->getId() => 1],
-                'color' => ['products' => '1'],
+                'color' => ['products' => 1],
             ],
             [
                 'transition' => $this->addMoreProduct->getId(),
                 'places' => [$this->cartHasProducts->getId() => 1],
-                'color' => ['products' => '2'],
+                'color' => ['products' => 2],
             ],
             [
                 'transition' => $this->goToCheckout->getId(),
                 'places' => [$this->checkout->getId() => 1],
-                'color' => ['products' => '2'],
+                'color' => ['products' => 2],
             ],
         ], $nodes);
     }
@@ -125,22 +125,22 @@ class AStarTest extends TestCase
             [
                 'transition' => null,
                 'places' => [$this->cartHasProducts->getId() => 1],
-                'color' => ['products' => '8'],
+                'color' => ['products' => 8],
             ],
             [
                 'transition' => $this->clearCart->getId(),
                 'places' => [$this->cartEmpty->getId() => 1],
-                'color' => ['products' => '0'],
+                'color' => ['products' => 0],
             ],
             [
                 'transition' => $this->addFirstProduct->getId(),
                 'places' => [$this->cartHasProducts->getId() => 1],
-                'color' => ['products' => '1'],
+                'color' => ['products' => 1],
             ],
             [
                 'transition' => $this->goToCheckout->getId(),
                 'places' => [$this->checkout->getId() => 1],
-                'color' => ['products' => '1'],
+                'color' => ['products' => 1],
             ],
         ], $nodes);
     }

@@ -1,11 +1,12 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use SingleColorPetrinet\Model\ColorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
@@ -43,7 +44,7 @@ class WindowCommandRunner extends CommandRunner
         return [];
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::OPEN:
@@ -79,14 +80,9 @@ class WindowCommandRunner extends CommandRunner
 
     protected function getDimension(string $target): WebDriverDimension
     {
-        $match = preg_match('/^(\d+)x(\d+)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid dimension');
-        }
+        list($width, $height) = explode('x', $target);
 
-        list(, $width, $height) = $matches;
-
-        return new WebDriverDimension($width, $height);
+        return new WebDriverDimension((int) $width, (int) $height);
     }
 
     protected function getHandle(string $target): string

@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
+        "ext-json": "*",
         "doctrine/orm": "^2.8",
         "egulias/email-validator": "^2.1",
         "jmgq/a-star": "^1.1",

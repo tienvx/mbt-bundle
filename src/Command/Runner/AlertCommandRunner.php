@@ -1,9 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
+use SingleColorPetrinet\Model\ColorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class AlertCommandRunner extends CommandRunner
@@ -37,7 +38,7 @@ class AlertCommandRunner extends CommandRunner
         return [];
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::ACCEPT_ALERT:

@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Transition;
@@ -25,7 +25,6 @@ class TransitionTest extends TestCase
         $this->setUpActions();
         $this->transition = new Transition();
         $this->transition->setGuard('count > 2');
-        $this->transition->setExpression('{product: 1}');
         $this->transition->setFromPlaces([1, 2, 3]);
         $this->transition->setToPlaces([12, 23]);
         $this->transition->setActions([

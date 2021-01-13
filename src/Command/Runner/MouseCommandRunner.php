@@ -1,11 +1,11 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverPoint;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
+use SingleColorPetrinet\Model\ColorInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class MouseCommandRunner extends CommandRunner
@@ -70,7 +70,7 @@ class MouseCommandRunner extends CommandRunner
         ];
     }
 
-    public function run(CommandInterface $command, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::ADD_SELECTION:
@@ -185,13 +185,8 @@ class MouseCommandRunner extends CommandRunner
 
     protected function getPoint(string $target): WebDriverPoint
     {
-        $match = preg_match('/^(\d+),(\d+)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid point');
-        }
+        list($x, $y) = explode(',', $target);
 
-        list(, $x, $y) = $matches;
-
-        return new WebDriverPoint($x, $y);
+        return new WebDriverPoint((int) $x, (int) $y);
     }
 }

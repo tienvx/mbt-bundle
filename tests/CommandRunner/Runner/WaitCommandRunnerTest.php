@@ -8,13 +8,13 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner;
-use Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\Runner\WaitCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\CommandRunner\CommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
  */
 class WaitCommandRunnerTest extends RunnerTestCase
@@ -47,7 +47,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => true, 'readonly' => false]);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testWaitForElementNotEditable(): void
@@ -73,7 +73,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => false, 'readonly' => true]);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testWaitForElementPresent(): void
@@ -93,7 +93,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testNoElementsPresent(): void
@@ -107,7 +107,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && 'button' === $selector->getValue();
         }))->willReturn([]);
         $this->driver->expects($this->never())->method('wait');
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testWaitForElementNotPresent(): void
@@ -131,7 +131,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testWaitForElementVisible(): void
@@ -152,7 +152,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testWaitForElementNotVisible(): void
@@ -173,6 +173,6 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 }

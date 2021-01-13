@@ -57,7 +57,7 @@ class PetrinetHelper implements PetrinetHelperInterface
         $transitions = [];
         foreach ($model->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
-                $transitions[$index] = $builder->transition($transition->getGuard(), $transition->getExpression());
+                $transitions[$index] = $builder->transition($transition->getGuard());
                 $transitions[$index]->setId($index);
             }
         }

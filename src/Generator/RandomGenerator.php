@@ -45,11 +45,7 @@ class RandomGenerator extends AbstractGenerator
     {
         $petrinet = $this->petrinetHelper->build($task->getModel());
         $places = $this->modelHelper->getStartPlaces($task->getModel());
-        $marking = $this->markingHelper->getMarking(
-            $petrinet,
-            $places,
-            $this->modelHelper->getStartColor($task->getModel())
-        );
+        $marking = $this->markingHelper->getMarking($petrinet, $places);
         $state = new State(array_keys($places), count($petrinet->getPlaces()), count($petrinet->getTransitions()));
         $transition = null;
 
