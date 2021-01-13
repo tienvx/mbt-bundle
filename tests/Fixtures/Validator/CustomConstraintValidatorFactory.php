@@ -10,6 +10,8 @@ use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
@@ -26,6 +28,8 @@ class CustomConstraintValidatorFactory extends ConstraintValidatorFactory
                     new AssertionRunner(),
                     new KeyboardCommandRunner(),
                     new MouseCommandRunner(),
+                    new ScriptCommandRunner(),
+                    new StoreCommandRunner(),
                     new WaitCommandRunner(),
                     new WindowCommandRunner(),
                 ],

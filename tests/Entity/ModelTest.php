@@ -17,6 +17,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
