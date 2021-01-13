@@ -18,12 +18,7 @@ abstract class CommandRunner implements CommandRunnerInterface
 
     protected function getSelector(string $target): WebDriverBy
     {
-        $match = preg_match('/^(id|name|linkText|partialLinkText|css|xpath)=(.*)/i', $target, $matches);
-        if (!$match) {
-            throw new UnexpectedValueException('Invalid target');
-        }
-
-        list(, $mechanism, $value) = $matches;
+        list($mechanism, $value) = explode('=', $target, 2);
         switch ($mechanism) {
             case 'id':
                 return WebDriverBy::id($value);
