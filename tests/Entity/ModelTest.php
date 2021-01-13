@@ -103,7 +103,7 @@ class ModelTest extends TestCase
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(18, $violations);
+        $this->assertCount(16, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:

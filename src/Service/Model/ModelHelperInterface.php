@@ -2,7 +2,6 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 interface ModelHelperInterface

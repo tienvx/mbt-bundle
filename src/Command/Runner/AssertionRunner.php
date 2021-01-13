@@ -93,7 +93,7 @@ class AssertionRunner extends CommandRunner
                 ][$command->getCommand()];
                 $this->assert(
                     $alertText === $command->getTarget(),
-                    sprintf('Actual %s text "%s" did not match "%s"', $type, $command->getTarget(), $alertText)
+                    sprintf('Actual %s text "%s" did not match "%s"', $type, $alertText, $command->getTarget())
                 );
                 break;
             case self::ASSERT_TITLE:

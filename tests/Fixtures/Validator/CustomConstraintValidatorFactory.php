@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Fixtures\Validator;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
+use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
@@ -19,14 +20,17 @@ class CustomConstraintValidatorFactory extends ConstraintValidatorFactory
     {
         $className = $constraint->validatedBy();
         if (ValidCommandValidator::class === $className && !isset($this->validators[$className])) {
-            $this->validators[$className] = new ValidCommandValidator(new CommandRunnerManager([
-                new AlertCommandRunner(),
-                new AssertionRunner(),
-                new KeyboardCommandRunner(),
-                new MouseCommandRunner(),
-                new WaitCommandRunner(),
-                new WindowCommandRunner(),
-            ]));
+            $this->validators[$className] = new ValidCommandValidator(new CommandRunnerManager(
+                [
+                    new AlertCommandRunner(),
+                    new AssertionRunner(),
+                    new KeyboardCommandRunner(),
+                    new MouseCommandRunner(),
+                    new WaitCommandRunner(),
+                    new WindowCommandRunner(),
+                ],
+                new CommandPreprocessor()
+            ));
         }
 
         return parent::getInstance($constraint);

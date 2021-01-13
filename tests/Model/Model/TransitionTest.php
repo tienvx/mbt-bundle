@@ -25,7 +25,6 @@ class TransitionTest extends TestCase
         $this->setUpActions();
         $this->transition = new Transition();
         $this->transition->setGuard('count > 2');
-        $this->transition->setExpression('{product: 1}');
         $this->transition->setFromPlaces([1, 2, 3]);
         $this->transition->setToPlaces([12, 23]);
         $this->transition->setActions([

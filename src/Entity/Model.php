@@ -255,7 +255,6 @@ class Model extends BaseModel
         $transition = new Transition();
         $transition->setLabel($transitionData['label'] ?? '');
         $transition->setGuard($transitionData['guard'] ?? null);
-        $transition->setExpression($transitionData['expression'] ?? null);
         $transition->setActions($this->denormalizeCommands($transitionData['actions'] ?? []));
         $transition->setFromPlaces($transitionData['fromPlaces'] ?? []);
         $transition->setToPlaces($transitionData['toPlaces'] ?? []);

@@ -229,7 +229,10 @@ return static function (ContainerConfigurator $container): void {
             ->alias(CommandPreprocessorInterface::class, CommandPreprocessor::class)
 
         ->set(CommandRunnerManager::class)
-            ->args([tagged_iterator(CommandRunnerInterface::TAG)])
+            ->args([
+                tagged_iterator(CommandRunnerInterface::TAG),
+                service(CommandPreprocessorInterface::class),
+            ])
             ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
 
         ->set(AlertCommandRunner::class)

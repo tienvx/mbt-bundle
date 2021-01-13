@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;

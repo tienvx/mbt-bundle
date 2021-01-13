@@ -23,9 +23,8 @@ class StepRunner implements StepRunnerInterface
     public function run(StepInterface $step, ModelInterface $model, RemoteWebDriver $driver): void
     {
         $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
-        $color = $step->getColor();
         if ($transition instanceof TransitionInterface) {
-            $this->executeCommands($transition->getActions(), $color, $driver);
+            $this->executeCommands($transition->getActions(), $step->getColor(), $driver);
         } else {
             // First step: go to starting url
             $driver->get($model->getStartUrl());
@@ -33,7 +32,7 @@ class StepRunner implements StepRunnerInterface
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executeCommands($place->getAssertions(), $color, $driver);
+                $this->executeCommands($place->getAssertions(), $step->getColor(), $driver);
             }
         }
     }

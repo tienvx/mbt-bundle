@@ -32,7 +32,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     /**
@@ -47,7 +47,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function testAnswerPrompt(): void
@@ -61,7 +61,7 @@ class AlertCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('alert')->willReturn($alert);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->driver);
+        $this->runner->run($command, $this->color, $this->driver);
     }
 
     public function acceptAlertCommandProvider(): array

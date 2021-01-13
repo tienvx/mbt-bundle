@@ -29,7 +29,10 @@ class ScriptCommandRunner extends CommandRunner
 
     public function getCommandsRequireValue(): array
     {
-        return [];
+        return [
+            self::EXECUTE_SCRIPT,
+            self::EXECUTE_ASYNC_SCRIPT,
+        ];
     }
 
     public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void

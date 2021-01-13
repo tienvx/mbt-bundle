@@ -6,6 +6,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
+use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
@@ -33,14 +34,17 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
 {
     protected function createValidator()
     {
-        return new ValidCommandValidator(new CommandRunnerManager([
-            new AlertCommandRunner(),
-            new AssertionRunner(),
-            new KeyboardCommandRunner(),
-            new MouseCommandRunner(),
-            new WaitCommandRunner(),
-            new WindowCommandRunner(),
-        ]));
+        return new ValidCommandValidator(new CommandRunnerManager(
+            [
+                new AlertCommandRunner(),
+                new AssertionRunner(),
+                new KeyboardCommandRunner(),
+                new MouseCommandRunner(),
+                new WaitCommandRunner(),
+                new WindowCommandRunner(),
+            ],
+            new CommandPreprocessor()
+        ));
     }
 
     /**

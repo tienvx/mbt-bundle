@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
-use SingleColorPetrinet\Model\Color;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
@@ -31,15 +31,17 @@ class StepRunnerTest extends TestCase
 {
     protected ModelInterface $model;
     protected array $commands = [];
-    protected array $firstCommands = [];
+    protected array $firstStepCommands = [];
     protected CommandRunnerManager $commandRunnerManager;
     protected RemoteWebDriver $driver;
+    protected ColorInterface $color;
 
     protected function setUp(): void
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->model = new Model();
         $this->model->setStartUrl('http://example.com');
+        $this->color = $this->createMock(ColorInterface::class);
         $transitions = [
             $transition = new Transition(),
         ];
@@ -61,15 +63,15 @@ class StepRunnerTest extends TestCase
         ]);
         $this->model->setPlaces($places);
         $this->commands = [
-            [$command1, $this->driver],
-            [$command2, $this->driver],
-            [$command3, $this->driver],
-            [$command4, $this->driver],
-            [$command5, $this->driver],
+            [$command1, $this->color, $this->driver],
+            [$command2, $this->color, $this->driver],
+            [$command3, $this->color, $this->driver],
+            [$command4, $this->color, $this->driver],
+            [$command5, $this->color, $this->driver],
         ];
-        $this->firstCommands = [
-            [$command3, $this->driver],
-            [$command4, $this->driver],
+        $this->firstStepCommands = [
+            [$command3, $this->color, $this->driver],
+            [$command4, $this->color, $this->driver],
         ];
 
         $this->commandRunnerManager = $this->createMock(CommandRunnerManager::class);
@@ -77,7 +79,7 @@ class StepRunnerTest extends TestCase
 
     public function testRun(): void
     {
-        $step = new Step([0 => 1, 1 => 1], new Color(), 0);
+        $step = new Step([0 => 1, 1 => 1], $this->color, 0);
         $this->commandRunnerManager->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
         $this->driver->expects($this->never())->method('get');
         $stepRunner = new StepRunner($this->commandRunnerManager);
@@ -86,11 +88,11 @@ class StepRunnerTest extends TestCase
 
     public function testRunFirstStep(): void
     {
-        $step = new Step([0 => 1], new Color(), null);
+        $step = new Step([0 => 1], $this->color, null);
         $this->commandRunnerManager
             ->expects($this->exactly(2))
             ->method('run')
-            ->withConsecutive(...$this->firstCommands);
+            ->withConsecutive(...$this->firstStepCommands);
         $this->driver->expects($this->once())->method('get')->with('http://example.com');
         $stepRunner = new StepRunner($this->commandRunnerManager);
         $stepRunner->run($step, $this->model, $this->driver);
