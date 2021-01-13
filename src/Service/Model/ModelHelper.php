@@ -35,15 +35,4 @@ class ModelHelper implements ModelHelperInterface
 
         return $places;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartColor(ModelInterface $model): ColorInterface
-    {
-        $color = $this->colorfulFactory->createColor([]);
-        $expression = $this->colorfulFactory->createExpression($model->getStartExpression(), false);
-
-        return $this->colorfulFactory->createColor($this->expressionEvaluator->evaluate($expression, $color));
-    }
 }

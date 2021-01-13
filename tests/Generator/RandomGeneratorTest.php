@@ -50,7 +50,6 @@ class RandomGeneratorTest extends TestCase
         $modelHelper = new ModelHelper($factory, $expressionEvaluator);
         $transitionService = new GuardedTransitionService($factory, $expressionEvaluator);
         $model = new Model();
-        $model->setStartExpression('{count: 0}');
         $places = [
             $place1 = new Place(),
             $place2 = new Place(),
@@ -64,10 +63,8 @@ class RandomGeneratorTest extends TestCase
         ];
         $transition1->setFromPlaces([0]);
         $transition1->setToPlaces([1]);
-        $transition1->setExpression('{count: count + 1}');
         $transition2->setFromPlaces([1]);
         $transition2->setToPlaces([2]);
-        $transition2->setExpression('{count: count - 1}');
         $model->setTransitions($transitions);
         $this->task = new Task();
         $this->task->setModel($model);

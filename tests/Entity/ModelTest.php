@@ -56,7 +56,6 @@ class ModelTest extends TestCase
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
         $model->setStartUrl('');
-        $model->setStartExpression('');
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -93,7 +92,6 @@ class ModelTest extends TestCase
         $t1->setLabel('t1');
         $t1->setFromPlaces([]);
         $t1->setToPlaces([1, 2]);
-        $t1->setExpression('{count: count + 1, product: "Galaxy Note"}');
         $t2->setLabel('');
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
@@ -118,8 +116,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).startUrl:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).startExpression:
-    This value should be a valid expression. (code 1766a3f3-ff03-40eb-b053-ab7aa23d988a)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
@@ -138,8 +134,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:
     This transition should connect at least 1 place to other places. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].expression:
-    This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
     This transition should connect some places to at least 1 place. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';

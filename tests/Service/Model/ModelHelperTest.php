@@ -51,15 +51,4 @@ class ModelHelperTest extends TestCase
             2 => 1,
         ], $this->modelHelper->getStartPlaces($model));
     }
-
-    public function testGetStartColor(): void
-    {
-        $model = new Model();
-        $model->setStartExpression('{count: 8, product: "car"}');
-        $color = $this->modelHelper->getStartColor($model);
-        $this->assertSame([
-            'count' => '8',
-            'product' => 'car',
-        ], $color->getValues());
-    }
 }

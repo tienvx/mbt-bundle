@@ -28,10 +28,6 @@ interface ModelInterface
 
     public function setStartUrl(string $startUrl): void;
 
-    public function getStartExpression(): ?string;
-
-    public function setStartExpression(?string $startExpression): void;
-
     public function getPlaces(): array;
 
     public function setPlaces(array $places): void;

@@ -55,12 +55,6 @@ class Model extends BaseModel
     protected string $startUrl = '';
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\ExpressionLanguageSyntax
-     */
-    protected ?string $startExpression = null;
-
-    /**
      * @ORM\Column(type="array")
      */
     protected array $places = [];
@@ -163,7 +157,6 @@ class Model extends BaseModel
                 $item = [
                     'label' => $transition->getLabel(),
                     'guard' => $transition->getGuard(),
-                    'expression' => $transition->getExpression(),
                     'actions' => $this->normalizeCommands($transition->getActions()),
                     'fromPlaces' => $transition->getFromPlaces(),
                     'toPlaces' => $transition->getToPlaces(),

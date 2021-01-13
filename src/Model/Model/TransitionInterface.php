@@ -12,10 +12,6 @@ interface TransitionInterface
 
     public function setGuard(?string $guard): void;
 
-    public function getExpression(): ?string;
-
-    public function setExpression(?string $expression): void;
-
     public function getActions(): array;
 
     public function setActions(array $actions): void;
