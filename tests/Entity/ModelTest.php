@@ -57,7 +57,7 @@ class ModelTest extends TestCase
         $model = new Model();
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
-        $model->setStartUrl('');
+        $model->setStartUrl('file:///home/test/image.png');
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -117,7 +117,7 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).startUrl:
-    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+    This value is not a valid URL. (code 57c2f299-1154-4870-89bb-ef3b1f5ad229)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:

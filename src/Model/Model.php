@@ -12,7 +12,7 @@ abstract class Model implements ModelInterface
     protected ?int $author;
     protected string $label = '';
     protected ?string $tags = null;
-    protected string $startUrl = '';
+    protected ?string $startUrl = null;
     protected array $places = [];
     protected array $transitions = [];
     protected int $version;
@@ -59,12 +59,12 @@ abstract class Model implements ModelInterface
         $this->tags = $tags;
     }
 
-    public function getStartUrl(): string
+    public function getStartUrl(): ?string
     {
         return $this->startUrl;
     }
 
-    public function setStartUrl(string $startUrl): void
+    public function setStartUrl(?string $startUrl): void
     {
         $this->startUrl = $startUrl;
     }
