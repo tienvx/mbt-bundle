@@ -48,11 +48,10 @@ class Model extends BaseModel
     protected ?string $tags = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\Url
      */
-    protected string $startUrl = '';
+    protected ?string $startUrl = null;
 
     /**
      * @ORM\Column(type="array")
