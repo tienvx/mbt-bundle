@@ -24,7 +24,7 @@ class StepRunner implements StepRunnerInterface
     {
         $transition = is_int($step->getTransition()) ? $model->getTransition($step->getTransition()) : null;
         if ($transition instanceof TransitionInterface) {
-            $this->executeCommands($transition->getActions(), $step->getColor(), $driver);
+            $this->executeCommands($transition->getCommands(), $step->getColor(), $driver);
         } elseif ($model->getStartUrl()) {
             // First step: go to starting url
             $driver->get($model->getStartUrl());
@@ -32,7 +32,7 @@ class StepRunner implements StepRunnerInterface
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $model->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executeCommands($place->getAssertions(), $step->getColor(), $driver);
+                $this->executeCommands($place->getCommands(), $step->getColor(), $driver);
             }
         }
     }

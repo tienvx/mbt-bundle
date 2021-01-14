@@ -119,7 +119,7 @@ class Model extends BaseModel
                 $item = [
                     'label' => $place->getLabel(),
                     'start' => $place->getStart(),
-                    'assertions' => $this->normalizeCommands($place->getAssertions()),
+                    'commands' => $this->normalizeCommands($place->getCommands()),
                 ];
                 $items[] = $item;
             }
@@ -156,7 +156,7 @@ class Model extends BaseModel
                 $item = [
                     'label' => $transition->getLabel(),
                     'guard' => $transition->getGuard(),
-                    'actions' => $this->normalizeCommands($transition->getActions()),
+                    'commands' => $this->normalizeCommands($transition->getCommands()),
                     'fromPlaces' => $transition->getFromPlaces(),
                     'toPlaces' => $transition->getToPlaces(),
                 ];
@@ -244,7 +244,7 @@ class Model extends BaseModel
         $place = new Place();
         $place->setLabel($placeData['label'] ?? '');
         $place->setStart($placeData['start'] ?? '');
-        $place->setAssertions($this->denormalizeCommands($placeData['assertions'] ?? []));
+        $place->setCommands($this->denormalizeCommands($placeData['commands'] ?? []));
 
         return $place;
     }
@@ -254,7 +254,7 @@ class Model extends BaseModel
         $transition = new Transition();
         $transition->setLabel($transitionData['label'] ?? '');
         $transition->setGuard($transitionData['guard'] ?? null);
-        $transition->setActions($this->denormalizeCommands($transitionData['actions'] ?? []));
+        $transition->setCommands($this->denormalizeCommands($transitionData['commands'] ?? []));
         $transition->setFromPlaces($transitionData['fromPlaces'] ?? []);
         $transition->setToPlaces($transitionData['toPlaces'] ?? []);
 

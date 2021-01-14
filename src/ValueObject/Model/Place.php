@@ -20,5 +20,5 @@ class Place extends PlaceModel
      * })
      * @Assert\Valid
      */
-    protected array $assertions = [];
+    protected array $commands = [];
 }

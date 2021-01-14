@@ -4,9 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 
 class Place implements PlaceInterface
 {
+    use HasCommands;
+
     protected string $label = '';
     protected bool $start = false;
-    protected array $assertions = [];
 
     public function getLabel(): string
     {
@@ -28,46 +29,8 @@ class Place implements PlaceInterface
         $this->start = $start;
     }
 
-    public function getAssertions(): array
-    {
-        return $this->assertions;
-    }
-
-    public function setAssertions(array $assertions): void
-    {
-        $this->assertions = [];
-
-        foreach ($assertions as $assertion) {
-            $this->addAssertion($assertion);
-        }
-    }
-
-    public function addAssertion(CommandInterface $assertion): void
-    {
-        $this->assertions[] = $assertion;
-    }
-
     public function isSame(PlaceInterface $place): bool
     {
-        return $this->getStart() === $place->getStart() && $this->isSameAssertions($place->getAssertions());
-    }
-
-    protected function isSameAssertions(array $assertions): bool
-    {
-        if (count($this->assertions) !== count($assertions)) {
-            return false;
-        }
-        foreach ($assertions as $index => $assertion) {
-            $selfAssertion = $this->assertions[$index] ?? null;
-            if (
-                !$selfAssertion instanceof CommandInterface ||
-                !$assertion instanceof CommandInterface ||
-                !$selfAssertion->isSame($assertion)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->getStart() === $place->getStart() && $this->isSameCommands($place->getCommands());
     }
 }

@@ -17,44 +17,44 @@ use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 class TransitionTest extends TestCase
 {
     protected TransitionInterface $transition;
-    protected CommandInterface $action1;
-    protected CommandInterface $action2;
+    protected CommandInterface $command1;
+    protected CommandInterface $command2;
 
     protected function setUp(): void
     {
-        $this->setUpActions();
+        $this->setUpCommands();
         $this->transition = new Transition();
         $this->transition->setGuard('count > 2');
         $this->transition->setFromPlaces([1, 2, 3]);
         $this->transition->setToPlaces([12, 23]);
-        $this->transition->setActions([
-            $this->action1,
-            $this->action2,
+        $this->transition->setCommands([
+            $this->command1,
+            $this->command2,
         ]);
     }
 
-    protected function setUpActions(): void
+    protected function setUpCommands(): void
     {
-        $this->action1 = new Command();
-        $this->action2 = new Command();
-        $this->action1->setCommand(KeyboardCommandRunner::TYPE);
-        $this->action1->setTarget('css=.email');
-        $this->action1->setValue('test@example.com');
-        $this->action2->setCommand(MouseCommandRunner::CLICK);
-        $this->action2->setTarget('css=.link');
-        $this->action2->setValue(null);
+        $this->command1 = new Command();
+        $this->command2 = new Command();
+        $this->command1->setCommand(KeyboardCommandRunner::TYPE);
+        $this->command1->setTarget('css=.email');
+        $this->command1->setValue('test@example.com');
+        $this->command2->setCommand(MouseCommandRunner::CLICK);
+        $this->command2->setTarget('css=.link');
+        $this->command2->setValue(null);
     }
 
     /**
      * @dataProvider differentTransitionProvider
      */
-    public function testIsNotSame(?string $guard, array $fromPlaces, array $toPlaces, array $actions): void
+    public function testIsNotSame(?string $guard, array $fromPlaces, array $toPlaces, array $commands): void
     {
         $transition = new Transition();
         $transition->setGuard($guard);
         $transition->setFromPlaces($fromPlaces);
         $transition->setToPlaces($toPlaces);
-        $transition->setActions($actions);
+        $transition->setCommands($commands);
         $this->assertFalse($transition->isSame($this->transition));
     }
 
@@ -64,29 +64,29 @@ class TransitionTest extends TestCase
         $transition->setGuard('count > 2');
         $transition->setFromPlaces([1, 2, 3]);
         $transition->setToPlaces([12, 23]);
-        $transition->setActions([
-            $this->action1,
-            $this->action2,
+        $transition->setCommands([
+            $this->command1,
+            $this->command2,
         ]);
         $this->assertTrue($transition->isSame($this->transition));
     }
 
     public function differentTransitionProvider(): array
     {
-        $this->setUpActions();
-        $action = new Command();
-        $action->setCommand(KeyboardCommandRunner::TYPE);
-        $action->setTarget('css=.name');
-        $action->setValue('My name');
+        $this->setUpCommands();
+        $command = new Command();
+        $command->setCommand(KeyboardCommandRunner::TYPE);
+        $command->setTarget('css=.name');
+        $command->setValue('My name');
 
         return [
-            ['count > 2', [1, 2, 3], [12, 23], [$this->action1]],
-            ['count > 2', [1, 2, 3], [12, 23], [$this->action2]],
-            ['count > 2', [1, 2, 3], [12, 23], [$this->action1, $action]],
-            ['count > 2', [1, 2, 3], [12], [$this->action1, $this->action2]],
-            ['count > 2', [1, 2, 3], [23], [$this->action1, $this->action2]],
-            ['count > 2', [1, 2], [12, 23], [$this->action1, $this->action2]],
-            ['count <= 2', [1, 2, 3], [12, 23], [$this->action1, $this->action2]],
+            ['count > 2', [1, 2, 3], [12, 23], [$this->command1]],
+            ['count > 2', [1, 2, 3], [12, 23], [$this->command2]],
+            ['count > 2', [1, 2, 3], [12, 23], [$this->command1, $command]],
+            ['count > 2', [1, 2, 3], [12], [$this->command1, $this->command2]],
+            ['count > 2', [1, 2, 3], [23], [$this->command1, $this->command2]],
+            ['count > 2', [1, 2], [12, 23], [$this->command1, $this->command2]],
+            ['count <= 2', [1, 2, 3], [12, 23], [$this->command1, $this->command2]],
         ];
     }
 }

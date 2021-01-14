@@ -16,40 +16,40 @@ use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 class PlaceTest extends TestCase
 {
     protected PlaceInterface $place;
-    protected CommandInterface $assertion1;
-    protected CommandInterface $assertion2;
+    protected CommandInterface $command1;
+    protected CommandInterface $command2;
 
     protected function setUp(): void
     {
-        $this->setUpAssertions();
+        $this->setUpCommands();
         $this->place = new Place();
         $this->place->setStart(true);
-        $this->place->setAssertions([
-            $this->assertion1,
-            $this->assertion2,
+        $this->place->setCommands([
+            $this->command1,
+            $this->command2,
         ]);
     }
 
-    protected function setUpAssertions(): void
+    protected function setUpCommands(): void
     {
-        $this->assertion1 = new Command();
-        $this->assertion2 = new Command();
-        $this->assertion1->setCommand(AssertionRunner::ASSERT_TEXT);
-        $this->assertion1->setTarget('css=.title');
-        $this->assertion1->setValue('Hello');
-        $this->assertion2->setCommand(AssertionRunner::ASSERT_ALERT);
-        $this->assertion2->setTarget('css=.warning');
-        $this->assertion2->setValue('Are you sure?');
+        $this->command1 = new Command();
+        $this->command2 = new Command();
+        $this->command1->setCommand(AssertionRunner::ASSERT_TEXT);
+        $this->command1->setTarget('css=.title');
+        $this->command1->setValue('Hello');
+        $this->command2->setCommand(AssertionRunner::ASSERT_ALERT);
+        $this->command2->setTarget('css=.warning');
+        $this->command2->setValue('Are you sure?');
     }
 
     /**
      * @dataProvider placeProvider
      */
-    public function testIsNotSame(bool $start, array $assertions): void
+    public function testIsNotSame(bool $start, array $commands): void
     {
         $place = new Place();
         $place->setStart($start);
-        $place->setAssertions($assertions);
+        $place->setCommands($commands);
         $this->assertFalse($place->isSame($this->place));
     }
 
@@ -57,26 +57,26 @@ class PlaceTest extends TestCase
     {
         $place = new Place();
         $place->setStart(true);
-        $place->setAssertions([
-            $this->assertion1,
-            $this->assertion2,
+        $place->setCommands([
+            $this->command1,
+            $this->command2,
         ]);
         $this->assertTrue($place->isSame($this->place));
     }
 
     public function placeProvider(): array
     {
-        $this->setUpAssertions();
-        $assertion = new Command();
-        $assertion->setCommand(AssertionRunner::ASSERT_ALERT);
-        $assertion->setTarget('css=.warning');
-        $assertion->setValue('Are you sure about this?');
+        $this->setUpCommands();
+        $command = new Command();
+        $command->setCommand(AssertionRunner::ASSERT_ALERT);
+        $command->setTarget('css=.warning');
+        $command->setValue('Are you sure about this?');
 
         return [
-            [false, [$this->assertion1, $this->assertion2]],
-            [true, [$this->assertion1]],
-            [true, [$this->assertion2]],
-            [false, [$this->assertion1, $assertion]],
+            [false, [$this->command1, $this->command2]],
+            [true, [$this->command1]],
+            [true, [$this->command2]],
+            [false, [$this->command1, $command]],
         ];
     }
 }
