@@ -29,6 +29,8 @@ use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
@@ -242,6 +244,10 @@ return static function (ContainerConfigurator $container): void {
         ->set(KeyboardCommandRunner::class)
             ->autoconfigure(true)
         ->set(MouseCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(ScriptCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(StoreCommandRunner::class)
             ->autoconfigure(true)
         ->set(WaitCommandRunner::class)
             ->autoconfigure(true)
