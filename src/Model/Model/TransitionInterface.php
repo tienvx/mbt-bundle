@@ -12,11 +12,11 @@ interface TransitionInterface
 
     public function setGuard(?string $guard): void;
 
-    public function getActions(): array;
+    public function getCommands(): array;
 
-    public function setActions(array $actions): void;
+    public function setCommands(array $commands): void;
 
-    public function addAction(CommandInterface $action): void;
+    public function addCommand(CommandInterface $command): void;
 
     public function getFromPlaces(): array;
 

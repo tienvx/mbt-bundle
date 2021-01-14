@@ -44,13 +44,13 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
 
     protected function getCommands(string $method = 'getAllCommands'): array
     {
-        $actions = [];
+        $commands = [];
         foreach ($this->runners as $runner) {
             if ($runner instanceof CommandRunnerInterface) {
-                $actions = array_merge($actions, call_user_func([$runner, $method]));
+                $commands = array_merge($commands, call_user_func([$runner, $method]));
             }
         }
 
-        return $actions;
+        return $commands;
     }
 }

@@ -4,9 +4,10 @@ namespace Tienvx\Bundle\MbtBundle\Model\Model;
 
 class Transition implements TransitionInterface
 {
+    use HasCommands;
+
     protected string $label = '';
     protected ?string $guard = null;
-    protected array $actions = [];
     protected array $fromPlaces = [];
     protected array $toPlaces = [];
 
@@ -28,25 +29,6 @@ class Transition implements TransitionInterface
     public function setGuard(?string $guard): void
     {
         $this->guard = $guard;
-    }
-
-    public function getActions(): array
-    {
-        return $this->actions;
-    }
-
-    public function setActions(array $actions): void
-    {
-        $this->actions = [];
-
-        foreach ($actions as $action) {
-            $this->addAction($action);
-        }
-    }
-
-    public function addAction(CommandInterface $action): void
-    {
-        $this->actions[] = $action;
     }
 
     public function getFromPlaces(): array
@@ -92,25 +74,6 @@ class Transition implements TransitionInterface
         return $this->getGuard() === $transition->getGuard() &&
             $this->getFromPlaces() === $transition->getFromPlaces() &&
             $this->getToPlaces() === $transition->getToPlaces() &&
-            $this->isSameActions($transition->getActions());
-    }
-
-    protected function isSameActions(array $actions): bool
-    {
-        if (count($this->actions) !== count($actions)) {
-            return false;
-        }
-        foreach ($actions as $index => $action) {
-            $selfAction = $this->actions[$index] ?? null;
-            if (
-                !$selfAction instanceof CommandInterface ||
-                !$action instanceof CommandInterface ||
-                !$selfAction->isSame($action)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
+            $this->isSameCommands($transition->getCommands());
     }
 }

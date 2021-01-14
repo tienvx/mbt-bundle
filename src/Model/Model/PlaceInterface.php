@@ -12,11 +12,11 @@ interface PlaceInterface
 
     public function setStart(bool $start): void;
 
-    public function getAssertions(): array;
+    public function getCommands(): array;
 
-    public function setAssertions(array $assertions): void;
+    public function setCommands(array $commands): void;
 
-    public function addAssertion(CommandInterface $assertion): void;
+    public function addCommand(CommandInterface $command): void;
 
     public function isSame(self $place): bool;
 }

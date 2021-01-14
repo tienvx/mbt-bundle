@@ -45,7 +45,7 @@ class StepRunnerTest extends TestCase
         $transitions = [
             $transition = new Transition(),
         ];
-        $transition->setActions([
+        $transition->setCommands([
             $command1 = CommandFactory::create(WindowCommandRunner::OPEN, ''),
             $command2 = CommandFactory::create(MouseCommandRunner::CLICK, ''),
         ]);
@@ -54,11 +54,11 @@ class StepRunnerTest extends TestCase
             $place1 = new Place(),
             $place2 = new Place(),
         ];
-        $place1->setAssertions([
+        $place1->setCommands([
             $command3 = CommandFactory::create(AssertionRunner::ASSERT_EDITABLE, ''),
             $command4 = CommandFactory::create(AssertionRunner::ASSERT_ALERT, ''),
         ]);
-        $place2->setAssertions([
+        $place2->setCommands([
             $command5 = CommandFactory::create(AssertionRunner::ASSERT_TEXT, ''),
         ]);
         $this->model->setPlaces($places);

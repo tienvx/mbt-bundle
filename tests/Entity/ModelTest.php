@@ -64,7 +64,7 @@ class ModelTest extends TestCase
         ];
         $p1->setLabel('');
         $p1->setStart(false);
-        $p1->setAssertions([
+        $p1->setCommands([
             $c1 = new Command(),
             $c2 = new Command(),
         ]);
@@ -76,7 +76,7 @@ class ModelTest extends TestCase
         $c2->setValue('test');
         $p2->setLabel('p2');
         $p2->setStart(false);
-        $p2->setAssertions([
+        $p2->setCommands([
             $c3 = new Command(),
             $c4 = new Command(),
         ]);
@@ -120,15 +120,15 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).startUrl:
     This value is not a valid URL. (code 57c2f299-1154-4870-89bb-ef3b1f5ad229)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
     The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].assertions[1].target:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
     The target is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
     The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].assertions[1].value:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
     The value is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.

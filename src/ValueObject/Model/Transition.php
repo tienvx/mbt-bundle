@@ -23,7 +23,7 @@ class Transition extends TransitionModel
      * })
      * @Assert\Valid
      */
-    protected array $actions = [];
+    protected array $commands = [];
 
     /**
      * @Assert\All({
