@@ -21,11 +21,11 @@ class WindowCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Open' => self::OPEN,
-            'Set Window Size' => self::SET_WINDOW_SIZE,
-            'Select Window' => self::SELECT_WINDOW,
-            'Close' => self::CLOSE,
-            'Select Frame' => self::SELECT_FRAME,
+            self::OPEN,
+            self::SET_WINDOW_SIZE,
+            self::SELECT_WINDOW,
+            self::CLOSE,
+            self::SELECT_FRAME,
         ];
     }
 

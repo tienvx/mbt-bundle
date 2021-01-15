@@ -16,15 +16,15 @@ class ScriptCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Run Script' => self::RUN_SCRIPT,
-            'Execute Script' => self::EXECUTE_SCRIPT,
-            'Execute Async Script' => self::EXECUTE_ASYNC_SCRIPT,
+            self::RUN_SCRIPT,
+            self::EXECUTE_SCRIPT,
+            self::EXECUTE_ASYNC_SCRIPT,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array

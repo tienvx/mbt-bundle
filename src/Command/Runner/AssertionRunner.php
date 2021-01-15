@@ -32,30 +32,30 @@ class AssertionRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Assert' => self::ASSERT,
-            'Assert Alert' => self::ASSERT_ALERT,
-            'Assert Confirmation' => self::ASSERT_CONFIRMATION,
-            'Assert Prompt' => self::ASSERT_PROMPT,
-            'Assert Title' => self::ASSERT_TITLE,
-            'Assert Text' => self::ASSERT_TEXT,
-            'Assert Not Text' => self::ASSERT_NOT_TEXT,
-            'Assert Value' => self::ASSERT_VALUE,
-            'Assert Editable' => self::ASSERT_EDITABLE,
-            'Assert Not Editable' => self::ASSERT_NOT_EDITABLE,
-            'Assert Element Present' => self::ASSERT_ELEMENT_PRESENT,
-            'Assert Element Not Present' => self::ASSERT_ELEMENT_NOT_PRESENT,
-            'Assert Checked' => self::ASSERT_CHECKED,
-            'Assert Not Checked' => self::ASSERT_NOT_CHECKED,
-            'Assert Selected Value' => self::ASSERT_SELECTED_VALUE,
-            'Assert Not Selected Value' => self::ASSERT_NOT_SELECTED_VALUE,
-            'Assert Selected Label' => self::ASSERT_SELECTED_LABEL,
-            'Assert Not Selected Label' => self::ASSERT_NOT_SELECTED_LABEL,
+            self::ASSERT,
+            self::ASSERT_ALERT,
+            self::ASSERT_CONFIRMATION,
+            self::ASSERT_PROMPT,
+            self::ASSERT_TITLE,
+            self::ASSERT_TEXT,
+            self::ASSERT_NOT_TEXT,
+            self::ASSERT_VALUE,
+            self::ASSERT_EDITABLE,
+            self::ASSERT_NOT_EDITABLE,
+            self::ASSERT_ELEMENT_PRESENT,
+            self::ASSERT_ELEMENT_NOT_PRESENT,
+            self::ASSERT_CHECKED,
+            self::ASSERT_NOT_CHECKED,
+            self::ASSERT_SELECTED_VALUE,
+            self::ASSERT_NOT_SELECTED_VALUE,
+            self::ASSERT_SELECTED_LABEL,
+            self::ASSERT_NOT_SELECTED_LABEL,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array
