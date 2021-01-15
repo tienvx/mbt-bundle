@@ -340,6 +340,110 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $this->runner->run($command, $this->color, $this->driver);
     }
 
+    public function testMouseOutTop(): void
+    {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::MOUSE_OUT);
+        $command->setTarget('id=cart');
+        $coord = $this->createMock(WebDriverCoordinates::class);
+        $element = $this->createMock(RemoteWebElement::class);
+        $element->expects($this->once())->method('getCoordinates')->willReturn($coord);
+        $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'cart' === $selector->getValue();
+        }))->willReturn($element);
+        $mouse = $this->createMock(RemoteMouse::class);
+        $mouse->expects($this->once())->method('mouseMove')->with($coord, null, -2);
+        $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
+        $this->driver->expects($this->once())->method('executeScript')->with(
+            'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+            [$element]
+        )->willReturn([
+            $rect = (object) ['top' => 1, 'height' => 2],
+            $vp = (object) [],
+        ]);
+        $this->runner->run($command, $this->color, $this->driver);
+    }
+
+    public function testMouseOutRight(): void
+    {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::MOUSE_OUT);
+        $command->setTarget('id=cart');
+        $coord = $this->createMock(WebDriverCoordinates::class);
+        $element = $this->createMock(RemoteWebElement::class);
+        $element->expects($this->once())->method('getCoordinates')->willReturn($coord);
+        $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'cart' === $selector->getValue();
+        }))->willReturn($element);
+        $mouse = $this->createMock(RemoteMouse::class);
+        $mouse->expects($this->once())->method('mouseMove')->with($coord, 2);
+        $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
+        $this->driver->expects($this->once())->method('executeScript')->with(
+            'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+            [$element]
+        )->willReturn([
+            $rect = (object) ['top' => 0, 'right' => 2],
+            $vp = (object) ['width' => 3],
+        ]);
+        $this->runner->run($command, $this->color, $this->driver);
+    }
+
+    public function testMouseOutBottom(): void
+    {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::MOUSE_OUT);
+        $command->setTarget('id=cart');
+        $coord = $this->createMock(WebDriverCoordinates::class);
+        $element = $this->createMock(RemoteWebElement::class);
+        $element->expects($this->once())->method('getCoordinates')->willReturn($coord);
+        $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'cart' === $selector->getValue();
+        }))->willReturn($element);
+        $mouse = $this->createMock(RemoteMouse::class);
+        $mouse->expects($this->once())->method('mouseMove')->with($coord, null, 3);
+        $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
+        $this->driver->expects($this->once())->method('executeScript')->with(
+            'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+            [$element]
+        )->willReturn([
+            $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'height' => 4],
+            $vp = (object) ['width' => 2, 'height' => 2],
+        ]);
+        $this->runner->run($command, $this->color, $this->driver);
+    }
+
+    public function testMouseOutLeft(): void
+    {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::MOUSE_OUT);
+        $command->setTarget('id=cart');
+        $coord = $this->createMock(WebDriverCoordinates::class);
+        $element = $this->createMock(RemoteWebElement::class);
+        $element->expects($this->once())->method('getCoordinates')->willReturn($coord);
+        $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'cart' === $selector->getValue();
+        }))->willReturn($element);
+        $mouse = $this->createMock(RemoteMouse::class);
+        $mouse->expects($this->once())->method('mouseMove')->with($coord, -1);
+        $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
+        $this->driver->expects($this->once())->method('executeScript')->with(
+            'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+            [$element]
+        )->willReturn([
+            $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'left' => 1],
+            $vp = (object) ['width' => 2, 'height' => 1],
+        ]);
+        $this->runner->run($command, $this->color, $this->driver);
+    }
+
     public function testMouseOver(): void
     {
         $command = new Command();
