@@ -21,20 +21,16 @@ abstract class CommandRunner implements CommandRunnerInterface
         list($mechanism, $value) = explode('=', $target, 2);
         switch ($mechanism) {
             case 'id':
-                return WebDriverBy::id($value);
             case 'name':
-                return WebDriverBy::name($value);
             case 'linkText':
-                return WebDriverBy::linkText($value);
             case 'partialLinkText':
-                return WebDriverBy::partialLinkText($value);
+            case 'xpath':
+                return WebDriverBy::{$mechanism}($value);
             case 'css':
                 return WebDriverBy::cssSelector($value);
-            case 'xpath':
-                return WebDriverBy::xpath($value);
+            default:
+                throw new UnexpectedValueException('Invalid target mechanism');
         }
-
-        throw new UnexpectedValueException('Invalid target mechanism');
     }
 
     protected function isElementEditable(RemoteWebDriver $driver, WebDriverElement $element): bool
