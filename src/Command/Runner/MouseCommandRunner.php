@@ -22,7 +22,7 @@ class MouseCommandRunner extends CommandRunner
     public const MOUSE_DOWN = 'mouseDown';
     public const MOUSE_DOWN_AT = 'mouseDownAt';
     public const MOUSE_MOVE_AT = 'mouseMoveAt';
-    //public const MOUSE_OUT = 'mouseOut'; // Do we have to support this one?
+    public const MOUSE_OUT = 'mouseOut';
     public const MOUSE_OVER = 'mouseOver';
     public const MOUSE_UP = 'mouseUp';
     public const MOUSE_UP_AT = 'mouseUpAt';
@@ -43,6 +43,7 @@ class MouseCommandRunner extends CommandRunner
             self::MOUSE_DOWN,
             self::MOUSE_DOWN_AT,
             self::MOUSE_MOVE_AT,
+            self::MOUSE_OUT,
             self::MOUSE_OVER,
             self::MOUSE_UP,
             self::MOUSE_UP_AT,
@@ -156,6 +157,36 @@ class MouseCommandRunner extends CommandRunner
                     $point->getY()
                 );
                 break;
+            case self::MOUSE_OUT:
+                $element = $driver->findElement($this->getSelector($command->getTarget()));
+                [$rect, $vp] = $driver->executeScript(
+                    // phpcs:ignore Generic.Files.LineLength
+                    'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+                    [$element]
+                );
+                if ($rect->top > 0) {
+                    // try top
+                    $y = -($rect->height / 2 + 1);
+                    $driver->getMouse()->mouseMove($element->getCoordinates(), null, $y);
+                    break;
+                } elseif ($vp->width > $rect->right) {
+                    // try right
+                    $x = $rect->right / 2 + 1;
+                    $driver->getMouse()->mouseMove($element->getCoordinates(), $x);
+                    break;
+                } elseif ($vp->height > $rect->bottom) {
+                    // try bottom
+                    $y = $rect->height / 2 + 1;
+                    $driver->getMouse()->mouseMove($element->getCoordinates(), null, $y);
+                    break;
+                } elseif ($rect->left > 0) {
+                    // try left
+                    $x = (int) (-($rect->right / 2));
+                    $driver->getMouse()->mouseMove($element->getCoordinates(), $x);
+                    break;
+                }
+
+                throw new \Exception('Unable to perform mouse out as the element takes up the entire viewport');
             case self::MOUSE_OVER:
                 $driver->getMouse()->mouseMove(
                     $driver->findElement($this->getSelector($command->getTarget()))->getCoordinates()
