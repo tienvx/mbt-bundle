@@ -18,11 +18,11 @@ class AlertCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Accept Alert' => self::ACCEPT_ALERT,
-            'Accept Confirmation' => self::ACCEPT_CONFIRMATION,
-            'Answer Prompt' => self::ANSWER_PROMPT,
-            'Dismiss Confirmation' => self::DISMISS_CONFIRMATION,
-            'Dismiss Prompt' => self::DISMISS_PROMPT,
+            self::ACCEPT_ALERT,
+            self::ACCEPT_CONFIRMATION,
+            self::ANSWER_PROMPT,
+            self::DISMISS_CONFIRMATION,
+            self::DISMISS_PROMPT,
         ];
     }
 

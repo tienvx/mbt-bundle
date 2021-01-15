@@ -21,20 +21,20 @@ class StoreCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Store' => self::STORE,
-            'Store Attribute' => self::STORE_ATTRIBUTE,
-            'Store Element Count' => self::STORE_ELEMENT_COUNT,
-            'Store Json' => self::STORE_JSON,
-            'Store Text' => self::STORE_TEXT,
-            'Store Title' => self::STORE_TITLE,
-            'Store Value' => self::STORE_VALUE,
-            'Store Window Handle' => self::STORE_WINDOW_HANDLE,
+            self::STORE,
+            self::STORE_ATTRIBUTE,
+            self::STORE_ELEMENT_COUNT,
+            self::STORE_JSON,
+            self::STORE_TEXT,
+            self::STORE_TITLE,
+            self::STORE_VALUE,
+            self::STORE_WINDOW_HANDLE,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array

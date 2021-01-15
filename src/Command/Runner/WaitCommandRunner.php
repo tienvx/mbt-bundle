@@ -20,23 +20,23 @@ class WaitCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Wait For Element Editable' => self::WAIT_FOR_ELEMENT_EDITABLE,
-            'Wait For Element Not Editable' => self::WAIT_FOR_ELEMENT_NOT_EDITABLE,
-            'Wait For Element Present' => self::WAIT_FOR_ELEMENT_PRESENT,
-            'Wait For Element Not Present' => self::WAIT_FOR_ELEMENT_NOT_PRESENT,
-            'Wait For Element Visible' => self::WAIT_FOR_ELEMENT_VISIBLE,
-            'Wait For Element Not Visible' => self::WAIT_FOR_ELEMENT_NOT_VISIBLE,
+            self::WAIT_FOR_ELEMENT_EDITABLE,
+            self::WAIT_FOR_ELEMENT_NOT_EDITABLE,
+            self::WAIT_FOR_ELEMENT_PRESENT,
+            self::WAIT_FOR_ELEMENT_NOT_PRESENT,
+            self::WAIT_FOR_ELEMENT_VISIBLE,
+            self::WAIT_FOR_ELEMENT_NOT_VISIBLE,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array
     {
-        return $this->getCommandsRequireTarget();
+        return $this->getAllCommands();
     }
 
     public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void

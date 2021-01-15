@@ -15,14 +15,14 @@ class KeyboardCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Type' => self::TYPE,
-            'Send Keys' => self::SEND_KEYS,
+            self::TYPE,
+            self::SEND_KEYS,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array

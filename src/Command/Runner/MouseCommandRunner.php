@@ -31,28 +31,28 @@ class MouseCommandRunner extends CommandRunner
     public function getAllCommands(): array
     {
         return [
-            'Add Selection' => self::ADD_SELECTION,
-            'Remove Selection' => self::REMOVE_SELECTION,
-            'Check' => self::CHECK,
-            'Uncheck' => self::UNCHECK,
-            'Click' => self::CLICK,
-            'Click At' => self::CLICK_AT,
-            'Double Click' => self::DOUBLE_CLICK,
-            'Double Click At' => self::DOUBLE_CLICK_AT,
-            'Drag And Drop To Object' => self::DRAG_AND_DROP_TO_OBJECT,
-            'Mouse Down' => self::MOUSE_DOWN,
-            'Mouse Down At' => self::MOUSE_DOWN_AT,
-            'Mouse Move At' => self::MOUSE_MOVE_AT,
-            'Mouse Over' => self::MOUSE_OVER,
-            'Mouse Up' => self::MOUSE_UP,
-            'Mouse Up At' => self::MOUSE_UP_AT,
-            'Select' => self::SELECT,
+            self::ADD_SELECTION,
+            self::REMOVE_SELECTION,
+            self::CHECK,
+            self::UNCHECK,
+            self::CLICK,
+            self::CLICK_AT,
+            self::DOUBLE_CLICK,
+            self::DOUBLE_CLICK_AT,
+            self::DRAG_AND_DROP_TO_OBJECT,
+            self::MOUSE_DOWN,
+            self::MOUSE_DOWN_AT,
+            self::MOUSE_MOVE_AT,
+            self::MOUSE_OVER,
+            self::MOUSE_UP,
+            self::MOUSE_UP_AT,
+            self::SELECT,
         ];
     }
 
     public function getCommandsRequireTarget(): array
     {
-        return array_values($this->getAllCommands());
+        return $this->getAllCommands();
     }
 
     public function getCommandsRequireValue(): array
