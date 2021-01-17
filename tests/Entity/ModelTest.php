@@ -57,7 +57,11 @@ class ModelTest extends TestCase
         $model = new Model();
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
-        $model->setStartUrl('file:///home/test/image.png');
+        $c1 = new Command();
+        $c1->setCommand('');
+        $c1->setTarget(null);
+        $c1->setValue(null);
+        $model->setStartCommands([$c1]);
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -65,27 +69,27 @@ class ModelTest extends TestCase
         $p1->setLabel('');
         $p1->setStart(false);
         $p1->setCommands([
-            $c1 = new Command(),
             $c2 = new Command(),
+            $c3 = new Command(),
         ]);
-        $c1->setCommand('');
-        $c1->setTarget('css=.name');
-        $c1->setValue('test');
-        $c2->setCommand('click');
-        $c2->setTarget(null);
+        $c2->setCommand('');
+        $c2->setTarget('css=.name');
         $c2->setValue('test');
+        $c3->setCommand('click');
+        $c3->setTarget(null);
+        $c3->setValue('test');
         $p2->setLabel('p2');
         $p2->setStart(false);
         $p2->setCommands([
-            $c3 = new Command(),
             $c4 = new Command(),
+            $c5 = new Command(),
         ]);
-        $c3->setCommand('doNoThing');
-        $c3->setTarget('css=.about');
-        $c3->setValue('test');
-        $c4->setCommand('clickAt');
-        $c4->setTarget('css=.avatar');
-        $c4->setValue(null);
+        $c4->setCommand('doNoThing');
+        $c4->setTarget('css=.about');
+        $c4->setValue('test');
+        $c5->setCommand('clickAt');
+        $c5->setTarget('css=.avatar');
+        $c5->setValue(null);
         $model->setPlaces($places);
         $transitions = [
             $t1 = new Transition(),
@@ -105,7 +109,7 @@ class ModelTest extends TestCase
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
         $violations = $validator->validate($model);
-        $this->assertCount(16, $violations);
+        $this->assertCount(17, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
@@ -116,8 +120,10 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).startUrl:
-    This value is not a valid URL. (code 57c2f299-1154-4870-89bb-ef3b1f5ad229)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).startCommands[0].command:
+    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).startCommands[0].command:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
