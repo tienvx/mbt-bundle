@@ -48,10 +48,9 @@ class Model extends BaseModel
     protected ?string $tags = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Url
+     * @ORM\Column(type="array")
      */
-    protected ?string $startUrl = null;
+    protected array $startCommands = [];
 
     /**
      * @ORM\Column(type="array")
@@ -94,6 +93,22 @@ class Model extends BaseModel
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new DateTime());
+    }
+
+    /**
+     * @Assert\All({
+     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
+     * })
+     * @Assert\Valid
+     */
+    public function getStartCommands(): array
+    {
+        return $this->denormalizeCommands($this->startCommands);
+    }
+
+    public function setStartCommands(array $startCommands): void
+    {
+        $this->startCommands = $this->normalizeCommands($startCommands);
     }
 
     /**
