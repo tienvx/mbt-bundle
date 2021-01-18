@@ -10,12 +10,11 @@ use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
+use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
 use Tienvx\Bundle\MbtBundle\Model\Search\Node;
-use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
@@ -45,16 +44,20 @@ class AStarTest extends TestCase
 
     protected function setUp(): void
     {
+        $emptyProducts = fn (ColorInterface $color): array => ['products' => 0];
+        $oneProduct = fn (ColorInterface $color): array => ['products' => 1];
+        $hasOneProduct = fn (ColorInterface $color): bool => 1 === $color->getValue('products');
+        $hasMoreThanOneProduct = fn (ColorInterface $color): bool => $color->getValue('products') > 1;
+        $removeProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') - 1];
+        $addProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') + 1];
         $this->factory = new ColorfulFactory();
-        $expressionLanguage = new ExpressionLanguage();
-        $expressionEvaluator = new ExpressionLanguageEvaluator($expressionLanguage);
-        $this->transitionService = new GuardedTransitionService($this->factory, $expressionEvaluator);
+        $this->transitionService = new GuardedTransitionService($this->factory);
         $this->markingHelper = new MarkingHelper($this->factory);
         $builder = new SingleColorPetrinetBuilder($this->factory);
-        $this->clearCart = $builder->transition(null, '{products: 0}');
-        $this->removeLastProduct = $builder->transition('products === 1', '{products: 0}');
-        $this->removeProduct = $builder->transition('products > 1', '{products: products - 1}');
-        $this->addMoreProduct = $builder->transition(null, '{products: products + 1}');
+        $this->clearCart = $builder->transition(null, $emptyProducts);
+        $this->removeLastProduct = $builder->transition($hasOneProduct, $emptyProducts);
+        $this->removeProduct = $builder->transition($hasMoreThanOneProduct, $removeProduct);
+        $this->addMoreProduct = $builder->transition(null, $addProduct);
         $this->petrinet = $builder
             ->connect($this->cartHasProducts = $builder->place(), $this->clearCart)
             ->connect($this->clearCart, $this->cartEmpty = $builder->place(), 1)
@@ -64,7 +67,7 @@ class AStarTest extends TestCase
             ->connect($this->removeLastProduct, $this->cartEmpty, 1)
             ->connect($this->cartHasProducts, $this->removeProduct)
             ->connect($this->removeProduct, $this->cartHasProducts, 1)
-            ->connect($this->cartEmpty, $this->addFirstProduct = $builder->transition(null, '{products: 1}'))
+            ->connect($this->cartEmpty, $this->addFirstProduct = $builder->transition(null, $oneProduct))
             ->connect($this->addFirstProduct, $this->cartHasProducts, 1)
             ->connect($this->cartHasProducts, $this->addMoreProduct)
             ->connect($this->addMoreProduct, $this->cartHasProducts, 1)

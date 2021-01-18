@@ -32,7 +32,7 @@
         "symfony/security-core": "^5.2",
         "symfony/translation": "^5.2",
         "symfony/validator": "^5.2",
-        "tienvx/single-color-petrinet": "^1.1"
+        "tienvx/single-color-petrinet": "^1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"

@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Generator;
 
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\ColorfulFactory;
-use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -43,12 +42,11 @@ class RandomGeneratorTest extends TestCase
     protected function setUp(): void
     {
         $factory = new ColorfulFactory();
-        $petrinetHelper = new PetrinetHelper($factory);
-        $markingHelper = new MarkingHelper($factory);
         $expressionLanguage = new ExpressionLanguage();
-        $expressionEvaluator = new ExpressionLanguageEvaluator($expressionLanguage);
-        $modelHelper = new ModelHelper($factory, $expressionEvaluator);
-        $transitionService = new GuardedTransitionService($factory, $expressionEvaluator);
+        $petrinetHelper = new PetrinetHelper($factory, $expressionLanguage);
+        $markingHelper = new MarkingHelper($factory);
+        $modelHelper = new ModelHelper();
+        $transitionService = new GuardedTransitionService($factory);
         $model = new Model();
         $places = [
             $place1 = new Place(),

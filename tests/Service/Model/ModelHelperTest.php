@@ -3,10 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
-use SingleColorPetrinet\Model\ColorfulFactory;
-use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
-use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 
@@ -20,16 +17,6 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
  */
 class ModelHelperTest extends TestCase
 {
-    protected ModelHelper $modelHelper;
-
-    protected function setUp(): void
-    {
-        $factory = new ColorfulFactory();
-        $expressionLanguage = new ExpressionLanguage();
-        $expressionEvaluator = new ExpressionLanguageEvaluator($expressionLanguage);
-        $this->modelHelper = new ModelHelper($factory, $expressionEvaluator);
-    }
-
     public function testGetStartPlaces(): void
     {
         $model = new Model();
@@ -49,6 +36,6 @@ class ModelHelperTest extends TestCase
         $this->assertSame([
             1 => 1,
             2 => 1,
-        ], $this->modelHelper->getStartPlaces($model));
+        ], (new ModelHelper())->getStartPlaces($model));
     }
 }

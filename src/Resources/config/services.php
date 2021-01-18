@@ -6,8 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Petrinet\Builder\MarkingBuilder;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
-use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -261,10 +259,6 @@ return static function (ContainerConfigurator $container): void {
             ->alias(ModelDumperInterface::class, ModelDumper::class)
 
         ->set(ModelHelper::class)
-            ->args([
-                service(ColorfulFactoryInterface::class),
-                service(ExpressionEvaluatorInterface::class),
-            ])
             ->alias(ModelHelperInterface::class, ModelHelper::class)
 
         ->set(BugProgress::class)
@@ -302,23 +296,17 @@ return static function (ContainerConfigurator $container): void {
         ->set(PetrinetHelper::class)
             ->args([
                 service(ColorfulFactoryInterface::class),
+                service(ExpressionLanguage::class),
             ])
             ->alias(PetrinetHelperInterface::class, PetrinetHelper::class)
 
         // Single Color Petrinet services
-        ->set(ExpressionLanguageEvaluator::class)
-            ->args([
-                service(ExpressionLanguage::class),
-            ])
-            ->alias(ExpressionEvaluatorInterface::class, ExpressionLanguageEvaluator::class)
-
         ->set(ColorfulFactory::class)
             ->alias(ColorfulFactoryInterface::class, ColorfulFactory::class)
 
         ->set(GuardedTransitionService::class)
             ->args([
                 service(ColorfulFactoryInterface::class),
-                service(ExpressionEvaluatorInterface::class),
             ])
             ->alias(GuardedTransitionServiceInterface::class, GuardedTransitionService::class)
 
