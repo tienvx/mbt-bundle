@@ -7,17 +7,21 @@ use Petrinet\Model\PlaceInterface as PetrinetPlaceInterface;
 use Petrinet\Model\TransitionInterface as PetrinetTransitionInterface;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 
 class PetrinetHelper implements PetrinetHelperInterface
 {
     protected ColorfulFactoryInterface $colorfulFactory;
+    protected ExpressionLanguage $expressionLanguage;
 
-    public function __construct(ColorfulFactoryInterface $colorfulFactory)
+    public function __construct(ColorfulFactoryInterface $colorfulFactory, ExpressionLanguage $expressionLanguage)
     {
         $this->colorfulFactory = $colorfulFactory;
+        $this->expressionLanguage = $expressionLanguage;
     }
 
     public function build(ModelInterface $model): PetrinetInterface
@@ -57,7 +61,13 @@ class PetrinetHelper implements PetrinetHelperInterface
         $transitions = [];
         foreach ($model->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
-                $transitions[$index] = $builder->transition($transition->getGuard());
+                $guardCallback = $transition->getGuard()
+                    ? fn (ColorInterface $color): bool => (bool) $this->expressionLanguage->evaluate(
+                        $transition->getGuard(),
+                        $color->getValues()
+                    )
+                    : null;
+                $transitions[$index] = $builder->transition($guardCallback);
                 $transitions[$index]->setId($index);
             }
         }

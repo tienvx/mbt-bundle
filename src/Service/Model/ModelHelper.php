@@ -2,24 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
-use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class ModelHelper implements ModelHelperInterface
 {
-    protected ColorfulFactoryInterface $colorfulFactory;
-    protected ExpressionEvaluatorInterface $expressionEvaluator;
-
-    public function __construct(
-        ColorfulFactoryInterface $colorfulFactory,
-        ExpressionEvaluatorInterface $expressionEvaluator
-    ) {
-        $this->colorfulFactory = $colorfulFactory;
-        $this->expressionEvaluator = $expressionEvaluator;
-    }
-
     /**
      * {@inheritdoc}
      */

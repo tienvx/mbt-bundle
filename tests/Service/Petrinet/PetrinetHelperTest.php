@@ -4,15 +4,18 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Petrinet;
 
 use Petrinet\Model\PlaceInterface;
 use PHPUnit\Framework\TestCase;
+use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
+ * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
@@ -23,7 +26,8 @@ class PetrinetHelperTest extends TestCase
     public function testBuild(): void
     {
         $factory = new ColorfulFactory();
-        $helper = new PetrinetHelper($factory);
+        $expressionLanguage = new ExpressionLanguage();
+        $helper = new PetrinetHelper($factory, $expressionLanguage);
         $places = [
             $place1 = new Place(),
             $place2 = new Place(),
@@ -56,7 +60,9 @@ class PetrinetHelperTest extends TestCase
         foreach ($petrinet->getTransitions() as $place) {
             $this->assertInstanceOf(GuardedTransitionInterface::class, $place);
         }
-        $this->assertSame('count > 0', $petrinet->getTransitions()[0]->getGuard()->getExpression());
+        $this->assertIsCallable($guardCallback = $petrinet->getTransitions()[0]->getGuard());
+        $this->assertTrue($guardCallback(new Color(['count' => 1])));
+        $this->assertFalse($guardCallback(new Color(['count' => 0])));
         $this->assertNull($petrinet->getTransitions()[1]->getGuard());
         $this->assertCount(2, $petrinet->getTransitions()[0]->getInputArcs());
         $this->assertCount(1, $petrinet->getTransitions()[0]->getOutputArcs());
