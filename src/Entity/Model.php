@@ -118,12 +118,7 @@ class Model extends BaseModel
      */
     public function getPlaces(): array
     {
-        $places = [];
-        foreach ($this->places as $placeData) {
-            $places[] = $this->denormalizePlace($placeData);
-        }
-
-        return $places;
+        return $this->denormalizePlaces($this->places);
     }
 
     public function setPlaces(array $places): void
@@ -155,12 +150,7 @@ class Model extends BaseModel
      */
     public function getTransitions(): array
     {
-        $transitions = [];
-        foreach ($this->transitions as $transitionData) {
-            $transitions[] = $this->denormalizeTransition($transitionData);
-        }
-
-        return $transitions;
+        return $this->denormalizeTransitions($this->transitions);
     }
 
     public function setTransitions(array $transitions): void
@@ -192,17 +182,16 @@ class Model extends BaseModel
      */
     public function validatePlacesInTransitions(ExecutionContextInterface $context, $payload): void
     {
-        $places = array_keys($this->places);
         foreach ($this->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 $fromPlaces = $transition->getFromPlaces();
-                if ($fromPlaces && array_diff($fromPlaces, $places)) {
+                if ($fromPlaces && array_diff($fromPlaces, array_keys($this->places))) {
                     $context->buildViolation('From places are invalid')
                         ->atPath(sprintf('transitions[%d].fromPlaces', $index))
                         ->addViolation();
                 }
                 $toPlaces = $transition->getToPlaces();
-                if ($toPlaces && array_diff($toPlaces, $places)) {
+                if ($toPlaces && array_diff($toPlaces, array_keys($this->places))) {
                     $context->buildViolation('To places are invalid')
                         ->atPath(sprintf('transitions[%d].toPlaces', $index))
                         ->addViolation();
@@ -222,6 +211,26 @@ class Model extends BaseModel
                 ->atPath('places')
                 ->addViolation();
         }
+    }
+
+    public function normalize(): array
+    {
+        return [
+            'label' => $this->label,
+            'tags' => $this->tags,
+            'startCommands' => $this->startCommands,
+            'places' => $this->places,
+            'transitions' => $this->transitions,
+        ];
+    }
+
+    public function denormalize(array $data): void
+    {
+        $this->setLabel($data['label'] ?? '');
+        $this->setTags($data['tags'] ?? null);
+        $this->setStartCommands($this->denormalizeCommands($data['startCommands'] ?? []));
+        $this->setPlaces($this->denormalizePlaces($data['places'] ?? []));
+        $this->setTransitions($this->denormalizeTransitions($data['transitions'] ?? []));
     }
 
     protected function normalizeCommands(array $commands): array
@@ -254,6 +263,11 @@ class Model extends BaseModel
         return $commands;
     }
 
+    protected function denormalizePlaces(array $placesData): array
+    {
+        return array_map(fn (array $placeData) => $this->denormalizePlace($placeData), $placesData);
+    }
+
     protected function denormalizePlace(array $placeData): PlaceInterface
     {
         $place = new Place();
@@ -262,6 +276,11 @@ class Model extends BaseModel
         $place->setCommands($this->denormalizeCommands($placeData['commands'] ?? []));
 
         return $place;
+    }
+
+    protected function denormalizeTransitions(array $transitionsData): array
+    {
+        return array_map(fn (array $transitionData) => $this->denormalizeTransition($transitionData), $transitionsData);
     }
 
     protected function denormalizeTransition(array $transitionData): TransitionInterface

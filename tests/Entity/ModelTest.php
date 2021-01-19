@@ -33,26 +33,9 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  */
 class ModelTest extends TestCase
 {
-    public function testPrePersist(): void
-    {
-        $model = new Model();
-        $model->prePersist();
-        $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
-        $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
-        $this->assertSame(1, $model->getVersion());
-    }
+    protected Model $model;
 
-    public function testPreUpdate(): void
-    {
-        $model = new Model();
-        $model->prePersist();
-        $model->preUpdate();
-        $this->assertInstanceOf(\DateTime::class, $updatedAt = $model->getUpdatedAt());
-        $model->preUpdate();
-        $this->assertTrue($model->getUpdatedAt() instanceof \DateTime && $updatedAt !== $model->getUpdatedAt());
-    }
-
-    public function testValidateInvalidModel(): void
+    protected function setUp(): void
     {
         $model = new Model();
         $model->setLabel('');
@@ -104,11 +87,35 @@ class ModelTest extends TestCase
         $t2->setGuard('count > 1');
         $model->setTransitions($transitions);
 
+        $this->model = $model;
+    }
+
+    public function testPrePersist(): void
+    {
+        $model = new Model();
+        $model->prePersist();
+        $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
+        $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
+        $this->assertSame(1, $model->getVersion());
+    }
+
+    public function testPreUpdate(): void
+    {
+        $model = new Model();
+        $model->prePersist();
+        $model->preUpdate();
+        $this->assertInstanceOf(\DateTime::class, $updatedAt = $model->getUpdatedAt());
+        $model->preUpdate();
+        $this->assertTrue($model->getUpdatedAt() instanceof \DateTime && $updatedAt !== $model->getUpdatedAt());
+    }
+
+    public function testValidateInvalidModel(): void
+    {
         $validator = Validation::createValidatorBuilder()
             ->enableAnnotationMapping()
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
-        $violations = $validator->validate($model);
+        $violations = $validator->validate($this->model);
         $this->assertCount(17, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     To places are invalid
@@ -146,5 +153,96 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
     This transition should connect some places to at least 1 place. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
+    }
+
+    public function testNormalize(): void
+    {
+        $this->assertSame([
+            'label' => '',
+            'tags' => 'tag1,tag1,tag2,,tag3',
+            'startCommands' => [
+                0 => [
+                    'command' => '',
+                    'target' => null,
+                    'value' => null,
+                ],
+            ],
+            'places' => [
+                0 => [
+                    'label' => '',
+                    'start' => false,
+                    'commands' => [
+                        0 => [
+                            'command' => '',
+                            'target' => 'css=.name',
+                            'value' => 'test',
+                        ],
+                        1 => [
+                            'command' => 'click',
+                            'target' => null,
+                            'value' => 'test',
+                        ],
+                    ],
+                ],
+                1 => [
+                    'label' => 'p2',
+                    'start' => false,
+                    'commands' => [
+                        0 => [
+                            'command' => 'doNoThing',
+                            'target' => 'css=.about',
+                            'value' => 'test',
+                        ],
+                        1 => [
+                            'command' => 'clickAt',
+                            'target' => 'css=.avatar',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+            'transitions' => [
+                0 => [
+                    'label' => 't1',
+                    'guard' => null,
+                    'commands' => [
+                    ],
+                    'fromPlaces' => [
+                    ],
+                    'toPlaces' => [
+                        0 => 1,
+                        1 => 2,
+                    ],
+                ],
+                1 => [
+                    'label' => '',
+                    'guard' => 'count > 1',
+                    'commands' => [
+                    ],
+                    'fromPlaces' => [
+                        0 => 1,
+                        1 => 2,
+                    ],
+                    'toPlaces' => [
+                    ],
+                ],
+            ],
+        ], $this->model->normalize());
+    }
+
+    public function testDenormalize(): void
+    {
+        $this->model->denormalize([
+            'label' => 'Custom label',
+            'tags' => 'custom,tags',
+            'startCommands' => [],
+            'places' => [],
+            'transitions' => [],
+        ]);
+        $this->assertSame('Custom label', $this->model->getLabel());
+        $this->assertSame('custom,tags', $this->model->getTags());
+        $this->assertSame([], $this->model->getStartCommands());
+        $this->assertSame([], $this->model->getPlaces());
+        $this->assertSame([], $this->model->getTransitions());
     }
 }
