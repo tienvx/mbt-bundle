@@ -12,8 +12,16 @@ class CommandPreprocessor implements CommandPreprocessorInterface
     {
         $processed = new Command();
         $processed->setCommand($command->getCommand());
-        $processed->setTarget($this->replaceVariables($command->getTarget(), $color->getValues()));
-        $processed->setValue($this->replaceVariables($command->getValue(), $color->getValues()));
+        $processed->setTarget(
+            $command->getTarget()
+                ? $this->replaceVariables($command->getTarget(), $color->getValues())
+                : $command->getTarget()
+        );
+        $processed->setValue(
+            $command->getValue()
+                ? $this->replaceVariables($command->getValue(), $color->getValues())
+                : $command->getValue()
+        );
 
         return $processed;
     }
