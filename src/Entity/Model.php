@@ -186,13 +186,13 @@ class Model extends BaseModel
             if ($transition instanceof TransitionInterface) {
                 $fromPlaces = $transition->getFromPlaces();
                 if ($fromPlaces && array_diff($fromPlaces, array_keys($this->places))) {
-                    $context->buildViolation('From places are invalid')
+                    $context->buildViolation('mbt.model.places_invalid')
                         ->atPath(sprintf('transitions[%d].fromPlaces', $index))
                         ->addViolation();
                 }
                 $toPlaces = $transition->getToPlaces();
                 if ($toPlaces && array_diff($toPlaces, array_keys($this->places))) {
-                    $context->buildViolation('To places are invalid')
+                    $context->buildViolation('mbt.model.places_invalid')
                         ->atPath(sprintf('transitions[%d].toPlaces', $index))
                         ->addViolation();
                 }
@@ -207,7 +207,7 @@ class Model extends BaseModel
     {
         $startingPlaces = array_filter($this->places, fn (array $place) => $place['start'] ?? false);
         if (0 === count($startingPlaces)) {
-            $context->buildViolation('You must select at least 1 start place')
+            $context->buildViolation('mbt.model.missing_start_places')
                 ->atPath('places')
                 ->addViolation();
         }

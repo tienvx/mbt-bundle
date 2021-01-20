@@ -118,11 +118,11 @@ class ModelTest extends TestCase
         $violations = $validator->validate($this->model);
         $this->assertCount(17, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
-    To places are invalid
+    mbt.model.places_invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
-    From places are invalid
+    mbt.model.places_invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places:
-    You must select at least 1 start place
+    mbt.model.missing_start_places
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
@@ -146,11 +146,11 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:
-    This transition should connect at least 1 place to other places. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+    mbt.model.missing_from_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
-    This transition should connect some places to at least 1 place. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+    mbt.model.missing_to_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
     }

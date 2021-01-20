@@ -29,7 +29,7 @@ class Transition extends TransitionModel
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
-     * @Assert\Count(min=1, minMessage="This transition should connect at least 1 place to other places.")
+     * @Assert\Count(min=1, minMessage="mbt.model.missing_from_places")
      */
     protected array $fromPlaces = [];
 
@@ -37,7 +37,7 @@ class Transition extends TransitionModel
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
-     * @Assert\Count(min=1, minMessage="This transition should connect some places to at least 1 place.")
+     * @Assert\Count(min=1, minMessage="mbt.model.missing_to_places")
      */
     protected array $toPlaces = [];
 }
