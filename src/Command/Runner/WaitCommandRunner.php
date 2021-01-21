@@ -83,6 +83,8 @@ class WaitCommandRunner extends CommandRunner
                     WebDriverExpectedCondition::invisibilityOfElementLocated($this->getSelector($command->getTarget()))
                 );
                 break;
+            default:
+                break;
         }
     }
 }

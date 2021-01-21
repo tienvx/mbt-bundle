@@ -93,6 +93,8 @@ class StoreCommandRunner extends CommandRunner
             case self::STORE_WINDOW_HANDLE:
                 $color->setValue($command->getTarget(), $driver->getWindowHandle());
                 break;
+            default:
+                break;
         }
     }
 }

@@ -191,6 +191,8 @@ class AssertionRunner extends CommandRunner
                     sprintf('Actual label "%s" did match "%s"', $elementLabel, $command->getValue())
                 );
                 break;
+            default:
+                break;
         }
     }
 

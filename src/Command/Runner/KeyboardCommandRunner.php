@@ -46,6 +46,8 @@ class KeyboardCommandRunner extends CommandRunner
                     ->click()
                     ->sendKeys($this->sanitizeValue($command));
                 break;
+            default:
+                break;
         }
     }
 
