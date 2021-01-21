@@ -80,6 +80,22 @@ class WindowCommandRunner extends CommandRunner
         }
     }
 
+    public function validateTarget(CommandInterface $command): bool
+    {
+        switch ($command->getCommand()) {
+            case self::OPEN:
+                return $command->getTarget() && $this->isValidUrl($command->getTarget());
+            case self::SET_WINDOW_SIZE:
+                return $command->getTarget() && 2 === count(explode('x', $command->getTarget()));
+            case self::SELECT_WINDOW:
+                return $command->getTarget() && $this->isValidHandle($command->getTarget());
+            case self::SELECT_FRAME:
+                return $command->getTarget() && $this->isValidFrame($command->getTarget());
+            default:
+                return true;
+        }
+    }
+
     protected function getDimension(string $target): WebDriverDimension
     {
         list($width, $height) = explode('x', $target);
@@ -89,10 +105,34 @@ class WindowCommandRunner extends CommandRunner
 
     protected function getHandle(string $target): string
     {
-        if (!str_starts_with($target, 'handle=')) {
+        if (!$this->isValidHandle($target)) {
             throw new UnexpectedValueException('Invalid handle');
         }
 
         return substr($target, 7);
+    }
+
+    protected function isValidHandle(string $target): bool
+    {
+        return str_starts_with($target, 'handle=');
+    }
+
+    protected function isValidFrame(string $target): bool
+    {
+        return $target && (
+            in_array($target, ['relative=top', 'relative=parent'])
+                || str_starts_with($target, 'index=')
+                || $this->isValidSelector($target)
+        );
+    }
+
+    /**
+     * TODO Find a solution better than this.
+     */
+    protected function isValidUrl(string $target): bool
+    {
+        $url = filter_var($target, FILTER_SANITIZE_URL);
+
+        return filter_var($url, FILTER_VALIDATE_URL);
     }
 }

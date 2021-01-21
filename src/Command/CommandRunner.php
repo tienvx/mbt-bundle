@@ -17,17 +17,24 @@ abstract class CommandRunner implements CommandRunnerInterface
         return in_array($command->getCommand(), $this->getAllCommands());
     }
 
+    protected function isValidSelector(string $target): bool
+    {
+        list($mechanism) = explode('=', $target, 2);
+
+        return in_array($mechanism, static::MECHANISMS);
+    }
+
     protected function getSelector(string $target): WebDriverBy
     {
         list($mechanism, $value) = explode('=', $target, 2);
         switch ($mechanism) {
-            case 'id':
-            case 'name':
-            case 'linkText':
-            case 'partialLinkText':
-            case 'xpath':
+            case static::MECHANISM_ID:
+            case static::MECHANISM_NAME:
+            case static::MECHANISM_LINK_TEXT:
+            case static::MECHANISM_PARTIAL_LINK_TEXT:
+            case static::MECHANISM_XPATH:
                 return WebDriverBy::{$mechanism}($value);
-            case 'css':
+            case static::MECHANISM_CSS:
                 return WebDriverBy::cssSelector($value);
             default:
                 throw new UnexpectedValueException('Invalid target mechanism');

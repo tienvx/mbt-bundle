@@ -39,21 +39,25 @@ class ValidCommandValidator extends ConstraintValidator
                 ->addViolation();
         }
 
-        if (
-            in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireTarget())
-            && is_null($value->getTarget())
-        ) {
-            $this->context->buildViolation($constraint->targetMessage)
-                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
-                ->atPath('target')
-                ->addViolation();
+        if (in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireTarget())) {
+            if (is_null($value->getTarget())) {
+                $this->context->buildViolation($constraint->targetRequiredMessage)
+                    ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                    ->atPath('target')
+                    ->addViolation();
+            } elseif (!$this->commandRunnerManager->validateTarget($value)) {
+                $this->context->buildViolation($constraint->targetInvalidMessage)
+                    ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                    ->atPath('target')
+                    ->addViolation();
+            }
         }
 
         if (
             in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireValue())
             && is_null($value->getValue())
         ) {
-            $this->context->buildViolation($constraint->valueMessage)
+            $this->context->buildViolation($constraint->valueRequiredMessage)
                 ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
                 ->atPath('value')
                 ->addViolation();

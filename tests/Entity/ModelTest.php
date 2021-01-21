@@ -138,11 +138,11 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
-    The target is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    The target is required. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
     The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
-    The value is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    The value is required. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:

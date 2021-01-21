@@ -60,4 +60,11 @@ class ScriptCommandRunnerTest extends RunnerTestCase
         )->willReturn('Hello');
         $this->runner->run($command, $this->color, $this->driver);
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [ScriptCommandRunner::RUN_SCRIPT, 'anything', true],
+        ];
+    }
 }

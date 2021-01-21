@@ -175,4 +175,13 @@ class WaitCommandRunnerTest extends RunnerTestCase
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
         $this->runner->run($command, $this->color, $this->driver);
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE, null, false],
+            [WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE, 'anything', false],
+            [WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE, 'xpath=//path/to/element', true],
+        ];
+    }
 }
