@@ -56,6 +56,8 @@ class AlertCommandRunner extends CommandRunner
             case self::DISMISS_PROMPT:
                 $driver->switchTo()->alert()->dismiss();
                 break;
+            default:
+                break;
         }
     }
 }

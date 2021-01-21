@@ -211,6 +211,8 @@ class MouseCommandRunner extends CommandRunner
                     ->findElement($this->getSelector($command->getValue()))
                     ->click();
                 break;
+            default:
+                break;
         }
     }
 

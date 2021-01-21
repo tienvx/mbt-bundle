@@ -39,19 +39,21 @@ class ScriptCommandRunner extends CommandRunner
     {
         switch ($command->getCommand()) {
             case self::RUN_SCRIPT:
-                $driver->executeScript($command->getTarget(), $color->getValues());
+                $driver->executeScript($command->getTarget());
                 break;
             case self::EXECUTE_SCRIPT:
-                $value = $driver->executeScript($command->getTarget(), $color->getValues());
+                $value = $driver->executeScript($command->getTarget());
                 if ($command->getValue()) {
                     $color->setValue($command->getValue(), $value);
                 }
                 break;
             case self::EXECUTE_ASYNC_SCRIPT:
-                $value = $driver->executeAsyncScript($command->getTarget(), $color->getValues());
+                $value = $driver->executeAsyncScript($command->getTarget());
                 if ($command->getValue()) {
                     $color->setValue($command->getValue(), $value);
                 }
+                break;
+            default:
                 break;
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
+use Facebook\WebDriver\Exception\UnexpectedTagNameException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
@@ -43,6 +44,9 @@ abstract class CommandRunner implements CommandRunnerInterface
         return $result->enabled && !$result->readonly;
     }
 
+    /**
+     * @throws UnexpectedTagNameException
+     */
     protected function getSelect(WebDriverElement $element): WebDriverSelect
     {
         return new WebDriverSelect($element);

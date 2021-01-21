@@ -75,6 +75,8 @@ class WindowCommandRunner extends CommandRunner
                     $targetLocator->frame($driver->findElement($webDriverBy));
                 }
                 break;
+            default:
+                break;
         }
     }
 
