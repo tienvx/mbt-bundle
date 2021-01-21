@@ -129,4 +129,19 @@ class StoreCommandRunnerTest extends RunnerTestCase
         $this->driver->expects($this->once())->method('getWindowHandle')->willReturn('window-123');
         $this->runner->run($command, $this->color, $this->driver);
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [StoreCommandRunner::STORE_ATTRIBUTE, null, false],
+            [StoreCommandRunner::STORE_ATTRIBUTE, 'anything', false],
+            [StoreCommandRunner::STORE_ATTRIBUTE, 'xpath=//path/to/element@attribute', true],
+            [StoreCommandRunner::STORE_TEXT, null, false],
+            [StoreCommandRunner::STORE_TEXT, 'anything', false],
+            [StoreCommandRunner::STORE_TEXT, 'xpath=//path/to/element', true],
+            [StoreCommandRunner::STORE_JSON, null, false],
+            [StoreCommandRunner::STORE_JSON, 'anything', false],
+            [StoreCommandRunner::STORE_JSON, '{"key": "value"}', true],
+        ];
+    }
 }

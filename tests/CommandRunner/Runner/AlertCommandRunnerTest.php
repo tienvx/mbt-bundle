@@ -79,4 +79,11 @@ class AlertCommandRunnerTest extends RunnerTestCase
             [AlertCommandRunner::DISMISS_PROMPT],
         ];
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [AlertCommandRunner::ANSWER_PROMPT, 'anything', true],
+        ];
+    }
 }

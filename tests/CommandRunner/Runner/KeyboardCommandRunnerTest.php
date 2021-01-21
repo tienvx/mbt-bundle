@@ -54,4 +54,13 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
         }))->willReturn($element);
         $this->runner->run($command, $this->color, $this->driver);
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [KeyboardCommandRunner::SEND_KEYS, null, false],
+            [KeyboardCommandRunner::SEND_KEYS, 'anything', false],
+            [KeyboardCommandRunner::SEND_KEYS, 'xpath=//path/to/element', true],
+        ];
+    }
 }

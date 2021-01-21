@@ -84,7 +84,7 @@ class WindowCommandRunner extends CommandRunner
     {
         switch ($command->getCommand()) {
             case self::OPEN:
-                return $command->getTarget() && filter_var($command->getTarget(), FILTER_VALIDATE_URL);
+                return $command->getTarget() && $this->isValidUrl($command->getTarget());
             case self::SET_WINDOW_SIZE:
                 return $command->getTarget() && 2 === count(explode('x', $command->getTarget()));
             case self::SELECT_WINDOW:
@@ -124,5 +124,15 @@ class WindowCommandRunner extends CommandRunner
                 || str_starts_with($target, 'index=')
                 || $this->isValidSelector($target)
         );
+    }
+
+    /**
+     * TODO Find a solution better than this.
+     */
+    protected function isValidUrl(string $target): bool
+    {
+        $url = filter_var($target, FILTER_SANITIZE_URL);
+
+        return filter_var($url, FILTER_VALIDATE_URL);
     }
 }

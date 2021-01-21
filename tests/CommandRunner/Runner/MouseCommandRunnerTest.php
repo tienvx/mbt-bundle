@@ -540,4 +540,13 @@ class MouseCommandRunnerTest extends RunnerTestCase
             [false, false],
         ];
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [MouseCommandRunner::CLICK, null, false],
+            [MouseCommandRunner::CLICK, 'anything', false],
+            [MouseCommandRunner::CLICK, 'xpath=//path/to/element', true],
+        ];
+    }
 }

@@ -592,4 +592,13 @@ class AssertionRunnerTest extends RunnerTestCase
             [AssertionRunner::ASSERT_PROMPT, 'prompt'],
         ];
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [AssertionRunner::ASSERT_TEXT, 'invalid=anything', false],
+            [AssertionRunner::ASSERT_VALUE, 'css=.age', true],
+            [AssertionRunner::ASSERT, 'anything', true],
+        ];
+    }
 }

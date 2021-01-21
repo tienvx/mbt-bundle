@@ -40,4 +40,17 @@ abstract class RunnerTestCase extends TestCase
             ['invalidCommand', false],
         ];
     }
+
+    /**
+     * @dataProvider targetProvider
+     */
+    public function testValidateTarget(string $commandString, $target, bool $valid): void
+    {
+        $command = new Command();
+        $command->setCommand($commandString);
+        $command->setTarget($target);
+        $this->assertSame($valid, $this->runner->validateTarget($command));
+    }
+
+    abstract public function targetProvider(): array;
 }

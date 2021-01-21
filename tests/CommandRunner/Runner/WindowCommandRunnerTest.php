@@ -126,4 +126,25 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
         $this->runner->run($command, $this->color, $this->driver);
     }
+
+    public function targetProvider(): array
+    {
+        return [
+            [WindowCommandRunner::OPEN, null, false],
+            [WindowCommandRunner::OPEN, 'anything', false],
+            [WindowCommandRunner::OPEN, 'http://example.com', true],
+            [WindowCommandRunner::SET_WINDOW_SIZE, null, false],
+            [WindowCommandRunner::SET_WINDOW_SIZE, 'anything', false],
+            [WindowCommandRunner::SET_WINDOW_SIZE, '123x234', true],
+            [WindowCommandRunner::SELECT_WINDOW, null, false],
+            [WindowCommandRunner::SELECT_WINDOW, 'anything', false],
+            [WindowCommandRunner::SELECT_WINDOW, 'handle=anything', true],
+            [WindowCommandRunner::SELECT_FRAME, null, false],
+            [WindowCommandRunner::SELECT_FRAME, 'anything', false],
+            [WindowCommandRunner::SELECT_FRAME, 'relative=top', true],
+            [WindowCommandRunner::SELECT_FRAME, 'relative=parent', true],
+            [WindowCommandRunner::SELECT_FRAME, 'index=123', true],
+            [WindowCommandRunner::SELECT_FRAME, 'xpath=//path/to/element', true],
+        ];
+    }
 }
