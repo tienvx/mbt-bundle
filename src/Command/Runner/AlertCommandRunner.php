@@ -60,4 +60,9 @@ class AlertCommandRunner extends CommandRunner
                 break;
         }
     }
+
+    public function validateTarget(CommandInterface $command): bool
+    {
+        return true;
+    }
 }

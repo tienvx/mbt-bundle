@@ -97,4 +97,34 @@ class StoreCommandRunner extends CommandRunner
                 break;
         }
     }
+
+    public function validateTarget(CommandInterface $command): bool
+    {
+        switch ($command->getCommand()) {
+            case self::STORE_ATTRIBUTE:
+                return $command->getTarget() && $this->isValidAttribute($command->getTarget());
+            case self::STORE_ELEMENT_COUNT:
+            case self::STORE_TEXT:
+            case self::STORE_VALUE:
+                return $command->getTarget() && $this->isValidSelector($command->getTarget());
+            case self::STORE_JSON:
+                return $command->getTarget() && $this->isValidJson($command->getTarget());
+            default:
+                return true;
+        }
+    }
+
+    protected function isValidAttribute(string $target): bool
+    {
+        list($elementLocator) = explode('@', $target, 2);
+
+        return $this->isValidSelector($elementLocator);
+    }
+
+    protected function isValidJson(string $target): bool
+    {
+        json_decode($target);
+
+        return JSON_ERROR_NONE === json_last_error();
+    }
 }

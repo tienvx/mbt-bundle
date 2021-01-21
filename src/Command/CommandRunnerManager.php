@@ -32,6 +32,17 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
         return $this->getCommands('getCommandsRequireValue');
     }
 
+    public function validateTarget(CommandInterface $command): bool
+    {
+        foreach ($this->runners as $runner) {
+            if ($runner instanceof CommandRunnerInterface && $runner->supports($command)) {
+                return $runner->validateTarget($command);
+            }
+        }
+
+        return false;
+    }
+
     public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
     {
         foreach ($this->runners as $runner) {

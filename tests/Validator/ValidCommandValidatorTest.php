@@ -92,10 +92,11 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
             ->assertRaised();
     }
 
-    public function testInvalidTarget()
+    public function testRequiredTarget()
     {
         $constraint = new ValidCommand([
-            'targetMessage' => 'invalid target',
+            'targetRequiredMessage' => 'required target',
+            'targetInvalidMessage' => 'invalid target',
         ]);
 
         $command = new Command();
@@ -103,16 +104,16 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
         $command->setTarget(null);
         $this->validator->validate($command, $constraint);
 
-        $this->buildViolation('invalid target')
+        $this->buildViolation('required target')
             ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
             ->atPath('property.path.target')
             ->assertRaised();
     }
 
-    public function testInvalidValue()
+    public function testRequiredValue()
     {
         $constraint = new ValidCommand([
-            'valueMessage' => 'invalid value',
+            'valueRequiredMessage' => 'required value',
         ]);
 
         $command = new Command();
@@ -121,9 +122,26 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
         $command->setValue(null);
         $this->validator->validate($command, $constraint);
 
-        $this->buildViolation('invalid value')
+        $this->buildViolation('required value')
             ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
             ->atPath('property.path.value')
+            ->assertRaised();
+    }
+
+    public function testInvalidTarget()
+    {
+        $constraint = new ValidCommand([
+            'targetInvalidMessage' => 'invalid target',
+        ]);
+
+        $command = new Command();
+        $command->setCommand(WindowCommandRunner::OPEN);
+        $command->setTarget('testing');
+        $this->validator->validate($command, $constraint);
+
+        $this->buildViolation('invalid target')
+            ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+            ->atPath('property.path.target')
             ->assertRaised();
     }
 

@@ -51,6 +51,11 @@ class KeyboardCommandRunner extends CommandRunner
         }
     }
 
+    public function validateTarget(CommandInterface $command): bool
+    {
+        return $command->getTarget() && $this->isValidSelector($command->getTarget());
+    }
+
     /**
      * Don't allow to upload local file.
      */

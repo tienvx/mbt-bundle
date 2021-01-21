@@ -196,6 +196,28 @@ class AssertionRunner extends CommandRunner
         }
     }
 
+    public function validateTarget(CommandInterface $command): bool
+    {
+        switch ($command->getCommand()) {
+            case self::ASSERT_TEXT:
+            case self::ASSERT_NOT_TEXT:
+            case self::ASSERT_VALUE:
+            case self::ASSERT_EDITABLE:
+            case self::ASSERT_NOT_EDITABLE:
+            case self::ASSERT_ELEMENT_PRESENT:
+            case self::ASSERT_ELEMENT_NOT_PRESENT:
+            case self::ASSERT_CHECKED:
+            case self::ASSERT_NOT_CHECKED:
+            case self::ASSERT_SELECTED_VALUE:
+            case self::ASSERT_NOT_SELECTED_VALUE:
+            case self::ASSERT_SELECTED_LABEL:
+            case self::ASSERT_NOT_SELECTED_LABEL:
+                return $command->getTarget() && $this->isValidSelector($command->getTarget());
+            default:
+                return true;
+        }
+    }
+
     protected function assert(bool $assertion, string $message): void
     {
         if (!$assertion) {

@@ -14,5 +14,7 @@ interface CommandRunnerManagerInterface
 
     public function getCommandsRequireValue(): array;
 
+    public function validateTarget(CommandInterface $command): bool;
+
     public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void;
 }

@@ -57,4 +57,9 @@ class ScriptCommandRunner extends CommandRunner
                 break;
         }
     }
+
+    public function validateTarget(CommandInterface $command): bool
+    {
+        return true;
+    }
 }
