@@ -52,7 +52,7 @@ class RandomGenerator extends AbstractGenerator
         do {
             yield new Step(
                 $this->markingHelper->getPlaces($marking),
-                $marking->getColor(),
+                clone $marking->getColor(),
                 $transition ? $transition->getId() : null
             );
 
