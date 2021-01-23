@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
@@ -59,6 +60,26 @@ class ModelHelperTest extends TestCase
 
     public function testGetStartPlaceIds(): void
     {
+        $this->assertSame([0 => 1], $this->helper->getStartPlaceIds($this->model));
+    }
+
+    public function testGetStartTransitionIdMissingStartTransition(): void
+    {
+        $transitions = $this->model->getTransitions();
+        $transitions[1]->setFromPlaces([1]);
+        $this->model->setTransitions($transitions);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing start transition');
+        $this->assertSame(1, $this->helper->getStartTransitionId($this->model));
+    }
+
+    public function testGetStartPlaceIdsMissingStartTransition(): void
+    {
+        $transitions = $this->model->getTransitions();
+        $transitions[1]->setFromPlaces([1]);
+        $this->model->setTransitions($transitions);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing start transition');
         $this->assertSame([0 => 1], $this->helper->getStartPlaceIds($this->model));
     }
 }
