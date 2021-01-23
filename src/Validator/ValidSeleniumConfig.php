@@ -15,7 +15,7 @@ class ValidSeleniumConfig extends Constraint
         self::IS_SELENIUM_CONFIG_INVALID_ERROR => 'IS_SELENIUM_CONFIG_INVALID_ERROR',
     ];
 
-    public string $message = 'The selenium config is not valid.';
+    public string $message = 'mbt.task.invalid_selenium_config';
 
     public function getTargets()
     {

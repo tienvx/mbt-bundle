@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Validator\CustomConstraintValidatorFactory;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
@@ -34,6 +35,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 class ModelTest extends TestCase
 {
     protected Model $model;
+    protected ValidatorInterface $validator;
 
     protected function setUp(): void
     {
@@ -81,6 +83,11 @@ class ModelTest extends TestCase
         $model->setTransitions($transitions);
 
         $this->model = $model;
+
+        $this->validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
+            ->getValidator();
     }
 
     public function testPrePersist(): void
@@ -104,11 +111,7 @@ class ModelTest extends TestCase
 
     public function testValidateInvalidModel(): void
     {
-        $validator = Validation::createValidatorBuilder()
-            ->enableAnnotationMapping()
-            ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
-            ->getValidator();
-        $violations = $validator->validate($this->model);
+        $violations = $this->validator->validate($this->model);
         $this->assertCount(14, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     mbt.model.places_invalid
@@ -123,15 +126,53 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
-    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
-    The target is required. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    mbt.model.command.required_target (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
-    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
-    The value is required. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+    mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
+    This value should be of type string.
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
+    mbt.model.missing_to_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+';
+        $this->assertSame($message, (string) $violations);
+    }
+
+    public function testValidateInvalidModelTooManyStartTransitions(): void
+    {
+        $transitions = $this->model->getTransitions();
+        $transitions[0]->setFromPlaces([]);
+        $transitions[1]->setFromPlaces([]);
+        $this->model->setTransitions($transitions);
+        $violations = $this->validator->validate($this->model);
+        $this->assertCount(13, $violations);
+        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
+    mbt.model.places_invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions:
+    mbt.model.too_many_start_transitions
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
+    The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+    mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
+    mbt.model.command.required_target (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
+    mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
+    mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
