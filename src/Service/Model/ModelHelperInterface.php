@@ -7,7 +7,12 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 interface ModelHelperInterface
 {
     /**
-     * Get starting places and their tokens count (1).
+     * Get start transition id.
      */
-    public function getStartPlaces(ModelInterface $model): array;
+    public function getStartTransitionId(ModelInterface $model): int;
+
+    /**
+     * Get start place ids and their tokens count (1).
+     */
+    public function getStartPlaceIds(ModelInterface $model): array;
 }

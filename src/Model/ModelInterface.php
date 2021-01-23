@@ -24,10 +24,6 @@ interface ModelInterface
 
     public function setTags(?string $tags): void;
 
-    public function getStartCommands(): array;
-
-    public function setStartCommands(array $startCommands): void;
-
     public function getPlaces(): array;
 
     public function setPlaces(array $places): void;

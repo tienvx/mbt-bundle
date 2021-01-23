@@ -15,7 +15,7 @@ class ValidTaskConfig extends Constraint
         self::IS_TASK_CONFIG_INVALID_ERROR => 'IS_TASK_CONFIG_INVALID_ERROR',
     ];
 
-    public string $message = 'The task config is not valid.';
+    public string $message = 'mbt.task.invalid_task_config';
 
     public function getTargets()
     {

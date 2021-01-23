@@ -54,16 +54,18 @@ class RandomGeneratorTest extends TestCase
             $place2 = new Place(),
             $place3 = new Place(),
         ];
-        $place1->setStart(true);
         $model->setPlaces($places);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
+            $transition3 = new Transition(),
         ];
-        $transition1->setFromPlaces([0]);
-        $transition1->setToPlaces([1]);
-        $transition2->setFromPlaces([1]);
-        $transition2->setToPlaces([2]);
+        $transition1->setFromPlaces([]);
+        $transition1->setToPlaces([0]);
+        $transition2->setFromPlaces([0]);
+        $transition2->setToPlaces([1]);
+        $transition3->setFromPlaces([1]);
+        $transition3->setToPlaces([2]);
         $model->setTransitions($transitions);
         $this->task = new Task();
         $this->task->setModel($model);
@@ -123,10 +125,12 @@ class RandomGeneratorTest extends TestCase
     public function configProvider(): array
     {
         return [
-            [['max_place_coverage' => 0, 'max_transition_coverage' => 0], 1],
-            [['max_place_coverage' => 0.1, 'max_transition_coverage' => 0.1], 2],
-            [['max_place_coverage' => 60.0, 'max_transition_coverage' => 50.0], 2],
-            [['max_place_coverage' => 70.0, 'max_transition_coverage' => 60.0], 3],
+            [['max_place_coverage' => 0, 'max_transition_coverage' => 0], 0],
+            [['max_place_coverage' => 0.1, 'max_transition_coverage' => 0.1], 1],
+            [['max_place_coverage' => 33, 'max_transition_coverage' => 33], 1],
+            [['max_place_coverage' => 34, 'max_transition_coverage' => 34], 2],
+            [['max_place_coverage' => 66.0, 'max_transition_coverage' => 56.0], 2],
+            [['max_place_coverage' => 70.0, 'max_transition_coverage' => 67.0], 3],
         ];
     }
 }

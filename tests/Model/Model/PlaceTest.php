@@ -23,7 +23,6 @@ class PlaceTest extends TestCase
     {
         $this->setUpCommands();
         $this->place = new Place();
-        $this->place->setStart(true);
         $this->place->setCommands([
             $this->command1,
             $this->command2,
@@ -43,12 +42,11 @@ class PlaceTest extends TestCase
     }
 
     /**
-     * @dataProvider placeProvider
+     * @dataProvider commandsProvider
      */
-    public function testIsNotSame(bool $start, array $commands): void
+    public function testIsNotSame(array $commands): void
     {
         $place = new Place();
-        $place->setStart($start);
         $place->setCommands($commands);
         $this->assertFalse($place->isSame($this->place));
     }
@@ -56,7 +54,6 @@ class PlaceTest extends TestCase
     public function testIsSame(): void
     {
         $place = new Place();
-        $place->setStart(true);
         $place->setCommands([
             $this->command1,
             $this->command2,
@@ -64,7 +61,7 @@ class PlaceTest extends TestCase
         $this->assertTrue($place->isSame($this->place));
     }
 
-    public function placeProvider(): array
+    public function commandsProvider(): array
     {
         $this->setUpCommands();
         $command = new Command();
@@ -73,10 +70,9 @@ class PlaceTest extends TestCase
         $command->setValue('Are you sure about this?');
 
         return [
-            [false, [$this->command1, $this->command2]],
-            [true, [$this->command1]],
-            [true, [$this->command2]],
-            [false, [$this->command1, $command]],
+            [[$this->command1]],
+            [[$this->command2]],
+            [[$this->command1, $command]],
         ];
     }
 }

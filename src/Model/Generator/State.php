@@ -12,11 +12,11 @@ class State implements StateInterface
     protected float $placeCoverage = 0;
 
     public function __construct(
-        array $visitedPlaces,
+        array $visitedTransitions,
         int $totalPlaces,
         int $totalTransitions
     ) {
-        $this->visitedPlaces = $visitedPlaces;
+        $this->visitedTransitions = $visitedTransitions;
         $this->totalPlaces = $totalPlaces;
         $this->totalTransitions = $totalTransitions;
     }

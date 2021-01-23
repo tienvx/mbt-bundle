@@ -33,6 +33,7 @@ class AStarTest extends TestCase
     protected PlaceInterface $cartEmpty;
     protected PlaceInterface $cartHasProducts;
     protected PlaceInterface $checkout;
+    protected TransitionInterface $init;
     protected TransitionInterface $clearCart;
     protected TransitionInterface $goToCheckout;
     protected TransitionInterface $removeLastProduct;
@@ -44,46 +45,76 @@ class AStarTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->factory = new ColorfulFactory();
+        $this->transitionService = new GuardedTransitionService($this->factory);
+        $this->markingHelper = new MarkingHelper($this->factory);
+        $builder = new SingleColorPetrinetBuilder($this->factory);
+        $this->initPlaces($builder);
+        $this->initTransitions($builder);
+        $this->initPetrinet($builder);
+        $this->initAstar();
+    }
+
+    protected function initPlaces(SingleColorPetrinetBuilder $builder): void
+    {
+        $this->cartHasProducts = $builder->place();
+        $this->cartEmpty = $builder->place();
+        $this->checkout = $builder->place();
+        $this->cartHasProducts->setId(0);
+        $this->cartEmpty->setId(1);
+        $this->checkout->setId(2);
+    }
+
+    protected function initTransitions(SingleColorPetrinetBuilder $builder): void
+    {
         $emptyProducts = fn (ColorInterface $color): array => ['products' => 0];
         $oneProduct = fn (ColorInterface $color): array => ['products' => 1];
         $hasOneProduct = fn (ColorInterface $color): bool => 1 === $color->getValue('products');
         $hasMoreThanOneProduct = fn (ColorInterface $color): bool => $color->getValue('products') > 1;
         $removeProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') - 1];
         $addProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') + 1];
-        $this->factory = new ColorfulFactory();
-        $this->transitionService = new GuardedTransitionService($this->factory);
-        $this->markingHelper = new MarkingHelper($this->factory);
-        $builder = new SingleColorPetrinetBuilder($this->factory);
+
+        $this->init = $builder->transition(null, $emptyProducts);
         $this->clearCart = $builder->transition(null, $emptyProducts);
+        $this->goToCheckout = $builder->transition();
         $this->removeLastProduct = $builder->transition($hasOneProduct, $emptyProducts);
         $this->removeProduct = $builder->transition($hasMoreThanOneProduct, $removeProduct);
+        $this->addFirstProduct = $builder->transition(null, $oneProduct);
         $this->addMoreProduct = $builder->transition(null, $addProduct);
+        $this->updateCart = $builder->transition();
+        $this->init->setId(0);
+        $this->clearCart->setId(1);
+        $this->goToCheckout->setId(2);
+        $this->removeLastProduct->setId(3);
+        $this->removeProduct->setId(4);
+        $this->addFirstProduct->setId(5);
+        $this->addMoreProduct->setId(6);
+        $this->updateCart->setId(7);
+    }
+
+    protected function initPetrinet(SingleColorPetrinetBuilder $builder): void
+    {
         $this->petrinet = $builder
-            ->connect($this->cartHasProducts = $builder->place(), $this->clearCart)
-            ->connect($this->clearCart, $this->cartEmpty = $builder->place(), 1)
-            ->connect($this->cartHasProducts, $this->goToCheckout = $builder->transition())
-            ->connect($this->goToCheckout, $this->checkout = $builder->place())
+            ->connect($this->cartHasProducts, $this->clearCart)
+            ->connect($this->clearCart, $this->cartEmpty, 1)
+            ->connect($this->cartHasProducts, $this->goToCheckout)
+            ->connect($this->goToCheckout, $this->checkout)
             ->connect($this->cartHasProducts, $this->removeLastProduct)
             ->connect($this->removeLastProduct, $this->cartEmpty, 1)
             ->connect($this->cartHasProducts, $this->removeProduct)
             ->connect($this->removeProduct, $this->cartHasProducts, 1)
-            ->connect($this->cartEmpty, $this->addFirstProduct = $builder->transition(null, $oneProduct))
+            ->connect($this->cartEmpty, $this->addFirstProduct)
             ->connect($this->addFirstProduct, $this->cartHasProducts, 1)
             ->connect($this->cartHasProducts, $this->addMoreProduct)
             ->connect($this->addMoreProduct, $this->cartHasProducts, 1)
-            ->connect($this->cartHasProducts, $this->updateCart = $builder->transition())
+            ->connect($this->cartHasProducts, $this->updateCart)
             ->connect($this->updateCart, $this->cartHasProducts)
+            ->connect($this->init, $this->cartEmpty)
             ->getPetrinet();
-        $this->cartHasProducts->setId(0);
-        $this->cartEmpty->setId(1);
-        $this->checkout->setId(2);
-        $this->clearCart->setId(0);
-        $this->goToCheckout->setId(1);
-        $this->removeLastProduct->setId(2);
-        $this->removeProduct->setId(3);
-        $this->addFirstProduct->setId(4);
-        $this->addMoreProduct->setId(5);
-        $this->updateCart->setId(6);
+    }
+
+    protected function initAstar(): void
+    {
         $this->aStar = new AStar();
         $this->aStar->setTransitionService($this->transitionService);
         $this->aStar->setMarkingHelper($this->markingHelper);
@@ -92,12 +123,12 @@ class AStarTest extends TestCase
 
     public function testRunFromCartEmptyToCheckout(): void
     {
-        $start = new Node([$this->cartEmpty->getId() => 1], new Color(['products' => 0]), null);
-        $goal = new Node([$this->checkout->getId() => 1], new Color(['products' => 2]), 1);
+        $start = new Node([$this->cartEmpty->getId() => 1], new Color(['products' => 0]), $this->init->getId());
+        $goal = new Node([$this->checkout->getId() => 1], new Color(['products' => 2]), $this->goToCheckout->getId());
         $nodes = $this->aStar->run($start, $goal);
         $this->assertNodes([
             [
-                'transition' => null,
+                'transition' => $this->init->getId(),
                 'places' => [$this->cartEmpty->getId() => 1],
                 'color' => ['products' => 0],
             ],
@@ -121,12 +152,16 @@ class AStarTest extends TestCase
 
     public function testRunFromCartHasProductsToCheckout(): void
     {
-        $start = new Node([$this->cartHasProducts->getId() => 1], new Color(['products' => 8]), null);
-        $goal = new Node([$this->checkout->getId() => 1], new Color(['products' => 1]), 1);
+        $start = new Node(
+            [$this->cartHasProducts->getId() => 1],
+            new Color(['products' => 8]),
+            $this->addMoreProduct->getId()
+        );
+        $goal = new Node([$this->checkout->getId() => 1], new Color(['products' => 1]), $this->goToCheckout->getId());
         $nodes = $this->aStar->run($start, $goal);
         $this->assertNodes([
             [
-                'transition' => null,
+                'transition' => $this->addMoreProduct->getId(),
                 'places' => [$this->cartHasProducts->getId() => 1],
                 'color' => ['products' => 8],
             ],

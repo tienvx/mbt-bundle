@@ -44,28 +44,36 @@ class RandomGenerator extends AbstractGenerator
     public function generate(TaskInterface $task): iterable
     {
         $petrinet = $this->petrinetHelper->build($task->getModel());
-        $places = $this->modelHelper->getStartPlaces($task->getModel());
-        $marking = $this->markingHelper->getMarking($petrinet, $places);
-        $state = new State(array_keys($places), count($petrinet->getPlaces()), count($petrinet->getTransitions()));
         $transition = null;
+        $transitionId = $this->modelHelper->getStartTransitionId($task->getModel());
+        $marking = $this->markingHelper->getMarking($petrinet, $this->modelHelper->getStartPlaceIds($task->getModel()));
+        $places = [];
+        $state = new State(
+            [$transitionId],
+            count($task->getModel()->getPlaces()),
+            count($task->getModel()->getTransitions())
+        );
 
-        do {
+        while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig())) {
             yield new Step(
-                $this->markingHelper->getPlaces($marking),
+                $places,
                 clone $marking->getColor(),
-                $transition ? $transition->getId() : null
+                $transitionId
             );
 
-            if ($transition instanceof TransitionInterface) {
+            if ($transition) {
                 $this->transitionService->fire($transition, $marking);
-                $this->update($state, $marking, $transition);
             }
+            $this->update($state, $marking, $transitionId);
 
             $transition = $this->nextTransition($petrinet, $marking);
             if (!$transition) {
                 break;
             }
-        } while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig()));
+
+            $transitionId = $transition->getId();
+            $places = $this->markingHelper->getPlaces($marking);
+        }
     }
 
     public function validate(array $config): bool
@@ -89,7 +97,7 @@ class RandomGenerator extends AbstractGenerator
         ;
     }
 
-    protected function update(StateInterface $state, MarkingInterface $marking, TransitionInterface $transition): void
+    protected function update(StateInterface $state, MarkingInterface $marking, int $transitionId): void
     {
         // Update visited places and transitions.
         foreach ($marking->getPlaceMarkings() as $placeMarking) {
@@ -97,7 +105,7 @@ class RandomGenerator extends AbstractGenerator
                 $state->addVisitedPlace($placeMarking->getPlace()->getId());
             }
         }
-        $state->addVisitedTransition($transition->getId());
+        $state->addVisitedTransition($transitionId);
 
         // Update current coverage.
         $state->setTransitionCoverage(count($state->getVisitedTransitions()) / $state->getTotalTransitions() * 100);

@@ -2,7 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
+use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class ModelHelper implements ModelHelperInterface
@@ -10,15 +11,28 @@ class ModelHelper implements ModelHelperInterface
     /**
      * {@inheritdoc}
      */
-    public function getStartPlaces(ModelInterface $model): array
+    public function getStartTransitionId(ModelInterface $model): int
     {
-        $places = [];
-        foreach ($model->getPlaces() as $index => $place) {
-            if ($place instanceof PlaceInterface && true === $place->getStart()) {
-                $places[$index] = 1;
+        foreach ($model->getTransitions() as $index => $transition) {
+            if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
+                return $index;
             }
         }
 
-        return $places;
+        throw new RuntimeException('Missing start transition');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStartPlaceIds(ModelInterface $model): array
+    {
+        foreach ($model->getTransitions() as $transition) {
+            if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
+                return array_fill_keys($transition->getToPlaces(), 1);
+            }
+        }
+
+        throw new RuntimeException('Missing start transition');
     }
 }

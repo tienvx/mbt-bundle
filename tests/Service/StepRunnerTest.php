@@ -31,7 +31,6 @@ class StepRunnerTest extends TestCase
 {
     protected ModelInterface $model;
     protected array $commands = [];
-    protected array $firstStepCommands = [];
     protected CommandRunnerManager $commandRunnerManager;
     protected RemoteWebDriver $driver;
     protected ColorInterface $color;
@@ -40,16 +39,13 @@ class StepRunnerTest extends TestCase
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->model = new Model();
-        $this->model->setStartCommands([
-            $command1 = CommandFactory::create(WindowCommandRunner::OPEN, 'http://example.com'),
-        ]);
         $this->color = $this->createMock(ColorInterface::class);
         $transitions = [
             $transition = new Transition(),
         ];
         $transition->setCommands([
-            $command2 = CommandFactory::create(WindowCommandRunner::OPEN, ''),
-            $command3 = CommandFactory::create(MouseCommandRunner::CLICK, ''),
+            $command1 = CommandFactory::create(WindowCommandRunner::OPEN, ''),
+            $command2 = CommandFactory::create(MouseCommandRunner::CLICK, ''),
         ]);
         $this->model->setTransitions($transitions);
         $places = [
@@ -57,22 +53,17 @@ class StepRunnerTest extends TestCase
             $place2 = new Place(),
         ];
         $place1->setCommands([
-            $command4 = CommandFactory::create(AssertionRunner::ASSERT_EDITABLE, ''),
-            $command5 = CommandFactory::create(AssertionRunner::ASSERT_ALERT, ''),
+            $command3 = CommandFactory::create(AssertionRunner::ASSERT_EDITABLE, ''),
+            $command4 = CommandFactory::create(AssertionRunner::ASSERT_ALERT, ''),
         ]);
         $place2->setCommands([
-            $command6 = CommandFactory::create(AssertionRunner::ASSERT_TEXT, ''),
+            $command5 = CommandFactory::create(AssertionRunner::ASSERT_TEXT, ''),
         ]);
         $this->model->setPlaces($places);
         $this->commands = [
+            [$command1, $this->color, $this->driver],
             [$command2, $this->color, $this->driver],
             [$command3, $this->color, $this->driver],
-            [$command4, $this->color, $this->driver],
-            [$command5, $this->color, $this->driver],
-            [$command6, $this->color, $this->driver],
-        ];
-        $this->firstStepCommands = [
-            [$command1, $this->color, $this->driver],
             [$command4, $this->color, $this->driver],
             [$command5, $this->color, $this->driver],
         ];
@@ -84,17 +75,6 @@ class StepRunnerTest extends TestCase
     {
         $step = new Step([0 => 1, 1 => 1], $this->color, 0);
         $this->commandRunnerManager->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
-        $stepRunner = new StepRunner($this->commandRunnerManager);
-        $stepRunner->run($step, $this->model, $this->driver);
-    }
-
-    public function testRunFirstStep(): void
-    {
-        $step = new Step([0 => 1], $this->color, null);
-        $this->commandRunnerManager
-            ->expects($this->exactly(3))
-            ->method('run')
-            ->withConsecutive(...$this->firstStepCommands);
         $stepRunner = new StepRunner($this->commandRunnerManager);
         $stepRunner->run($step, $this->model, $this->driver);
     }

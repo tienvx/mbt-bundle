@@ -15,10 +15,10 @@ class ValidCommand extends Constraint
         self::IS_COMMAND_INVALID_ERROR => 'IS_COMMAND_INVALID_ERROR',
     ];
 
-    public string $commandMessage = 'The command is not valid.';
-    public string $targetRequiredMessage = 'The target is required.';
-    public string $targetInvalidMessage = 'The target is not valid.';
-    public string $valueRequiredMessage = 'The value is required.';
+    public string $commandMessage = 'mbt.model.command.invalid_command';
+    public string $targetRequiredMessage = 'mbt.model.command.required_target';
+    public string $targetInvalidMessage = 'mbt.model.command.invalid_target';
+    public string $valueRequiredMessage = 'mbt.model.command.required_value';
 
     public function getTargets()
     {

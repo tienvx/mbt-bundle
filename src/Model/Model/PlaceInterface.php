@@ -8,10 +8,6 @@ interface PlaceInterface
 
     public function setLabel(string $label): void;
 
-    public function getStart(): bool;
-
-    public function setStart(bool $start): void;
-
     public function getCommands(): array;
 
     public function setCommands(array $commands): void;

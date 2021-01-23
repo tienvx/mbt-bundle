@@ -30,7 +30,7 @@ class PetrinetHelper implements PetrinetHelperInterface
         $places = $this->getPlaces($model, $builder);
         $transitions = $this->getTransitions($model, $builder);
         foreach ($model->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface) {
+            if ($transition instanceof TransitionInterface && $this->isValidTransition($transition)) {
                 $this->connectPlacesToTransition(
                     array_intersect_key($places, array_flip($transition->getFromPlaces())),
                     $transitions[$index],
@@ -60,7 +60,7 @@ class PetrinetHelper implements PetrinetHelperInterface
     {
         $transitions = [];
         foreach ($model->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface) {
+            if ($transition instanceof TransitionInterface && $this->isValidTransition($transition)) {
                 $guardCallback = $transition->getGuard()
                     ? fn (ColorInterface $color): bool => (bool) $this->expressionLanguage->evaluate(
                         $transition->getGuard(),
@@ -96,5 +96,10 @@ class PetrinetHelper implements PetrinetHelperInterface
         foreach ($toPlaces as $toPlace) {
             $builder->connect($transition, $places[$toPlace], 1);
         }
+    }
+
+    protected function isValidTransition(TransitionInterface $transition): bool
+    {
+        return !empty($transition->getFromPlaces());
     }
 }

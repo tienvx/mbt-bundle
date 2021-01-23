@@ -50,11 +50,6 @@ class Model extends BaseModel
     /**
      * @ORM\Column(type="array")
      */
-    protected array $startCommands = [];
-
-    /**
-     * @ORM\Column(type="array")
-     */
     protected array $places = [];
 
     /**
@@ -96,22 +91,6 @@ class Model extends BaseModel
     }
 
     /**
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
-     * })
-     * @Assert\Valid
-     */
-    public function getStartCommands(): array
-    {
-        return $this->denormalizeCommands($this->startCommands);
-    }
-
-    public function setStartCommands(array $startCommands): void
-    {
-        $this->startCommands = $this->normalizeCommands($startCommands);
-    }
-
-    /**
      * @Assert\Valid
      *
      * @return PlaceInterface[]
@@ -128,7 +107,6 @@ class Model extends BaseModel
             if ($place instanceof PlaceInterface) {
                 $item = [
                     'label' => $place->getLabel(),
-                    'start' => $place->getStart(),
                     'commands' => $this->normalizeCommands($place->getCommands()),
                 ];
                 $items[] = $item;
@@ -203,12 +181,20 @@ class Model extends BaseModel
     /**
      * @Assert\Callback
      */
-    public function validateStartPlaces(ExecutionContextInterface $context, $payload): void
+    public function validateStartTransitions(ExecutionContextInterface $context, $payload): void
     {
-        $startingPlaces = array_filter($this->places, fn (array $place) => $place['start'] ?? false);
-        if (0 === count($startingPlaces)) {
-            $context->buildViolation('mbt.model.missing_start_places')
-                ->atPath('places')
+        $startTransitions = array_filter(
+            $this->transitions,
+            fn (array $transition) => 0 === count($transition['fromPlaces'] ?? [])
+        );
+        if (0 === count($startTransitions)) {
+            $context->buildViolation('mbt.model.missing_start_transition')
+                ->atPath('transitions')
+                ->addViolation();
+        }
+        if (count($startTransitions) > 1) {
+            $context->buildViolation('mbt.model.too_many_start_transitions')
+                ->atPath('transitions')
                 ->addViolation();
         }
     }
@@ -218,7 +204,6 @@ class Model extends BaseModel
         return [
             'label' => $this->label,
             'tags' => $this->tags,
-            'startCommands' => $this->startCommands,
             'places' => $this->places,
             'transitions' => $this->transitions,
         ];
@@ -228,7 +213,6 @@ class Model extends BaseModel
     {
         $this->setLabel($data['label'] ?? '');
         $this->setTags($data['tags'] ?? null);
-        $this->setStartCommands($this->denormalizeCommands($data['startCommands'] ?? []));
         $this->setPlaces($this->denormalizePlaces($data['places'] ?? []));
         $this->setTransitions($this->denormalizeTransitions($data['transitions'] ?? []));
     }
@@ -272,7 +256,6 @@ class Model extends BaseModel
     {
         $place = new Place();
         $place->setLabel($placeData['label'] ?? '');
-        $place->setStart($placeData['start'] ?? '');
         $place->setCommands($this->denormalizeCommands($placeData['commands'] ?? []));
 
         return $place;

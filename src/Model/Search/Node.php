@@ -9,9 +9,9 @@ class Node extends AbstractNode
 {
     protected array $places;
     protected ColorInterface $color;
-    protected ?int $transition = null;
+    protected int $transition;
 
-    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
+    public function __construct(array $places, ColorInterface $color, int $transition)
     {
         $this->setPlaces($places);
         $this->setColor($color);
@@ -59,7 +59,7 @@ class Node extends AbstractNode
         return $this->color;
     }
 
-    public function setTransition(?int $transition): void
+    public function setTransition(int $transition): void
     {
         $this->transition = $transition;
     }

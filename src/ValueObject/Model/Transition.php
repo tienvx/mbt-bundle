@@ -29,7 +29,6 @@ class Transition extends TransitionModel
      * @Assert\All({
      *     @Assert\Type("integer")
      * })
-     * @Assert\Count(min=1, minMessage="mbt.model.missing_from_places")
      */
     protected array $fromPlaces = [];
 
