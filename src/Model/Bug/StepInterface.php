@@ -16,7 +16,7 @@ interface StepInterface
 
     public function addPlace(int $place, int $tokens): void;
 
-    public function getTransition(): ?int;
+    public function getTransition(): int;
 
-    public function setTransition(?int $transition): void;
+    public function setTransition(int $transition): void;
 }

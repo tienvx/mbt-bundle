@@ -8,6 +8,12 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\Step as StepModel;
 
 class Step extends StepModel
 {
+    /**
+     * @Assert\All({
+     *     @Assert\Type("integer")
+     * })
+     * @Assert\Count(min=1, minMessage="mbt.bug.missing_places_in_step")
+     */
     protected array $places;
 
     /**
@@ -15,5 +21,8 @@ class Step extends StepModel
      */
     protected ColorInterface $color;
 
-    protected ?int $transition = null;
+    /**
+     * @Assert\Type("integer")
+     */
+    protected int $transition;
 }

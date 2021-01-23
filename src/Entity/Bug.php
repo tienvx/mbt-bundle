@@ -132,7 +132,7 @@ class Bug extends BugModel
         return new Step(
             $stepData['places'] ?? [],
             new Color($stepData['color'] ?? []),
-            $stepData['transition'] ?? null
+            $stepData['transition'] ?? -1
         );
     }
 }

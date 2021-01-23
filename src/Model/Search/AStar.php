@@ -9,6 +9,7 @@ use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 class AStar extends AbstractAStar
@@ -38,7 +39,7 @@ class AStar extends AbstractAStar
     public function calculateEstimatedCost(NodeInterface $start, NodeInterface $end): float
     {
         if (!$start instanceof Node || !$end instanceof Node) {
-            throw new Exception('The provided nodes are invalid');
+            throw new RuntimeException('The provided nodes are invalid');
         }
 
         $tokensDiff = [];
@@ -64,7 +65,7 @@ class AStar extends AbstractAStar
     public function generateAdjacentNodes(NodeInterface $node): array
     {
         if (!$node instanceof Node) {
-            throw new Exception('The provided node is invalid');
+            throw new RuntimeException('The provided node is invalid');
         }
 
         $adjacents = [];

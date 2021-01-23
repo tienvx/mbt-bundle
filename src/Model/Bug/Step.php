@@ -8,9 +8,9 @@ class Step implements StepInterface
 {
     protected ColorInterface $color;
     protected array $places;
-    protected ?int $transition = null;
+    protected int $transition;
 
-    public function __construct(array $places, ColorInterface $color, ?int $transition = null)
+    public function __construct(array $places, ColorInterface $color, int $transition)
     {
         $this->setPlaces($places);
         $this->setColor($color);
@@ -46,12 +46,12 @@ class Step implements StepInterface
         $this->places[$place] = $tokens;
     }
 
-    public function getTransition(): ?int
+    public function getTransition(): int
     {
         return $this->transition;
     }
 
-    public function setTransition(?int $transition): void
+    public function setTransition(int $transition): void
     {
         $this->transition = $transition;
     }

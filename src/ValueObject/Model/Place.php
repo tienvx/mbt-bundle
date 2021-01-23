@@ -12,8 +12,6 @@ class Place extends PlaceModel
      */
     protected string $label = '';
 
-    protected bool $start = false;
-
     /**
      * @Assert\All({
      *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")

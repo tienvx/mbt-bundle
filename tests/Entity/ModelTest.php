@@ -40,46 +40,39 @@ class ModelTest extends TestCase
         $model = new Model();
         $model->setLabel('');
         $model->setTags('tag1,tag1,tag2,,tag3');
-        $c1 = new Command();
-        $c1->setCommand('');
-        $c1->setTarget(null);
-        $c1->setValue(null);
-        $model->setStartCommands([$c1]);
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
         ];
         $p1->setLabel('');
-        $p1->setStart(false);
         $p1->setCommands([
+            $c1 = new Command(),
             $c2 = new Command(),
-            $c3 = new Command(),
         ]);
-        $c2->setCommand('');
-        $c2->setTarget('css=.name');
+        $c1->setCommand('');
+        $c1->setTarget('css=.name');
+        $c1->setValue('test');
+        $c2->setCommand('click');
+        $c2->setTarget(null);
         $c2->setValue('test');
-        $c3->setCommand('click');
-        $c3->setTarget(null);
-        $c3->setValue('test');
         $p2->setLabel('p2');
-        $p2->setStart(false);
         $p2->setCommands([
+            $c3 = new Command(),
             $c4 = new Command(),
-            $c5 = new Command(),
         ]);
-        $c4->setCommand('doNoThing');
-        $c4->setTarget('css=.about');
-        $c4->setValue('test');
-        $c5->setCommand('clickAt');
-        $c5->setTarget('css=.avatar');
-        $c5->setValue(null);
+        $c3->setCommand('doNoThing');
+        $c3->setTarget('css=.about');
+        $c3->setValue('test');
+        $c4->setCommand('clickAt');
+        $c4->setTarget('css=.avatar');
+        $c4->setValue(null);
         $model->setPlaces($places);
         $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
         ];
         $t1->setLabel('t1');
-        $t1->setFromPlaces([]);
+        $t1->setFromPlaces([1]);
         $t1->setToPlaces([1, 2]);
         $t2->setLabel('');
         $t2->setFromPlaces([1, 2]);
@@ -116,21 +109,17 @@ class ModelTest extends TestCase
             ->setConstraintValidatorFactory(new CustomConstraintValidatorFactory())
             ->getValidator();
         $violations = $validator->validate($this->model);
-        $this->assertCount(17, $violations);
+        $this->assertCount(14, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
     mbt.model.places_invalid
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
     mbt.model.places_invalid
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places:
-    mbt.model.missing_start_places
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions:
+    mbt.model.missing_start_transition
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).startCommands[0].command:
-    The command is not valid. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).startCommands[0].command:
-    This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
@@ -145,8 +134,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
     The value is required. (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
     This value should be of type string.
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].fromPlaces:
-    mbt.model.missing_from_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
@@ -160,17 +147,9 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
         $this->assertSame([
             'label' => '',
             'tags' => 'tag1,tag1,tag2,,tag3',
-            'startCommands' => [
-                0 => [
-                    'command' => '',
-                    'target' => null,
-                    'value' => null,
-                ],
-            ],
             'places' => [
                 0 => [
                     'label' => '',
-                    'start' => false,
                     'commands' => [
                         0 => [
                             'command' => '',
@@ -186,7 +165,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
                 ],
                 1 => [
                     'label' => 'p2',
-                    'start' => false,
                     'commands' => [
                         0 => [
                             'command' => 'doNoThing',
@@ -208,6 +186,7 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
                     'commands' => [
                     ],
                     'fromPlaces' => [
+                        0 => 1,
                     ],
                     'toPlaces' => [
                         0 => 1,
@@ -235,13 +214,11 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
         $this->model->denormalize([
             'label' => 'Custom label',
             'tags' => 'custom,tags',
-            'startCommands' => [],
             'places' => [],
             'transitions' => [],
         ]);
         $this->assertSame('Custom label', $this->model->getLabel());
         $this->assertSame('custom,tags', $this->model->getTags());
-        $this->assertSame([], $this->model->getStartCommands());
         $this->assertSame([], $this->model->getPlaces());
         $this->assertSame([], $this->model->getTransitions());
     }
