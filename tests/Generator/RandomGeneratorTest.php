@@ -9,7 +9,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
@@ -101,12 +100,7 @@ class RandomGeneratorTest extends TestCase
     public function testGenerate(array $config, int $stepsCount): void
     {
         $this->task->getTaskConfig()->setGeneratorConfig($config);
-        /** @var StepInterface[] $steps */
-        $steps = iterator_to_array($this->generator->generate($this->task));
-        $this->assertCount($stepsCount, $steps);
-        for ($i = 0; $i < $stepsCount - 1; ++$i) {
-            $this->assertNotSame($steps[$i]->getColor(), $steps[$i + 1]->getColor());
-        }
+        $this->assertCount($stepsCount, $this->generator->generate($this->task));
     }
 
     public function configValidationProvider(): array

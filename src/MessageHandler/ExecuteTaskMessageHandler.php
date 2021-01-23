@@ -73,7 +73,7 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
-                    $steps[] = $step;
+                    $steps[] = clone $step;
                     $task->getProgress()->increase();
                     $this->stepRunner->run($step, $task->getModel(), $driver);
                 }

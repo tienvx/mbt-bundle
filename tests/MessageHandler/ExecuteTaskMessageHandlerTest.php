@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use SingleColorPetrinet\Model\Color;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
@@ -20,6 +21,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
+use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler
@@ -47,10 +49,10 @@ class ExecuteTaskMessageHandlerTest extends StepsTestCase
     protected function setUp(): void
     {
         $this->steps = [
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
+            new Step([], new Color(), 0),
+            new Step([], new Color(), 1),
+            new Step([], new Color(), 2),
+            new Step([], new Color(), 3),
         ];
         $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
         $this->providerManager = $this->createMock(ProviderManagerInterface::class);

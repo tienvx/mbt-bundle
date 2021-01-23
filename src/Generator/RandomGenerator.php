@@ -57,7 +57,7 @@ class RandomGenerator extends AbstractGenerator
         while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig())) {
             yield new Step(
                 $places,
-                clone $marking->getColor(),
+                $marking->getColor(),
                 $transitionId
             );
 
