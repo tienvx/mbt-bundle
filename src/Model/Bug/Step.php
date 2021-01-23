@@ -17,6 +17,11 @@ class Step implements StepInterface
         $this->setTransition($transition);
     }
 
+    public function __clone()
+    {
+        $this->color = clone $this->color;
+    }
+
     public function setColor(ColorInterface $color): void
     {
         $this->color = $color;
