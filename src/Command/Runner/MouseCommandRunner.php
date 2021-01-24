@@ -2,11 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
+use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverPoint;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class MouseCommandRunner extends CommandRunner
@@ -187,7 +187,9 @@ class MouseCommandRunner extends CommandRunner
                     break;
                 }
 
-                throw new RuntimeException('Unable to perform mouse out as the element takes up the entire viewport');
+                throw new Exception( //NOSONAR
+                    'Unable to perform mouse out as the element takes up the entire viewport'
+                );
             case self::MOUSE_OVER:
                 $driver->getMouse()->mouseMove(
                     $driver->findElement($this->getSelector($command->getTarget()))->getCoordinates()

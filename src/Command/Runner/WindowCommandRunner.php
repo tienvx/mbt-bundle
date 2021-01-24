@@ -2,12 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
+use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class WindowCommandRunner extends CommandRunner
@@ -106,7 +106,7 @@ class WindowCommandRunner extends CommandRunner
     protected function getHandle(string $target): string
     {
         if (!$this->isValidHandle($target)) {
-            throw new UnexpectedValueException('Invalid handle');
+            throw new Exception('Invalid window handle given (e.g. handle=${handleVariable})'); //NOSONAR
         }
 
         return substr($target, 7);
