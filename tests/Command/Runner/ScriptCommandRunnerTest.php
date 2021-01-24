@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Tests\Command\Runner;
 
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;

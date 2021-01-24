@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Tests\Command\Runner;
 
 use Facebook\WebDriver\Interactions\Internal\WebDriverCoordinates;
 use Facebook\WebDriver\Interactions\WebDriverActions;
@@ -161,7 +161,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
     /**
      * @dataProvider uncheckDataProvider
      */
-    public function testunCheck(bool $selected, bool $unchecked): void
+    public function testUncheck(bool $selected, bool $unchecked): void
     {
         $command = new Command();
         $command->setCommand(MouseCommandRunner::UNCHECK);
@@ -441,6 +441,31 @@ class MouseCommandRunnerTest extends RunnerTestCase
             $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'left' => 1],
             $vp = (object) ['width' => 2, 'height' => 1],
         ]);
+        $this->runner->run($command, $this->color, $this->driver);
+    }
+
+    public function testUnableMouseOut(): void
+    {
+        $command = new Command();
+        $command->setCommand(MouseCommandRunner::MOUSE_OUT);
+        $command->setTarget('id=cart');
+        $element = $this->createMock(RemoteWebElement::class);
+        $element->expects($this->never())->method('getCoordinates');
+        $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
+            return $selector instanceof WebDriverBy
+                && 'id' === $selector->getMechanism()
+                && 'cart' === $selector->getValue();
+        }))->willReturn($element);
+        $this->driver->expects($this->never())->method('getMouse');
+        $this->driver->expects($this->once())->method('executeScript')->with(
+            'return [arguments[0].getBoundingClientRect(), {height: window.innerHeight, width: window.innerWidth}];',
+            [$element]
+        )->willReturn([
+            $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'left' => 0],
+            $vp = (object) ['width' => 2, 'height' => 1],
+        ]);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unable to perform mouse out as the element takes up the entire viewport');
         $this->runner->run($command, $this->color, $this->driver);
     }
 
