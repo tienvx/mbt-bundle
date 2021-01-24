@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner\Runner;
+namespace Tienvx\Bundle\MbtBundle\Tests\Command\Runner;
 
 use Closure;
 use Facebook\WebDriver\Exception\StaleElementReferenceException;

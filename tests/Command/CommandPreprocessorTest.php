@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner;
+namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;

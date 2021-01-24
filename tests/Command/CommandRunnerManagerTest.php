@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\CommandRunner;
+namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\MockObject\MockObject;

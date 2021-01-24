@@ -2,10 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
+use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
 
 class AssertionRunner extends CommandRunner
@@ -221,7 +221,7 @@ class AssertionRunner extends CommandRunner
     protected function assert(bool $assertion, string $message): void
     {
         if (!$assertion) {
-            throw new RuntimeException($message);
+            throw new Exception($message); //NOSONAR
         }
     }
 }
