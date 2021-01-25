@@ -51,6 +51,10 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
             throw new OutOfRangeException('Can not create new steps using invalid range');
         }
 
-        return $this->strategy->run($this->petrinetHelper->build($bug->getTask()->getModel()), $fromStep, $toStep);
+        return $this->strategy->run(
+            $this->petrinetHelper->build($bug->getTask()->getModelRevision()),
+            $fromStep,
+            $toStep
+        );
     }
 }

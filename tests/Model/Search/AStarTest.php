@@ -33,7 +33,6 @@ class AStarTest extends TestCase
     protected PlaceInterface $cartEmpty;
     protected PlaceInterface $cartHasProducts;
     protected PlaceInterface $checkout;
-    protected TransitionInterface $init;
     protected TransitionInterface $clearCart;
     protected TransitionInterface $goToCheckout;
     protected TransitionInterface $removeLastProduct;
@@ -74,7 +73,6 @@ class AStarTest extends TestCase
         $removeProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') - 1];
         $addProduct = fn (ColorInterface $color): array => ['products' => $color->getValue('products') + 1];
 
-        $this->init = $builder->transition(null, $emptyProducts);
         $this->clearCart = $builder->transition(null, $emptyProducts);
         $this->goToCheckout = $builder->transition();
         $this->removeLastProduct = $builder->transition($hasOneProduct, $emptyProducts);
@@ -82,14 +80,13 @@ class AStarTest extends TestCase
         $this->addFirstProduct = $builder->transition(null, $oneProduct);
         $this->addMoreProduct = $builder->transition(null, $addProduct);
         $this->updateCart = $builder->transition();
-        $this->init->setId(0);
-        $this->clearCart->setId(1);
-        $this->goToCheckout->setId(2);
-        $this->removeLastProduct->setId(3);
-        $this->removeProduct->setId(4);
-        $this->addFirstProduct->setId(5);
-        $this->addMoreProduct->setId(6);
-        $this->updateCart->setId(7);
+        $this->clearCart->setId(0);
+        $this->goToCheckout->setId(1);
+        $this->removeLastProduct->setId(2);
+        $this->removeProduct->setId(3);
+        $this->addFirstProduct->setId(4);
+        $this->addMoreProduct->setId(5);
+        $this->updateCart->setId(6);
     }
 
     protected function initPetrinet(SingleColorPetrinetBuilder $builder): void
@@ -109,7 +106,6 @@ class AStarTest extends TestCase
             ->connect($this->addMoreProduct, $this->cartHasProducts, 1)
             ->connect($this->cartHasProducts, $this->updateCart)
             ->connect($this->updateCart, $this->cartHasProducts)
-            ->connect($this->init, $this->cartEmpty)
             ->getPetrinet();
     }
 
@@ -123,12 +119,12 @@ class AStarTest extends TestCase
 
     public function testRunFromCartEmptyToCheckout(): void
     {
-        $start = new Node([$this->cartEmpty->getId() => 1], new Color(['products' => 0]), $this->init->getId());
+        $start = new Node([$this->cartEmpty->getId() => 1], new Color(['products' => 0]), $this->clearCart->getId());
         $goal = new Node([$this->checkout->getId() => 1], new Color(['products' => 2]), $this->goToCheckout->getId());
         $nodes = $this->aStar->run($start, $goal);
         $this->assertNodes([
             [
-                'transition' => $this->init->getId(),
+                'transition' => $this->clearCart->getId(),
                 'places' => [$this->cartEmpty->getId() => 1],
                 'color' => ['products' => 0],
             ],

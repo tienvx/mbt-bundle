@@ -4,11 +4,13 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
@@ -34,14 +36,10 @@ class Task extends TaskModel
     protected string $title;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Model")
-     * @ORM\JoinColumn(
-     *     name="model_id",
-     *     referencedColumnName="id",
-     *     nullable=false
-     * )
+     * @ORM\OneToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
+     * @Assert\Valid
      */
-    protected ModelInterface $model;
+    protected RevisionInterface $modelRevision;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -66,6 +64,12 @@ class Task extends TaskModel
     protected ProgressInterface $progress;
 
     /**
+     * @ORM\OneToMany(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Bug", mappedBy="task", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    protected Collection $bugs;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     protected DateTimeInterface $createdAt;
@@ -81,6 +85,7 @@ class Task extends TaskModel
         $this->progress = new Progress();
         $this->seleniumConfig = new SeleniumConfig();
         $this->taskConfig = new TaskConfig();
+        $this->bugs = new ArrayCollection();
     }
 
     /**

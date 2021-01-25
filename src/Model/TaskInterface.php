@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
@@ -16,9 +18,9 @@ interface TaskInterface
 
     public function setTitle(string $title): void;
 
-    public function getModel(): ModelInterface;
+    public function getModelRevision(): RevisionInterface;
 
-    public function setModel(ModelInterface $model): void;
+    public function setModelRevision(RevisionInterface $modelRevision): void;
 
     public function getAuthor(): ?int;
 
@@ -35,6 +37,10 @@ interface TaskInterface
     public function getProgress(): ProgressInterface;
 
     public function setProgress(ProgressInterface $progress): void;
+
+    public function getBugs(): Collection;
+
+    public function addBug(BugInterface $bug): void;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\ValueObject\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Model\Model\Place as PlaceModel;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place as PlaceModel;
 
 class Place extends PlaceModel
 {

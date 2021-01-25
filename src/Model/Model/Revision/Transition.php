@@ -1,6 +1,9 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Model\Revision;
+
+use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory;
+use Tienvx\Bundle\MbtBundle\Model\Model\HasCommands;
 
 class Transition implements TransitionInterface
 {
@@ -10,6 +13,20 @@ class Transition implements TransitionInterface
     protected ?string $guard = null;
     protected array $fromPlaces = [];
     protected array $toPlaces = [];
+
+    public function __serialize(): array
+    {
+        return $this->toArray();
+    }
+
+    public function __unserialize(array $data)
+    {
+        $this->label = $data['label'];
+        $this->guard = $data['guard'];
+        $this->fromPlaces = $data['fromPlaces'];
+        $this->toPlaces = $data['toPlaces'];
+        $this->commands = array_map([CommandFactory::class, 'createFromArray'], $data['commands']);
+    }
 
     public function getLabel(): string
     {
@@ -69,11 +86,14 @@ class Transition implements TransitionInterface
         $this->toPlaces[] = $toPlace;
     }
 
-    public function isSame(TransitionInterface $transition): bool
+    public function toArray(): array
     {
-        return $this->getGuard() === $transition->getGuard() &&
-            $this->getFromPlaces() === $transition->getFromPlaces() &&
-            $this->getToPlaces() === $transition->getToPlaces() &&
-            $this->isSameCommands($transition->getCommands());
+        return [
+            'label' => $this->label,
+            'guard' => $this->guard,
+            'fromPlaces' => $this->fromPlaces,
+            'toPlaces' => $this->toPlaces,
+            'commands' => array_map(fn (CommandInterface $command) => $command->toArray(), $this->commands),
+        ];
     }
 }

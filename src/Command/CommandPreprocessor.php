@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use SingleColorPetrinet\Model\ColorInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\Command;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 class CommandPreprocessor implements CommandPreprocessorInterface
 {

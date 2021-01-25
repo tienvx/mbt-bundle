@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -56,22 +56,25 @@ class RecordVideoMessageHandlerTest extends TestCase
 
     public function testInvokeRecordVideo(): void
     {
-        $model = new Model();
+        $revision = new Revision();
         $task = new Task();
-        $task->setModel($model);
+        $task->setModelRevision($revision);
         $seleniumConfig = new SeleniumConfig();
         $seleniumConfig->setProvider('current-provider');
         $task->setSeleniumConfig($seleniumConfig);
         $bug = new Bug();
         $bug->setId(123);
-        $bug->setModelVersion(1);
         $bug->setTask($task);
-        $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
+        $bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
         $driver = $this->createMock(RemoteWebDriver::class);
         $driver->expects($this->once())->method('quit');
         $this->providerManager->expects($this->once())->method('createDriver')->with($task, 123)->willReturn($driver);
-        $this->stepRunner->expects($this->exactly(6))
-            ->method('run')->with($this->isInstanceOf(StepInterface::class), $model, $driver);
+        $this->stepRunner->expects($this->exactly(3))
+            ->method('run')->with($this->isInstanceOf(StepInterface::class), $revision, $driver);
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $message = new RecordVideoMessage(123);
         call_user_func($this->handler, $message);

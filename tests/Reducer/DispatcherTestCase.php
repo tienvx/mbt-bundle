@@ -25,7 +25,7 @@ class DispatcherTestCase extends TestCase
         $this->bug = new Bug();
         $this->bug->setId(123);
         $this->bug->setMessage('Something wrong');
-        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 11)));
+        $this->bug->setSteps(...array_map(fn () => $this->createMock(StepInterface::class), range(1, 11)));
     }
 
     public function testDispatch(): void

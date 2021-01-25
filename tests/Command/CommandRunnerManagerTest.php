@@ -9,7 +9,7 @@ use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager

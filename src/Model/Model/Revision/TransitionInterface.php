@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Model\Revision;
 
 interface TransitionInterface
 {
@@ -30,5 +30,5 @@ interface TransitionInterface
 
     public function addToPlace(int $toPlace): void;
 
-    public function isSame(self $transition): bool;
+    public function toArray(): array;
 }

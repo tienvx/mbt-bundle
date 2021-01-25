@@ -17,7 +17,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class WindowCommandRunnerTest extends RunnerTestCase
 {

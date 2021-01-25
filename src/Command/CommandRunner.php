@@ -8,7 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverSelect;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 abstract class CommandRunner implements CommandRunnerInterface
 {

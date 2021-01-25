@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Model;
 
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+
 trait HasCommands
 {
     protected array $commands = [];
@@ -23,24 +25,5 @@ trait HasCommands
     public function addCommand(CommandInterface $command): void
     {
         $this->commands[] = $command;
-    }
-
-    protected function isSameCommands(array $commands): bool
-    {
-        if (count($this->commands) !== count($commands)) {
-            return false;
-        }
-        foreach ($commands as $index => $command) {
-            $thisCommand = $this->commands[$index] ?? null;
-            if (
-                !$thisCommand instanceof CommandInterface ||
-                !$command instanceof CommandInterface ||
-                !$thisCommand->isSame($command)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

@@ -3,17 +3,17 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 class ModelHelper implements ModelHelperInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function getStartTransitionId(ModelInterface $model): int
+    public function getStartTransitionId(RevisionInterface $revision): int
     {
-        foreach ($model->getTransitions() as $index => $transition) {
+        foreach ($revision->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
                 return $index;
             }
@@ -25,9 +25,9 @@ class ModelHelper implements ModelHelperInterface
     /**
      * {@inheritdoc}
      */
-    public function getStartPlaceIds(ModelInterface $model): array
+    public function getStartPlaceIds(RevisionInterface $revision): array
     {
-        foreach ($model->getTransitions() as $transition) {
+        foreach ($revision->getTransitions() as $transition) {
             if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
                 return array_fill_keys($transition->getToPlaces(), 1);
             }

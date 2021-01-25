@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Model\Revision;
 
 interface PlaceInterface
 {
@@ -14,5 +14,5 @@ interface PlaceInterface
 
     public function addCommand(CommandInterface $command): void;
 
-    public function isSame(self $place): bool;
+    public function toArray(): array;
 }

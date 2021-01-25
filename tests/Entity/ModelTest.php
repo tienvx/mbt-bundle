@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Validator\CustomConstraintValidatorFactory;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
@@ -24,10 +25,12 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @covers \Tienvx\Bundle\MbtBundle\Validator\TagsValidator
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommand
  * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Command
@@ -39,9 +42,7 @@ class ModelTest extends TestCase
 
     protected function setUp(): void
     {
-        $model = new Model();
-        $model->setLabel('');
-        $model->setTags('tag1,tag1,tag2,,tag3');
+        $revision = new Revision();
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -68,7 +69,7 @@ class ModelTest extends TestCase
         $c4->setCommand('clickAt');
         $c4->setTarget('css=.avatar');
         $c4->setValue(null);
-        $model->setPlaces($places);
+        $revision->setPlaces(...$places);
         $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
@@ -80,8 +81,12 @@ class ModelTest extends TestCase
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
         $t2->setGuard('count > 1');
-        $model->setTransitions($transitions);
+        $revision->setTransitions(...$transitions);
 
+        $model = new Model();
+        $model->setLabel('');
+        $model->setTags('tag1,tag1,tag2,,tag3');
+        $model->setActiveRevision($revision);
         $this->model = $model;
 
         $this->validator = Validation::createValidatorBuilder()
@@ -96,7 +101,6 @@ class ModelTest extends TestCase
         $model->prePersist();
         $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $model->getUpdatedAt());
-        $this->assertSame(1, $model->getVersion());
     }
 
     public function testPreUpdate(): void
@@ -113,33 +117,33 @@ class ModelTest extends TestCase
     {
         $violations = $this->validator->validate($this->model);
         $this->assertCount(14, $violations);
-        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
-    mbt.model.places_invalid
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].fromPlaces:
-    mbt.model.places_invalid
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions:
-    mbt.model.missing_start_transition
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
+        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].toPlaces:
+    mbt.model.places_invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].fromPlaces:
+    mbt.model.places_invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions:
+    mbt.model.missing_start_transition
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[0].command:
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[1].target:
     mbt.model.command.required_target (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[0].command:
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[1].value:
     mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].guard:
     This value should be of type string.
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].toPlaces:
     mbt.model.missing_to_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
@@ -147,43 +151,41 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
 
     public function testValidateInvalidModelTooManyStartTransitions(): void
     {
-        $transitions = $this->model->getTransitions();
-        $transitions[0]->setFromPlaces([]);
-        $transitions[1]->setFromPlaces([]);
-        $this->model->setTransitions($transitions);
+        $this->model->getActiveRevision()->getTransition(0)->setFromPlaces([]);
+        $this->model->getActiveRevision()->getTransition(1)->setFromPlaces([]);
         $violations = $this->validator->validate($this->model);
         $this->assertCount(13, $violations);
-        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].toPlaces:
-    mbt.model.places_invalid
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions:
-    mbt.model.too_many_start_transitions
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
+        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
     The tags should be unique and not blank. (code 628fca96-35f8-11eb-adc1-0242ac120002)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].label:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].toPlaces:
+    mbt.model.places_invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions:
+    mbt.model.too_many_start_transitions
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[0].command:
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[0].command:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[0].commands[1].target:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[0].commands[1].target:
     mbt.model.command.required_target (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[0].command:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[0].command:
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).places[1].commands[1].value:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[1].value:
     mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[0].guard:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].guard:
     This value should be of type string.
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].label:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
+Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].toPlaces:
     mbt.model.missing_to_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
     }
 
-    public function testNormalize(): void
+    public function testToArray(): void
     {
         $this->assertSame([
             'label' => '',
@@ -224,43 +226,29 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).transitions[1].toPlaces:
                 0 => [
                     'label' => 't1',
                     'guard' => null,
-                    'commands' => [
-                    ],
                     'fromPlaces' => [
                         0 => 1,
                     ],
                     'toPlaces' => [
                         0 => 1,
                         1 => 2,
+                    ],
+                    'commands' => [
                     ],
                 ],
                 1 => [
                     'label' => '',
                     'guard' => 'count > 1',
-                    'commands' => [
-                    ],
                     'fromPlaces' => [
                         0 => 1,
                         1 => 2,
                     ],
                     'toPlaces' => [
                     ],
+                    'commands' => [
+                    ],
                 ],
             ],
-        ], $this->model->normalize());
-    }
-
-    public function testDenormalize(): void
-    {
-        $this->model->denormalize([
-            'label' => 'Custom label',
-            'tags' => 'custom,tags',
-            'places' => [],
-            'transitions' => [],
-        ]);
-        $this->assertSame('Custom label', $this->model->getLabel());
-        $this->assertSame('custom,tags', $this->model->getTags());
-        $this->assertSame([], $this->model->getPlaces());
-        $this->assertSame([], $this->model->getTransitions());
+        ], $this->model->toArray());
     }
 }

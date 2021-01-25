@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -50,10 +50,8 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
-        $model = new Model();
-        $model->setVersion(1);
         $this->task = new Task();
-        $this->task->setModel($model);
+        $this->task->setModelRevision(new Revision());
         $this->handler = new ReduceStepsMessageHandler(
             $this->reducerManager,
             $this->entityManager,
@@ -71,28 +69,18 @@ class ReduceStepsMessageHandlerTest extends TestCase
         call_user_func($this->handler, $message);
     }
 
-    public function testInvokeBugWithModifiedModel(): void
-    {
-        $this->task->getModel()->setVersion(2);
-        $bug = new Bug();
-        $bug->setModelVersion(1);
-        $bug->setTask($this->task);
-        $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
-        $this->reducerManager->expects($this->never())->method('getReducer');
-        $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
-        $message = new ReduceStepsMessage(123, 6, 1, 2);
-        call_user_func($this->handler, $message);
-    }
-
     public function testInvokeReducedBug(): void
     {
         $bug = new Bug();
-        $bug->setModelVersion(1);
         $bug->setTask($this->task);
-        $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
+        $bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
         $this->reducerManager->expects($this->never())->method('getReducer');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
-        $message = new ReduceStepsMessage(123, 6, 1, 2);
+        $message = new ReduceStepsMessage(123, 4, 1, 2);
         call_user_func($this->handler, $message);
     }
 
@@ -104,16 +92,20 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $progress->setProcessed(5);
         $bug = new Bug();
         $bug->setProgress($progress);
-        $bug->setModelVersion(1);
         $bug->setTask($this->task);
-        $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
+        $bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($bug, 1);
-        $message = new ReduceStepsMessage(123, 6, 1, 2);
+        $message = new ReduceStepsMessage(123, 4, 1, 2);
         call_user_func($this->handler, $message);
     }
 
@@ -126,9 +118,13 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setProgress($progress);
         $bug->setId(123);
-        $bug->setModelVersion(1);
         $bug->setTask($this->task);
-        $bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 6)));
+        $bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
@@ -145,7 +141,7 @@ class ReduceStepsMessageHandlerTest extends TestCase
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($bug, 1);
-        $message = new ReduceStepsMessage(123, 6, 1, 2);
+        $message = new ReduceStepsMessage(123, 4, 1, 2);
         call_user_func($this->handler, $message);
     }
 }

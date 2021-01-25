@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
@@ -16,10 +16,9 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
  * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */
 class PetrinetHelperTest extends TestCase
 {
@@ -33,8 +32,8 @@ class PetrinetHelperTest extends TestCase
             $place2 = new Place(),
             $place3 = new Place(),
         ];
-        $model = new Model();
-        $model->setPlaces($places);
+        $revision = new Revision();
+        $revision->setPlaces(...$places);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
@@ -44,8 +43,8 @@ class PetrinetHelperTest extends TestCase
         $transition1->setToPlaces([2]);
         $transition2->setFromPlaces([2]);
         $transition2->setToPlaces([1]);
-        $model->setTransitions($transitions);
-        $petrinet = $helper->build($model);
+        $revision->setTransitions(...$transitions);
+        $petrinet = $helper->build($revision);
         $this->assertCount(3, $petrinet->getPlaces());
         foreach ($petrinet->getPlaces() as $place) {
             $this->assertInstanceOf(PlaceInterface::class, $place);

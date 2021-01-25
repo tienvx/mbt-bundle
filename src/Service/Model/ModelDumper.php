@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class ModelDumper implements ModelDumperInterface
@@ -22,7 +22,7 @@ class ModelDumper implements ModelDumperInterface
     protected function dumpPlaces(ModelInterface $model): string
     {
         $places = '';
-        foreach ($model->getPlaces() as $index => $place) {
+        foreach ($model->getActiveRevision()->getPlaces() as $index => $place) {
             if ($place instanceof PlaceInterface) {
                 $places .= $this->dumpPlace($index, $place);
             }
@@ -43,7 +43,7 @@ class ModelDumper implements ModelDumperInterface
     protected function dumpTransitions(ModelInterface $model): string
     {
         $transitions = '';
-        foreach ($model->getTransitions() as $index => $transition) {
+        foreach ($model->getActiveRevision()->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 $transitions .= $this->dumpTransition($index, $transition);
             }
@@ -66,7 +66,7 @@ class ModelDumper implements ModelDumperInterface
         $arcs = '';
 
         // Process the arcs
-        foreach ($model->getTransitions() as $index => $transition) {
+        foreach ($model->getActiveRevision()->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 foreach ($transition->getFromPlaces() as $place) {
                     $arcs .= sprintf(

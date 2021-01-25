@@ -14,10 +14,11 @@ use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
@@ -30,11 +31,12 @@ class HandlerTestCase extends StepsTestCase
     protected MessageBusInterface $messageBus;
     protected StepRunnerInterface $stepRunner;
     protected StepsBuilderInterface $stepsBuilder;
+    protected BugHelperInterface $bugHelper;
     protected RemoteWebDriver $driver;
     protected array $newSteps;
     protected BugInterface $bug;
     protected TaskInterface $task;
-    protected ModelInterface $model;
+    protected RevisionInterface $revision;
 
     protected function setUp(): void
     {
@@ -43,20 +45,28 @@ class HandlerTestCase extends StepsTestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->stepRunner = $this->createMock(StepRunnerInterface::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
+        $this->bugHelper = $this->createMock(BugHelperInterface::class);
         $this->newSteps = [
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ];
-        $this->model = $this->createMock(ModelInterface::class);
+        $this->revision = $this->createMock(RevisionInterface::class);
         $this->task = new Task();
-        $this->task->setModel($this->model);
+        $this->task->setId(123);
+        $this->task->setModelRevision($this->revision);
         $this->bug = new Bug();
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
-        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 5)));
-        $this->bug->setTask($this->task);
+        $this->bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
+        $this->task->addBug($this->bug);
         $this->stepsBuilder
             ->expects($this->once())
             ->method('create')
@@ -69,7 +79,11 @@ class HandlerTestCase extends StepsTestCase
     {
         $this->driver->expects($this->never())->method('quit');
         $this->providerManager->expects($this->never())->method('createDriver');
-        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 3)));
+        $this->bug->setSteps(
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+            $this->createMock(StepInterface::class),
+        );
         $this->stepRunner->expects($this->never())->method('run');
         $this->handler->handle($this->bug, 1, 2);
     }
@@ -83,7 +97,7 @@ class HandlerTestCase extends StepsTestCase
             ->with($this->task)
             ->willReturn($this->driver);
         $this->stepRunner->expects($this->exactly(4))
-            ->method('run')->with($this->isInstanceOf(StepInterface::class), $this->model, $this->driver);
+            ->method('run')->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
         $this->handler->handle($this->bug, 1, 2);
     }
 
@@ -96,7 +110,7 @@ class HandlerTestCase extends StepsTestCase
             ->with($this->task)
             ->willReturn($this->driver);
         $this->stepRunner->expects($this->exactly(4))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->model, $this->driver)
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->will($this->onConsecutiveCalls(
                 null,
                 null,
@@ -135,7 +149,7 @@ class HandlerTestCase extends StepsTestCase
             ->with($this->isInstanceOf(ReduceBugMessage::class))
             ->willReturn(new Envelope(new \stdClass()));
         $this->stepRunner->expects($this->exactly(4))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->model, $this->driver)
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->will($this->onConsecutiveCalls(
                 null,
                 null,
@@ -144,5 +158,31 @@ class HandlerTestCase extends StepsTestCase
             ));
         $this->handler->handle($this->bug, 1, 2);
         $this->assertSteps($this->newSteps, $this->bug->getSteps());
+    }
+
+    public function testRunFoundDifferentBug(): void
+    {
+        $this->driver->expects($this->once())->method('quit');
+        $this->providerManager
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->task)
+            ->willReturn($this->driver);
+        $this->entityManager->expects($this->never())->method('refresh');
+        $this->entityManager->expects($this->never())->method('lock');
+        $this->entityManager->expects($this->never())->method('transactional');
+        $this->entityManager->expects($this->once())->method('flush');
+        $this->messageBus->expects($this->never())->method('dispatch');
+        $this->stepRunner->expects($this->exactly(4))->method('run')
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
+            ->will($this->onConsecutiveCalls(
+                null,
+                null,
+                null,
+                $this->throwException(new Exception('Something wrong differently')),
+            ));
+        $this->handler->handle($this->bug, 1, 2);
+        $this->assertCount(2, $this->bug->getTask()->getBugs());
+        $this->assertSteps($this->newSteps, $this->bug->getTask()->getBugs()->get(1)->getSteps());
     }
 }

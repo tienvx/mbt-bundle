@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Petrinet;
 
 use Petrinet\Model\PetrinetInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 interface PetrinetHelperInterface
 {
-    public function build(ModelInterface $model): PetrinetInterface;
+    public function build(RevisionInterface $revision): PetrinetInterface;
 }

@@ -3,8 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 interface ModelInterface
 {
@@ -24,27 +23,17 @@ interface ModelInterface
 
     public function setTags(?string $tags): void;
 
-    public function getPlaces(): array;
-
-    public function setPlaces(array $places): void;
-
-    public function getPlace(int $index): ?PlaceInterface;
-
-    public function getTransitions(): array;
-
-    public function setTransitions(array $transitions): void;
-
-    public function getTransition(int $index): ?TransitionInterface;
-
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
-    public function getVersion(): int;
+    public function getActiveRevision(): RevisionInterface;
 
-    public function setVersion(int $version): void;
+    public function setActiveRevision(RevisionInterface $activeRevision): void;
 
     public function getCreatedAt(): ?DateTimeInterface;
 
     public function setUpdatedAt(DateTimeInterface $updatedAt): void;
 
     public function getUpdatedAt(): ?DateTimeInterface;
+
+    public function toArray(): array;
 }

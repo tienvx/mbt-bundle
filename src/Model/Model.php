@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Doctrine\Common\Collections\Collection;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 abstract class Model implements ModelInterface
 {
@@ -12,9 +12,8 @@ abstract class Model implements ModelInterface
     protected ?int $author;
     protected string $label = '';
     protected ?string $tags = null;
-    protected array $places = [];
-    protected array $transitions = [];
-    protected int $version;
+    protected Collection $revisions;
+    protected RevisionInterface $activeRevision;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -58,26 +57,31 @@ abstract class Model implements ModelInterface
         $this->tags = $tags;
     }
 
-    abstract public function getPlaces(): array;
-
-    abstract public function setPlaces(array $places): void;
-
-    abstract public function getPlace(int $index): ?PlaceInterface;
-
-    abstract public function getTransitions(): array;
-
-    abstract public function setTransitions(array $transitions): void;
-
-    abstract public function getTransition(int $index): ?TransitionInterface;
-
-    public function getVersion(): int
+    /**
+     * @return Collection|RevisionInterface[]
+     */
+    public function getRevisions(): Collection
     {
-        return $this->version;
+        return $this->revisions;
     }
 
-    public function setVersion(int $version): void
+    public function addRevision(RevisionInterface $revision): void
     {
-        $this->version = $version;
+        if (!$this->revisions->contains($revision)) {
+            $this->revisions->add($revision);
+            $revision->setModel($this);
+        }
+    }
+
+    public function getActiveRevision(): RevisionInterface
+    {
+        return $this->activeRevision;
+    }
+
+    public function setActiveRevision(RevisionInterface $activeRevision): void
+    {
+        $this->activeRevision = $activeRevision;
+        $this->addRevision($activeRevision);
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void
@@ -98,5 +102,13 @@ abstract class Model implements ModelInterface
     public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'label' => $this->label,
+            'tags' => $this->tags,
+        ] + $this->activeRevision->toArray();
     }
 }

@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Service\GuardedTransitionService;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
@@ -27,8 +27,9 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
@@ -47,13 +48,13 @@ class RandomGeneratorTest extends TestCase
         $markingHelper = new MarkingHelper($factory);
         $modelHelper = new ModelHelper();
         $transitionService = new GuardedTransitionService($factory);
-        $model = new Model();
+        $revision = new Revision();
         $places = [
             $place1 = new Place(),
             $place2 = new Place(),
             $place3 = new Place(),
         ];
-        $model->setPlaces($places);
+        $revision->setPlaces(...$places);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
@@ -65,9 +66,9 @@ class RandomGeneratorTest extends TestCase
         $transition2->setToPlaces([1]);
         $transition3->setFromPlaces([1]);
         $transition3->setToPlaces([2]);
-        $model->setTransitions($transitions);
+        $revision->setTransitions(...$transitions);
         $this->task = new Task();
-        $this->task->setModel($model);
+        $this->task->setModelRevision($revision);
         $this->generator = new RandomGenerator(
             $petrinetHelper,
             $markingHelper,

@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\ValueObject\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Model\Model\Transition as TransitionModel;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition as TransitionModel;
 
 class Transition extends TransitionModel
 {
