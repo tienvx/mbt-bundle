@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
 abstract class Bug implements BugInterface
 {
@@ -19,8 +20,6 @@ abstract class Bug implements BugInterface
     protected ProgressInterface $progress;
 
     protected bool $closed = false;
-
-    protected int $modelVersion;
 
     protected DateTimeInterface $updatedAt;
 
@@ -51,9 +50,15 @@ abstract class Bug implements BugInterface
         $this->title = $title;
     }
 
-    abstract public function getSteps(): array;
+    public function setSteps(StepInterface ...$steps): void
+    {
+        $this->steps = $steps;
+    }
 
-    abstract public function setSteps(array $steps): void;
+    public function getSteps(): array
+    {
+        return $this->steps;
+    }
 
     public function getTask(): TaskInterface
     {
@@ -93,16 +98,6 @@ abstract class Bug implements BugInterface
     public function setClosed(bool $closed): void
     {
         $this->closed = $closed;
-    }
-
-    public function getModelVersion(): int
-    {
-        return $this->modelVersion;
-    }
-
-    public function setModelVersion(int $modelVersion): void
-    {
-        $this->modelVersion = $modelVersion;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

@@ -4,14 +4,15 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
-use Tienvx\Bundle\MbtBundle\Model\Model\Command;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\Place;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
  */
 class PlaceTest extends TestCase
 {
@@ -41,38 +42,21 @@ class PlaceTest extends TestCase
         $this->command2->setValue('Are you sure?');
     }
 
-    /**
-     * @dataProvider commandsProvider
-     */
-    public function testIsNotSame(array $commands): void
+    public function testSerialize(): void
     {
-        $place = new Place();
-        $place->setCommands($commands);
-        $this->assertFalse($place->isSame($this->place));
+        // phpcs:ignore Generic.Files.LineLength
+        $this->assertSame('O:50:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place":2:{s:5:"label";s:0:"";s:8:"commands";a:2:{i:0;a:3:{s:7:"command";s:10:"assertText";s:6:"target";s:10:"css=.title";s:5:"value";s:5:"Hello";}i:1;a:3:{s:7:"command";s:11:"assertAlert";s:6:"target";s:12:"css=.warning";s:5:"value";s:13:"Are you sure?";}}}', serialize($this->place));
     }
 
-    public function testIsSame(): void
+    public function testUnerialize(): void
     {
-        $place = new Place();
-        $place->setCommands([
-            $this->command1,
-            $this->command2,
-        ]);
-        $this->assertTrue($place->isSame($this->place));
-    }
-
-    public function commandsProvider(): array
-    {
-        $this->setUpCommands();
-        $command = new Command();
-        $command->setCommand(AssertionRunner::ASSERT_ALERT);
-        $command->setTarget('css=.warning');
-        $command->setValue('Are you sure about this?');
-
-        return [
-            [[$this->command1]],
-            [[$this->command2]],
-            [[$this->command1, $command]],
-        ];
+        // phpcs:ignore Generic.Files.LineLength
+        $place = unserialize('O:50:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place":2:{s:5:"label";s:10:"Serialized";s:8:"commands";a:1:{i:0;a:3:{s:7:"command";s:19:"assertSelectedValue";s:6:"target";s:12:"css=.country";s:5:"value";s:2:"vn";}}}');
+        $this->assertInstanceOf(PlaceInterface::class, $place);
+        $this->assertSame('Serialized', $place->getLabel());
+        $this->assertInstanceOf(CommandInterface::class, $place->getCommands()[0]);
+        $this->assertSame(AssertionRunner::ASSERT_SELECTED_VALUE, $place->getCommands()[0]->getCommand());
+        $this->assertSame('css=.country', $place->getCommands()[0]->getTarget());
+        $this->assertSame('vn', $place->getCommands()[0]->getValue());
     }
 }

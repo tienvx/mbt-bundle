@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Model\Revision;
 
 interface CommandInterface
 {
@@ -16,5 +16,5 @@ interface CommandInterface
 
     public function setValue(?string $value): void;
 
-    public function isSame(self $command): bool;
+    public function toArray(): array;
 }

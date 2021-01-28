@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 
@@ -20,19 +21,22 @@ abstract class HandlerTemplate implements HandlerInterface
     protected MessageBusInterface $messageBus;
     protected StepRunnerInterface $stepRunner;
     protected StepsBuilderInterface $stepsBuilder;
+    protected BugHelperInterface $bugHelper;
 
     public function __construct(
         ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         StepRunnerInterface $stepRunner,
-        StepsBuilderInterface $stepsBuilder
+        StepsBuilderInterface $stepsBuilder,
+        BugHelperInterface $bugHelper
     ) {
         $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
         $this->stepRunner = $stepRunner;
         $this->stepsBuilder = $stepsBuilder;
+        $this->bugHelper = $bugHelper;
     }
 
     /**
@@ -56,7 +60,7 @@ abstract class HandlerTemplate implements HandlerInterface
         $driver = $this->providerManager->createDriver($bug->getTask());
         try {
             foreach ($newSteps as $step) {
-                $this->stepRunner->run($step, $bug->getTask()->getModel(), $driver);
+                $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);
             }
         } catch (ExceptionInterface $exception) {
             throw $exception;
@@ -64,6 +68,13 @@ abstract class HandlerTemplate implements HandlerInterface
             if ($throwable->getMessage() === $bug->getMessage()) {
                 $this->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
+            } else {
+                $bug->getTask()->addBug($this->bugHelper->createBug(
+                    $newSteps,
+                    $throwable->getMessage(),
+                    $bug->getTask()->getId()
+                ));
+                $this->entityManager->flush();
             }
         } finally {
             $driver->quit();
@@ -78,7 +89,7 @@ abstract class HandlerTemplate implements HandlerInterface
 
             if (count($newSteps) <= count($bug->getSteps())) {
                 $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
-                $bug->setSteps($newSteps);
+                $bug->setSteps(...$newSteps);
             }
         };
 

@@ -4,7 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Petrinet\Model\Petrinet;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
@@ -35,18 +35,18 @@ class ShortestPathStepsBuilderTest extends StepsTestCase
             $step6 = $this->createMock(StepInterface::class),
             $step7 = $this->createMock(StepInterface::class),
         ];
-        $bug->setSteps($steps);
+        $bug->setSteps(...$steps);
         $petrinet = new Petrinet();
-        $model = new Model();
+        $revision = new Revision();
         $task = new Task();
-        $task->setModel($model);
+        $task->setModelRevision($revision);
         $bug->setTask($task);
         $shortestSteps = [
             $step8 = $this->createMock(StepInterface::class),
             $step9 = $this->createMock(StepInterface::class),
         ];
         $petrinetHelper = $this->createMock(PetrinetHelperInterface::class);
-        $petrinetHelper->expects($this->once())->method('build')->with($model)->willReturn($petrinet);
+        $petrinetHelper->expects($this->once())->method('build')->with($revision)->willReturn($petrinet);
         $strategy = $this->createMock(ShortestPathStrategyInterface::class);
         $strategy->expects($this->once())->method('run')->with(
             $petrinet,

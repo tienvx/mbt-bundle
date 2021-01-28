@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
 interface BugInterface
 {
@@ -14,9 +15,12 @@ interface BugInterface
 
     public function setTitle(string $title): void;
 
+    /**
+     * @return StepInterface[]
+     */
     public function getSteps(): array;
 
-    public function setSteps(array $steps): void;
+    public function setSteps(StepInterface ...$steps): void;
 
     public function getTask(): TaskInterface;
 
@@ -24,7 +28,7 @@ interface BugInterface
 
     public function getMessage(): string;
 
-    public function setMessage(string $bugMessage): void;
+    public function setMessage(string $message): void;
 
     public function getProgress(): ProgressInterface;
 
@@ -33,10 +37,6 @@ interface BugInterface
     public function isClosed(): bool;
 
     public function setClosed(bool $closed): void;
-
-    public function getModelVersion(): int;
-
-    public function setModelVersion(int $modelVersion): void;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

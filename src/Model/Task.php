@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
@@ -10,11 +12,12 @@ class Task implements TaskInterface
 {
     protected ?int $id;
     protected string $title;
-    protected ModelInterface $model;
+    protected RevisionInterface $modelRevision;
     protected ?int $author;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;
+    protected Collection $bugs;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -43,14 +46,14 @@ class Task implements TaskInterface
         $this->title = $title;
     }
 
-    public function getModel(): ModelInterface
+    public function getModelRevision(): RevisionInterface
     {
-        return $this->model;
+        return $this->modelRevision;
     }
 
-    public function setModel(ModelInterface $model): void
+    public function setModelRevision(RevisionInterface $modelRevision): void
     {
-        $this->model = $model;
+        $this->modelRevision = $modelRevision;
     }
 
     public function getAuthor(): ?int
@@ -91,6 +94,22 @@ class Task implements TaskInterface
     public function setProgress(ProgressInterface $progress): void
     {
         $this->progress = $progress;
+    }
+
+    /**
+     * @return Collection|BugInterface[]
+     */
+    public function getBugs(): Collection
+    {
+        return $this->bugs;
+    }
+
+    public function addBug(BugInterface $bug): void
+    {
+        if (!$this->bugs->contains($bug)) {
+            $this->bugs->add($bug);
+            $bug->setTask($this);
+        }
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

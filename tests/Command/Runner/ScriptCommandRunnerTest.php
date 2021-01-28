@@ -9,7 +9,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class ScriptCommandRunnerTest extends RunnerTestCase
 {

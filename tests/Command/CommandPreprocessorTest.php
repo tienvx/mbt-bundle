@@ -7,11 +7,11 @@ use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\Model\Model\Command;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class CommandPreprocessorTest extends TestCase
 {

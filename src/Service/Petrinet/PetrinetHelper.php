@@ -8,9 +8,9 @@ use Petrinet\Model\TransitionInterface as PetrinetTransitionInterface;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 
 class PetrinetHelper implements PetrinetHelperInterface
@@ -24,12 +24,12 @@ class PetrinetHelper implements PetrinetHelperInterface
         $this->expressionLanguage = $expressionLanguage;
     }
 
-    public function build(ModelInterface $model): PetrinetInterface
+    public function build(RevisionInterface $revision): PetrinetInterface
     {
         $builder = new SingleColorPetrinetBuilder($this->colorfulFactory);
-        $places = $this->getPlaces($model, $builder);
-        $transitions = $this->getTransitions($model, $builder);
-        foreach ($model->getTransitions() as $index => $transition) {
+        $places = $this->getPlaces($revision, $builder);
+        $transitions = $this->getTransitions($revision, $builder);
+        foreach ($revision->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface && $this->isValidTransition($transition)) {
                 $this->connectPlacesToTransition(
                     array_intersect_key($places, array_flip($transition->getFromPlaces())),
@@ -43,10 +43,10 @@ class PetrinetHelper implements PetrinetHelperInterface
         return $builder->getPetrinet();
     }
 
-    protected function getPlaces(ModelInterface $model, SingleColorPetrinetBuilder $builder): array
+    protected function getPlaces(RevisionInterface $revision, SingleColorPetrinetBuilder $builder): array
     {
         $places = [];
-        foreach ($model->getPlaces() as $index => $place) {
+        foreach ($revision->getPlaces() as $index => $place) {
             if ($place instanceof PlaceInterface) {
                 $places[$index] = $builder->place();
                 $places[$index]->setId($index);
@@ -56,10 +56,10 @@ class PetrinetHelper implements PetrinetHelperInterface
         return $places;
     }
 
-    protected function getTransitions(ModelInterface $model, SingleColorPetrinetBuilder $builder): array
+    protected function getTransitions(RevisionInterface $revision, SingleColorPetrinetBuilder $builder): array
     {
         $transitions = [];
-        foreach ($model->getTransitions() as $index => $transition) {
+        foreach ($revision->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface && $this->isValidTransition($transition)) {
                 $guardCallback = $transition->getGuard()
                     ? fn (ColorInterface $color): bool => (bool) $this->expressionLanguage->evaluate(

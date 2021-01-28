@@ -4,21 +4,16 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\PlaceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\TransitionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Tags;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
-use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="model")
  * @ORM\HasLifecycleCallbacks
  */
 class Model extends BaseModel
@@ -48,16 +43,6 @@ class Model extends BaseModel
     protected ?string $tags = null;
 
     /**
-     * @ORM\Column(type="array")
-     */
-    protected array $places = [];
-
-    /**
-     * @ORM\Column(type="array")
-     */
-    protected array $transitions = [];
-
-    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     protected DateTimeInterface $createdAt;
@@ -68,9 +53,24 @@ class Model extends BaseModel
     protected DateTimeInterface $updatedAt;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
+     * @Assert\Valid
      */
-    protected int $version;
+    protected RevisionInterface $activeRevision;
+
+    /**
+     * @ORM\ManyToOne(
+     *     targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision",
+     *     inversedBy="model"
+     * )
+     * @Assert\Valid
+     */
+    protected Collection $revisions;
+
+    public function __construct()
+    {
+        $this->revisions = new ArrayCollection();
+    }
 
     /**
      * @ORM\PrePersist
@@ -79,7 +79,6 @@ class Model extends BaseModel
     {
         $this->setCreatedAt(new DateTime());
         $this->setUpdatedAt(new DateTime());
-        $this->version = 1;
     }
 
     /**
@@ -88,193 +87,5 @@ class Model extends BaseModel
     public function preUpdate(): void
     {
         $this->setUpdatedAt(new DateTime());
-    }
-
-    /**
-     * @Assert\Valid
-     *
-     * @return PlaceInterface[]
-     */
-    public function getPlaces(): array
-    {
-        return $this->denormalizePlaces($this->places);
-    }
-
-    public function setPlaces(array $places): void
-    {
-        $items = [];
-        foreach ($places as $place) {
-            if ($place instanceof PlaceInterface) {
-                $item = [
-                    'label' => $place->getLabel(),
-                    'commands' => $this->normalizeCommands($place->getCommands()),
-                ];
-                $items[] = $item;
-            }
-        }
-
-        $this->places = $items;
-    }
-
-    public function getPlace(int $index): ?PlaceInterface
-    {
-        return $this->places[$index] ? $this->denormalizePlace($this->places[$index]) : null;
-    }
-
-    /**
-     * @Assert\Valid
-     *
-     * @return TransitionInterface[]
-     */
-    public function getTransitions(): array
-    {
-        return $this->denormalizeTransitions($this->transitions);
-    }
-
-    public function setTransitions(array $transitions): void
-    {
-        $items = [];
-        foreach ($transitions as $transition) {
-            if ($transition instanceof TransitionInterface) {
-                $item = [
-                    'label' => $transition->getLabel(),
-                    'guard' => $transition->getGuard(),
-                    'commands' => $this->normalizeCommands($transition->getCommands()),
-                    'fromPlaces' => $transition->getFromPlaces(),
-                    'toPlaces' => $transition->getToPlaces(),
-                ];
-                $items[] = $item;
-            }
-        }
-
-        $this->transitions = $items;
-    }
-
-    public function getTransition(int $index): ?TransitionInterface
-    {
-        return $this->transitions[$index] ? $this->denormalizeTransition($this->transitions[$index]) : null;
-    }
-
-    /**
-     * @Assert\Callback
-     */
-    public function validatePlacesInTransitions(ExecutionContextInterface $context, $payload): void
-    {
-        foreach ($this->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface) {
-                $fromPlaces = $transition->getFromPlaces();
-                if ($fromPlaces && array_diff($fromPlaces, array_keys($this->places))) {
-                    $context->buildViolation('mbt.model.places_invalid')
-                        ->atPath(sprintf('transitions[%d].fromPlaces', $index))
-                        ->addViolation();
-                }
-                $toPlaces = $transition->getToPlaces();
-                if ($toPlaces && array_diff($toPlaces, array_keys($this->places))) {
-                    $context->buildViolation('mbt.model.places_invalid')
-                        ->atPath(sprintf('transitions[%d].toPlaces', $index))
-                        ->addViolation();
-                }
-            }
-        }
-    }
-
-    /**
-     * @Assert\Callback
-     */
-    public function validateStartTransitions(ExecutionContextInterface $context, $payload): void
-    {
-        $startTransitions = array_filter(
-            $this->transitions,
-            fn (array $transition) => 0 === count($transition['fromPlaces'] ?? [])
-        );
-        if (0 === count($startTransitions)) {
-            $context->buildViolation('mbt.model.missing_start_transition')
-                ->atPath('transitions')
-                ->addViolation();
-        }
-        if (count($startTransitions) > 1) {
-            $context->buildViolation('mbt.model.too_many_start_transitions')
-                ->atPath('transitions')
-                ->addViolation();
-        }
-    }
-
-    public function normalize(): array
-    {
-        return [
-            'label' => $this->label,
-            'tags' => $this->tags,
-            'places' => $this->places,
-            'transitions' => $this->transitions,
-        ];
-    }
-
-    public function denormalize(array $data): void
-    {
-        $this->setLabel($data['label'] ?? '');
-        $this->setTags($data['tags'] ?? null);
-        $this->setPlaces($this->denormalizePlaces($data['places'] ?? []));
-        $this->setTransitions($this->denormalizeTransitions($data['transitions'] ?? []));
-    }
-
-    protected function normalizeCommands(array $commands): array
-    {
-        $items = [];
-        foreach ($commands as $command) {
-            if ($command instanceof CommandInterface) {
-                $items[] = [
-                    'command' => $command->getCommand(),
-                    'target' => $command->getTarget(),
-                    'value' => $command->getValue(),
-                ];
-            }
-        }
-
-        return $items;
-    }
-
-    protected function denormalizeCommands(array $commandsData): array
-    {
-        $commands = [];
-        foreach ($commandsData as $commandData) {
-            $command = new Command();
-            $command->setCommand($commandData['command'] ?? '');
-            $command->setTarget($commandData['target'] ?? null);
-            $command->setValue($commandData['value'] ?? null);
-            $commands[] = $command;
-        }
-
-        return $commands;
-    }
-
-    protected function denormalizePlaces(array $placesData): array
-    {
-        return array_map(fn (array $placeData) => $this->denormalizePlace($placeData), $placesData);
-    }
-
-    protected function denormalizePlace(array $placeData): PlaceInterface
-    {
-        $place = new Place();
-        $place->setLabel($placeData['label'] ?? '');
-        $place->setCommands($this->denormalizeCommands($placeData['commands'] ?? []));
-
-        return $place;
-    }
-
-    protected function denormalizeTransitions(array $transitionsData): array
-    {
-        return array_map(fn (array $transitionData) => $this->denormalizeTransition($transitionData), $transitionsData);
-    }
-
-    protected function denormalizeTransition(array $transitionData): TransitionInterface
-    {
-        $transition = new Transition();
-        $transition->setLabel($transitionData['label'] ?? '');
-        $transition->setGuard($transitionData['guard'] ?? null);
-        $transition->setCommands($this->denormalizeCommands($transitionData['commands'] ?? []));
-        $transition->setFromPlaces($transitionData['fromPlaces'] ?? []);
-        $transition->setToPlaces($transitionData['toPlaces'] ?? []);
-
-        return $transition;
     }
 }

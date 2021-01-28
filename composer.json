@@ -20,7 +20,7 @@
         "ext-json": "*",
         "doctrine/orm": "^2.8",
         "egulias/email-validator": "^2.1",
-        "florianv/petrinet": "dev-fix-empty-input-arcs as 2.1.1",
+        "florianv/petrinet": "dev-master as 2.1.1",
         "jmgq/a-star": "^1.1",
         "php-webdriver/webdriver": "^1.9",
         "symfony/config": "^5.2",

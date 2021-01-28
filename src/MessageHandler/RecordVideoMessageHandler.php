@@ -51,7 +51,7 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
         $driver = $this->providerManager->createDriver($bug->getTask(), $bug->getId());
         try {
             foreach ($bug->getSteps() as $step) {
-                $this->stepRunner->run($step, $bug->getTask()->getModel(), $driver);
+                $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);
             }
         } catch (ExceptionInterface $exception) {
             throw $exception;

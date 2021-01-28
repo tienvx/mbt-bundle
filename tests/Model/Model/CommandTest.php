@@ -3,14 +3,13 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
-use Tienvx\Bundle\MbtBundle\Model\Model\Command;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Command
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class CommandTest extends TestCase
 {
@@ -24,34 +23,19 @@ class CommandTest extends TestCase
         $this->command->setValue('123');
     }
 
-    /**
-     * @dataProvider commandProvider
-     */
-    public function testIsNotSame(string $cmd, string $target, ?string $value): void
+    public function testSerialize(): void
     {
-        $command = new Command();
-        $command->setCommand($cmd);
-        $command->setTarget($target);
-        $command->setValue($value);
-        $this->assertFalse($command->isSame($this->command));
+        // phpcs:ignore Generic.Files.LineLength
+        $this->assertSame('O:52:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command":3:{s:7:"command";s:4:"open";s:6:"target";s:21:"http://localhost:1234";s:5:"value";s:3:"123";}', serialize($this->command));
     }
 
-    public function testIsSame(): void
+    public function testUnerialize(): void
     {
-        $command = new Command();
-        $command->setCommand(WindowCommandRunner::OPEN);
-        $command->setTarget('http://localhost:1234');
-        $command->setValue('123');
-        $this->assertTrue($command->isSame($this->command));
-    }
-
-    public function commandProvider(): array
-    {
-        return [
-            [WindowCommandRunner::OPEN, 'http://localhost:1234', '124'],
-            [WindowCommandRunner::OPEN, 'http://127.0.0.1:8080', '123'],
-            [KeyboardCommandRunner::TYPE, 'http://localhost:1234', '124'],
-            [MouseCommandRunner::CLICK, 'css=.button', null],
-        ];
+        // phpcs:ignore Generic.Files.LineLength
+        $command = unserialize('O:52:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command":3:{s:7:"command";s:5:"click";s:6:"target";s:11:"css=.button";s:5:"value";N;}');
+        $this->assertInstanceOf(CommandInterface::class, $command);
+        $this->assertSame(MouseCommandRunner::CLICK, $command->getCommand());
+        $this->assertSame('css=.button', $command->getTarget());
+        $this->assertSame(null, $command->getValue());
     }
 }

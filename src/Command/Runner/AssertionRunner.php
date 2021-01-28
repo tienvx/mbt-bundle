@@ -6,7 +6,7 @@ use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 class AssertionRunner extends CommandRunner
 {

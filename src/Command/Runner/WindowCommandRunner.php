@@ -8,7 +8,7 @@ use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
-use Tienvx\Bundle\MbtBundle\Model\Model\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 class WindowCommandRunner extends CommandRunner
 {

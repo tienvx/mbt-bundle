@@ -1,12 +1,24 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Model\Model\Revision;
 
 class Command implements CommandInterface
 {
     protected string $command;
     protected ?string $target = null;
     protected ?string $value = null;
+
+    public function __serialize(): array
+    {
+        return $this->toArray();
+    }
+
+    public function __unserialize(array $data)
+    {
+        $this->command = $data['command'];
+        $this->target = $data['target'];
+        $this->value = $data['value'];
+    }
 
     public function getCommand(): string
     {
@@ -38,10 +50,12 @@ class Command implements CommandInterface
         $this->value = $value;
     }
 
-    public function isSame(CommandInterface $command): bool
+    public function toArray(): array
     {
-        return $this->getCommand() === $command->getCommand() &&
-            $this->getTarget() === $command->getTarget() &&
-            $this->getValue() === $command->getValue();
+        return [
+            'command' => $this->command,
+            'target' => $this->target,
+            'value' => $this->value,
+        ];
     }
 }
