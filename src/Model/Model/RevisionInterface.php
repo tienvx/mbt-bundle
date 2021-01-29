@@ -8,6 +8,10 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 interface RevisionInterface
 {
+    public function setId(int $id);
+
+    public function getId(): ?int;
+
     public function getModel(): ?ModelInterface;
 
     public function setModel(?ModelInterface $model): void;
