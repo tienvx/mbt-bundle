@@ -19,7 +19,7 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler

@@ -35,11 +35,11 @@ use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
-use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
+use Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
@@ -52,8 +52,10 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
-use Tienvx\Bundle\MbtBundle\Service\BugProgress;
-use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
@@ -69,6 +71,8 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
+use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
@@ -114,13 +118,9 @@ return static function (ContainerConfigurator $container): void {
         ->set(Selenoid::class)
             ->autoconfigure(true)
 
-        ->set(ExecuteTaskMessageHandler::class)
+        ->set(RunTaskMessageHandler::class)
             ->args([
-                service(GeneratorManager::class),
-                service(ProviderManager::class),
-                service(EntityManagerInterface::class),
-                service(StepRunnerInterface::class),
-                service(TranslatorInterface::class),
+                service(TaskHelperInterface::class),
             ])
             ->autoconfigure(true)
 
@@ -174,6 +174,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
+                service(BugHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -192,6 +193,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
+                service(BugHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -266,6 +268,22 @@ return static function (ContainerConfigurator $container): void {
                 service(EntityManagerInterface::class),
             ])
             ->alias(BugProgressInterface::class, BugProgress::class)
+
+        ->set(BugHelper::class)
+            ->args([
+                service(TranslatorInterface::class),
+            ])
+            ->alias(BugHelperInterface::class, BugHelper::class)
+
+        ->set(TaskHelper::class)
+            ->args([
+                service(GeneratorManager::class),
+                service(ProviderManager::class),
+                service(EntityManagerInterface::class),
+                service(StepRunnerInterface::class),
+                service(TranslatorInterface::class),
+            ])
+            ->alias(TaskHelperInterface::class, TaskHelper::class)
 
         ->set(ShortestPathStepsBuilder::class)
             ->args([

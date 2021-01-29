@@ -26,6 +26,10 @@ interface TaskInterface
 
     public function setAuthor(?int $author): void;
 
+    public function isRunning(): bool;
+
+    public function setRunning(bool $running): void;
+
     public function getSeleniumConfig(): SeleniumConfigInterface;
 
     public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void;

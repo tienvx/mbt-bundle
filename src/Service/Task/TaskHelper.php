@@ -1,22 +1,21 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\MessageHandler;
+namespace Tienvx\Bundle\MbtBundle\Service\Task;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
+use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
-use Tienvx\Bundle\MbtBundle\Message\ExecuteTaskMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
-class ExecuteTaskMessageHandler implements MessageHandlerInterface
+class TaskHelper implements TaskHelperInterface
 {
     protected GeneratorManagerInterface $generatorManager;
     protected ProviderManagerInterface $providerManager;
@@ -47,27 +46,14 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
     /**
      * @throws ExceptionInterface
      */
-    public function __invoke(ExecuteTaskMessage $message): void
+    public function run(int $taskId): void
     {
-        $taskId = $message->getId();
-        $task = $this->entityManager->find(Task::class, $taskId);
+        $task = $this->getTask($taskId);
+        $this->startRunning($task);
 
-        if (!$task instanceof TaskInterface) {
-            throw new UnexpectedValueException(sprintf('Can not execute task %d: task not found', $taskId));
-        }
-
-        $this->execute($task);
-    }
-
-    /**
-     * @throws ExceptionInterface
-     */
-    protected function execute(TaskInterface $task): void
-    {
         $steps = [];
         $generator = $this->generatorManager->getGenerator($task->getTaskConfig()->getGenerator());
         $driver = $this->providerManager->createDriver($task);
-        $task->getProgress()->setTotal($this->maxSteps);
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
@@ -85,10 +71,39 @@ class ExecuteTaskMessageHandler implements MessageHandlerInterface
             $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage(), $task->getId()));
         } finally {
             $driver->quit();
-            $task->getProgress()->setTotal(count($steps));
-            // Executing task take long time. Reconnect to flush changes.
-            $this->entityManager->getConnection()->connect();
+            $this->stopRunning($task, count($steps));
+        }
+    }
+
+    protected function getTask(int $taskId): TaskInterface
+    {
+        $task = $this->entityManager->find(Task::class, $taskId);
+
+        if (!$task instanceof TaskInterface) {
+            throw new UnexpectedValueException(sprintf('Can not execute task %d: task not found', $taskId));
+        }
+
+        return $task;
+    }
+
+    protected function startRunning(TaskInterface $task): void
+    {
+        if ($task->isRunning()) {
+            throw new RuntimeException(sprintf('Task %d is already running', $task->getId()));
+        } else {
+            $task->setRunning(true);
+            $task->getProgress()->setProcessed(0);
+            $task->getProgress()->setTotal($this->maxSteps);
             $this->entityManager->flush();
         }
+    }
+
+    protected function stopRunning(TaskInterface $task, int $stepsCount): void
+    {
+        $task->setRunning(false);
+        $task->getProgress()->setTotal($stepsCount);
+        // Running task take long time. Reconnect to flush changes.
+        $this->entityManager->getConnection()->connect();
+        $this->entityManager->flush();
     }
 }

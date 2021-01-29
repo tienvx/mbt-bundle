@@ -7,9 +7,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Configuration;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension;
-use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Config;
 
 /**
@@ -48,7 +48,7 @@ class TienvxMbtExtensionTest extends TestCase
         ], $container->findDefinition(ProviderManager::class)->getMethodCalls());
         $this->assertSame([
             ['setMaxSteps', [$config[Configuration::MAX_STEPS]]],
-        ], $container->findDefinition(ExecuteTaskMessageHandler::class)->getMethodCalls());
+        ], $container->findDefinition(TaskHelperInterface::class)->getMethodCalls());
     }
 
     public function testRegisterForAutoconfiguration(): void

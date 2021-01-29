@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
 
 class ReduceBugMessageHandler implements MessageHandlerInterface
 {
