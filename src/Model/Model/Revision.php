@@ -8,9 +8,20 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class Revision implements RevisionInterface
 {
+    protected ?int $id;
     protected ?ModelInterface $model = null;
     protected array $places = [];
     protected array $transitions = [];
+
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getModel(): ?ModelInterface
     {

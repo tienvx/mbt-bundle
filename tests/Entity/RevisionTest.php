@@ -8,8 +8,9 @@ use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  */
 class RevisionTest extends TestCase
 {
@@ -18,12 +19,19 @@ class RevisionTest extends TestCase
     protected function setUp(): void
     {
         $this->revision = new Revision();
+        $this->revision->setId(1);
     }
 
-    public function testGetModel(): void
+    public function testModelRevision(): void
     {
         $model = new Model();
-        $this->revision->setModel($model);
+        $model->setActiveRevision($this->revision);
+        $this->assertSame($this->revision->getId(), $model->getActiveRevision()->getId());
         $this->assertSame($model, $this->revision->getModel());
+        $revision = new Revision();
+        $revision->setId(2);
+        $model->setActiveRevision($revision);
+        $this->assertNotSame($this->revision->getId(), $model->getActiveRevision()->getId());
+        $this->assertSame($model, $revision->getModel());
     }
 }

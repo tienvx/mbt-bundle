@@ -15,6 +15,13 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 class Revision extends BaseRevision
 {
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    protected ?int $id;
+
+    /**
      * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model")
      * @ORM\JoinColumn(nullable=true)
      */
