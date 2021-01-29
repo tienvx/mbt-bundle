@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
-use Tienvx\Bundle\MbtBundle\MessageHandler\ExecuteTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
+use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -36,7 +36,7 @@ class TienvxMbtExtension extends Extension
             ->addMethodCall('setConfig', [$config[Configuration::PROVIDERS]])
         ;
 
-        $container->findDefinition(ExecuteTaskMessageHandler::class)
+        $container->findDefinition(TaskHelperInterface::class)
             ->addMethodCall('setMaxSteps', [$config[Configuration::MAX_STEPS]])
         ;
 

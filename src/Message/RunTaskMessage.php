@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Message;
 
-class ExecuteTaskMessage implements MessageInterface
+class RunTaskMessage implements MessageInterface
 {
     protected int $id;
 

@@ -47,6 +47,11 @@ class Task extends TaskModel
     protected ?int $author;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected bool $running = false;
+
+    /**
      * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig")
      * @Assert\Valid
      */

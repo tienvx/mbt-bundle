@@ -14,6 +14,7 @@ class Task implements TaskInterface
     protected string $title;
     protected RevisionInterface $modelRevision;
     protected ?int $author;
+    protected bool $running;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;
@@ -64,6 +65,16 @@ class Task implements TaskInterface
     public function setAuthor(?int $author): void
     {
         $this->author = $author;
+    }
+
+    public function isRunning(): bool
+    {
+        return $this->running;
+    }
+
+    public function setRunning(bool $running): void
+    {
+        $this->running = $running;
     }
 
     public function getSeleniumConfig(): SeleniumConfigInterface

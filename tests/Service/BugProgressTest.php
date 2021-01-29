@@ -8,10 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Service\BugProgress;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Service\BugProgress
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
