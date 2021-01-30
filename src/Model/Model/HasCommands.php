@@ -18,7 +18,9 @@ trait HasCommands
         $this->commands = [];
 
         foreach ($commands as $command) {
-            $this->addCommand($command);
+            if ($command instanceof CommandInterface) {
+                $this->addCommand($command);
+            }
         }
     }
 

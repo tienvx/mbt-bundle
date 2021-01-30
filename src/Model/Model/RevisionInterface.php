@@ -21,7 +21,7 @@ interface RevisionInterface
      */
     public function getPlaces(): array;
 
-    public function setPlaces(PlaceInterface ...$places): void;
+    public function setPlaces(array $places): void;
 
     public function addPlace(PlaceInterface $place): void;
 
@@ -32,7 +32,7 @@ interface RevisionInterface
      */
     public function getTransitions(): array;
 
-    public function setTransitions(TransitionInterface ...$transitions): void;
+    public function setTransitions(array $transitions): void;
 
     public function addTransition(TransitionInterface $transition): void;
 

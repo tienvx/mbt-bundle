@@ -65,11 +65,11 @@ class RecordVideoMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setId(123);
         $bug->setTask($task);
-        $bug->setSteps(
+        $bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $driver = $this->createMock(RemoteWebDriver::class);
         $driver->expects($this->once())->method('quit');
         $this->providerManager->expects($this->once())->method('createDriver')->with($task, 123)->willReturn($driver);

@@ -35,7 +35,7 @@ class ShortestPathStepsBuilderTest extends StepsTestCase
             $step6 = $this->createMock(StepInterface::class),
             $step7 = $this->createMock(StepInterface::class),
         ];
-        $bug->setSteps(...$steps);
+        $bug->setSteps($steps);
         $petrinet = new Petrinet();
         $revision = new Revision();
         $task = new Task();

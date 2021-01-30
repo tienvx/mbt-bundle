@@ -54,7 +54,7 @@ class RandomGeneratorTest extends TestCase
             $place2 = new Place(),
             $place3 = new Place(),
         ];
-        $revision->setPlaces(...$places);
+        $revision->setPlaces($places);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
@@ -66,7 +66,7 @@ class RandomGeneratorTest extends TestCase
         $transition2->setToPlaces([1]);
         $transition3->setFromPlaces([1]);
         $transition3->setToPlaces([2]);
-        $revision->setTransitions(...$transitions);
+        $revision->setTransitions($transitions);
         $this->task = new Task();
         $this->task->setModelRevision($revision);
         $this->generator = new RandomGenerator(

@@ -12,8 +12,8 @@ class RevisionFactory
     public static function createFromArray(array $data): RevisionInterface
     {
         $revision = new Revision();
-        $revision->setPlaces(...array_map([PlaceFactory::class, 'createFromArray'], $data['places'] ?? []));
-        $revision->setTransitions(...array_map(
+        $revision->setPlaces(array_map([PlaceFactory::class, 'createFromArray'], $data['places'] ?? []));
+        $revision->setTransitions(array_map(
             [TransitionFactory::class, 'createFromArray'],
             $data['transitions'] ?? []
         ));

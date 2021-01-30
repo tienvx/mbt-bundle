@@ -20,7 +20,9 @@ interface BugInterface
      */
     public function getSteps(): array;
 
-    public function setSteps(StepInterface ...$steps): void;
+    public function setSteps(array $steps): void;
+
+    public function addStep(StepInterface $step): void;
 
     public function getTask(): TaskInterface;
 

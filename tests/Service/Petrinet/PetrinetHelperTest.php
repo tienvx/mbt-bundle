@@ -33,7 +33,7 @@ class PetrinetHelperTest extends TestCase
             $place3 = new Place(),
         ];
         $revision = new Revision();
-        $revision->setPlaces(...$places);
+        $revision->setPlaces($places);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
@@ -43,7 +43,7 @@ class PetrinetHelperTest extends TestCase
         $transition1->setToPlaces([2]);
         $transition2->setFromPlaces([2]);
         $transition2->setToPlaces([1]);
-        $revision->setTransitions(...$transitions);
+        $revision->setTransitions($transitions);
         $petrinet = $helper->build($revision);
         $this->assertCount(3, $petrinet->getPlaces());
         foreach ($petrinet->getPlaces() as $place) {

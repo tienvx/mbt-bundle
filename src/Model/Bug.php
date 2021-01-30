@@ -50,14 +50,22 @@ abstract class Bug implements BugInterface
         $this->title = $title;
     }
 
-    public function setSteps(StepInterface ...$steps): void
-    {
-        $this->steps = $steps;
-    }
-
     public function getSteps(): array
     {
         return $this->steps;
+    }
+
+    public function setSteps(array $steps): void
+    {
+        $this->steps = [];
+        foreach ($steps as $step) {
+            $this->addStep($step);
+        }
+    }
+
+    public function addStep(StepInterface $step): void
+    {
+        $this->steps[] = $step;
     }
 
     public function getTask(): TaskInterface
