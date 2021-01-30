@@ -28,11 +28,11 @@ class ModelHelperTest extends TestCase
         $this->helper = new ModelHelper();
 
         $this->revision = new Revision();
-        $this->revision->setPlaces(
+        $this->revision->setPlaces([
             $place1 = new Place(),
             $place2 = new Place(),
             $place3 = new Place(),
-        );
+        ]);
         $transitions = [
             $transition1 = new Transition(),
             $transition2 = new Transition(),
@@ -47,7 +47,7 @@ class ModelHelperTest extends TestCase
         $transition3->setToPlaces([2]);
         $transition4->setFromPlaces([1, 2]);
         $transition4->setToPlaces([1]);
-        $this->revision->setTransitions(...$transitions);
+        $this->revision->setTransitions($transitions);
     }
 
     public function testGetStartTransitionId(): void

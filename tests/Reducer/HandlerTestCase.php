@@ -59,13 +59,13 @@ class HandlerTestCase extends StepsTestCase
         $this->bug = new Bug();
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
-        $this->bug->setSteps(
+        $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $this->task->addBug($this->bug);
         $this->stepsBuilder
             ->expects($this->once())
@@ -79,11 +79,11 @@ class HandlerTestCase extends StepsTestCase
     {
         $this->driver->expects($this->never())->method('quit');
         $this->providerManager->expects($this->never())->method('createDriver');
-        $this->bug->setSteps(
+        $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $this->stepRunner->expects($this->never())->method('run');
         $this->handler->handle($this->bug, 1, 2);
     }

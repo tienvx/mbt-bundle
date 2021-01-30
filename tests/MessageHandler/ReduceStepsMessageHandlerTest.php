@@ -73,11 +73,11 @@ class ReduceStepsMessageHandlerTest extends TestCase
     {
         $bug = new Bug();
         $bug->setTask($this->task);
-        $bug->setSteps(
+        $bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $this->reducerManager->expects($this->never())->method('getReducer');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $message = new ReduceStepsMessage(123, 4, 1, 2);
@@ -93,12 +93,12 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug = new Bug();
         $bug->setProgress($progress);
         $bug->setTask($this->task);
-        $bug->setSteps(
+        $bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
@@ -119,12 +119,12 @@ class ReduceStepsMessageHandlerTest extends TestCase
         $bug->setProgress($progress);
         $bug->setId(123);
         $bug->setTask($this->task);
-        $bug->setSteps(
+        $bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
-        );
+        ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($bug, 1, 2);
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);

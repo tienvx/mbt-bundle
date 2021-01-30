@@ -69,7 +69,7 @@ class ModelTest extends TestCase
         $c4->setCommand('clickAt');
         $c4->setTarget('css=.avatar');
         $c4->setValue(null);
-        $revision->setPlaces(...$places);
+        $revision->setPlaces($places);
         $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
@@ -81,7 +81,7 @@ class ModelTest extends TestCase
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
         $t2->setGuard('count > 1');
-        $revision->setTransitions(...$transitions);
+        $revision->setTransitions($transitions);
 
         $model = new Model();
         $model->setLabel('');

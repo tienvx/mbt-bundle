@@ -46,7 +46,7 @@ class StepRunnerTest extends TestCase
             $command1 = CommandFactory::create(WindowCommandRunner::OPEN),
             $command2 = CommandFactory::create(MouseCommandRunner::CLICK),
         ]);
-        $this->revision->setTransitions(...$transitions);
+        $this->revision->setTransitions($transitions);
         $places = [
             $place1 = new Place(),
             $place2 = new Place(),
@@ -58,7 +58,7 @@ class StepRunnerTest extends TestCase
         $place2->setCommands([
             $command5 = CommandFactory::create(AssertionRunner::ASSERT_TEXT),
         ]);
-        $this->revision->setPlaces(...$places);
+        $this->revision->setPlaces($places);
         $this->commands = [
             [$command1, $this->color, $this->driver],
             [$command2, $this->color, $this->driver],

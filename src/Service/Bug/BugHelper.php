@@ -19,7 +19,7 @@ class BugHelper implements BugHelperInterface
     {
         $bug = new Bug();
         $bug->setTitle($this->translator->trans('mbt.default_bug_title', ['%id%' => $taskId]));
-        $bug->setSteps(...$steps);
+        $bug->setSteps($steps);
         $bug->setMessage($message);
 
         return $bug;

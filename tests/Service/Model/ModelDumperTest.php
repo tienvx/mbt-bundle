@@ -34,7 +34,7 @@ class ModelDumperTest extends TestCase
         $p2->setLabel('p2');
         $p3->setLabel('p3');
         $p4->setLabel('p4');
-        $revision->setPlaces(...$places);
+        $revision->setPlaces($places);
         $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
@@ -46,7 +46,7 @@ class ModelDumperTest extends TestCase
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([3]);
         $t2->setGuard('count > 1');
-        $revision->setTransitions(...$transitions);
+        $revision->setTransitions($transitions);
 
         $model = new Model();
         $model->setId(1);

@@ -38,11 +38,13 @@ class Revision implements RevisionInterface
         return $this->places;
     }
 
-    public function setPlaces(PlaceInterface ...$places): void
+    public function setPlaces(array $places): void
     {
         $this->places = [];
         foreach ($places as $place) {
-            $this->addPlace($place);
+            if ($place instanceof PlaceInterface) {
+                $this->addPlace($place);
+            }
         }
     }
 
@@ -61,11 +63,13 @@ class Revision implements RevisionInterface
         return $this->transitions;
     }
 
-    public function setTransitions(TransitionInterface ...$transitions): void
+    public function setTransitions(array $transitions): void
     {
         $this->transitions = [];
         foreach ($transitions as $transition) {
-            $this->addTransition($transition);
+            if ($transition instanceof TransitionInterface) {
+                $this->addTransition($transition);
+            }
         }
     }
 
