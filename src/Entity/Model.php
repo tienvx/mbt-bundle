@@ -59,10 +59,7 @@ class Model extends BaseModel
     protected RevisionInterface $activeRevision;
 
     /**
-     * @ORM\ManyToOne(
-     *     targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision",
-     *     inversedBy="model"
-     * )
+     * @ORM\OneToMany(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision", mappedBy="model")
      * @Assert\Valid
      */
     protected Collection $revisions;
