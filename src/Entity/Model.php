@@ -53,7 +53,7 @@ class Model extends BaseModel
     protected DateTimeInterface $updatedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
+     * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision", cascade={"persist"})
      * @Assert\Valid
      */
     protected RevisionInterface $activeRevision;
