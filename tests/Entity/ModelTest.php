@@ -38,11 +38,13 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 class ModelTest extends TestCase
 {
     protected Model $model;
+    protected Revision $revision;
     protected ValidatorInterface $validator;
 
     protected function setUp(): void
     {
-        $revision = new Revision();
+        $this->revision = new Revision();
+        $this->revision->setId(1);
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -69,7 +71,7 @@ class ModelTest extends TestCase
         $c4->setCommand('clickAt');
         $c4->setTarget('css=.avatar');
         $c4->setValue(null);
-        $revision->setPlaces($places);
+        $this->revision->setPlaces($places);
         $transitions = [
             $t1 = new Transition(),
             $t2 = new Transition(),
@@ -81,13 +83,12 @@ class ModelTest extends TestCase
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
         $t2->setGuard('count > 1');
-        $revision->setTransitions($transitions);
+        $this->revision->setTransitions($transitions);
 
-        $model = new Model();
-        $model->setLabel('');
-        $model->setTags('tag1,tag1,tag2,,tag3');
-        $model->setActiveRevision($revision);
-        $this->model = $model;
+        $this->model = new Model();
+        $this->model->setLabel('');
+        $this->model->setTags('tag1,tag1,tag2,,tag3');
+        $this->model->setActiveRevision($this->revision);
 
         $this->validator = Validation::createValidatorBuilder()
             ->enableAnnotationMapping()
@@ -111,6 +112,31 @@ class ModelTest extends TestCase
         $this->assertInstanceOf(\DateTime::class, $updatedAt = $model->getUpdatedAt());
         $model->preUpdate();
         $this->assertTrue($model->getUpdatedAt() instanceof \DateTime && $updatedAt !== $model->getUpdatedAt());
+    }
+
+    public function testActiveRevision(): void
+    {
+        $model = new Model();
+        $model->setActiveRevision($this->revision);
+        $this->assertSame($this->revision->getId(), $model->getActiveRevision()->getId());
+        $this->assertSame($model, $this->revision->getModel());
+        $revision = new Revision();
+        $revision->setId(2);
+        $model->setActiveRevision($revision);
+        $this->assertNotSame($this->revision->getId(), $model->getActiveRevision()->getId());
+        $this->assertSame($model, $revision->getModel());
+    }
+
+    public function testAddRemoveRevision(): void
+    {
+        $this->assertTrue($this->model->getRevisions()->contains($this->revision));
+        $this->model->removeRevision($this->revision);
+        $this->assertFalse($this->model->getRevisions()->contains($this->revision));
+        $this->assertCount(0, $this->model->getRevisions());
+        $revision = new Revision();
+        $this->model->addRevision($revision);
+        $this->assertTrue($this->model->getRevisions()->contains($revision));
+        $this->assertCount(1, $this->model->getRevisions());
     }
 
     public function testValidateInvalidModel(): void
