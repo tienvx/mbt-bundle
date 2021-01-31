@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 class Revision implements RevisionInterface
 {
-    protected ?int $id;
+    protected ?int $id = null;
     protected ?ModelInterface $model = null;
     protected array $places = [];
     protected array $transitions = [];
