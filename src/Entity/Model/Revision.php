@@ -19,7 +19,7 @@ class Revision extends BaseRevision
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model", inversedBy="revisions")

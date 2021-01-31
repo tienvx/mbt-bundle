@@ -8,8 +8,8 @@ use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 abstract class Model implements ModelInterface
 {
-    protected ?int $id;
-    protected ?int $author;
+    protected ?int $id = null;
+    protected ?int $author = null;
     protected string $label = '';
     protected ?string $tags = null;
     protected Collection $revisions;

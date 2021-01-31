@@ -27,13 +27,13 @@ class Task extends TaskModel
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank
      */
-    protected string $title;
+    protected string $title = '';
 
     /**
      * @ORM\OneToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
@@ -44,7 +44,7 @@ class Task extends TaskModel
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $author;
+    protected ?int $author = null;
 
     /**
      * @ORM\Column(type="boolean")

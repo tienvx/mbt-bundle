@@ -10,11 +10,11 @@ use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 class Task implements TaskInterface
 {
-    protected ?int $id;
-    protected string $title;
+    protected ?int $id = null;
+    protected string $title = '';
     protected RevisionInterface $modelRevision;
-    protected ?int $author;
-    protected bool $running;
+    protected ?int $author = null;
+    protected bool $running = false;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
     protected ProgressInterface $progress;

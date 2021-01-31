@@ -23,12 +23,12 @@ class Model extends BaseModel
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $author;
+    protected ?int $author = null;
 
     /**
      * @ORM\Column(type="string")

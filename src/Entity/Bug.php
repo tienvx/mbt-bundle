@@ -21,7 +21,7 @@ class Bug extends BugModel
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(type="string")
