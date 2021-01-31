@@ -108,24 +108,24 @@ class RandomGeneratorTest extends TestCase
     {
         return [
             [[], false],
-            [['max_place_coverage' => 55], false],
-            [['max_place_coverage' => 55.7], false],
-            [['max_transition_coverage' => 66], false],
-            [['max_transition_coverage' => 66.8], false],
-            [['max_place_coverage' => 100.1, 'max_transition_coverage' => 101.2], false],
-            [['max_place_coverage' => 55.7, 'max_transition_coverage' => 66.8], true],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 55], false],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 55.7], false],
+            [[RandomGenerator::MAX_TRANSITION_COVERAGE => 66], false],
+            [[RandomGenerator::MAX_TRANSITION_COVERAGE => 66.8], false],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 100.1, RandomGenerator::MAX_TRANSITION_COVERAGE => 101.2], false],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 55.7, RandomGenerator::MAX_TRANSITION_COVERAGE => 66.8], true],
         ];
     }
 
     public function configProvider(): array
     {
         return [
-            [['max_place_coverage' => 0, 'max_transition_coverage' => 0], 0],
-            [['max_place_coverage' => 0.1, 'max_transition_coverage' => 0.1], 1],
-            [['max_place_coverage' => 33, 'max_transition_coverage' => 33], 1],
-            [['max_place_coverage' => 34, 'max_transition_coverage' => 34], 2],
-            [['max_place_coverage' => 66.0, 'max_transition_coverage' => 56.0], 2],
-            [['max_place_coverage' => 70.0, 'max_transition_coverage' => 67.0], 3],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 0, RandomGenerator::MAX_TRANSITION_COVERAGE => 0], 0],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 0.1, RandomGenerator::MAX_TRANSITION_COVERAGE => 0.1], 1],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 33, RandomGenerator::MAX_TRANSITION_COVERAGE => 33], 1],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 34, RandomGenerator::MAX_TRANSITION_COVERAGE => 34], 2],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 66.0, RandomGenerator::MAX_TRANSITION_COVERAGE => 56.0], 2],
+            [[RandomGenerator::MAX_PLACE_COVERAGE => 70.0, RandomGenerator::MAX_TRANSITION_COVERAGE => 67.0], 3],
         ];
     }
 }
