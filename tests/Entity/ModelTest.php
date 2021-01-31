@@ -117,14 +117,17 @@ class ModelTest extends TestCase
     public function testActiveRevision(): void
     {
         $model = new Model();
+        $model->setId(1);
         $model->setActiveRevision($this->revision);
         $this->assertSame($this->revision->getId(), $model->getActiveRevision()->getId());
         $this->assertSame($model, $this->revision->getModel());
+        $this->assertSame($model->getId(), $this->revision->getModel()->getId());
         $revision = new Revision();
         $revision->setId(2);
         $model->setActiveRevision($revision);
         $this->assertNotSame($this->revision->getId(), $model->getActiveRevision()->getId());
         $this->assertSame($model, $revision->getModel());
+        $this->assertSame($model->getId(), $revision->getModel()->getId());
     }
 
     public function testAddRemoveRevision(): void
