@@ -16,8 +16,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 class RandomGenerator extends AbstractGenerator
 {
-    public const MAX_TRANSITION_COVERAGE = 'max_transition_coverage';
-    public const MAX_PLACE_COVERAGE = 'max_place_coverage';
+    public const MAX_TRANSITION_COVERAGE = 'maxTransitionCoverage';
+    public const MAX_PLACE_COVERAGE = 'maxPlaceCoverage';
 
     protected PetrinetHelperInterface $petrinetHelper;
     protected MarkingHelperInterface $markingHelper;
