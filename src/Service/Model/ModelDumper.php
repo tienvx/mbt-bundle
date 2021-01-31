@@ -4,25 +4,25 @@ namespace Tienvx\Bundle\MbtBundle\Service\Model;
 
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
-use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 class ModelDumper implements ModelDumperInterface
 {
-    public function dump(ModelInterface $model): string
+    public function dump(RevisionInterface $revision): string
     {
         return sprintf(
             "digraph \"%s\" {\n%s%s%s}",
-            $model->getId(),
-            $this->dumpPlaces($model),
-            $this->dumpTransitions($model),
-            $this->dumpArcs($model),
+            $revision->getId(),
+            $this->dumpPlaces($revision),
+            $this->dumpTransitions($revision),
+            $this->dumpArcs($revision),
         );
     }
 
-    protected function dumpPlaces(ModelInterface $model): string
+    protected function dumpPlaces(RevisionInterface $revision): string
     {
         $places = '';
-        foreach ($model->getActiveRevision()->getPlaces() as $index => $place) {
+        foreach ($revision->getPlaces() as $index => $place) {
             if ($place instanceof PlaceInterface) {
                 $places .= $this->dumpPlace($index, $place);
             }
@@ -40,10 +40,10 @@ class ModelDumper implements ModelDumperInterface
         );
     }
 
-    protected function dumpTransitions(ModelInterface $model): string
+    protected function dumpTransitions(RevisionInterface $revision): string
     {
         $transitions = '';
-        foreach ($model->getActiveRevision()->getTransitions() as $index => $transition) {
+        foreach ($revision->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 $transitions .= $this->dumpTransition($index, $transition);
             }
@@ -61,12 +61,12 @@ class ModelDumper implements ModelDumperInterface
         );
     }
 
-    protected function dumpArcs(ModelInterface $model): string
+    protected function dumpArcs(RevisionInterface $revision): string
     {
         $arcs = '';
 
         // Process the arcs
-        foreach ($model->getActiveRevision()->getTransitions() as $index => $transition) {
+        foreach ($revision->getTransitions() as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 foreach ($transition->getFromPlaces() as $place) {
                     $arcs .= sprintf(

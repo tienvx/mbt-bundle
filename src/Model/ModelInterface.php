@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 interface ModelInterface
@@ -22,6 +23,12 @@ interface ModelInterface
     public function getTags(): ?string;
 
     public function setTags(?string $tags): void;
+
+    public function getRevisions(): Collection;
+
+    public function addRevision(RevisionInterface $revision): void;
+
+    public function removeRevision(RevisionInterface $revision): void;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

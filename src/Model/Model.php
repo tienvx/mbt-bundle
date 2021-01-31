@@ -73,6 +73,14 @@ abstract class Model implements ModelInterface
         }
     }
 
+    public function removeRevision(RevisionInterface $revision): void
+    {
+        if ($this->revisions->contains($revision)) {
+            $this->revisions->removeElement($revision);
+            $revision->setModel(null);
+        }
+    }
+
     public function getActiveRevision(): RevisionInterface
     {
         return $this->activeRevision;

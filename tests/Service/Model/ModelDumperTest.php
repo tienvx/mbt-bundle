@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
@@ -11,10 +10,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Place
  * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
@@ -24,6 +21,7 @@ class ModelDumperTest extends TestCase
     public function testDump(): void
     {
         $revision = new Revision();
+        $revision->setId(1);
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
@@ -48,10 +46,6 @@ class ModelDumperTest extends TestCase
         $t2->setGuard('count > 1');
         $revision->setTransitions($transitions);
 
-        $model = new Model();
-        $model->setId(1);
-        $model->setActiveRevision($revision);
-
         $graph = 'digraph "1" {
 "place-0" [label="p1"]
 "place-1" [label="p2"]
@@ -66,6 +60,6 @@ class ModelDumperTest extends TestCase
 "place-2" -> "transition-1"
 "transition-1" -> "place-3"
 }';
-        $this->assertSame($graph, (new ModelDumper())->dump($model));
+        $this->assertSame($graph, (new ModelDumper())->dump($revision));
     }
 }

@@ -23,7 +23,7 @@ class Revision extends BaseRevision
 
     /**
      * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model", inversedBy="revisions")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     protected ?ModelInterface $model = null;
 
