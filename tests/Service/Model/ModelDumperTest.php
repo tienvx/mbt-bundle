@@ -21,6 +21,7 @@ class ModelDumperTest extends TestCase
     public function testDump(): void
     {
         $revision = new Revision();
+        $revision->setId(1);
         $places = [
             $p1 = new Place(),
             $p2 = new Place(),
