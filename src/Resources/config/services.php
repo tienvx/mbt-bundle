@@ -281,7 +281,7 @@ return static function (ContainerConfigurator $container): void {
                 service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(StepRunnerInterface::class),
-                service(TranslatorInterface::class),
+                service(BugHelperInterface::class),
             ])
             ->alias(TaskHelperInterface::class, TaskHelper::class)
 
