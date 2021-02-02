@@ -50,7 +50,9 @@ class ReportBugMessageHandler implements MessageHandlerInterface
             throw new UnexpectedValueException(sprintf('Can not report bug %d: bug not found', $bugId));
         }
 
-        $this->sendNotification($bug);
+        if ($bug->getTask()->getTaskConfig()->getNotifyChannels()) {
+            $this->sendNotification($bug);
+        }
     }
 
     protected function sendNotification(BugInterface $bug): void
