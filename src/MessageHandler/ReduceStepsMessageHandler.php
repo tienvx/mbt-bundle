@@ -60,7 +60,9 @@ class ReduceStepsMessageHandler implements MessageHandlerInterface
         $this->bugProgress->increaseProcessed($bug, 1);
         if ($bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
             $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
-            $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+            if ($bug->getTask()->getTaskConfig()->getNotifyChannels()) {
+                $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+            }
         }
     }
 }
