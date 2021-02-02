@@ -36,7 +36,7 @@ class Task extends TaskModel
     protected string $title = '';
 
     /**
-     * @ORM\OneToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
+     * @ORM\ManyToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
      * @Assert\Valid
      */
     protected RevisionInterface $modelRevision;
