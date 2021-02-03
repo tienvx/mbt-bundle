@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -55,6 +56,8 @@ class RecordVideoMessageHandler implements MessageHandlerInterface
             }
         } catch (ExceptionInterface $exception) {
             throw $exception;
+        } catch (Throwable $throwable) {
+            // Do nothing.
         } finally {
             $driver->quit();
         }
