@@ -40,6 +40,6 @@ abstract class DispatcherTemplate implements DispatcherInterface
 
     protected function maxPairs(array $steps): int
     {
-        return floor(sqrt(count($steps)));
+        return ceil(sqrt(count($steps)));
     }
 }
