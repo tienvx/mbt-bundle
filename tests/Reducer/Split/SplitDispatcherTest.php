@@ -24,8 +24,11 @@ class SplitDispatcherTest extends DispatcherTestCase
     protected function assertPairs(): void
     {
         parent::assertPairs();
-        $this->assertSame([0, 4], $this->pairs[0]);
-        $this->assertSame([4, 8], $this->pairs[1]);
-        $this->assertSame([8, 10], $this->pairs[2]);
+        $this->assertSame([
+            [0, 3],
+            [3, 6],
+            [6, 9],
+            [9, 10],
+        ], $this->pairs);
     }
 }
