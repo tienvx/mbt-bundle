@@ -68,7 +68,7 @@ class TaskHelper implements TaskHelperInterface
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
-            $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage(), $task->getId()));
+            $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage()));
         } finally {
             $driver->quit();
             $this->stopRunning($task, count($steps));

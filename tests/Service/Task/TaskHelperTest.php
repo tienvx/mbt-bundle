@@ -148,7 +148,7 @@ class TaskHelperTest extends StepsTestCase
         $this->bugHelper
             ->expects($this->once())
             ->method('createBug')
-            ->with([$this->steps[0], $this->steps[1], $this->steps[2]], 'Can not run the third step', 123)
+            ->with([$this->steps[0], $this->steps[1], $this->steps[2]], 'Can not run the third step')
             ->willReturn($bug = new Bug());
 
         $this->taskHelper->run(123);

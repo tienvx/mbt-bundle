@@ -6,5 +6,5 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 interface BugHelperInterface
 {
-    public function createBug(array $steps, string $message, int $taskId): BugInterface;
+    public function createBug(array $steps, string $message): BugInterface;
 }
