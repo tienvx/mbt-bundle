@@ -181,8 +181,13 @@ class HandlerTestCase extends StepsTestCase
                 null,
                 $this->throwException(new Exception('Something wrong differently')),
             ));
+        $this->bugHelper
+            ->expects($this->once())
+            ->method('createBug')
+            ->with($this->newSteps, 'Something wrong differently')
+            ->willReturn($bug = new Bug());
         $this->handler->handle($this->bug, 1, 2);
         $this->assertCount(2, $this->bug->getTask()->getBugs());
-        $this->assertSteps($this->newSteps, $this->bug->getTask()->getBugs()->get(1)->getSteps());
+        $this->assertSame($bug, $this->bug->getTask()->getBugs()->get(1));
     }
 }

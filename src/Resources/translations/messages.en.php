@@ -7,6 +7,5 @@ return [
             'bug_message' => 'Bug message: %message%',
             'more_info' => 'Follow the action to view more information about the bug.',
         ],
-        'default_bug_title' => 'New bug was found during testing task %id%',
     ],
 ];

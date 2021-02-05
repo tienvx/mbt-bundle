@@ -69,11 +69,7 @@ abstract class HandlerTemplate implements HandlerInterface
                 $this->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
             } else {
-                $bug->getTask()->addBug($this->bugHelper->createBug(
-                    $newSteps,
-                    $throwable->getMessage(),
-                    $bug->getTask()->getId()
-                ));
+                $bug->getTask()->addBug($this->bugHelper->createBug($newSteps, $throwable->getMessage()));
                 $this->entityManager->flush();
             }
         } finally {
