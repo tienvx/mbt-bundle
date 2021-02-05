@@ -4,16 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\Notifier\NotifierInterface;
-use Symfony\Component\Notifier\Recipient\Recipient;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
-use Tienvx\Bundle\MbtBundle\Notification\BugNotification;
 use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
 
 /**
@@ -24,26 +19,19 @@ use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
- * @covers \Tienvx\Bundle\MbtBundle\Notification\BugNotification
  */
 class ReportBugMessageHandlerTest extends TestCase
 {
     protected EntityManagerInterface $entityManager;
-    protected NotifierInterface $notifier;
-    protected TranslatorInterface $translator;
     protected NotifyHelperInterface $notifyHelper;
     protected ReportBugMessageHandler $handler;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->notifier = $this->createMock(NotifierInterface::class);
-        $this->translator = $this->createMock(TranslatorInterface::class);
         $this->notifyHelper = $this->createMock(NotifyHelperInterface::class);
         $this->handler = new ReportBugMessageHandler(
             $this->entityManager,
-            $this->notifier,
-            $this->translator,
             $this->notifyHelper
         );
     }
@@ -71,28 +59,8 @@ class ReportBugMessageHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($bug);
         $this->notifyHelper
             ->expects($this->once())
-            ->method('getBugUrl')
-            ->with($bug)
-            ->willReturn('http://localhost/bug/123');
-        $this->notifyHelper
-            ->expects($this->once())
-            ->method('getFromAddress')
-            ->willReturn(new Address('from@example.com'));
-        $this->translator->expects($this->exactly(3))->method('trans')->withConsecutive(
-            ['mbt.notify.bug_id', ['%id%' => $bug->getId()]],
-            ['mbt.notify.bug_message', ['%message%' => $bug->getMessage()]],
-            ['mbt.notify.more_info']
-        )->willReturnOnConsecutiveCalls(
-            'Bug id',
-            'Bug message',
-            'More info'
-        );
-        $recipient = new Recipient('test@example.com');
-        $this->notifyHelper->expects($this->once())->method('getRecipient')->with(22)->willReturn($recipient);
-        $this->notifier
-            ->expects($this->once())
-            ->method('send')
-            ->with($this->isInstanceOf(BugNotification::class), $recipient);
+            ->method('notify')
+            ->with($bug);
         $message = new ReportBugMessage(123);
         call_user_func($this->handler, $message);
     }

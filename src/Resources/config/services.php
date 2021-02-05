@@ -9,15 +9,8 @@ use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Notifier\NotifierInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
-use Tienvx\Bundle\MbtBundle\Channel\EmailChannel;
-use Tienvx\Bundle\MbtBundle\Channel\NexmoChannel;
-use Tienvx\Bundle\MbtBundle\Channel\SlackChannel;
-use Tienvx\Bundle\MbtBundle\Channel\TelegramChannel;
-use Tienvx\Bundle\MbtBundle\Channel\TwilioChannel;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
@@ -83,17 +76,6 @@ return static function (ContainerConfigurator $container): void {
         ->set(ChannelManager::class)
             ->alias(ChannelManagerInterface::class, ChannelManager::class)
 
-        ->set(EmailChannel::class)
-            ->autoconfigure(true)
-        ->set(NexmoChannel::class)
-            ->autoconfigure(true)
-        ->set(SlackChannel::class)
-            ->autoconfigure(true)
-        ->set(TelegramChannel::class)
-            ->autoconfigure(true)
-        ->set(TwilioChannel::class)
-            ->autoconfigure(true)
-
         ->set(EntitySubscriber::class)
             ->tag('doctrine.event_subscriber')
             ->args([
@@ -154,8 +136,6 @@ return static function (ContainerConfigurator $container): void {
         ->set(ReportBugMessageHandler::class)
             ->args([
                 service(EntityManagerInterface::class),
-                service(NotifierInterface::class),
-                service(TranslatorInterface::class),
                 service(NotifyHelperInterface::class),
             ])
             ->autoconfigure(true)
@@ -270,9 +250,6 @@ return static function (ContainerConfigurator $container): void {
             ->alias(BugProgressInterface::class, BugProgress::class)
 
         ->set(BugHelper::class)
-            ->args([
-                service(TranslatorInterface::class),
-            ])
             ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(TaskHelper::class)
