@@ -1,10 +1,10 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
+namespace Tienvx\Bundle\MbtBundle\Service\Bug;
 
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
-interface NotifyHelperInterface
+interface BugNotifierInterface
 {
     public function notify(BugInterface $bug): void;
 }

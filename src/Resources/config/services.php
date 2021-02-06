@@ -47,6 +47,7 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
@@ -54,7 +55,6 @@ use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
@@ -136,7 +136,7 @@ return static function (ContainerConfigurator $container): void {
         ->set(ReportBugMessageHandler::class)
             ->args([
                 service(EntityManagerInterface::class),
-                service(NotifyHelperInterface::class),
+                service(BugNotifierInterface::class),
             ])
             ->autoconfigure(true)
 

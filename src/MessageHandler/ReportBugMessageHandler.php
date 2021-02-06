@@ -9,14 +9,14 @@ use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 
 class ReportBugMessageHandler implements MessageHandlerInterface
 {
     protected EntityManagerInterface $entityManager;
-    protected NotifyHelperInterface $notifyHelper;
+    protected BugNotifierInterface $notifyHelper;
 
-    public function __construct(EntityManagerInterface $entityManager, NotifyHelperInterface $notifyHelper)
+    public function __construct(EntityManagerInterface $entityManager, BugNotifierInterface $notifyHelper)
     {
         $this->entityManager = $entityManager;
         $this->notifyHelper = $notifyHelper;
