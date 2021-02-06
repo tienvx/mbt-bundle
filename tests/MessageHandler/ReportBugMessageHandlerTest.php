@@ -9,7 +9,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
-use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler
@@ -23,13 +23,13 @@ use Tienvx\Bundle\MbtBundle\Service\NotifyHelperInterface;
 class ReportBugMessageHandlerTest extends TestCase
 {
     protected EntityManagerInterface $entityManager;
-    protected NotifyHelperInterface $notifyHelper;
+    protected BugNotifierInterface $notifyHelper;
     protected ReportBugMessageHandler $handler;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->notifyHelper = $this->createMock(NotifyHelperInterface::class);
+        $this->notifyHelper = $this->createMock(BugNotifierInterface::class);
         $this->handler = new ReportBugMessageHandler(
             $this->entityManager,
             $this->notifyHelper
