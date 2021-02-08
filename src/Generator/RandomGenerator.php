@@ -46,11 +46,8 @@ class RandomGenerator extends AbstractGenerator
         $petrinet = $this->petrinetHelper->build($task->getModelRevision());
         $transition = null;
         $transitionId = $this->modelHelper->getStartTransitionId($task->getModelRevision());
-        $marking = $this->markingHelper->getMarking(
-            $petrinet,
-            $this->modelHelper->getStartPlaceIds($task->getModelRevision())
-        );
-        $places = [];
+        $places = $this->modelHelper->getStartPlaceIds($task->getModelRevision());
+        $marking = $this->markingHelper->getMarking($petrinet, $places);
         $state = new State(
             [$transitionId],
             count($task->getModelRevision()->getPlaces()),
@@ -58,16 +55,17 @@ class RandomGenerator extends AbstractGenerator
         );
 
         while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig())) {
+            if ($transition) {
+                $this->transitionService->fire($transition, $marking);
+                $places = $this->markingHelper->getPlaces($marking);
+            }
+            $this->update($state, $marking, $transitionId);
+
             yield new Step(
                 $places,
                 $marking->getColor(),
                 $transitionId
             );
-
-            if ($transition) {
-                $this->transitionService->fire($transition, $marking);
-            }
-            $this->update($state, $marking, $transitionId);
 
             $transition = $this->nextTransition($petrinet, $marking);
             if (!$transition) {
@@ -75,7 +73,6 @@ class RandomGenerator extends AbstractGenerator
             }
 
             $transitionId = $transition->getId();
-            $places = $this->markingHelper->getPlaces($marking);
         }
     }
 
