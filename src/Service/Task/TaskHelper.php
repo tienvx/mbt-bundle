@@ -57,9 +57,9 @@ class TaskHelper implements TaskHelperInterface
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
-                    $steps[] = clone $step;
                     $task->getProgress()->increase();
                     $this->stepRunner->run($step, $task->getModelRevision(), $driver);
+                    $steps[] = clone $step;
                 }
                 if (count($steps) >= $this->maxSteps) {
                     break;
@@ -68,6 +68,10 @@ class TaskHelper implements TaskHelperInterface
         } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
+            if (isset($step) && $step instanceof StepInterface) {
+                // Last step cause the bug, we can't capture it. We capture it here.
+                $steps[] = clone $step;
+            }
             $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage()));
         } finally {
             $driver->quit();
