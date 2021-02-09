@@ -159,35 +159,4 @@ class HandlerTestCase extends StepsTestCase
         $this->handler->handle($this->bug, 1, 2);
         $this->assertSteps($this->newSteps, $this->bug->getSteps());
     }
-
-    public function testRunFoundDifferentBug(): void
-    {
-        $this->driver->expects($this->once())->method('quit');
-        $this->providerManager
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->task)
-            ->willReturn($this->driver);
-        $this->entityManager->expects($this->never())->method('refresh');
-        $this->entityManager->expects($this->never())->method('lock');
-        $this->entityManager->expects($this->never())->method('transactional');
-        $this->entityManager->expects($this->once())->method('flush');
-        $this->messageBus->expects($this->never())->method('dispatch');
-        $this->stepRunner->expects($this->exactly(4))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
-            ->will($this->onConsecutiveCalls(
-                null,
-                null,
-                null,
-                $this->throwException(new Exception('Something wrong differently')),
-            ));
-        $this->bugHelper
-            ->expects($this->once())
-            ->method('createBug')
-            ->with($this->newSteps, 'Something wrong differently')
-            ->willReturn($bug = new Bug());
-        $this->handler->handle($this->bug, 1, 2);
-        $this->assertCount(2, $this->bug->getTask()->getBugs());
-        $this->assertSame($bug, $this->bug->getTask()->getBugs()->get(1));
-    }
 }

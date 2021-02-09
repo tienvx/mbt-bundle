@@ -68,9 +68,6 @@ abstract class HandlerTemplate implements HandlerInterface
             if ($throwable->getMessage() === $bug->getMessage()) {
                 $this->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
-            } else {
-                $bug->getTask()->addBug($this->bugHelper->createBug($newSteps, $throwable->getMessage()));
-                $this->entityManager->flush();
             }
         } finally {
             $driver->quit();
