@@ -17,15 +17,9 @@ class Task implements TaskInterface
     protected bool $running = false;
     protected SeleniumConfigInterface $seleniumConfig;
     protected TaskConfigInterface $taskConfig;
-    protected ProgressInterface $progress;
     protected Collection $bugs;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
-
-    public function __construct()
-    {
-        $this->progress = new Progress();
-    }
 
     public function setId(int $id)
     {
@@ -95,16 +89,6 @@ class Task implements TaskInterface
     public function setTaskConfig(TaskConfigInterface $taskConfig): void
     {
         $this->taskConfig = $taskConfig;
-    }
-
-    public function getProgress(): ProgressInterface
-    {
-        return $this->progress;
-    }
-
-    public function setProgress(ProgressInterface $progress): void
-    {
-        $this->progress = $progress;
     }
 
     /**

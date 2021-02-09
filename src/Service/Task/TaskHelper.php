@@ -57,7 +57,6 @@ class TaskHelper implements TaskHelperInterface
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
-                    $task->getProgress()->increase();
                     $this->stepRunner->run($step, $task->getModelRevision(), $driver);
                     $steps[] = clone $step;
                 }
@@ -96,8 +95,6 @@ class TaskHelper implements TaskHelperInterface
             throw new RuntimeException(sprintf('Task %d is already running', $task->getId()));
         } else {
             $task->setRunning(true);
-            $task->getProgress()->setProcessed(0);
-            $task->getProgress()->setTotal($this->maxSteps);
             $this->entityManager->flush();
         }
     }
@@ -105,7 +102,6 @@ class TaskHelper implements TaskHelperInterface
     protected function stopRunning(TaskInterface $task, int $stepsCount): void
     {
         $task->setRunning(false);
-        $task->getProgress()->setTotal($stepsCount);
         // Running task take long time. Reconnect to flush changes.
         $this->entityManager->getConnection()->connect();
         $this->entityManager->flush();

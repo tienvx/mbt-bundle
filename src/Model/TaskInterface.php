@@ -38,10 +38,6 @@ interface TaskInterface
 
     public function setTaskConfig(TaskConfigInterface $taskConfig): void;
 
-    public function getProgress(): ProgressInterface;
-
-    public function setProgress(ProgressInterface $progress): void;
-
     public function getBugs(): Collection;
 
     public function addBug(BugInterface $bug): void;

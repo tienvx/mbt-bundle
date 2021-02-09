@@ -9,7 +9,6 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
-use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -33,7 +32,6 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
  */
 class TaskHelperTest extends StepsTestCase
 {
@@ -96,7 +94,6 @@ class TaskHelperTest extends StepsTestCase
         $task->setRunning(false);
         $task->setModelRevision($revision);
         $task->getTaskConfig()->setGenerator('random');
-        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -113,8 +110,7 @@ class TaskHelperTest extends StepsTestCase
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->entityManager->expects($this->never())->method('persist');
         $this->taskHelper->run(123);
-        $this->assertSame(4, $task->getProgress()->getProcessed());
-        $this->assertSame(4, $task->getProgress()->getTotal());
+        $this->assertFalse($task->isRunning());
     }
 
     public function testRunFoundBug(): void
@@ -125,7 +121,6 @@ class TaskHelperTest extends StepsTestCase
         $task->setRunning(false);
         $task->setModelRevision($revision);
         $task->getTaskConfig()->setGenerator('random');
-        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -152,8 +147,7 @@ class TaskHelperTest extends StepsTestCase
             ->willReturn($bug = new Bug());
 
         $this->taskHelper->run(123);
-        $this->assertSame(3, $task->getProgress()->getProcessed());
-        $this->assertSame(3, $task->getProgress()->getTotal());
+        $this->assertFalse($task->isRunning());
         $this->assertSame([$bug], $task->getBugs()->toArray());
     }
 
@@ -165,7 +159,6 @@ class TaskHelperTest extends StepsTestCase
         $task->setRunning(false);
         $task->setModelRevision($revision);
         $task->getTaskConfig()->setGenerator('random');
-        $task->setProgress(new Progress());
         $generator = $this->createMock(GeneratorInterface::class);
         $generator->expects($this->once())->method('generate')->with($task)->willReturnCallback(
             fn () => yield from $this->steps
@@ -182,7 +175,6 @@ class TaskHelperTest extends StepsTestCase
         $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->entityManager->expects($this->never())->method('persist');
         $this->taskHelper->run(123);
-        $this->assertSame(2, $task->getProgress()->getProcessed());
-        $this->assertSame(2, $task->getProgress()->getTotal());
+        $this->assertFalse($task->isRunning());
     }
 }
