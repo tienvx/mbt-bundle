@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
-use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
 use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
@@ -64,11 +63,6 @@ class Task extends TaskModel
     protected TaskConfigInterface $taskConfig;
 
     /**
-     * @ORM\Embedded(class="Progress")
-     */
-    protected ProgressInterface $progress;
-
-    /**
      * @ORM\OneToMany(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Bug", mappedBy="task", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
@@ -86,8 +80,6 @@ class Task extends TaskModel
 
     public function __construct()
     {
-        parent::__construct();
-        $this->progress = new Progress();
         $this->seleniumConfig = new SeleniumConfig();
         $this->taskConfig = new TaskConfig();
         $this->bugs = new ArrayCollection();
