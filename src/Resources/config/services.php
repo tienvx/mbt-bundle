@@ -108,35 +108,25 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(RecordVideoMessageHandler::class)
             ->args([
-                service(ProviderManager::class),
-                service(EntityManagerInterface::class),
-                service(StepRunnerInterface::class),
-                service(MessageBusInterface::class),
+                service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
 
         ->set(ReduceBugMessageHandler::class)
             ->args([
-                service(ReducerManager::class),
-                service(EntityManagerInterface::class),
-                service(MessageBusInterface::class),
-                service(BugProgressInterface::class),
+                service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
 
         ->set(ReduceStepsMessageHandler::class)
             ->args([
-                service(ReducerManager::class),
-                service(EntityManagerInterface::class),
-                service(MessageBusInterface::class),
-                service(BugProgressInterface::class),
+                service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
 
         ->set(ReportBugMessageHandler::class)
             ->args([
-                service(EntityManagerInterface::class),
-                service(BugNotifierInterface::class),
+                service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
 
@@ -250,6 +240,15 @@ return static function (ContainerConfigurator $container): void {
             ->alias(BugProgressInterface::class, BugProgress::class)
 
         ->set(BugHelper::class)
+            ->args([
+                service(ReducerManager::class),
+                service(EntityManagerInterface::class),
+                service(MessageBusInterface::class),
+                service(BugProgressInterface::class),
+                service(BugNotifierInterface::class),
+                service(ProviderManager::class),
+                service(StepRunnerInterface::class),
+            ])
             ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(TaskHelper::class)
