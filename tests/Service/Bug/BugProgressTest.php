@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Service;
+namespace Tienvx\Bundle\MbtBundle\Tests\Service\Bug;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,6 +29,7 @@ class BugProgressTest extends TestCase
         $progress->setProcessed(5);
         $this->bug = new Bug();
         $this->bug->setProgress($progress);
+        $this->bug->setReducing(true);
     }
 
     public function testIncreaseProcessed(): void
@@ -47,6 +48,7 @@ class BugProgressTest extends TestCase
         $bugProgress->increaseProcessed($this->bug, 2);
         $this->assertSame(7, $this->bug->getProgress()->getProcessed());
         $this->assertSame(10, $this->bug->getProgress()->getTotal());
+        $this->assertTrue($this->bug->isReducing());
     }
 
     public function testIncreaseProcessedReachLimit(): void
@@ -65,6 +67,7 @@ class BugProgressTest extends TestCase
         $bugProgress->increaseProcessed($this->bug, 6);
         $this->assertSame(10, $this->bug->getProgress()->getProcessed());
         $this->assertSame(10, $this->bug->getProgress()->getTotal());
+        $this->assertFalse($this->bug->isReducing());
     }
 
     public function testIncreaseTotal(): void
@@ -83,5 +86,6 @@ class BugProgressTest extends TestCase
         $bugProgress->increaseTotal($this->bug, 3);
         $this->assertSame(5, $this->bug->getProgress()->getProcessed());
         $this->assertSame(13, $this->bug->getProgress()->getTotal());
+        $this->assertTrue($this->bug->isReducing());
     }
 }

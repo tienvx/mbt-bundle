@@ -158,5 +158,8 @@ class HandlerTestCase extends StepsTestCase
             ));
         $this->handler->handle($this->bug, 1, 2);
         $this->assertSteps($this->newSteps, $this->bug->getSteps());
+        $this->assertFalse($this->bug->isReducing());
+        $this->assertSame(0, $this->bug->getProgress()->getProcessed());
+        $this->assertSame(0, $this->bug->getProgress()->getTotal());
     }
 }
