@@ -74,7 +74,7 @@ class TaskHelper implements TaskHelperInterface
             $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage()));
         } finally {
             $driver->quit();
-            $this->stopRunning($task, count($steps));
+            $this->stopRunning($task);
         }
     }
 
@@ -99,7 +99,7 @@ class TaskHelper implements TaskHelperInterface
         }
     }
 
-    protected function stopRunning(TaskInterface $task, int $stepsCount): void
+    protected function stopRunning(TaskInterface $task): void
     {
         $task->setRunning(false);
         // Running task take long time. Reconnect to flush changes.
