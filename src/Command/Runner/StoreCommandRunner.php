@@ -34,7 +34,15 @@ class StoreCommandRunner extends CommandRunner
 
     public function getCommandsRequireTarget(): array
     {
-        return $this->getAllCommands();
+        return [
+            self::STORE_ATTRIBUTE,
+            self::STORE_ELEMENT_COUNT,
+            self::STORE_JSON,
+            self::STORE_TEXT,
+            self::STORE_TITLE,
+            self::STORE_VALUE,
+            self::STORE_WINDOW_HANDLE,
+        ];
     }
 
     public function getCommandsRequireValue(): array
