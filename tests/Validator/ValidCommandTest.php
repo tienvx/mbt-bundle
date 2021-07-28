@@ -12,7 +12,7 @@ class ValidCommandTest extends TestCase
 {
     public function testGetTargets(): void
     {
-        $taskConfig = new ValidCommand();
-        $this->assertSame('class', $taskConfig->getTargets());
+        $constraint = new ValidCommand();
+        $this->assertSame('class', $constraint->getTargets());
     }
 }

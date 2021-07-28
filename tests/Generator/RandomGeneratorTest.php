@@ -24,7 +24,6 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
@@ -87,45 +86,8 @@ class RandomGeneratorTest extends TestCase
         $this->assertSame('random', RandomGenerator::getName());
     }
 
-    /**
-     * @dataProvider configValidationProvider
-     */
-    public function testValidate(array $config, bool $valid)
+    public function testGenerate(): void
     {
-        $this->assertSame($valid, $this->generator->validate($config));
-    }
-
-    /**
-     * @dataProvider configProvider
-     */
-    public function testGenerate(array $config, int $stepsCount): void
-    {
-        $this->task->getTaskConfig()->setGeneratorConfig($config);
-        $this->assertCount($stepsCount, $this->generator->generate($this->task));
-    }
-
-    public function configValidationProvider(): array
-    {
-        return [
-            [[], false],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 55], false],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 55.7], false],
-            [[RandomGenerator::MAX_TRANSITION_COVERAGE => 66], false],
-            [[RandomGenerator::MAX_TRANSITION_COVERAGE => 66.8], false],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 100.1, RandomGenerator::MAX_TRANSITION_COVERAGE => 101.2], false],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 55.7, RandomGenerator::MAX_TRANSITION_COVERAGE => 66.8], true],
-        ];
-    }
-
-    public function configProvider(): array
-    {
-        return [
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 0, RandomGenerator::MAX_TRANSITION_COVERAGE => 0], 0],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 0.1, RandomGenerator::MAX_TRANSITION_COVERAGE => 0.1], 1],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 33, RandomGenerator::MAX_TRANSITION_COVERAGE => 33], 1],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 34, RandomGenerator::MAX_TRANSITION_COVERAGE => 34], 2],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 66.0, RandomGenerator::MAX_TRANSITION_COVERAGE => 56.0], 2],
-            [[RandomGenerator::MAX_PLACE_COVERAGE => 70.0, RandomGenerator::MAX_TRANSITION_COVERAGE => 67.0], 3],
-        ];
+        $this->assertCount(3, $this->generator->generate($this->task));
     }
 }

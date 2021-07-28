@@ -12,8 +12,9 @@ use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 class BugHelper implements BugHelperInterface
@@ -23,8 +24,9 @@ class BugHelper implements BugHelperInterface
     protected MessageBusInterface $messageBus;
     protected BugProgressInterface $bugProgress;
     protected BugNotifierInterface $notifyHelper;
-    protected ProviderManager $providerManager;
     protected StepRunnerInterface $stepRunner;
+    protected SelenoidHelperInterface $selenoidHelper;
+    protected ConfigInterface $config;
 
     public function __construct(
         ReducerManagerInterface $reducerManager,
@@ -32,16 +34,18 @@ class BugHelper implements BugHelperInterface
         MessageBusInterface $messageBus,
         BugProgressInterface $bugProgress,
         BugNotifierInterface $notifyHelper,
-        ProviderManager $providerManager,
-        StepRunnerInterface $stepRunner
+        StepRunnerInterface $stepRunner,
+        SelenoidHelperInterface $selenoidHelper,
+        ConfigInterface $config
     ) {
         $this->reducerManager = $reducerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
         $this->bugProgress = $bugProgress;
         $this->notifyHelper = $notifyHelper;
-        $this->providerManager = $providerManager;
         $this->stepRunner = $stepRunner;
+        $this->selenoidHelper = $selenoidHelper;
+        $this->config = $config;
     }
 
     public function reduceBug(int $bugId): void
@@ -49,7 +53,7 @@ class BugHelper implements BugHelperInterface
         $bug = $this->getBug($bugId, 'reduce bug');
         $this->startReducing($bug);
 
-        $reducer = $this->reducerManager->getReducer($bug->getTask()->getTaskConfig()->getReducer());
+        $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
             $this->stopReducing($bug);
@@ -69,13 +73,13 @@ class BugHelper implements BugHelperInterface
             return;
         }
 
-        $reducer = $this->reducerManager->getReducer($bug->getTask()->getTaskConfig()->getReducer());
+        $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $reducer->handle($bug, $from, $to);
 
         $this->bugProgress->increaseProcessed($bug, 1);
         if (!$bug->isReducing()) {
             $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
-            if ($bug->getTask()->getTaskConfig()->getNotifyChannels()) {
+            if ($this->config->getNotifyChannels()) {
                 $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
             }
         }
@@ -85,15 +89,20 @@ class BugHelper implements BugHelperInterface
     {
         $bug = $this->getBug($bugId, 'report bug');
 
-        if ($bug->getTask()->getTaskConfig()->getNotifyChannels()) {
+        if ($this->config->getNotifyChannels()) {
             $this->notifyHelper->notify($bug);
         }
     }
 
+    /**
+     * @param int $bugId
+     *
+     * @throws ExceptionInterface
+     */
     public function recordVideo(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'record video for bug');
-        $driver = $this->providerManager->createDriver($bug->getTask(), $bug->getId());
+        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug->getTask(), $bug->getId()));
         try {
             foreach ($bug->getSteps() as $step) {
                 $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);

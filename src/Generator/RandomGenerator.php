@@ -16,8 +16,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 class RandomGenerator extends AbstractGenerator
 {
-    public const MAX_TRANSITION_COVERAGE = 'maxTransitionCoverage';
-    public const MAX_PLACE_COVERAGE = 'maxPlaceCoverage';
+    public const MAX_TRANSITION_COVERAGE = 100;
+    public const MAX_PLACE_COVERAGE = 100;
 
     protected PetrinetHelperInterface $petrinetHelper;
     protected MarkingHelperInterface $markingHelper;
@@ -54,7 +54,7 @@ class RandomGenerator extends AbstractGenerator
             count($task->getModelRevision()->getTransitions())
         );
 
-        while ($this->canContinue($state, $task->getTaskConfig()->getGeneratorConfig())) {
+        while ($this->canContinue($state)) {
             if ($transition) {
                 $this->transitionService->fire($transition, $marking);
                 $places = $this->markingHelper->getPlaces($marking);
@@ -76,24 +76,11 @@ class RandomGenerator extends AbstractGenerator
         }
     }
 
-    public function validate(array $config): bool
+    protected function canContinue(StateInterface $state): bool
     {
-        $maxPlaceCoverage = $config[static::MAX_PLACE_COVERAGE] ?? null;
-        $maxTransitionCoverage = $config[static::MAX_TRANSITION_COVERAGE] ?? null;
-
         return
-            is_float($maxPlaceCoverage) && $maxPlaceCoverage <= 100
-            && is_float($maxTransitionCoverage) && $maxTransitionCoverage <= 100;
-    }
-
-    protected function canContinue(StateInterface $state, array $config): bool
-    {
-        $maxPlaceCoverage = $config[static::MAX_PLACE_COVERAGE] ?? 100;
-        $maxTransitionCoverage = $config[static::MAX_TRANSITION_COVERAGE] ?? 100;
-
-        return
-            $state->getTransitionCoverage() < $maxTransitionCoverage
-            || $state->getPlaceCoverage() < $maxPlaceCoverage
+            $state->getTransitionCoverage() < static::MAX_TRANSITION_COVERAGE
+            || $state->getPlaceCoverage() < static::MAX_PLACE_COVERAGE
         ;
     }
 

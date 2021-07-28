@@ -5,8 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
-use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
-use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 class Task implements TaskInterface
 {
@@ -15,8 +13,8 @@ class Task implements TaskInterface
     protected RevisionInterface $modelRevision;
     protected ?int $author = null;
     protected bool $running = false;
-    protected SeleniumConfigInterface $seleniumConfig;
-    protected TaskConfigInterface $taskConfig;
+    protected string $browser = '';
+    protected string $browserVersion = '';
     protected Collection $bugs;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
@@ -71,24 +69,24 @@ class Task implements TaskInterface
         $this->running = $running;
     }
 
-    public function getSeleniumConfig(): SeleniumConfigInterface
+    public function getBrowser(): string
     {
-        return $this->seleniumConfig;
+        return $this->browser;
     }
 
-    public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void
+    public function setBrowser(string $browser): void
     {
-        $this->seleniumConfig = $seleniumConfig;
+        $this->browser = $browser;
     }
 
-    public function getTaskConfig(): TaskConfigInterface
+    public function getBrowserVersion(): string
     {
-        return $this->taskConfig;
+        return $this->browserVersion;
     }
 
-    public function setTaskConfig(TaskConfigInterface $taskConfig): void
+    public function setBrowserVersion(string $browserVersion): void
     {
-        $this->taskConfig = $taskConfig;
+        $this->browserVersion = $browserVersion;
     }
 
     /**

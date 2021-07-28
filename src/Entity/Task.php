@@ -8,12 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
-use Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
-use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
-use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 /**
  * @ORM\Entity
@@ -51,16 +47,16 @@ class Task extends TaskModel
     protected bool $running = false;
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
      */
-    protected SeleniumConfigInterface $seleniumConfig;
+    protected string $browser = '';
 
     /**
-     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\TaskConfig")
-     * @Assert\Valid
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank
      */
-    protected TaskConfigInterface $taskConfig;
+    protected string $browserVersion = '';
 
     /**
      * @ORM\OneToMany(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Bug", mappedBy="task", cascade={"persist"})
@@ -80,8 +76,6 @@ class Task extends TaskModel
 
     public function __construct()
     {
-        $this->seleniumConfig = new SeleniumConfig();
-        $this->taskConfig = new TaskConfig();
         $this->bugs = new ArrayCollection();
     }
 

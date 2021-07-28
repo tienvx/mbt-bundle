@@ -11,36 +11,34 @@ use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 class TaskHelper implements TaskHelperInterface
 {
     protected GeneratorManagerInterface $generatorManager;
-    protected ProviderManagerInterface $providerManager;
     protected EntityManagerInterface $entityManager;
     protected StepRunnerInterface $stepRunner;
     protected BugHelperInterface $bugHelper;
-    protected int $maxSteps;
+    protected SelenoidHelperInterface $selenoidHelper;
+    protected ConfigInterface $config;
 
     public function __construct(
         GeneratorManagerInterface $generatorManager,
-        ProviderManagerInterface $providerManager,
         EntityManagerInterface $entityManager,
         StepRunnerInterface $stepRunner,
-        BugHelperInterface $bugHelper
+        BugHelperInterface $bugHelper,
+        SelenoidHelperInterface $selenoidHelper,
+        ConfigInterface $config
     ) {
         $this->generatorManager = $generatorManager;
-        $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->stepRunner = $stepRunner;
         $this->bugHelper = $bugHelper;
-    }
-
-    public function setMaxSteps(int $maxSteps): void
-    {
-        $this->maxSteps = $maxSteps;
+        $this->selenoidHelper = $selenoidHelper;
+        $this->config = $config;
     }
 
     /**
@@ -52,15 +50,15 @@ class TaskHelper implements TaskHelperInterface
         $this->startRunning($task);
 
         $steps = [];
-        $generator = $this->generatorManager->getGenerator($task->getTaskConfig()->getGenerator());
-        $driver = $this->providerManager->createDriver($task);
+        $generator = $this->generatorManager->getGenerator($this->config->getGenerator());
+        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($task));
         try {
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
                     $this->stepRunner->run($step, $task->getModelRevision(), $driver);
                     $steps[] = clone $step;
                 }
-                if (count($steps) >= $this->maxSteps) {
+                if (count($steps) >= $this->config->getMaxSteps()) {
                     break;
                 }
             }

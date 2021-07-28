@@ -5,12 +5,11 @@ namespace Tienvx\Bundle\MbtBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Configuration;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
-use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Config;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension
@@ -18,47 +17,42 @@ use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Config;
  */
 class TienvxMbtExtensionTest extends TestCase
 {
-    /**
-     * @dataProvider missingConfigProvider
-     */
-    public function testExceptionMissingSeleniumServer(string $missingConfig): void
+    protected const CONFIGS = [[
+        Configuration::SELENOID_SERVER => 'http://localhost:4444',
+    ]];
+
+    protected ContainerBuilder $container;
+    protected TienvxMbtExtension $loader;
+
+    protected function setUp(): void
+    {
+        $this->container = new ContainerBuilder();
+        $this->loader = new TienvxMbtExtension();
+    }
+
+    public function testExceptionMissingSeleniumServer(): void
     {
         $this->expectException(InvalidConfigurationException::class);
         $loader = new TienvxMbtExtension();
-        $config = Config::DEFAULT_CONFIG;
-        unset($config[$missingConfig]);
-        $loader->load([$config], new ContainerBuilder());
-    }
-
-    public function missingConfigProvider(): array
-    {
-        return [
-            [Configuration::MAX_STEPS],
-        ];
+        $loader->load([], new ContainerBuilder());
     }
 
     public function testUpdateServiceDefinitions(): void
     {
-        $container = new ContainerBuilder();
-        $loader = new TienvxMbtExtension();
-        $config = Config::DEFAULT_CONFIG;
-        $loader->load([$config], $container);
+        $this->loader->load(static::CONFIGS, $this->container);
         $this->assertSame([
-            ['setConfig', [$config[Configuration::PROVIDERS]]],
-        ], $container->findDefinition(ProviderManager::class)->getMethodCalls());
-        $this->assertSame([
-            ['setMaxSteps', [$config[Configuration::MAX_STEPS]]],
-        ], $container->findDefinition(TaskHelperInterface::class)->getMethodCalls());
+            ['setSelenoidServer', [static::CONFIGS[0][Configuration::SELENOID_SERVER]]],
+        ], $this->container->findDefinition(SelenoidHelperInterface::class)->getMethodCalls());
     }
 
     public function testRegisterForAutoconfiguration(): void
     {
-        $container = new ContainerBuilder();
-        $loader = new TienvxMbtExtension();
-        $config = Config::DEFAULT_CONFIG;
-        $loader->load([$config], $container);
-        $autoConfigured = $container->getAutoconfiguredInstanceof()[PluginInterface::class];
-        $this->assertTrue($autoConfigured->hasTag(PluginInterface::TAG));
-        $this->assertTrue($autoConfigured->isLazy());
+        $this->loader->load(static::CONFIGS, $this->container);
+        $interfaces = [PluginInterface::class, CommandRunnerInterface::class];
+        foreach ($interfaces as $interface) {
+            $autoConfigured = $this->container->getAutoconfiguredInstanceof()[$interface];
+            $this->assertTrue($autoConfigured->hasTag($interface));
+            $this->assertTrue($autoConfigured->isLazy());
+        }
     }
 }
