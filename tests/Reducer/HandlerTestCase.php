@@ -95,8 +95,16 @@ class HandlerTestCase extends StepsTestCase
     public function testRun(): void
     {
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner->expects($this->exactly(4))
             ->method('run')->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
         $this->handler->handle($this->bug, 1, 2);
@@ -105,8 +113,16 @@ class HandlerTestCase extends StepsTestCase
     public function testRunIntoException(): void
     {
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner->expects($this->exactly(4))->method('run')
             ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->will($this->onConsecutiveCalls(
@@ -123,8 +139,16 @@ class HandlerTestCase extends StepsTestCase
     public function testRunFoundSameBug(): void
     {
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
         $this->entityManager
             ->expects($this->once())

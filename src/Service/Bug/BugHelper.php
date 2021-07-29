@@ -95,14 +95,14 @@ class BugHelper implements BugHelperInterface
     }
 
     /**
-     * @param int $bugId
-     *
      * @throws ExceptionInterface
      */
     public function recordVideo(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'record video for bug');
-        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug->getTask(), $bug->getId()));
+        $driver = $this->selenoidHelper->createDriver(
+            $this->selenoidHelper->getCapabilities($bug->getTask(), $bug->getId())
+        );
         try {
             foreach ($bug->getSteps() as $step) {
                 $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);

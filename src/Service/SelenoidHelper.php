@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;

@@ -295,8 +295,16 @@ class BugHelperTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Exception that we care about');
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task, 123)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->once())
             ->method('run')
@@ -309,8 +317,16 @@ class BugHelperTest extends TestCase
     public function testRecordVideoNotThrowException(): void
     {
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task, 123)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->exactly(2))
             ->method('run')
@@ -326,8 +342,16 @@ class BugHelperTest extends TestCase
     public function testRecordVideo(): void
     {
         $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper->expects($this->once())->method('getCapabilities')->with($this->task, 123)->willReturn($this->capabilities);
-        $this->selenoidHelper->expects($this->once())->method('createDriver')->with($this->capabilities)->willReturn($this->driver);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriver')
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->exactly(3))
             ->method('run')

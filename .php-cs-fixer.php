@@ -5,14 +5,14 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__.'/tests')
 ;
 
-return PhpCsFixer\Config::create()
+$config = new PhpCsFixer\Config();
+
+return $config
     ->setRules([
-        '@PSR2' => true,
+        '@PSR12' => true,
         '@Symfony' => true,
         'concat_space' => ['spacing' => 'one'],
         'single_line_throw' => false,
-        'class_definition' => ['single_line' => false],
-        'single_space_after_construct' => false,
     ])
     ->setUsingCache(false)
     ->setFinder($finder)
