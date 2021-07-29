@@ -9,9 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.

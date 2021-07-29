@@ -131,12 +131,12 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(RandomHandler::class)
             ->args([
-                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
                 service(BugHelperInterface::class),
+                service(SelenoidHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -150,12 +150,12 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(SplitHandler::class)
             ->args([
-                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
                 service(BugHelperInterface::class),
+                service(SelenoidHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
