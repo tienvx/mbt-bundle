@@ -2,10 +2,11 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Bug;
 
+use JMGQ\AStar\Node\NodeIdentifierInterface;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorInterface;
 
-class Step implements StepInterface
+class Step implements StepInterface, NodeIdentifierInterface
 {
     protected ColorInterface $color;
     protected array $places;
@@ -37,6 +38,19 @@ class Step implements StepInterface
     public function __clone()
     {
         $this->color = clone $this->color;
+    }
+
+    public function getUniqueNodeId(): string
+    {
+        $places = $this->places;
+        ksort($places);
+        $colorValues = $this->color->getValues();
+        ksort($colorValues);
+
+        return md5(serialize([
+            'places' => $places,
+            'color' => $colorValues,
+        ]));
     }
 
     public function setColor(ColorInterface $color): void

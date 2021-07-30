@@ -8,8 +8,8 @@ use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
-use Tienvx\Bundle\MbtBundle\Model\Search\Node;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
+use Tienvx\Bundle\MbtBundle\Service\AStar\Node;
 use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
@@ -17,7 +17,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\AStarStrategy
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Search\Node
+ * @covers \Tienvx\Bundle\MbtBundle\Service\AStar\Node
  */
 class AStarStrategyTest extends TestCase
 {
@@ -32,7 +32,7 @@ class AStarStrategyTest extends TestCase
         ];
         $transitionService = $this->createMock(GuardedTransitionServiceInterface::class);
         $markingHelper = $this->createMock(MarkingHelperInterface::class);
-        $aStar = $this->createMock(AStar::class);
+        $aStar = $this->createMock(PetrinetDomainLogic::class);
         $aStar
             ->expects($this->once())
             ->method('run')

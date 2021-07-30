@@ -13,14 +13,14 @@ use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Tienvx\Bundle\MbtBundle\Model\Search\AStar;
-use Tienvx\Bundle\MbtBundle\Model\Search\Node;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
+use Tienvx\Bundle\MbtBundle\Service\AStar\Node;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Model\Search\AStar
- * @covers \Tienvx\Bundle\MbtBundle\Model\Search\Node
+ * @covers \Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic
+ * @covers \Tienvx\Bundle\MbtBundle\Service\AStar\Node
  * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
  */
@@ -40,7 +40,7 @@ class AStarTest extends TestCase
     protected TransitionInterface $addFirstProduct;
     protected TransitionInterface $addMoreProduct;
     protected TransitionInterface $updateCart;
-    protected AStar $aStar;
+    protected PetrinetDomainLogic $aStar;
 
     protected function setUp(): void
     {
@@ -111,7 +111,7 @@ class AStarTest extends TestCase
 
     protected function initAstar(): void
     {
-        $this->aStar = new AStar();
+        $this->aStar = new PetrinetDomainLogic();
         $this->aStar->setTransitionService($this->transitionService);
         $this->aStar->setMarkingHelper($this->markingHelper);
         $this->aStar->setPetrinet($this->petrinet);

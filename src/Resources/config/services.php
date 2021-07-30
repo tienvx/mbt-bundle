@@ -41,7 +41,8 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
-use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
@@ -60,7 +61,6 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
@@ -245,16 +245,16 @@ return static function (ContainerConfigurator $container): void {
         ->set(ShortestPathStepsBuilder::class)
             ->args([
                 service(PetrinetHelperInterface::class),
-                service(ShortestPathStrategyInterface::class),
+                service(PetrinetDomainLogicInterface::class),
             ])
             ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
 
-        ->set(AStarStrategy::class)
+        ->set(PetrinetDomainLogic::class)
             ->args([
                 service(GuardedTransitionServiceInterface::class),
                 service(MarkingHelperInterface::class),
             ])
-            ->alias(ShortestPathStrategyInterface::class, AStarStrategy::class)
+            ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
 
         ->set(StepRunner::class)
             ->args([

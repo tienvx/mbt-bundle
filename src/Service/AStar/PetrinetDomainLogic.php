@@ -1,71 +1,62 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Model\Search;
+namespace Tienvx\Bundle\MbtBundle\Service\AStar;
 
-use Exception;
-use JMGQ\AStar\AStar as AbstractAStar;
-use JMGQ\AStar\Node as NodeInterface;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
+use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
-class AStar extends AbstractAStar
+class PetrinetDomainLogic implements PetrinetDomainLogicInterface
 {
     protected GuardedTransitionServiceInterface $transitionService;
     protected MarkingHelperInterface $markingHelper;
-    protected PetrinetInterface $petrinet;
+    protected ?PetrinetInterface $petrinet = null;
 
-    public function setTransitionService(GuardedTransitionServiceInterface $transitionService): void
-    {
+    public function __construct(
+        GuardedTransitionServiceInterface $transitionService,
+        MarkingHelperInterface $markingHelper
+    ) {
         $this->transitionService = $transitionService;
-    }
-
-    public function setMarkingHelper(MarkingHelperInterface $markingHelper): void
-    {
         $this->markingHelper = $markingHelper;
     }
 
-    public function setPetrinet(PetrinetInterface $petrinet): void
+    public function setPetrinet(?PetrinetInterface $petrinet): void
     {
         $this->petrinet = $petrinet;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function calculateEstimatedCost(NodeInterface $start, NodeInterface $end): float
+    public function calculateEstimatedCost(mixed $fromNode, mixed $toNode): float
     {
-        if (!$start instanceof Node || !$end instanceof Node) {
+        if (!$fromNode instanceof Step || !$toNode instanceof Step) {
             throw new RuntimeException('The provided nodes are invalid');
         }
 
         $tokensDiff = [];
-        foreach ($end->getPlaces() as $place => $tokens) {
-            $tokensDiff[$place] = abs($tokens - ($start->getPlaces()[$place] ?? 0));
+        foreach ($toNode->getPlaces() as $place => $tokens) {
+            $tokensDiff[$place] = abs($tokens - ($fromNode->getPlaces()[$place] ?? 0));
         }
         // Estimate it will took N transitions to move N tokens if color is the same, twice if color is not the same.
-        return array_sum($tokensDiff) * (($start->getColor()->getValues() != $end->getColor()->getValues()) + 1);
+        return array_sum($tokensDiff) * (($fromNode->getColor()->getValues() != $toNode->getColor()->getValues()) + 1);
     }
 
-    /**
-     * @return int
-     */
-    public function calculateRealCost(NodeInterface $node, NodeInterface $adjacent)
+    public function calculateRealCost(mixed $node, mixed $adjacent): float|int
     {
         // It only took 1 transition move N tokens from a node to adjacent node.
         return 1;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function generateAdjacentNodes(NodeInterface $node): array
+    public function getAdjacentNodes(mixed $node): iterable
     {
-        if (!$node instanceof Node) {
+        if (!$node instanceof Step) {
             throw new RuntimeException('The provided node is invalid');
+        }
+
+        if (!$this->petrinet instanceof PetrinetInterface) {
+            throw new RuntimeException('Petrinet is required');
         }
 
         $adjacents = [];
@@ -75,7 +66,7 @@ class AStar extends AbstractAStar
             $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
             if ($transition instanceof TransitionInterface && $marking instanceof ColorfulMarkingInterface) {
                 $this->transitionService->fire($transition, $marking);
-                $adjacents[] = new Node(
+                $adjacents[] = new Step(
                     $this->markingHelper->getPlaces($marking),
                     $marking->getColor(),
                     $transition->getId()

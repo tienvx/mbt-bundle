@@ -100,7 +100,6 @@ class BugHelperTest extends TestCase
             $this->createMock(StepInterface::class),
         ]);
         $this->bug->setReducing(false);
-        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->capabilities = new DesiredCapabilities();
     }
@@ -131,6 +130,7 @@ class BugHelperTest extends TestCase
     {
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(5);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
@@ -144,6 +144,7 @@ class BugHelperTest extends TestCase
     {
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(0);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(2))
@@ -216,6 +217,7 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
@@ -237,6 +239,7 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(1))
@@ -260,6 +263,7 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(2))
