@@ -4,14 +4,14 @@ This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Te
 
 ## Requirements
 
-* PHP 7.4, 8.0
-* Symfony 5.2
+* PHP 8.0
+* Symfony 5.3
 * See also the `require` section of [composer.json](composer.json)
 
 ## Installation
 
 ```shell
-composer require tienvx/mbt-bundle "^2.0"
+composer require tienvx/mbt-bundle "^3.0"
 ```
 
 ## Testing
