@@ -30,7 +30,7 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
     public function create(BugInterface $bug, int $from, int $to): Generator
     {
         foreach ($bug->getSteps() as $index => $step) {
-            if ($index <= $from) {
+            if ($index < $from) {
                 yield $step;
             }
         }
@@ -55,7 +55,7 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
 
         $this->petrinetDomainLogic->setPetrinet($this->petrinetHelper->build($bug->getTask()->getModelRevision()));
 
-        yield from (new AStar($this->petrinetDomainLogic))->run($from, $to);
+        yield from (new AStar($this->petrinetDomainLogic))->run($fromStep, $toStep);
 
         $this->petrinetDomainLogic->setPetrinet(null);
     }
