@@ -79,7 +79,7 @@ class BugHelper implements BugHelperInterface
         $this->bugProgress->increaseProcessed($bug, 1);
         if (!$bug->isReducing()) {
             $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
-            if ($this->config->getNotifyChannels()) {
+            if ($this->config->shouldReportBug()) {
                 $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
             }
         }
@@ -88,10 +88,7 @@ class BugHelper implements BugHelperInterface
     public function reportBug(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'report bug');
-
-        if ($this->config->getNotifyChannels()) {
-            $this->notifyHelper->notify($bug);
-        }
+        $this->notifyHelper->notify($bug);
     }
 
     /**

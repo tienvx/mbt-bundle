@@ -8,9 +8,7 @@ interface ConfigInterface
 
     public function getReducer(): string;
 
-    public function shouldNotifyAuthor(): bool;
-
-    public function getNotifyChannels(): array;
+    public function shouldReportBug(): bool;
 
     public function getMaxSteps(): int;
 }

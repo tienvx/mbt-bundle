@@ -51,7 +51,7 @@ class TienvxMbtExtensionTest extends TestCase
         $interfaces = [PluginInterface::class, CommandRunnerInterface::class];
         foreach ($interfaces as $interface) {
             $autoConfigured = $this->container->getAutoconfiguredInstanceof()[$interface];
-            $this->assertTrue($autoConfigured->hasTag($interface));
+            $this->assertTrue($autoConfigured->hasTag($interface::TAG));
             $this->assertTrue($autoConfigured->isLazy());
         }
     }
