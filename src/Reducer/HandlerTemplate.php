@@ -9,34 +9,34 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
-    protected ProviderManager $providerManager;
     protected EntityManagerInterface $entityManager;
     protected MessageBusInterface $messageBus;
     protected StepRunnerInterface $stepRunner;
     protected StepsBuilderInterface $stepsBuilder;
     protected BugHelperInterface $bugHelper;
+    protected SelenoidHelperInterface $selenoidHelper;
 
     public function __construct(
-        ProviderManager $providerManager,
         EntityManagerInterface $entityManager,
         MessageBusInterface $messageBus,
         StepRunnerInterface $stepRunner,
         StepsBuilderInterface $stepsBuilder,
-        BugHelperInterface $bugHelper
+        BugHelperInterface $bugHelper,
+        SelenoidHelperInterface $selenoidHelper
     ) {
-        $this->providerManager = $providerManager;
         $this->entityManager = $entityManager;
         $this->messageBus = $messageBus;
         $this->stepRunner = $stepRunner;
         $this->stepsBuilder = $stepsBuilder;
         $this->bugHelper = $bugHelper;
+        $this->selenoidHelper = $selenoidHelper;
     }
 
     /**
@@ -57,7 +57,7 @@ abstract class HandlerTemplate implements HandlerInterface
      */
     protected function run(array $newSteps, BugInterface $bug): void
     {
-        $driver = $this->providerManager->createDriver($bug->getTask());
+        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug->getTask()));
         try {
             foreach ($newSteps as $step) {
                 $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);

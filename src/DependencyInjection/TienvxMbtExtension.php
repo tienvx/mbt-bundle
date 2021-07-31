@@ -9,8 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -32,12 +31,8 @@ class TienvxMbtExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->findDefinition(ProviderManager::class)
-            ->addMethodCall('setConfig', [$config[Configuration::PROVIDERS]])
-        ;
-
-        $container->findDefinition(TaskHelperInterface::class)
-            ->addMethodCall('setMaxSteps', [$config[Configuration::MAX_STEPS]])
+        $container->findDefinition(SelenoidHelperInterface::class)
+            ->addMethodCall('setSelenoidServer', [$config[Configuration::SELENOID_SERVER]])
         ;
 
         $this->registerForAutoconfiguration($container);

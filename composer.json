@@ -16,29 +16,23 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-json": "*",
         "doctrine/orm": "^2.8",
-        "florianv/petrinet": "dev-master as 2.1.1",
-        "jmgq/a-star": "^1.1",
-        "php-webdriver/webdriver": "^1.9",
-        "symfony/config": "^5.2",
-        "symfony/dependency-injection": "^5.2",
-        "symfony/expression-language": "^5.2",
-        "symfony/http-kernel": "^5.2",
-        "symfony/messenger": "^5.2",
-        "symfony/validator": "^5.2",
+        "florianv/petrinet": "^2.1",
+        "jmgq/a-star": "^2.1",
+        "php-webdriver/webdriver": "^1.11",
+        "symfony/config": "^5.3",
+        "symfony/dependency-injection": "^5.3",
+        "symfony/expression-language": "^5.3",
+        "symfony/http-kernel": "^5.3",
+        "symfony/messenger": "^5.3",
+        "symfony/validator": "^5.3",
         "tienvx/single-color-petrinet": "^1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/tienvx/petrinet.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Tienvx\\Bundle\\MbtBundle\\": "src/"
@@ -54,7 +48,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "3.0-dev"
         }
     }
 }

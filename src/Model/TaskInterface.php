@@ -5,8 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
-use Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfigInterface;
-use Tienvx\Bundle\MbtBundle\Model\Task\TaskConfigInterface;
 
 interface TaskInterface
 {
@@ -30,13 +28,13 @@ interface TaskInterface
 
     public function setRunning(bool $running): void;
 
-    public function getSeleniumConfig(): SeleniumConfigInterface;
+    public function getBrowser(): string;
 
-    public function setSeleniumConfig(SeleniumConfigInterface $seleniumConfig): void;
+    public function setBrowser(string $browser): void;
 
-    public function getTaskConfig(): TaskConfigInterface;
+    public function getBrowserVersion(): string;
 
-    public function setTaskConfig(TaskConfigInterface $taskConfig): void;
+    public function setBrowserVersion(string $browserVersion): void;
 
     public function getBugs(): Collection;
 

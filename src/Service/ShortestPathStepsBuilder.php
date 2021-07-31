@@ -3,23 +3,25 @@
 namespace Tienvx\Bundle\MbtBundle\Service;
 
 use Generator;
+use JMGQ\AStar\AStar;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 
 class ShortestPathStepsBuilder implements StepsBuilderInterface
 {
     protected PetrinetHelperInterface $petrinetHelper;
-    protected ShortestPathStrategyInterface $strategy;
+    protected PetrinetDomainLogicInterface $petrinetDomainLogic;
 
     public function __construct(
         PetrinetHelperInterface $petrinetHelper,
-        ShortestPathStrategyInterface $strategy
+        PetrinetDomainLogicInterface $petrinetDomainLogic
     ) {
         $this->petrinetHelper = $petrinetHelper;
-        $this->strategy = $strategy;
+        $this->petrinetDomainLogic = $petrinetDomainLogic;
     }
 
     /**
@@ -28,7 +30,7 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
     public function create(BugInterface $bug, int $from, int $to): Generator
     {
         foreach ($bug->getSteps() as $index => $step) {
-            if ($index <= $from) {
+            if ($index < $from) {
                 yield $step;
             }
         }
@@ -51,10 +53,10 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
             throw new OutOfRangeException('Can not create new steps using invalid range');
         }
 
-        return $this->strategy->run(
-            $this->petrinetHelper->build($bug->getTask()->getModelRevision()),
-            $fromStep,
-            $toStep
-        );
+        $this->petrinetDomainLogic->setPetrinet($this->petrinetHelper->build($bug->getTask()->getModelRevision()));
+
+        yield from (new AStar($this->petrinetDomainLogic))->run($fromStep, $toStep);
+
+        $this->petrinetDomainLogic->setPetrinet(null);
     }
 }

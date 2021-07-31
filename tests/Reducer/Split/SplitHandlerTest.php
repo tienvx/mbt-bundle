@@ -22,12 +22,12 @@ class SplitHandlerTest extends HandlerTestCase
     {
         parent::setUp();
         $this->handler = new SplitHandler(
-            $this->providerManager,
             $this->entityManager,
             $this->messageBus,
             $this->stepRunner,
             $this->stepsBuilder,
-            $this->bugHelper
+            $this->bugHelper,
+            $this->selenoidHelper
         );
     }
 }

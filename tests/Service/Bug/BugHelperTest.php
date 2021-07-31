@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Bug;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
@@ -13,7 +14,6 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Entity\Task\SeleniumConfig;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
@@ -23,13 +23,14 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 /**
@@ -40,8 +41,6 @@ use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task\TaskConfig
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task\SeleniumConfig
  * @covers \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
  * @covers \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  */
@@ -52,14 +51,17 @@ class BugHelperTest extends TestCase
     protected MessageBusInterface $messageBus;
     protected BugProgressInterface $bugProgress;
     protected BugNotifierInterface $notifyHelper;
-    protected ProviderManager $providerManager;
     protected StepRunnerInterface $stepRunner;
+    protected SelenoidHelperInterface $selenoidHelper;
+    protected ConfigInterface $config;
     protected BugHelperInterface $helper;
     protected Connection $connection;
     protected TaskInterface $task;
     protected BugInterface $bug;
     protected ProgressInterface $progress;
     protected RevisionInterface $revision;
+    protected DesiredCapabilities $capabilities;
+    protected RemoteWebDriver $driver;
 
     protected function setUp(): void
     {
@@ -68,25 +70,23 @@ class BugHelperTest extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugProgress = $this->createMock(BugProgressInterface::class);
         $this->notifyHelper = $this->createMock(BugNotifierInterface::class);
-        $this->providerManager = $this->createMock(ProviderManager::class);
         $this->stepRunner = $this->createMock(StepRunnerInterface::class);
+        $this->selenoidHelper = $this->createMock(SelenoidHelperInterface::class);
+        $this->config = $this->createMock(ConfigInterface::class);
         $this->helper = new BugHelper(
             $this->reducerManager,
             $this->entityManager,
             $this->messageBus,
             $this->bugProgress,
             $this->notifyHelper,
-            $this->providerManager,
-            $this->stepRunner
+            $this->stepRunner,
+            $this->selenoidHelper,
+            $this->config
         );
         $this->connection = $this->createMock(Connection::class);
         $this->revision = new Revision();
         $this->task = new Task();
         $this->task->setModelRevision($this->revision);
-        $this->task->getTaskConfig()->setReducer('random');
-        $seleniumConfig = new SeleniumConfig();
-        $seleniumConfig->setProvider('current-provider');
-        $this->task->setSeleniumConfig($seleniumConfig);
         $this->progress = new Progress();
         $this->progress->setTotal(10);
         $this->progress->setProcessed(10);
@@ -100,6 +100,8 @@ class BugHelperTest extends TestCase
             $this->createMock(StepInterface::class),
         ]);
         $this->bug->setReducing(false);
+        $this->driver = $this->createMock(RemoteWebDriver::class);
+        $this->capabilities = new DesiredCapabilities();
     }
 
     public function testCreateBug(): void
@@ -128,6 +130,7 @@ class BugHelperTest extends TestCase
     {
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(5);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
@@ -141,6 +144,7 @@ class BugHelperTest extends TestCase
     {
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(0);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(2))
@@ -174,8 +178,6 @@ class BugHelperTest extends TestCase
     {
         $task = new Task();
         $task->setAuthor(22);
-        $task->getTaskConfig()->setNotifyAuthor(true);
-        $task->getTaskConfig()->setNotifyChannels(['email', 'chat/slack', 'sms/nexmo']);
         $bug = new Bug();
         $bug->setTitle('New bug found');
         $bug->setId(123);
@@ -215,6 +217,7 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
@@ -228,7 +231,6 @@ class BugHelperTest extends TestCase
 
     public function testStopReduceStepsAndRecordVideo(): void
     {
-        $this->task->getTaskConfig()->setNotifyChannels([]);
         $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -237,6 +239,7 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus
             ->expects($this->exactly(1))
@@ -252,7 +255,6 @@ class BugHelperTest extends TestCase
 
     public function testStopReduceStepsAndReportBug(): void
     {
-        $this->task->getTaskConfig()->setNotifyChannels(['email', 'chat/slack']);
         $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -261,7 +263,9 @@ class BugHelperTest extends TestCase
         ]);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('handle')->with($this->bug, 1, 2);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
+        $this->config->expects($this->once())->method('shouldReportBug')->willReturn(true);
         $this->messageBus
             ->expects($this->exactly(2))
             ->method('dispatch')
@@ -295,17 +299,21 @@ class BugHelperTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Exception that we care about');
-        $driver = $this->createMock(RemoteWebDriver::class);
-        $driver->expects($this->once())->method('quit');
-        $this->providerManager
+        $this->driver->expects($this->once())->method('quit');
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
             ->expects($this->once())
             ->method('createDriver')
-            ->with($this->task, 123)
-            ->willReturn($driver);
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->once())
             ->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $driver)
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->willThrowException(new RuntimeException('Exception that we care about'));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
         $this->helper->recordVideo(123);
@@ -313,17 +321,21 @@ class BugHelperTest extends TestCase
 
     public function testRecordVideoNotThrowException(): void
     {
-        $driver = $this->createMock(RemoteWebDriver::class);
-        $driver->expects($this->once())->method('quit');
-        $this->providerManager
+        $this->driver->expects($this->once())->method('quit');
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
             ->expects($this->once())
             ->method('createDriver')
-            ->with($this->task, 123)
-            ->willReturn($driver);
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->exactly(2))
             ->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $driver)
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->willReturnOnConsecutiveCalls(
                 null,
                 $this->throwException(new Exception("Exception that we don't care about")),
@@ -334,17 +346,21 @@ class BugHelperTest extends TestCase
 
     public function testRecordVideo(): void
     {
-        $driver = $this->createMock(RemoteWebDriver::class);
-        $driver->expects($this->once())->method('quit');
-        $this->providerManager
+        $this->driver->expects($this->once())->method('quit');
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('getCapabilities')
+            ->with($this->task, 123)
+            ->willReturn($this->capabilities);
+        $this->selenoidHelper
             ->expects($this->once())
             ->method('createDriver')
-            ->with($this->task, 123)
-            ->willReturn($driver);
+            ->with($this->capabilities)
+            ->willReturn($this->driver);
         $this->stepRunner
             ->expects($this->exactly(3))
             ->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $driver);
+            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
         $this->helper->recordVideo(123);
     }

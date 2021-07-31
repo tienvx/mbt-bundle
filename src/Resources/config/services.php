@@ -33,9 +33,6 @@ use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReportBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManager;
-use Tienvx\Bundle\MbtBundle\Provider\ProviderManagerInterface;
-use Tienvx\Bundle\MbtBundle\Provider\Selenoid;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomReducer;
@@ -44,12 +41,14 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
-use Tienvx\Bundle\MbtBundle\Service\AStarStrategy;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
+use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumperInterface;
@@ -59,8 +58,9 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
-use Tienvx\Bundle\MbtBundle\Service\ShortestPathStrategyInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
@@ -68,8 +68,6 @@ use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
-use Tienvx\Bundle\MbtBundle\Validator\ValidSeleniumConfigValidator;
-use Tienvx\Bundle\MbtBundle\Validator\ValidTaskConfigValidator;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -92,12 +90,6 @@ return static function (ContainerConfigurator $container): void {
                 service(ModelHelperInterface::class),
                 service(GuardedTransitionServiceInterface::class),
             ])
-            ->autoconfigure(true)
-
-        ->set(ProviderManager::class)
-            ->alias(ProviderManagerInterface::class, ProviderManager::class)
-
-        ->set(Selenoid::class)
             ->autoconfigure(true)
 
         ->set(RunTaskMessageHandler::class)
@@ -139,12 +131,12 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(RandomHandler::class)
             ->args([
-                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
                 service(BugHelperInterface::class),
+                service(SelenoidHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -158,12 +150,12 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(SplitHandler::class)
             ->args([
-                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(MessageBusInterface::class),
                 service(StepRunnerInterface::class),
                 service(StepsBuilderInterface::class),
                 service(BugHelperInterface::class),
+                service(SelenoidHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -173,22 +165,6 @@ return static function (ContainerConfigurator $container): void {
             ->autoconfigure(true)
 
         ->set(TagsValidator::class)
-        ->set(ValidSeleniumConfigValidator::class)
-            ->args([
-                service(ProviderManager::class),
-            ])
-            ->tag('validator.constraint_validator', [
-                'alias' => ValidSeleniumConfigValidator::class,
-            ])
-        ->set(ValidTaskConfigValidator::class)
-            ->args([
-                service(GeneratorManager::class),
-                service(ReducerManager::class),
-                service(ChannelManager::class),
-            ])
-            ->tag('validator.constraint_validator', [
-                'alias' => ValidTaskConfigValidator::class,
-            ])
         ->set(ValidCommandValidator::class)
             ->args([
                 service(CommandRunnerManagerInterface::class),
@@ -227,6 +203,9 @@ return static function (ContainerConfigurator $container): void {
         // Services
         ->set(ExpressionLanguage::class)
 
+        ->set(SelenoidHelper::class)
+            ->alias(SelenoidHelperInterface::class, SelenoidHelper::class)
+
         ->set(ModelDumper::class)
             ->alias(ModelDumperInterface::class, ModelDumper::class)
 
@@ -246,34 +225,36 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugProgressInterface::class),
                 service(BugNotifierInterface::class),
-                service(ProviderManager::class),
                 service(StepRunnerInterface::class),
+                service(SelenoidHelperInterface::class),
+                service(ConfigInterface::class),
             ])
             ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(TaskHelper::class)
             ->args([
                 service(GeneratorManager::class),
-                service(ProviderManager::class),
                 service(EntityManagerInterface::class),
                 service(StepRunnerInterface::class),
                 service(BugHelperInterface::class),
+                service(SelenoidHelperInterface::class),
+                service(ConfigInterface::class),
             ])
             ->alias(TaskHelperInterface::class, TaskHelper::class)
 
         ->set(ShortestPathStepsBuilder::class)
             ->args([
                 service(PetrinetHelperInterface::class),
-                service(ShortestPathStrategyInterface::class),
+                service(PetrinetDomainLogicInterface::class),
             ])
             ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
 
-        ->set(AStarStrategy::class)
+        ->set(PetrinetDomainLogic::class)
             ->args([
                 service(GuardedTransitionServiceInterface::class),
                 service(MarkingHelperInterface::class),
             ])
-            ->alias(ShortestPathStrategyInterface::class, AStarStrategy::class)
+            ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
 
         ->set(StepRunner::class)
             ->args([

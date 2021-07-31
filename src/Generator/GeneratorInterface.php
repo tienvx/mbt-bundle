@@ -8,6 +8,4 @@ use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 interface GeneratorInterface extends PluginInterface
 {
     public function generate(TaskInterface $task): iterable;
-
-    public function validate(array $config): bool;
 }
