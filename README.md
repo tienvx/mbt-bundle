@@ -62,10 +62,10 @@ This package is available under the [MIT license](LICENSE).
 [coveralls_link]: https://coveralls.io/github/tienvx/mbt-bundle?branch=master
 
 [version-url]: https://packagist.org/packages/tienvx/mbt-bundle
-[version-image]: http://img.shields.io/packagist/v/tienvx/mbt-bundle.svg?style=flat
+[version-image]: https://img.shields.io/github/v/release/tienvx/mbt-bundle?include_prereleases
 
-[php-version-url]: https://packagist.org/packages/tienvx/coloured-petrinet
-[php-version-image]: http://img.shields.io/badge/php-7.4.0+-ff69b4.svg
+[php-version-url]: https://packagist.org/packages/tienvx/mbt-bundle
+[php-version-image]: http://img.shields.io/badge/php-8.0.0+-ff69b4.svg
 
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls
