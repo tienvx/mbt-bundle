@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Model\Model as BaseModel;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Validator\Tags;
@@ -67,6 +68,7 @@ class Model extends BaseModel
     public function __construct()
     {
         $this->revisions = new ArrayCollection();
+        $this->activeRevision = new Revision();
     }
 
     /**
