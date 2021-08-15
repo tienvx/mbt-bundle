@@ -13,7 +13,10 @@ class Transition extends TransitionModel
     protected string $label = '';
 
     /**
-     * @Assert\ExpressionLanguageSyntax
+     * @Assert\AtLeastOneOf({
+     *     @Assert\IsNull,
+     *     @Assert\ExpressionLanguageSyntax
+     * })
      */
     protected ?string $guard = null;
 

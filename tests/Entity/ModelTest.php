@@ -145,7 +145,7 @@ class ModelTest extends TestCase
     public function testValidateInvalidModel(): void
     {
         $violations = $this->validator->validate($this->model);
-        $this->assertCount(14, $violations);
+        $this->assertCount(13, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
@@ -168,8 +168,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[0
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[1].value:
     mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].guard:
-    This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].toPlaces:
@@ -183,7 +181,7 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].toPla
         $this->model->getActiveRevision()->getTransition(0)->setFromPlaces([]);
         $this->model->getActiveRevision()->getTransition(1)->setFromPlaces([]);
         $violations = $this->validator->validate($this->model);
-        $this->assertCount(13, $violations);
+        $this->assertCount(12, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model).label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).tags:
@@ -204,8 +202,6 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[0
     mbt.model.command.invalid_command (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.places[1].commands[1].value:
     mbt.model.command.required_value (code ba5fd751-cbdf-45ab-a1e7-37045d5ef44b)
-Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[0].guard:
-    This value should be of type string.
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model).activeRevision.transitions[1].toPlaces:
