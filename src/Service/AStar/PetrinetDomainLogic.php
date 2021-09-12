@@ -43,7 +43,7 @@ class PetrinetDomainLogic implements PetrinetDomainLogicInterface
         return array_sum($tokensDiff) * (($fromNode->getColor()->getValues() != $toNode->getColor()->getValues()) + 1);
     }
 
-    public function calculateRealCost(mixed $node, mixed $adjacent): float | int
+    public function calculateRealCost(mixed $node, mixed $adjacent): float|int
     {
         // It only took 1 transition move N tokens from a node to adjacent node.
         return 1;
