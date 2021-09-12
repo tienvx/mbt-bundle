@@ -42,4 +42,9 @@ class Transition extends TransitionModel
      * @Assert\Count(min=1, minMessage="mbt.model.missing_to_places")
      */
     protected array $toPlaces = [];
+
+    public function __toString(): string
+    {
+        return $this->label;
+    }
 }

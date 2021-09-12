@@ -19,4 +19,9 @@ class Command extends CommandModel
     protected ?string $target = null;
 
     protected ?string $value = null;
+
+    public function __toString(): string
+    {
+        return $this->command;
+    }
 }

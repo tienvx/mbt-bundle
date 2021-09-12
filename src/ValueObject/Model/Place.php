@@ -19,4 +19,9 @@ class Place extends PlaceModel
      * @Assert\Valid
      */
     protected array $commands = [];
+
+    public function __toString(): string
+    {
+        return $this->label;
+    }
 }
