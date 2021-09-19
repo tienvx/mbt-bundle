@@ -8,7 +8,7 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 interface SelenoidHelperInterface
 {
-    public function setSelenoidServer(string $selenoidServer): void;
+    public function setWebdriverUri(string $webdriverUri): void;
 
     public function getVideoUrl(int $bugId): string;
 

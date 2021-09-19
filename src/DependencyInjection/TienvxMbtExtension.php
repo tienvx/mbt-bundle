@@ -32,7 +32,7 @@ class TienvxMbtExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->findDefinition(SelenoidHelperInterface::class)
-            ->addMethodCall('setSelenoidServer', [$config[Configuration::SELENOID_SERVER]])
+            ->addMethodCall('setWebdriverUri', [$config[Configuration::WEBDRIVER_URI]])
         ;
 
         $this->registerForAutoconfiguration($container);

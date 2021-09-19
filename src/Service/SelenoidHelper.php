@@ -9,16 +9,16 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 class SelenoidHelper implements SelenoidHelperInterface
 {
-    protected string $selenoidServer;
+    protected string $webdriverUri;
 
-    public function setSelenoidServer(string $selenoidServer): void
+    public function setWebdriverUri(string $webdriverUri): void
     {
-        $this->selenoidServer = $selenoidServer;
+        $this->webdriverUri = $webdriverUri;
     }
 
     public function getVideoUrl(int $bugId): string
     {
-        return sprintf('%s/video/%s', $this->selenoidServer, $this->getVideoFilename($bugId));
+        return sprintf('%s/video/%s', $this->webdriverUri, $this->getVideoFilename($bugId));
     }
 
     public function getVideoFilename(int $bugId): string
@@ -29,7 +29,7 @@ class SelenoidHelper implements SelenoidHelperInterface
     public function createDriver(DesiredCapabilities $capabilities): RemoteWebDriver
     {
         return RemoteWebDriver::create(
-            $this->selenoidServer,
+            $this->webdriverUri,
             $capabilities
         );
     }

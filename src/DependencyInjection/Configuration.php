@@ -7,7 +7,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public const SELENOID_SERVER = 'selenoid_server';
+    public const WEBDRIVER_URI = 'webdriver_uri';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -16,7 +16,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode(static::SELENOID_SERVER)
+                ->scalarNode(static::WEBDRIVER_URI)
                     ->isRequired()
                     ->cannotBeEmpty()
                     ->defaultValue('http://localhost:4444')
