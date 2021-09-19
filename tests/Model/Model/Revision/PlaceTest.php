@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model;
+namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model\Revision;
 
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
