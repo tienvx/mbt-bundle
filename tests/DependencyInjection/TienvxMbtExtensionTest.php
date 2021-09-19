@@ -18,7 +18,7 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 class TienvxMbtExtensionTest extends TestCase
 {
     protected const CONFIGS = [[
-        Configuration::SELENOID_SERVER => 'http://localhost:4444',
+        Configuration::WEBDRIVER_URI => 'http://localhost:4444',
     ]];
 
     protected ContainerBuilder $container;
@@ -41,7 +41,7 @@ class TienvxMbtExtensionTest extends TestCase
     {
         $this->loader->load(static::CONFIGS, $this->container);
         $this->assertSame([
-            ['setSelenoidServer', [static::CONFIGS[0][Configuration::SELENOID_SERVER]]],
+            ['setWebdriverUri', [static::CONFIGS[0][Configuration::WEBDRIVER_URI]]],
         ], $this->container->findDefinition(SelenoidHelperInterface::class)->getMethodCalls());
     }
 
