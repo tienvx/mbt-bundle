@@ -93,4 +93,9 @@ class Revision implements RevisionInterface
             ),
         ];
     }
+
+    public function __toString()
+    {
+        return $this->model ? $this->model->getLabel() : '';
+    }
 }
