@@ -40,13 +40,13 @@ class SelenoidHelper implements SelenoidHelperInterface
         if ($bugId) {
             $caps = [
                 'enableVideo' => true,
-                'videoName' => sprintf('bug-%d.mp4', $bugId),
+                'videoName' => $this->getVideoFilename($bugId),
                 'name' => sprintf('Recording video for bug %d', $bugId),
             ];
         }
         $caps += [
-            WebDriverCapabilityType::BROWSER_NAME => $task->getBrowser(),
-            WebDriverCapabilityType::VERSION => $task->getBrowserVersion(),
+            WebDriverCapabilityType::BROWSER_NAME => $task->getBrowser()->getName(),
+            WebDriverCapabilityType::VERSION => $task->getBrowser()->getVersion(),
             'enableVNC' => true,
             'enableLog' => true,
             'name' => sprintf('Executing task %d', $task->getId()),

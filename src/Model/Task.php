@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
 
 class Task implements TaskInterface
 {
@@ -13,8 +14,7 @@ class Task implements TaskInterface
     protected RevisionInterface $modelRevision;
     protected ?int $author = null;
     protected bool $running = false;
-    protected string $browser = '';
-    protected string $browserVersion = '';
+    protected BrowserInterface $browser;
     protected Collection $bugs;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
@@ -69,24 +69,14 @@ class Task implements TaskInterface
         $this->running = $running;
     }
 
-    public function getBrowser(): string
+    public function getBrowser(): BrowserInterface
     {
         return $this->browser;
     }
 
-    public function setBrowser(string $browser): void
+    public function setBrowser(BrowserInterface $browser): void
     {
         $this->browser = $browser;
-    }
-
-    public function getBrowserVersion(): string
-    {
-        return $this->browserVersion;
-    }
-
-    public function setBrowserVersion(string $browserVersion): void
-    {
-        $this->browserVersion = $browserVersion;
     }
 
     /**

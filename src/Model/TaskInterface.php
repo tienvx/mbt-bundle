@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
 
 interface TaskInterface
 {
@@ -28,13 +29,9 @@ interface TaskInterface
 
     public function setRunning(bool $running): void;
 
-    public function getBrowser(): string;
+    public function getBrowser(): BrowserInterface;
 
-    public function setBrowser(string $browser): void;
-
-    public function getBrowserVersion(): string;
-
-    public function setBrowserVersion(string $browserVersion): void;
+    public function setBrowser(BrowserInterface $browser): void;
 
     public function getBugs(): Collection;
 
