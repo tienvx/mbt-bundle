@@ -7,9 +7,11 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Embedded;
 use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
+use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
 
 /**
  * @ORM\Entity
@@ -32,7 +34,9 @@ class Task extends TaskModel
 
     /**
      * @ORM\ManyToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Model\Revision")
+     * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
+     * @Assert\NotNull
      */
     protected RevisionInterface $modelRevision;
 
@@ -47,16 +51,10 @@ class Task extends TaskModel
     protected bool $running = false;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
+     * @Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Task\Browser")
+     * @Assert\NotNull
      */
-    protected string $browser = '';
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank
-     */
-    protected string $browserVersion = '';
+    protected BrowserInterface $browser;
 
     /**
      * @ORM\OneToMany(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Bug", mappedBy="task", cascade={"persist"})
