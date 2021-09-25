@@ -40,6 +40,7 @@ class Bug extends BugModel
 
     /**
      * @ORM\ManyToOne(targetEntity="\Tienvx\Bundle\MbtBundle\Entity\Task", inversedBy="bugs")
+     * @ORM\JoinColumn(nullable=false)
      */
     protected TaskInterface $task;
 
