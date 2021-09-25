@@ -54,6 +54,7 @@ class Model extends BaseModel
 
     /**
      * @ORM\OneToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model\Revision", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid
      */
     protected RevisionInterface $activeRevision;
