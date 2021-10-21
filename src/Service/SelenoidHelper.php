@@ -29,7 +29,7 @@ class SelenoidHelper implements SelenoidHelperInterface
     public function createDriver(DesiredCapabilities $capabilities): RemoteWebDriver
     {
         return RemoteWebDriver::create(
-            $this->webdriverUri  . '/wd/hub',
+            $this->webdriverUri . '/wd/hub',
             $capabilities
         );
     }
