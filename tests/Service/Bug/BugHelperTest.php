@@ -146,6 +146,7 @@ class BugHelperTest extends TestCase
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(0);
         $this->config->expects($this->once())->method('getReducer')->willReturn('random');
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
+        $this->config->expects($this->once())->method('shouldReportBug')->willReturn(true);
         $this->messageBus
             ->expects($this->exactly(2))
             ->method('dispatch')

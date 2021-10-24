@@ -57,8 +57,7 @@ class BugHelper implements BugHelperInterface
         $messagesCount = $reducer->dispatch($bug);
         if (0 === $messagesCount && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
             $this->stopReducing($bug);
-            $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
-            $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+            $this->recordAndReport($bug);
         } elseif ($messagesCount > 0) {
             $this->bugProgress->increaseTotal($bug, $messagesCount);
         }
@@ -78,10 +77,7 @@ class BugHelper implements BugHelperInterface
 
         $this->bugProgress->increaseProcessed($bug, 1);
         if (!$bug->isReducing()) {
-            $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
-            if ($this->config->shouldReportBug()) {
-                $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
-            }
+            $this->recordAndReport($bug);
         }
     }
 
@@ -150,5 +146,13 @@ class BugHelper implements BugHelperInterface
         // Reducing bug take long time. Reconnect to flush changes.
         $this->entityManager->getConnection()->connect();
         $this->entityManager->flush();
+    }
+
+    protected function recordAndReport(BugInterface $bug): void
+    {
+        $this->messageBus->dispatch(new RecordVideoMessage($bug->getId()));
+        if ($this->config->shouldReportBug()) {
+            $this->messageBus->dispatch(new ReportBugMessage($bug->getId()));
+        }
     }
 }
