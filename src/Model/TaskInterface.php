@@ -37,6 +37,14 @@ interface TaskInterface
 
     public function addBug(BugInterface $bug): void;
 
+    public function getSession(): string;
+
+    public function setSession(string $session): void;
+
+    public function isDebug(): bool;
+
+    public function setDebug(bool $debug): void;
+
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): DateTimeInterface;

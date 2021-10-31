@@ -10,9 +10,9 @@ interface SelenoidHelperInterface
 {
     public function setWebdriverUri(string $webdriverUri): void;
 
-    public function getVideoUrl(int $bugId): string;
+    public function getVideoUrl(string $session): string;
 
-    public function getVideoFilename(int $bugId): string;
+    public function getLogUrl(string $session): string;
 
     public function createDriver(DesiredCapabilities $capabilities): RemoteWebDriver;
 

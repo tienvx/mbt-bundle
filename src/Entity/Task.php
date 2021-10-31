@@ -63,6 +63,16 @@ class Task extends TaskModel
     protected Collection $bugs;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected string $session;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected bool $debug = false;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     protected DateTimeInterface $createdAt;

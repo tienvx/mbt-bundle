@@ -65,6 +65,11 @@ class Bug extends BugModel
     protected bool $reducing = false;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected string $session;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     protected DateTimeInterface $createdAt;

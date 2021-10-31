@@ -16,6 +16,8 @@ class Task implements TaskInterface
     protected bool $running = false;
     protected BrowserInterface $browser;
     protected Collection $bugs;
+    protected string $session;
+    protected bool $debug = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -93,6 +95,26 @@ class Task implements TaskInterface
             $this->bugs->add($bug);
             $bug->setTask($this);
         }
+    }
+
+    public function getSession(): string
+    {
+        return $this->session;
+    }
+
+    public function setSession(string $session): void
+    {
+        $this->session = $session;
+    }
+
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    public function setDebug(bool $debug): void
+    {
+        $this->debug = $debug;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

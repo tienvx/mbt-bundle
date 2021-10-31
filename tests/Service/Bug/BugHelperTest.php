@@ -62,6 +62,7 @@ class BugHelperTest extends TestCase
     protected RevisionInterface $revision;
     protected DesiredCapabilities $capabilities;
     protected RemoteWebDriver $driver;
+    protected string $session = 'f2bcd32b-d932-4cdc-a639-687ab8e4f840';
 
     protected function setUp(): void
     {
@@ -301,6 +302,7 @@ class BugHelperTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Exception that we care about');
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
@@ -317,12 +319,15 @@ class BugHelperTest extends TestCase
             ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
             ->willThrowException(new RuntimeException('Exception that we care about'));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
+        $this->entityManager->expects($this->once())->method('flush');
         $this->helper->recordVideo(123);
+        $this->assertSame($this->session, $this->bug->getSession());
     }
 
     public function testRecordVideoNotThrowException(): void
     {
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
@@ -342,12 +347,15 @@ class BugHelperTest extends TestCase
                 $this->throwException(new Exception("Exception that we don't care about")),
             );
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
+        $this->entityManager->expects($this->once())->method('flush');
         $this->helper->recordVideo(123);
+        $this->assertSame($this->session, $this->bug->getSession());
     }
 
     public function testRecordVideo(): void
     {
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
@@ -363,6 +371,8 @@ class BugHelperTest extends TestCase
             ->method('run')
             ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
+        $this->entityManager->expects($this->once())->method('flush');
         $this->helper->recordVideo(123);
+        $this->assertSame($this->session, $this->bug->getSession());
     }
 }
