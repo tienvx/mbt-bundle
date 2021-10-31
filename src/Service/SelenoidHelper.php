@@ -16,14 +16,14 @@ class SelenoidHelper implements SelenoidHelperInterface
         $this->webdriverUri = $webdriverUri;
     }
 
-    public function getVideoUrl(int $bugId): string
+    public function getVideoUrl(string $session): string
     {
-        return sprintf('%s/video/%s', $this->webdriverUri, $this->getVideoFilename($bugId));
+        return sprintf('%s/video/%s.mp4', $this->webdriverUri, $session);
     }
 
-    public function getVideoFilename(int $bugId): string
+    public function getLogUrl(string $session): string
     {
-        return sprintf('bug-%s.mp4', $bugId);
+        return sprintf('%s/logs/%s.log', $this->webdriverUri, $session);
     }
 
     public function createDriver(DesiredCapabilities $capabilities): RemoteWebDriver
@@ -36,19 +36,12 @@ class SelenoidHelper implements SelenoidHelperInterface
 
     public function getCapabilities(TaskInterface $task, ?int $bugId = null): DesiredCapabilities
     {
-        $caps = [];
-        if ($bugId) {
-            $caps = [
-                'enableVideo' => true,
-                'videoName' => $this->getVideoFilename($bugId),
-                'name' => sprintf('Recording video for bug %d', $bugId),
-            ];
-        }
-        $caps += [
+        $caps = [
             WebDriverCapabilityType::BROWSER_NAME => $task->getBrowser()->getName(),
             WebDriverCapabilityType::VERSION => $task->getBrowser()->getVersion(),
-            'enableVNC' => true,
-            'enableLog' => true,
+            'enableVNC' => false,
+            'enableLog' => $task->isDebug() || $bugId,
+            'enableVideo' => $task->isDebug() || $bugId,
             'name' => sprintf('Executing task %d', $task->getId()),
         ];
 

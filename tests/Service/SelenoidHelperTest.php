@@ -27,17 +27,26 @@ class SelenoidHelperTest extends StepsTestCase
         $this->selenoidHelper->setWebdriverUri($this->webdriverUri);
     }
 
-    public function testGetVideoFileName(): void
+    public function testGetLogUrl(): void
     {
-        $this->assertSame('bug-123.mp4', $this->selenoidHelper->getVideoFilename(123));
+        $this->assertSame(
+            'http://localhost:4444/logs/607667f7e1c7923779e35506b040300d.log',
+            $this->selenoidHelper->getLogUrl('607667f7e1c7923779e35506b040300d')
+        );
     }
 
     public function testGetVideoUrl(): void
     {
-        $this->assertSame('http://localhost:4444/video/bug-123.mp4', $this->selenoidHelper->getVideoUrl(123));
+        $this->assertSame(
+            'http://localhost:4444/video/607667f7e1c7923779e35506b040300d.mp4',
+            $this->selenoidHelper->getVideoUrl('607667f7e1c7923779e35506b040300d')
+        );
     }
 
-    public function testGetCapabilities(): void
+    /**
+     * @dataProvider capabilitiesParameterProvider
+     */
+    public function testGetCapabilities(bool $debug, ?int $bugId): void
     {
         $browser = new Browser();
         $browser->setName('firefox');
@@ -45,24 +54,31 @@ class SelenoidHelperTest extends StepsTestCase
         $task = new Task();
         $task->setId(123);
         $task->setBrowser($browser);
-        $this->assertCapabilities($this->selenoidHelper->getCapabilities($task, 234), $task, 234);
-        $this->assertCapabilities($this->selenoidHelper->getCapabilities($task), $task);
+        $task->setDebug($debug);
+        $this->assertCapabilities($this->selenoidHelper->getCapabilities($task, $bugId), $task, $bugId);
     }
 
     private function assertCapabilities(DesiredCapabilities $capabilities, Task $task, ?int $bugId = null): void
     {
         if ($bugId) {
             $this->assertTrue($capabilities->getCapability('enableVideo'));
-            $this->assertSame($this->selenoidHelper->getVideoFilename(234), $capabilities->getCapability('videoName'));
-            $this->assertSame('Recording video for bug 234', $capabilities->getCapability('name'));
+            $this->assertTrue($capabilities->getCapability('enableLog'));
         } else {
-            $this->assertFalse($capabilities->is('enableVideo'));
-            $this->assertFalse($capabilities->is('videoName'));
-            $this->assertSame('Executing task 123', $capabilities->getCapability('name'));
+            $this->assertSame($task->isDebug(), $capabilities->is('enableVideo'));
+            $this->assertSame($task->isDebug(), $capabilities->is('enableLog'));
         }
         $this->assertSame($task->getBrowser()->getVersion(), $capabilities->getVersion());
         $this->assertSame($task->getBrowser()->getName(), $capabilities->getBrowserName());
-        $this->assertTrue($capabilities->getCapability('enableVNC'));
-        $this->assertTrue($capabilities->getCapability('enableLog'));
+        $this->assertFalse($capabilities->getCapability('enableVNC'));
+    }
+
+    public function capabilitiesParameterProvider(): array
+    {
+        return [
+            [true, null],
+            [true, 234],
+            [false, null],
+            [false, 234],
+        ];
     }
 }

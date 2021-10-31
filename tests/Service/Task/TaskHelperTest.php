@@ -50,6 +50,7 @@ class TaskHelperTest extends StepsTestCase
     protected RemoteWebDriver $driver;
     protected Revision $revision;
     protected TaskInterface $task;
+    protected string $session = 'f2bcd32b-d932-4cdc-a639-687ab8e4f840';
 
     protected function setUp(): void
     {
@@ -110,6 +111,7 @@ class TaskHelperTest extends StepsTestCase
             fn () => yield from $this->steps
         );
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
         $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->selenoidHelper
@@ -133,6 +135,7 @@ class TaskHelperTest extends StepsTestCase
         $this->entityManager->expects($this->never())->method('persist');
         $this->taskHelper->run(123);
         $this->assertFalse($this->task->isRunning());
+        $this->assertSame($this->session, $this->task->getSession());
     }
 
     public function testRunFoundBug(): void
@@ -143,6 +146,7 @@ class TaskHelperTest extends StepsTestCase
             fn () => yield from $this->steps
         );
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
         $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->selenoidHelper
@@ -175,6 +179,7 @@ class TaskHelperTest extends StepsTestCase
         $this->taskHelper->run(123);
         $this->assertFalse($this->task->isRunning());
         $this->assertSame([$bug], $this->task->getBugs()->toArray());
+        $this->assertSame($this->session, $this->task->getSession());
     }
 
     public function testRunReachMaxSteps(): void
@@ -185,6 +190,7 @@ class TaskHelperTest extends StepsTestCase
             fn () => yield from $this->steps
         );
         $this->driver->expects($this->once())->method('quit');
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->session);
         $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
         $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
         $this->selenoidHelper
@@ -206,5 +212,6 @@ class TaskHelperTest extends StepsTestCase
         $this->entityManager->expects($this->never())->method('persist');
         $this->taskHelper->run(123);
         $this->assertFalse($this->task->isRunning());
+        $this->assertSame($this->session, $this->task->getSession());
     }
 }
