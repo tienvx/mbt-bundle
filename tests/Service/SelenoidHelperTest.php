@@ -29,12 +29,18 @@ class SelenoidHelperTest extends StepsTestCase
 
     public function testGetLogUrl(): void
     {
-        $this->assertSame('http://localhost:4444/logs/607667f7e1c7923779e35506b040300d.log', $this->selenoidHelper->getLogUrl('607667f7e1c7923779e35506b040300d'));
+        $this->assertSame(
+            'http://localhost:4444/logs/607667f7e1c7923779e35506b040300d.log',
+            $this->selenoidHelper->getLogUrl('607667f7e1c7923779e35506b040300d')
+        );
     }
 
     public function testGetVideoUrl(): void
     {
-        $this->assertSame('http://localhost:4444/video/607667f7e1c7923779e35506b040300d.mp4', $this->selenoidHelper->getVideoUrl('607667f7e1c7923779e35506b040300d'));
+        $this->assertSame(
+            'http://localhost:4444/video/607667f7e1c7923779e35506b040300d.mp4',
+            $this->selenoidHelper->getVideoUrl('607667f7e1c7923779e35506b040300d')
+        );
     }
 
     /**
