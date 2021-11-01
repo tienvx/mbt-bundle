@@ -16,7 +16,7 @@ class Task implements TaskInterface
     protected bool $running = false;
     protected BrowserInterface $browser;
     protected Collection $bugs;
-    protected string $session;
+    protected ?string $session = null;
     protected bool $debug = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
@@ -97,7 +97,7 @@ class Task implements TaskInterface
         }
     }
 
-    public function getSession(): string
+    public function getSession(): ?string
     {
         return $this->session;
     }

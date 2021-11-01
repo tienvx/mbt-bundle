@@ -15,7 +15,7 @@ abstract class Bug implements BugInterface
     protected ProgressInterface $progress;
     protected bool $closed = false;
     protected bool $reducing = false;
-    protected string $session;
+    protected ?string $session = null;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -112,7 +112,7 @@ abstract class Bug implements BugInterface
         $this->reducing = $reducing;
     }
 
-    public function getSession(): string
+    public function getSession(): ?string
     {
         return $this->session;
     }

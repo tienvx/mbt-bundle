@@ -65,9 +65,9 @@ class Bug extends BugModel
     protected bool $reducing = false;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    protected string $session;
+    protected ?string $session;
 
     /**
      * @ORM\Column(name="created_at", type="datetime")
