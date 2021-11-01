@@ -37,7 +37,7 @@ interface TaskInterface
 
     public function addBug(BugInterface $bug): void;
 
-    public function getSession(): string;
+    public function getSession(): ?string;
 
     public function setSession(string $session): void;
 

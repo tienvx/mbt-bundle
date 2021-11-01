@@ -44,7 +44,7 @@ interface BugInterface
 
     public function setReducing(bool $reducing): void;
 
-    public function getSession(): string;
+    public function getSession(): ?string;
 
     public function setSession(string $session): void;
 
