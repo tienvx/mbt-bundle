@@ -57,7 +57,7 @@ abstract class HandlerTemplate implements HandlerInterface
      */
     protected function run(array $newSteps, BugInterface $bug): void
     {
-        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug->getTask()));
+        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug));
         try {
             foreach ($newSteps as $step) {
                 $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);

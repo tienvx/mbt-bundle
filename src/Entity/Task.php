@@ -63,11 +63,6 @@ class Task extends TaskModel
     protected Collection $bugs;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected ?string $session;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     protected bool $debug = false;

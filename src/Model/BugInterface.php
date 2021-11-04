@@ -44,10 +44,6 @@ interface BugInterface
 
     public function setReducing(bool $reducing): void;
 
-    public function getSession(): ?string;
-
-    public function setSession(string $session): void;
-
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): DateTimeInterface;
