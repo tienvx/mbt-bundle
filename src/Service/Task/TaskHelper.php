@@ -52,8 +52,9 @@ class TaskHelper implements TaskHelperInterface
         $steps = [];
         try {
             $generator = $this->generatorManager->getGenerator($this->config->getGenerator());
-            $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($task));
-            $task->setSession($driver->getSessionID());
+            $driver = $this->selenoidHelper->createDriver(
+                $this->selenoidHelper->getCapabilities($task, $task->isDebug())
+            );
             foreach ($generator->generate($task) as $step) {
                 if ($step instanceof StepInterface) {
                     $this->stepRunner->run($step, $task->getModelRevision(), $driver);

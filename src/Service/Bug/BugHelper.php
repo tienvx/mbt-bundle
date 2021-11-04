@@ -93,10 +93,7 @@ class BugHelper implements BugHelperInterface
     public function recordVideo(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'record video for bug');
-        $driver = $this->selenoidHelper->createDriver(
-            $this->selenoidHelper->getCapabilities($bug->getTask(), $bug->getId())
-        );
-        $bug->setSession($driver->getSessionID());
+        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug, true));
         try {
             foreach ($bug->getSteps() as $step) {
                 $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);
@@ -107,7 +104,6 @@ class BugHelper implements BugHelperInterface
             // Do nothing.
         } finally {
             $driver->quit();
-            $this->entityManager->flush();
         }
     }
 

@@ -98,7 +98,7 @@ class HandlerTestCase extends StepsTestCase
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
-            ->with($this->task)
+            ->with($this->bug)
             ->willReturn($this->capabilities);
         $this->selenoidHelper
             ->expects($this->once())
@@ -116,7 +116,7 @@ class HandlerTestCase extends StepsTestCase
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
-            ->with($this->task)
+            ->with($this->bug)
             ->willReturn($this->capabilities);
         $this->selenoidHelper
             ->expects($this->once())
@@ -142,7 +142,7 @@ class HandlerTestCase extends StepsTestCase
         $this->selenoidHelper
             ->expects($this->once())
             ->method('getCapabilities')
-            ->with($this->task)
+            ->with($this->bug)
             ->willReturn($this->capabilities);
         $this->selenoidHelper
             ->expects($this->once())
