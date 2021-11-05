@@ -17,11 +17,15 @@ use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 class RevisionTest extends TestCase
 {
     protected RevisionInterface $revision;
+    protected RevisionInterface $activeRevision;
     protected ModelInterface $model;
 
     protected function setUp(): void
     {
         $this->revision = new Revision();
+        $this->revision->setId(1);
+        $this->activeRevision = new Revision();
+        $this->activeRevision->setId(2);
         $this->model = new Model();
         $this->model->setLabel('Model label');
     }
@@ -29,7 +33,15 @@ class RevisionTest extends TestCase
     public function testConvertToString(): void
     {
         $this->assertSame('', (string) $this->revision);
-        $this->revision->setModel($this->model);
+        $this->model->setActiveRevision($this->revision);
         $this->assertSame($this->model->getLabel(), (string) $this->revision);
+    }
+
+    public function testIsLatest(): void
+    {
+        $this->model->setActiveRevision($this->revision);
+        $this->model->setActiveRevision($this->activeRevision);
+        $this->assertFalse($this->revision->isLatest());
+        $this->assertTrue($this->activeRevision->isLatest());
     }
 }
