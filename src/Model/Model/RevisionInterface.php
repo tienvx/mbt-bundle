@@ -39,4 +39,6 @@ interface RevisionInterface
     public function getTransition(int $index): ?TransitionInterface;
 
     public function toArray(): array;
+
+    public function isLatest(): bool;
 }

@@ -94,6 +94,11 @@ class Revision implements RevisionInterface
         ];
     }
 
+    public function isLatest(): bool
+    {
+        return $this->getId() && $this->model && $this->getId() === $this->model->getActiveRevision()->getId();
+    }
+
     public function __toString()
     {
         return $this->model ? $this->model->getLabel() : '';
