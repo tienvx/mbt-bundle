@@ -89,7 +89,7 @@ class BugHelperTest extends TestCase
         $this->task->setModelRevision($this->revision);
         $this->progress = new Progress();
         $this->progress->setTotal(10);
-        $this->progress->setProcessed(10);
+        $this->progress->setProcessed(9);
         $this->bug = new Bug();
         $this->bug->setProgress($this->progress);
         $this->bug->setId(123);
@@ -99,7 +99,6 @@ class BugHelperTest extends TestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
-        $this->bug->setReducing(false);
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->capabilities = new DesiredCapabilities();
     }
@@ -126,7 +125,7 @@ class BugHelperTest extends TestCase
         $this->helper->reduceBug(123);
     }
 
-    public function testNotFinishReduceBug(): void
+    public function testReduceBugDispatchMessages(): void
     {
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(5);
@@ -134,14 +133,25 @@ class BugHelperTest extends TestCase
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
-        $this->entityManager->expects($this->once())->method('flush');
         $this->bugProgress->expects($this->once())->method('increaseTotal')->with($this->bug, 5);
         $this->helper->reduceBug(123);
-        $this->assertTrue($this->bug->isReducing());
+    }
+
+    public function testReduceBugNotDispatchMessages(): void
+    {
+        $reducer = $this->createMock(ReducerInterface::class);
+        $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(0);
+        $this->config->expects($this->once())->method('getReducer')->willReturn('random');
+        $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
+        $this->messageBus->expects($this->never())->method('dispatch');
+        $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
+        $this->bugProgress->expects($this->never())->method('increaseTotal');
+        $this->helper->reduceBug(123);
     }
 
     public function testFinishReduceBug(): void
     {
+        $this->progress->setProcessed(10);
         $reducer = $this->createMock(ReducerInterface::class);
         $reducer->expects($this->once())->method('dispatch')->with($this->bug)->willReturn(0);
         $this->config->expects($this->once())->method('getReducer')->willReturn('random');
@@ -159,12 +169,8 @@ class BugHelperTest extends TestCase
             }))
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
-        $this->entityManager->expects($this->exactly(2))->method('flush');
-        $this->connection->expects($this->once())->method('connect');
-        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->bugProgress->expects($this->never())->method('increaseTotal');
         $this->helper->reduceBug(123);
-        $this->assertFalse($this->bug->isReducing());
     }
 
     public function testReportMissingBug(): void
@@ -209,7 +215,6 @@ class BugHelperTest extends TestCase
 
     public function testNotStopReduceSteps(): void
     {
-        $this->progress->setProcessed(5);
         $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -222,11 +227,7 @@ class BugHelperTest extends TestCase
         $this->reducerManager->expects($this->once())->method('getReducer')->with('random')->willReturn($reducer);
         $this->messageBus->expects($this->never())->method('dispatch');
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
-        $this->bugProgress
-            ->expects($this->once())
-            ->method('increaseProcessed')
-            ->with($this->bug, 1)
-            ->willReturnCallback(fn () => $this->bug->setReducing(true));
+        $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($this->bug, 1);
         $this->helper->reduceSteps(123, 4, 1, 2);
     }
 
@@ -250,7 +251,11 @@ class BugHelperTest extends TestCase
             ))
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
-        $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($this->bug, 1);
+        $this->bugProgress
+            ->expects($this->once())
+            ->method('increaseProcessed')
+            ->with($this->bug, 1)
+            ->willReturnCallback(fn () => $this->progress->setProcessed(10));
         $this->helper->reduceSteps(123, 4, 1, 2);
     }
 
@@ -284,7 +289,11 @@ class BugHelperTest extends TestCase
             )
             ->willReturn(new Envelope(new \stdClass()));
         $this->entityManager->expects($this->once())->method('find')->with(Bug::class, 123)->willReturn($this->bug);
-        $this->bugProgress->expects($this->once())->method('increaseProcessed')->with($this->bug, 1);
+        $this->bugProgress
+            ->expects($this->once())
+            ->method('increaseProcessed')
+            ->with($this->bug, 1)
+            ->willReturnCallback(fn () => $this->progress->setProcessed(10));
         $this->helper->reduceSteps(123, 4, 1, 2);
     }
 

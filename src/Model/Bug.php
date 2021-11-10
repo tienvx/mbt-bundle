@@ -14,7 +14,6 @@ abstract class Bug implements BugInterface
     protected string $message;
     protected ProgressInterface $progress;
     protected bool $closed = false;
-    protected bool $reducing = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -99,16 +98,6 @@ abstract class Bug implements BugInterface
     public function setClosed(bool $closed): void
     {
         $this->closed = $closed;
-    }
-
-    public function isReducing(): bool
-    {
-        return $this->reducing;
-    }
-
-    public function setReducing(bool $reducing): void
-    {
-        $this->reducing = $reducing;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

@@ -40,10 +40,6 @@ interface BugInterface
 
     public function setClosed(bool $closed): void;
 
-    public function isReducing(): bool;
-
-    public function setReducing(bool $reducing): void;
-
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): DateTimeInterface;

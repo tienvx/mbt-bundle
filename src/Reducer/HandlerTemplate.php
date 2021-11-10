@@ -82,7 +82,6 @@ abstract class HandlerTemplate implements HandlerInterface
 
             if (count($newSteps) <= count($bug->getSteps())) {
                 $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
-                $bug->setReducing(false);
                 $bug->getProgress()->setTotal(0);
                 $bug->getProgress()->setProcessed(0);
                 $bug->setSteps($newSteps);
