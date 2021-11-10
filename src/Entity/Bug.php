@@ -60,11 +60,6 @@ class Bug extends BugModel
     protected bool $closed = false;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    protected bool $reducing = false;
-
-    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     protected DateTimeInterface $createdAt;

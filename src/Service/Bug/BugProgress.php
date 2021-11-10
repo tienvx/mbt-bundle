@@ -23,9 +23,6 @@ class BugProgress implements BugProgressInterface
 
             $this->entityManager->lock($bug, LockMode::PESSIMISTIC_WRITE);
             $bug->getProgress()->increase($processed);
-            if ($bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
-                $bug->setReducing(false);
-            }
         };
 
         $this->entityManager->transactional($callback);

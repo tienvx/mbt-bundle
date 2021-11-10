@@ -1,0 +1,45 @@
+@startuml
+start
+:Reduce Bug;
+:Dispatch Messages;
+if (Count Messages > 0) then (yes)
+  :Increase bug messages total;
+  stop
+elseif (Finish all messages) then (yes)
+  :Stop reducing;
+  :Record and report;
+  stop
+else
+  stop
+endif
+
+start
+:Reduce Steps;
+if (Short Length) then (yes)
+  stop
+else
+  group Handle steps
+    :Create new steps;
+    if (Steps too long) then (yes)
+      stop
+    else
+      :Run new steps;
+      if (Got exact same bug) then (yes)
+        group Update bug
+          :Stop reducing;
+          :Set total = 0;
+          :Set processed = 0;
+          :Set steps;
+        end group
+        :Dispatch reduce bug again;
+      endif
+    endif
+  end group
+  :Increase bug messages processed;
+  if (Stopped Reducing) then (yes)
+    /':Stop reducing; '/
+    :Record and report;
+    stop
+  else
+    stop
+@enduml

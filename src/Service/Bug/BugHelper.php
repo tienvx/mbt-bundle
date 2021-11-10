@@ -7,7 +7,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
@@ -51,15 +50,13 @@ class BugHelper implements BugHelperInterface
     public function reduceBug(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'reduce bug');
-        $this->startReducing($bug);
 
         $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $messagesCount = $reducer->dispatch($bug);
-        if (0 === $messagesCount && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
-            $this->stopReducing($bug);
-            $this->recordAndReport($bug);
-        } elseif ($messagesCount > 0) {
+        if ($messagesCount > 0) {
             $this->bugProgress->increaseTotal($bug, $messagesCount);
+        } elseif ($bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
+            $this->recordAndReport($bug);
         }
     }
 
@@ -75,8 +72,11 @@ class BugHelper implements BugHelperInterface
         $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $reducer->handle($bug, $from, $to);
 
-        $this->bugProgress->increaseProcessed($bug, 1);
-        if (!$bug->isReducing()) {
+        $this->bugProgress->increaseProcessed($bug);
+        if (
+            $bug->getProgress()->getTotal() > 0
+            && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()
+        ) {
             $this->recordAndReport($bug);
         }
     }
@@ -126,24 +126,6 @@ class BugHelper implements BugHelperInterface
         }
 
         return $bug;
-    }
-
-    protected function startReducing(BugInterface $bug): void
-    {
-        if ($bug->isReducing()) {
-            throw new RuntimeException(sprintf('Bug %d is already reducing', $bug->getId()));
-        } else {
-            $bug->setReducing(true);
-            $this->entityManager->flush();
-        }
-    }
-
-    protected function stopReducing(BugInterface $bug): void
-    {
-        $bug->setReducing(false);
-        // Reducing bug take long time. Reconnect to flush changes.
-        $this->entityManager->getConnection()->connect();
-        $this->entityManager->flush();
     }
 
     protected function recordAndReport(BugInterface $bug): void
