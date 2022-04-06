@@ -40,15 +40,18 @@ class PluginPassTest extends TestCase
 
     public function testProcessSupportedPlugins(): void
     {
-        $this->assertSame(['plugin11'], $this->container->get(Manager1::class)->all());
-        $this->assertTrue($this->container->get(Manager1::class)->has('plugin11'));
-        $this->assertFalse($this->container->get(Manager1::class)->has('plugin12'));
-        $this->assertInstanceOf(Plugin11::class, $this->container->get(Manager1::class)->get('plugin11'));
-        $this->assertSame(['plugin21', 'plugin22'], $this->container->get(Manager2::class)->all());
-        $this->assertTrue($this->container->get(Manager2::class)->has('plugin21'));
-        $this->assertTrue($this->container->get(Manager2::class)->has('plugin22'));
-        $this->assertInstanceOf(Plugin21::class, $this->container->get(Manager2::class)->get('plugin21'));
-        $this->assertInstanceOf(Plugin22::class, $this->container->get(Manager2::class)->get('plugin22'));
+        $manager1 = $this->container->get(Manager1::class);
+        $this->assertSame(['plugin11'], $manager1->all());
+        $this->assertTrue($manager1->has('plugin11'));
+        $this->assertFalse($manager1->has('plugin12'));
+        $this->assertInstanceOf(Plugin11::class, $manager1->get('plugin11'));
+
+        $manager2 = $this->container->get(Manager2::class);
+        $this->assertSame(['plugin21', 'plugin22'], $manager2->all());
+        $this->assertTrue($manager2->has('plugin21'));
+        $this->assertTrue($manager2->has('plugin22'));
+        $this->assertInstanceOf(Plugin21::class, $manager2->get('plugin21'));
+        $this->assertInstanceOf(Plugin22::class, $manager2->get('plugin22'));
     }
 
     public function testProcessNotSupportedPlugin(): void

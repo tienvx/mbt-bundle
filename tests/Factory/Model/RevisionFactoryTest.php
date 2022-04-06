@@ -6,13 +6,14 @@ use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Factory\Model\RevisionFactory;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\PlaceFactory
- * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\TransitionFactory
  * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\RevisionFactory
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\PlaceFactory
+ * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\TransitionFactory
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */
 class RevisionFactoryTest extends TestCase
 {

@@ -19,12 +19,13 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\StepRunner
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
- * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
  */
 class StepRunnerTest extends TestCase
 {

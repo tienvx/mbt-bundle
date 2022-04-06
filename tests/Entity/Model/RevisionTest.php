@@ -9,8 +9,8 @@ use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */

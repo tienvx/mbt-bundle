@@ -11,8 +11,9 @@ use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
- * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
  */
 class PlaceTest extends TestCase
 {

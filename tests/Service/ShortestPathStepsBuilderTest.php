@@ -25,15 +25,16 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task
  * @covers \Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder
- * @covers \Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic
- * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
- * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic
+ * @uses \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
+ * @uses \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
  */
 class ShortestPathStepsBuilderTest extends TestCase
 {

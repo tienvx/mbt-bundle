@@ -12,8 +12,9 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\ReducerTemplate
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  */
 class SplitReducerTest extends TestCase
 {

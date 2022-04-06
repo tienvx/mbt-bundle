@@ -9,7 +9,8 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler
- * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
  */
 class ReduceStepsMessageHandlerTest extends TestCase
 {

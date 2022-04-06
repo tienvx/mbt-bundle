@@ -8,7 +8,8 @@ use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class CommandFactoryTest extends TestCase
 {

@@ -13,11 +13,11 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task\Browser
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
  * @covers \Tienvx\Bundle\MbtBundle\Service\SelenoidHelper
  */
 class SelenoidHelperTest extends StepsTestCase

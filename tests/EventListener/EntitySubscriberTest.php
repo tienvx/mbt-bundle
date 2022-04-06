@@ -14,9 +14,10 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber
- * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  */
 class EntitySubscriberTest extends TestCase
 {

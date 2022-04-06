@@ -12,9 +12,10 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
  */
 class BugProgressTest extends TestCase
 {

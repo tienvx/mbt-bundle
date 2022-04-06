@@ -15,7 +15,8 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class WaitCommandRunnerTest extends RunnerTestCase
 {

@@ -15,10 +15,11 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
- * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */
 class PetrinetHelperTest extends TestCase
 {

@@ -7,8 +7,9 @@ use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\PlaceFactory;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\PlaceFactory
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
  */
 class PlaceFactoryTest extends TestCase
 {

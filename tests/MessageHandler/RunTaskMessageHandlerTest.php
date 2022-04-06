@@ -9,7 +9,8 @@ use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler
- * @covers \Tienvx\Bundle\MbtBundle\Message\RunTaskMessage
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Message\RunTaskMessage
  */
 class RunTaskMessageHandlerTest extends StepsTestCase
 {

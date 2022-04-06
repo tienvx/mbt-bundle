@@ -9,6 +9,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper;
@@ -20,19 +21,20 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Generator\RandomGenerator
  * @covers \Tienvx\Bundle\MbtBundle\Generator\AbstractGenerator
- * @covers \Tienvx\Bundle\MbtBundle\Model\Generator\State
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
- * @covers \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
- * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
- * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
- * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Generator\State
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ * @uses \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
+ * @uses \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
+ * @uses \Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper
+ * @uses \Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper
  */
 class RandomGeneratorTest extends TestCase
 {
@@ -86,8 +88,26 @@ class RandomGeneratorTest extends TestCase
         $this->assertSame('random', RandomGenerator::getName());
     }
 
+    public function testIsSupported(): void
+    {
+        $this->assertTrue(RandomGenerator::isSupported());
+    }
+
     public function testGenerate(): void
     {
-        $this->assertCount(3, $this->generator->generate($this->task));
+        $count = 0;
+        $steps = [
+            ['transition' => 0, 'places' => [0 => 1], 'color' => []],
+            ['transition' => 1, 'places' => [1 => 1], 'color' => []],
+            ['transition' => 2, 'places' => [2 => 1], 'color' => []],
+        ];
+        foreach ($this->generator->generate($this->task) as $index => $step) {
+            $this->assertInstanceOf(StepInterface::class, $step);
+            $this->assertSame($steps[$index]['transition'], $step->getTransition());
+            $this->assertSame($steps[$index]['places'], $step->getPlaces());
+            $this->assertSame($steps[$index]['color'], $step->getColor()->getValues());
+            ++$count;
+        }
+        $this->assertSame(3, $count);
     }
 }

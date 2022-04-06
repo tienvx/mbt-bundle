@@ -11,7 +11,8 @@ use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class CommandPreprocessorTest extends TestCase
 {
