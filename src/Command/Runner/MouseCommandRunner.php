@@ -187,7 +187,7 @@ class MouseCommandRunner extends CommandRunner
                     break;
                 }
 
-                throw new Exception( //NOSONAR
+                throw new Exception(
                     'Unable to perform mouse out as the element takes up the entire viewport'
                 );
             case self::MOUSE_OVER:

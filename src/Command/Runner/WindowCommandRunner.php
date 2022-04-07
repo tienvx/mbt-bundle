@@ -106,7 +106,7 @@ class WindowCommandRunner extends CommandRunner
     protected function getHandle(string $target): string
     {
         if (!$this->isValidHandle($target)) {
-            throw new Exception('Invalid window handle given (e.g. handle=${handleVariable})'); //NOSONAR
+            throw new Exception('Invalid window handle given (e.g. handle=${handleVariable})');
         }
 
         return substr($target, 7);

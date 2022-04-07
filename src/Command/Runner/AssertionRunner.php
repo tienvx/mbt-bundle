@@ -221,7 +221,7 @@ class AssertionRunner extends CommandRunner
     protected function assert(bool $assertion, string $message): void
     {
         if (!$assertion) {
-            throw new Exception($message); //NOSONAR
+            throw new Exception($message);
         }
     }
 }
