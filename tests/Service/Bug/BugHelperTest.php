@@ -35,14 +35,15 @@ use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Task
- * @covers \Tienvx\Bundle\MbtBundle\Model\Progress
- * @covers \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
- * @covers \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
+ * @uses \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
+ * @uses \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  */
 class BugHelperTest extends TestCase
 {

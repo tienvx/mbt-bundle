@@ -12,8 +12,9 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\Random\RandomReducer
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\ReducerTemplate
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  */
 class RandomReducerTest extends TestCase
 {

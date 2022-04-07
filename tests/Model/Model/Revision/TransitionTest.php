@@ -13,8 +13,9 @@ use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
- * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
  */
 class TransitionTest extends TestCase
 {

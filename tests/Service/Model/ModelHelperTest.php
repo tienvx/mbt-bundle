@@ -12,11 +12,12 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Model\ModelHelper
- * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Place
- * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\ValueObject\Model\Place
+ * @uses \Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */
 class ModelHelperTest extends TestCase
 {

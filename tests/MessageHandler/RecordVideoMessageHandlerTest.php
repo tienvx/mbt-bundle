@@ -9,7 +9,8 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler
- * @covers \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  */
 class RecordVideoMessageHandlerTest extends TestCase
 {

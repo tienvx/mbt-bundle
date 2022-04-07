@@ -8,10 +8,11 @@ use Tienvx\Bundle\MbtBundle\Tests\Reducer\DispatcherTestCase;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\DispatcherTemplate
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
- * @covers \Tienvx\Bundle\MbtBundle\Model\Bug\Step
- * @covers \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage
  */
 class SplitDispatcherTest extends DispatcherTestCase
 {

@@ -13,27 +13,28 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
- * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
- * @covers \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
  * @covers \Tienvx\Bundle\MbtBundle\Model\Model
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision
- * @covers \Tienvx\Bundle\MbtBundle\Validator\TagsValidator
- * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommand
- * @covers \Tienvx\Bundle\MbtBundle\ValueObject\Model\Command
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ * @uses \Tienvx\Bundle\MbtBundle\Validator\TagsValidator
+ * @uses \Tienvx\Bundle\MbtBundle\Validator\ValidCommand
+ * @uses \Tienvx\Bundle\MbtBundle\ValueObject\Model\Command
  */
 class ModelTest extends TestCase
 {

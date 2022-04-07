@@ -7,8 +7,9 @@ use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\TransitionFactory;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\TransitionFactory
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
- * @covers \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\HasCommands
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition
  */
 class TransitionFactoryTest extends TestCase
 {
