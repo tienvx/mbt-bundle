@@ -12,9 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task as TaskModel;
 use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepository;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=TaskRepository::class)
  * @ORM\HasLifecycleCallbacks
  */
 class Task extends TaskModel

@@ -23,12 +23,10 @@ class RandomHandlerTest extends HandlerTestCase
     {
         parent::setUp();
         $this->handler = new RandomHandler(
-            $this->entityManager,
+            $this->bugRepository,
             $this->messageBus,
-            $this->stepRunner,
-            $this->stepsBuilder,
-            $this->bugHelper,
-            $this->selenoidHelper
+            $this->stepsRunner,
+            $this->stepsBuilder
         );
     }
 }

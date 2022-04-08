@@ -2,7 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Petrinet\Builder\MarkingBuilder;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
@@ -41,13 +41,15 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitDispatcher;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitHandler;
 use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
+use Tienvx\Bundle\MbtBundle\Repository\BugRepository;
+use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepository;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
 use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
-use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgress;
-use Tienvx\Bundle\MbtBundle\Service\Bug\BugProgressInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelDumper;
@@ -64,6 +66,8 @@ use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
@@ -92,51 +96,46 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->autoconfigure(true)
 
+        // Message handlers
         ->set(RunTaskMessageHandler::class)
             ->args([
                 service(TaskHelperInterface::class),
             ])
             ->autoconfigure(true)
-
         ->set(RecordVideoMessageHandler::class)
             ->args([
                 service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
-
         ->set(ReduceBugMessageHandler::class)
             ->args([
                 service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
-
         ->set(ReduceStepsMessageHandler::class)
             ->args([
                 service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
-
         ->set(ReportBugMessageHandler::class)
             ->args([
                 service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
-
         ->set(ReducerManager::class)
             ->alias(ReducerManagerInterface::class, ReducerManager::class)
 
+        // Reducers
         ->set(RandomDispatcher::class)
             ->args([
                 service(MessageBusInterface::class),
             ])
         ->set(RandomHandler::class)
             ->args([
-                service(EntityManagerInterface::class),
+                service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(StepRunnerInterface::class),
+                service(StepsRunnerInterface::class),
                 service(StepsBuilderInterface::class),
-                service(BugHelperInterface::class),
-                service(SelenoidHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -150,12 +149,10 @@ return static function (ContainerConfigurator $container): void {
             ])
         ->set(SplitHandler::class)
             ->args([
-                service(EntityManagerInterface::class),
+                service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(StepRunnerInterface::class),
+                service(StepsRunnerInterface::class),
                 service(StepsBuilderInterface::class),
-                service(BugHelperInterface::class),
-                service(SelenoidHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -164,6 +161,7 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->autoconfigure(true)
 
+        // Validators
         ->set(TagsValidator::class)
         ->set(ValidCommandValidator::class)
             ->args([
@@ -173,9 +171,9 @@ return static function (ContainerConfigurator $container): void {
                 'alias' => ValidCommandValidator::class,
             ])
 
+        // Commands
         ->set(CommandPreprocessor::class)
             ->alias(CommandPreprocessorInterface::class, CommandPreprocessor::class)
-
         ->set(CommandRunnerManager::class)
             ->args([
                 tagged_iterator(CommandRunnerInterface::TAG),
@@ -200,6 +198,20 @@ return static function (ContainerConfigurator $container): void {
         ->set(WindowCommandRunner::class)
             ->autoconfigure(true)
 
+        // Repositories
+        ->set(BugRepository::class)
+            ->args([
+                service(ManagerRegistry::class),
+            ])
+            ->tag('doctrine.repository_service')
+            ->alias(BugRepositoryInterface::class, BugRepository::class)
+        ->set(TaskRepository::class)
+            ->args([
+                service(ManagerRegistry::class),
+            ])
+            ->tag('doctrine.repository_service')
+            ->alias(TaskRepositoryInterface::class, TaskRepository::class)
+
         // Services
         ->set(ExpressionLanguage::class)
 
@@ -212,32 +224,23 @@ return static function (ContainerConfigurator $container): void {
         ->set(ModelHelper::class)
             ->alias(ModelHelperInterface::class, ModelHelper::class)
 
-        ->set(BugProgress::class)
-            ->args([
-                service(EntityManagerInterface::class),
-            ])
-            ->alias(BugProgressInterface::class, BugProgress::class)
-
         ->set(BugHelper::class)
             ->args([
-                service(ReducerManager::class),
-                service(EntityManagerInterface::class),
+                service(ReducerManagerInterface::class),
+                service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(BugProgressInterface::class),
                 service(BugNotifierInterface::class),
-                service(StepRunnerInterface::class),
-                service(SelenoidHelperInterface::class),
+                service(StepsRunnerInterface::class),
                 service(ConfigInterface::class),
             ])
             ->alias(BugHelperInterface::class, BugHelper::class)
 
         ->set(TaskHelper::class)
             ->args([
-                service(GeneratorManager::class),
-                service(EntityManagerInterface::class),
-                service(StepRunnerInterface::class),
+                service(GeneratorManagerInterface::class),
+                service(TaskRepositoryInterface::class),
+                service(StepsRunnerInterface::class),
                 service(BugHelperInterface::class),
-                service(SelenoidHelperInterface::class),
                 service(ConfigInterface::class),
             ])
             ->alias(TaskHelperInterface::class, TaskHelper::class)
@@ -261,6 +264,13 @@ return static function (ContainerConfigurator $container): void {
                 service(CommandRunnerManagerInterface::class),
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
+
+        ->set(StepsRunner::class)
+            ->args([
+                service(SelenoidHelperInterface::class),
+                service(StepRunnerInterface::class),
+            ])
+            ->alias(StepsRunnerInterface::class, StepsRunner::class)
 
         ->set(MarkingHelper::class)
             ->args([

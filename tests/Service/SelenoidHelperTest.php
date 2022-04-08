@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
+use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Entity\Task\Browser;
@@ -10,7 +11,6 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
@@ -20,7 +20,7 @@ use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
  * @covers \Tienvx\Bundle\MbtBundle\Service\SelenoidHelper
  */
-class SelenoidHelperTest extends StepsTestCase
+class SelenoidHelperTest extends TestCase
 {
     protected string $webdriverUri = 'http://localhost:4444';
     protected SelenoidHelperInterface $selenoidHelper;
