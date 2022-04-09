@@ -2,33 +2,32 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Channel;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ServiceLocator;
+use Tienvx\Bundle\MbtBundle\Channel\ChannelInterface;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
+use Tienvx\Bundle\MbtBundle\Tests\Plugin\PluginManagerTest;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Channel\ChannelManager
- * @covers \Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Plugin\PluginManager
  */
-class ChannelManagerTest extends TestCase
+class ChannelManagerTest extends PluginManagerTest
 {
-    protected ChannelManager $channelManager;
-    protected ServiceLocator $locator;
+    protected array $plugins = ['email', 'slack/chat'];
+    protected string $getMethod = 'getChannel';
 
-    protected function setUp(): void
+    protected function getPluginManagerClass(): string
     {
-        $this->locator = $this->createMock(ServiceLocator::class);
-        $plugins = ['split', 'random'];
-        $this->channelManager = new ChannelManager($this->locator, $plugins);
+        return ChannelManager::class;
     }
 
-    public function testDoesNotHaveOther(): void
+    protected function getPluginInterface(): string
     {
-        $this->locator->expects($this->never())->method('has');
-        $this->assertFalse($this->channelManager->has('other'));
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Channel "other" does not exist.');
-        $this->channelManager->getChannel('other');
+        return ChannelInterface::class;
+    }
+
+    protected function getInvalidPluginExceptionMessage(string $plugin): string
+    {
+        return sprintf('Channel "%s" does not exist.', $plugin);
     }
 }

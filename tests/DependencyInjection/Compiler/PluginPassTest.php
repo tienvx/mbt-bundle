@@ -16,7 +16,7 @@ use Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin\Plugin22;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass
- * @covers \Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager
+ * @covers \Tienvx\Bundle\MbtBundle\Plugin\PluginManager
  */
 class PluginPassTest extends TestCase
 {

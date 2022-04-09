@@ -2,17 +2,22 @@
 
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManager;
 
-class GeneratorManager extends AbstractPluginManager implements GeneratorManagerInterface
+class GeneratorManager extends PluginManager implements GeneratorManagerInterface
 {
     public function getGenerator(string $name): GeneratorInterface
     {
-        if ($this->has($name) && ($generator = $this->get($name)) && $generator instanceof GeneratorInterface) {
-            return $generator;
-        }
+        return parent::get($name);
+    }
 
-        throw new UnexpectedValueException(sprintf('Generator "%s" does not exist.', $name));
+    protected function getPluginInterface(): string
+    {
+        return GeneratorInterface::class;
+    }
+
+    protected function getInvalidPluginExceptionMessage(string $name): string
+    {
+        return sprintf('Generator "%s" does not exist.', $name);
     }
 }
