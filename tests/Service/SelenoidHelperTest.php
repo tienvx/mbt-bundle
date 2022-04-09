@@ -13,12 +13,13 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
 /**
+ * @covers \Tienvx\Bundle\MbtBundle\Service\SelenoidHelper
+ *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
- * @covers \Tienvx\Bundle\MbtBundle\Service\SelenoidHelper
  */
 class SelenoidHelperTest extends TestCase
 {
