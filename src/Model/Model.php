@@ -3,10 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
-abstract class Model implements ModelInterface
+class Model implements ModelInterface
 {
     protected ?int $id = null;
     protected ?int $author = null;
@@ -16,6 +17,11 @@ abstract class Model implements ModelInterface
     protected RevisionInterface $activeRevision;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
+
+    public function __construct()
+    {
+        $this->revisions = new ArrayCollection();
+    }
 
     public function setId(int $id)
     {
@@ -58,7 +64,7 @@ abstract class Model implements ModelInterface
     }
 
     /**
-     * @return Collection|RevisionInterface[]
+     * @return Collection<RevisionInterface>
      */
     public function getRevisions(): Collection
     {

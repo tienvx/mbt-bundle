@@ -4,6 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Generator;
 
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManagerInterface;
 use Tienvx\Bundle\MbtBundle\Tests\Plugin\PluginManagerTest;
 
 /**
@@ -16,14 +18,14 @@ class GeneratorManagerTest extends PluginManagerTest
     protected array $plugins = ['random'];
     protected string $getMethod = 'getGenerator';
 
-    protected function getPluginManagerClass(): string
+    protected function createPluginManager(): PluginManagerInterface
     {
-        return GeneratorManager::class;
+        return new GeneratorManager($this->locator, $this->plugins);
     }
 
-    protected function getPluginInterface(): string
+    protected function createPlugin(): PluginInterface
     {
-        return GeneratorInterface::class;
+        return $this->createMock(GeneratorInterface::class);
     }
 
     protected function getInvalidPluginExceptionMessage(string $plugin): string

@@ -2,6 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
 use Tienvx\Bundle\MbtBundle\Tests\Plugin\PluginManagerTest;
@@ -16,14 +18,14 @@ class ReducerManagerTest extends PluginManagerTest
     protected array $plugins = ['split', 'random'];
     protected string $getMethod = 'getReducer';
 
-    protected function getPluginManagerClass(): string
+    protected function createPluginManager(): PluginManagerInterface
     {
-        return ReducerManager::class;
+        return new ReducerManager($this->locator, $this->plugins);
     }
 
-    protected function getPluginInterface(): string
+    protected function createPlugin(): PluginInterface
     {
-        return ReducerInterface::class;
+        return $this->createMock(ReducerInterface::class);
     }
 
     protected function getInvalidPluginExceptionMessage(string $plugin): string

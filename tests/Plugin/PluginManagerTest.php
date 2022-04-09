@@ -23,10 +23,9 @@ class PluginManagerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->plugin = $this->createMock($this->getPluginInterface());
+        $this->plugin = $this->createPlugin();
         $this->locator = $this->createMock(ServiceLocator::class);
-        $pluginManagerClass = $this->getPluginManagerClass();
-        $this->pluginManager = new $pluginManagerClass($this->locator, $this->plugins);
+        $this->pluginManager = $this->createPluginManager();
     }
 
     /**
@@ -63,14 +62,14 @@ class PluginManagerTest extends TestCase
         $this->pluginManager->get($plugin);
     }
 
-    protected function getPluginManagerClass(): string
+    protected function createPluginManager(): PluginManagerInterface
     {
-        return PluginManager::class;
+        return new PluginManager($this->locator, $this->plugins);
     }
 
-    protected function getPluginInterface(): string
+    protected function createPlugin(): PluginInterface
     {
-        return PluginInterface::class;
+        return $this->createMock(PluginInterface::class);
     }
 
     protected function getInvalidPluginExceptionMessage(string $plugin): string
