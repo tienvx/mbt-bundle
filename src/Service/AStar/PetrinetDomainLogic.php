@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Service\AStar;
 
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
-use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
@@ -29,18 +28,26 @@ class PetrinetDomainLogic implements PetrinetDomainLogicInterface
         $this->petrinet = $petrinet;
     }
 
-    public function calculateEstimatedCost(mixed $fromNode, mixed $toNode): float
+    public function calculateEstimatedCost(mixed $fromNode, mixed $toNode): float|int
     {
         if (!$fromNode instanceof Step || !$toNode instanceof Step) {
             throw new RuntimeException('The provided nodes are invalid');
         }
 
-        $tokensDiff = [];
-        foreach ($toNode->getPlaces() as $place => $tokens) {
-            $tokensDiff[$place] = abs($tokens - ($fromNode->getPlaces()[$place] ?? 0));
+        $tokensDiff = 0;
+        $fromPlaces = array_keys($fromNode->getPlaces());
+        $toPlaces = array_keys($toNode->getPlaces());
+        foreach (array_unique(array_merge($fromPlaces, $toPlaces)) as $place) {
+            if (!in_array($place, $fromPlaces)) {
+                $tokensDiff += $toNode->getPlaces()[$place];
+            } elseif (!in_array($place, $toPlaces)) {
+                $tokensDiff += $fromNode->getPlaces()[$place];
+            } else {
+                $tokensDiff += abs($toNode->getPlaces()[$place] - $fromNode->getPlaces()[$place]);
+            }
         }
         // Estimate it will took N transitions to move N tokens if color is the same, twice if color is not the same.
-        return array_sum($tokensDiff) * (($fromNode->getColor()->getValues() != $toNode->getColor()->getValues()) + 1);
+        return $tokensDiff * (($fromNode->getColor()->getValues() != $toNode->getColor()->getValues()) + 1);
     }
 
     public function calculateRealCost(mixed $node, mixed $adjacent): float|int
@@ -64,7 +71,7 @@ class PetrinetDomainLogic implements PetrinetDomainLogicInterface
         foreach ($this->transitionService->getEnabledTransitions($this->petrinet, $marking) as $transition) {
             // Create new marking.
             $marking = $this->markingHelper->getMarking($this->petrinet, $node->getPlaces(), $node->getColor());
-            if ($transition instanceof TransitionInterface && $marking instanceof ColorfulMarkingInterface) {
+            if ($transition instanceof TransitionInterface) {
                 $this->transitionService->fire($transition, $marking);
                 $adjacents[] = new Step(
                     $this->markingHelper->getPlaces($marking),
