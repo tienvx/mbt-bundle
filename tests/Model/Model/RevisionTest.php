@@ -85,6 +85,7 @@ class RevisionTest extends TestCase
         $this->assertSame(1, $this->revision->getId());
         $this->assertSame($this->model, $this->revision->getModel());
         $this->assertSame($this->places, $this->revision->getPlaces());
+        $this->assertSame($this->places[0], $this->revision->getPlace(0));
         $this->assertSame($this->transitions, $this->revision->getTransitions());
         $this->assertSame($this->transitions[0], $this->revision->getTransition(0));
     }
