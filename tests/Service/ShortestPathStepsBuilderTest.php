@@ -195,9 +195,9 @@ class ShortestPathStepsBuilderTest extends TestCase
         $this->bug->setTask($task);
     }
 
-    protected function geColor(int $number): Color
+    protected function geColor(int $products): Color
     {
-        return new Color(['products' => $number]);
+        return new Color(['products' => $products]);
     }
 
     protected function initStepsBuilder(): void
