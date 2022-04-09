@@ -2,17 +2,17 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
+use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Message\RunTaskMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
-use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler
  *
  * @uses \Tienvx\Bundle\MbtBundle\Message\RunTaskMessage
  */
-class RunTaskMessageHandlerTest extends StepsTestCase
+class RunTaskMessageHandlerTest extends TestCase
 {
     protected TaskHelperInterface $taskHelper;
     protected RunTaskMessageHandler $handler;

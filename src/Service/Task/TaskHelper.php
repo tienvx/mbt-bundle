@@ -2,110 +2,72 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Task;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 
 class TaskHelper implements TaskHelperInterface
 {
     protected GeneratorManagerInterface $generatorManager;
-    protected EntityManagerInterface $entityManager;
-    protected StepRunnerInterface $stepRunner;
+    protected TaskRepositoryInterface $taskRepository;
+    protected StepsRunnerInterface $stepsRunner;
     protected BugHelperInterface $bugHelper;
-    protected SelenoidHelperInterface $selenoidHelper;
     protected ConfigInterface $config;
 
     public function __construct(
         GeneratorManagerInterface $generatorManager,
-        EntityManagerInterface $entityManager,
-        StepRunnerInterface $stepRunner,
+        TaskRepositoryInterface $taskRepository,
+        StepsRunnerInterface $stepsRunner,
         BugHelperInterface $bugHelper,
-        SelenoidHelperInterface $selenoidHelper,
         ConfigInterface $config
     ) {
         $this->generatorManager = $generatorManager;
-        $this->entityManager = $entityManager;
-        $this->stepRunner = $stepRunner;
+        $this->taskRepository = $taskRepository;
+        $this->stepsRunner = $stepsRunner;
         $this->bugHelper = $bugHelper;
-        $this->selenoidHelper = $selenoidHelper;
         $this->config = $config;
     }
 
-    /**
-     * @throws ExceptionInterface
-     */
     public function run(int $taskId): void
     {
-        $task = $this->getTask($taskId);
-        $this->startRunning($task);
-
-        $steps = [];
-        try {
-            $generator = $this->generatorManager->getGenerator($this->config->getGenerator());
-            $driver = $this->selenoidHelper->createDriver(
-                $this->selenoidHelper->getCapabilities($task, $task->isDebug())
-            );
-            foreach ($generator->generate($task) as $step) {
-                if ($step instanceof StepInterface) {
-                    $this->stepRunner->run($step, $task->getModelRevision(), $driver);
-                    $steps[] = clone $step;
-                }
-                if (count($steps) >= $this->config->getMaxSteps()) {
-                    break;
-                }
-            }
-        } catch (ExceptionInterface $exception) {
-            throw $exception;
-        } catch (Throwable $throwable) {
-            if (isset($step) && $step instanceof StepInterface) {
-                // Last step cause the bug, we can't capture it. We capture it here.
-                $steps[] = clone $step;
-            }
-            $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage()));
-        } finally {
-            if (isset($driver)) {
-                $driver->quit();
-            }
-            $this->stopRunning($task);
-        }
-    }
-
-    protected function getTask(int $taskId): TaskInterface
-    {
-        $task = $this->entityManager->find(Task::class, $taskId);
+        $task = $this->taskRepository->find($taskId);
 
         if (!$task instanceof TaskInterface) {
-            throw new UnexpectedValueException(sprintf('Can not execute task %d: task not found', $taskId));
+            throw new UnexpectedValueException(sprintf('Can not run task %d: task not found', $taskId));
         }
 
-        return $task;
-    }
-
-    protected function startRunning(TaskInterface $task): void
-    {
         if ($task->isRunning()) {
-            throw new RuntimeException(sprintf('Task %d is already running', $task->getId()));
-        } else {
-            $task->setRunning(true);
-            $this->entityManager->flush();
+            throw new RuntimeException(sprintf('Can not run task %d: task is already running', $task->getId()));
         }
-    }
 
-    protected function stopRunning(TaskInterface $task): void
-    {
-        $task->setRunning(false);
-        // Running task take long time. Reconnect to flush changes.
-        $this->entityManager->getConnection()->connect();
-        $this->entityManager->flush();
+        $this->taskRepository->startRunning($task);
+
+        $steps = [];
+        $this->stepsRunner->run(
+            $this->generatorManager->getGenerator($this->config->getGenerator())->generate($task),
+            $task,
+            $task->isDebug(),
+            function (Throwable $throwable, ?StepInterface $step) use ($task, &$steps): void {
+                if ($step instanceof StepInterface) {
+                    // Last step cause the bug, we can't capture it. We capture it here.
+                    $steps[] = clone $step;
+                }
+                $task->addBug($this->bugHelper->createBug($steps, $throwable->getMessage()));
+            },
+            function (StepInterface $step) use (&$steps): bool {
+                $steps[] = clone $step;
+
+                return count($steps) >= $this->config->getMaxSteps();
+            }
+        );
+
+        $this->taskRepository->stopRunning($task);
     }
 }

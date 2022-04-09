@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
-        "doctrine/annotations": "^1.13",
+        "doctrine/doctrine-bundle": "^2.6",
         "doctrine/orm": "^2.8",
         "florianv/petrinet": "^2.1",
         "jmgq/a-star": "^2.1",

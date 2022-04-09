@@ -2,28 +2,25 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Task;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
+use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
-use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
@@ -36,21 +33,17 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
-class TaskHelperTest extends StepsTestCase
+class TaskHelperTest extends TestCase
 {
     protected array $steps;
     protected GeneratorManagerInterface $generatorManager;
-    protected EntityManagerInterface $entityManager;
-    protected StepRunnerInterface $stepRunner;
+    protected TaskRepositoryInterface $taskRepository;
+    protected StepsRunnerInterface $stepsRunner;
     protected BugHelperInterface $bugHelper;
     protected TaskHelperInterface $taskHelper;
-    protected SelenoidHelperInterface $selenoidHelper;
     protected ConfigInterface $config;
-    protected Connection $connection;
-    protected DesiredCapabilities $capabilities;
-    protected RemoteWebDriver $driver;
-    protected Revision $revision;
     protected TaskInterface $task;
+    protected BugInterface $bug;
 
     protected function setUp(): void
     {
@@ -61,151 +54,109 @@ class TaskHelperTest extends StepsTestCase
             new Step([], new Color(), 3),
         ];
         $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->stepRunner = $this->createMock(StepRunnerInterface::class);
+        $this->taskRepository = $this->createMock(TaskRepositoryInterface::class);
+        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
         $this->bugHelper = $this->createMock(BugHelperInterface::class);
-        $this->selenoidHelper = $this->createMock(SelenoidHelperInterface::class);
         $this->config = $this->createMock(ConfigInterface::class);
-        $this->connection = $this->createMock(Connection::class);
         $this->taskHelper = new TaskHelper(
             $this->generatorManager,
-            $this->entityManager,
-            $this->stepRunner,
+            $this->taskRepository,
+            $this->stepsRunner,
             $this->bugHelper,
-            $this->selenoidHelper,
             $this->config
         );
-        $this->driver = $this->createMock(RemoteWebDriver::class);
-        $this->capabilities = new DesiredCapabilities();
-        $this->revision = new Revision();
         $this->task = new Task();
         $this->task->setId(123);
         $this->task->setRunning(false);
-        $this->task->setModelRevision($this->revision);
+        $this->task->setDebug(true);
+        $this->bug = new Bug();
     }
 
     public function testRunNoTask(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Can not execute task 123: task not found');
-        $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn(null);
+        $this->expectExceptionMessage('Can not run task 123: task not found');
+        $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn(null);
         $this->taskHelper->run(123);
     }
 
-    public function testRunAlreadyRunningTask(): void
+    public function testRunTaskAlreadyRunning(): void
     {
-        $task = new Task();
-        $task->setId(123);
-        $task->setRunning(true);
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Task 123 is already running');
-        $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($task);
+        $this->expectExceptionMessage('Can not run task 123: task is already running');
+        $this->task->setRunning(true);
+        $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn($this->task);
         $this->taskHelper->run(123);
     }
 
-    public function testRun(): void
+    /**
+     * @dataProvider stepProvider
+     */
+    public function testRun(?Throwable $exception, ?StepInterface $step): void
     {
-        $this->config->expects($this->exactly(4))->method('getMaxSteps')->willReturn(150);
+        $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn($this->task);
+        $this->taskRepository->expects($this->once())->method('startRunning')->with($this->task);
+        $this->taskRepository->expects($this->once())->method('stopRunning')->with($this->task);
         $generator = $this->createMock(GeneratorInterface::class);
-        $generator->expects($this->once())->method('generate')->with($this->task)->willReturnCallback(
-            fn () => yield from $this->steps
-        );
-        $this->driver->expects($this->once())->method('quit');
-        $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
+        $generator->expects($this->once())->method('generate')->with($this->task)->willReturn($this->steps);
         $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
-        $this->selenoidHelper
+        $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
+        $this->stepsRunner
             ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->task, $this->task->isDebug())
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->stepRunner
-            ->expects($this->exactly(4))
             ->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
-        $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($this->task);
-        $this->entityManager->expects($this->exactly(2))->method('flush');
-        $this->connection->expects($this->once())->method('connect');
-        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
-        $this->entityManager->expects($this->never())->method('persist');
+            ->with(
+                $this->steps,
+                $this->task,
+                $this->task->isDebug(),
+                $this->callback(function (callable $exceptionCallback) use ($exception, $step) {
+                    if ($exception) {
+                        $exceptionCallback($exception, $step);
+                    }
+
+                    return true;
+                }),
+                $this->callback(function (callable $runCallback) use ($exception, $step) {
+                    if (!$exception && $step) {
+                        $this->assertFalse($runCallback($step));
+                    }
+
+                    return true;
+                })
+            );
+        if ($exception) {
+            $this->bugHelper
+                ->expects($this->once())
+                ->method('createBug')
+                ->with($step ? [$step] : [], $exception->getMessage())
+                ->willReturn($this->bug);
+        } else {
+            $this->bugHelper->expects($this->never())->method('createBug');
+        }
+        if (!$exception && $step) {
+            $this->config
+                ->expects($this->once())
+                ->method('getMaxSteps')
+                ->willReturn(150);
+        } else {
+            $this->config->expects($this->never())->method('getMaxSteps');
+        }
         $this->taskHelper->run(123);
-        $this->assertFalse($this->task->isRunning());
+        if ($exception) {
+            $this->assertSame([$this->bug], $this->task->getBugs()->toArray());
+        } else {
+            $this->assertEmpty($this->task->getBugs());
+        }
     }
 
-    public function testRunFoundBug(): void
+    public function stepProvider(): array
     {
-        $this->config->expects($this->exactly(2))->method('getMaxSteps')->willReturn(150);
-        $generator = $this->createMock(GeneratorInterface::class);
-        $generator->expects($this->once())->method('generate')->with($this->task)->willReturnCallback(
-            fn () => yield from $this->steps
-        );
-        $this->driver->expects($this->once())->method('quit');
-        $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
-        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->task, $this->task->isDebug())
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->stepRunner->expects($this->exactly(3))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
-            ->will($this->onConsecutiveCalls(
-                null,
-                null,
-                $this->throwException(new Exception('Can not run the third step')),
-            ));
-        $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($this->task);
-        $this->entityManager->expects($this->exactly(2))->method('flush');
-        $this->connection->expects($this->once())->method('connect');
-        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
-        $this->bugHelper
-            ->expects($this->once())
-            ->method('createBug')
-            ->with([$this->steps[0], $this->steps[1], $this->steps[2]], 'Can not run the third step')
-            ->willReturn($bug = new Bug());
+        $step = new Step([], new Color(), 0);
 
-        $this->taskHelper->run(123);
-        $this->assertFalse($this->task->isRunning());
-        $this->assertSame([$bug], $this->task->getBugs()->toArray());
-    }
-
-    public function testRunReachMaxSteps(): void
-    {
-        $this->config->expects($this->exactly(2))->method('getMaxSteps')->willReturn(2);
-        $generator = $this->createMock(GeneratorInterface::class);
-        $generator->expects($this->once())->method('generate')->with($this->task)->willReturnCallback(
-            fn () => yield from $this->steps
-        );
-        $this->driver->expects($this->once())->method('quit');
-        $this->config->expects($this->once())->method('getGenerator')->willReturn('random');
-        $this->generatorManager->expects($this->once())->method('getGenerator')->with('random')->willReturn($generator);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->task, $this->task->isDebug())
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->stepRunner->expects($this->exactly(2))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
-        $this->entityManager->expects($this->once())->method('find')->with(Task::class, 123)->willReturn($this->task);
-        $this->entityManager->expects($this->exactly(2))->method('flush');
-        $this->connection->expects($this->once())->method('connect');
-        $this->entityManager->expects($this->once())->method('getConnection')->willReturn($this->connection);
-        $this->entityManager->expects($this->never())->method('persist');
-        $this->taskHelper->run(123);
-        $this->assertFalse($this->task->isRunning());
+        return [
+            [null, null],
+            [null, $step],
+            [new Exception('Something wrong'), null],
+            [new Exception('Caught a bug'), $step],
+        ];
     }
 }

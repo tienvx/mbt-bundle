@@ -2,62 +2,43 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
-use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
-use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
-use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
-use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Tests\StepsTestCase;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 
-class HandlerTestCase extends StepsTestCase
+class HandlerTestCase extends TestCase
 {
     protected HandlerInterface $handler;
-    protected EntityManagerInterface $entityManager;
+    protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected StepRunnerInterface $stepRunner;
+    protected StepsRunnerInterface $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
-    protected BugHelperInterface $bugHelper;
-    protected SelenoidHelperInterface $selenoidHelper;
-    protected DesiredCapabilities $capabilities;
-    protected RemoteWebDriver $driver;
     protected array $newSteps;
     protected BugInterface $bug;
-    protected TaskInterface $task;
-    protected RevisionInterface $revision;
 
     protected function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->stepRunner = $this->createMock(StepRunnerInterface::class);
+        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
-        $this->bugHelper = $this->createMock(BugHelperInterface::class);
-        $this->selenoidHelper = $this->createMock(SelenoidHelperInterface::class);
         $this->newSteps = [
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ];
-        $this->revision = $this->createMock(RevisionInterface::class);
-        $this->task = new Task();
-        $this->task->setId(123);
-        $this->task->setModelRevision($this->revision);
         $this->bug = new Bug();
         $this->bug->setId(1);
         $this->bug->setMessage('Something wrong');
@@ -68,116 +49,66 @@ class HandlerTestCase extends StepsTestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
-        $this->task->addBug($this->bug);
         $this->stepsBuilder
             ->expects($this->once())
             ->method('create')
             ->with($this->bug, 1, 2)
             ->willReturn((fn () => yield from $this->newSteps)());
-        $this->driver = $this->createMock(RemoteWebDriver::class);
-        $this->capabilities = new DesiredCapabilities();
     }
 
     public function testHandleOldBug(): void
     {
-        $this->driver->expects($this->never())->method('quit');
-        $this->selenoidHelper->expects($this->never())->method('getCapabilities');
-        $this->selenoidHelper->expects($this->never())->method('createDriver');
         $this->bug->setSteps([
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
-        $this->stepRunner->expects($this->never())->method('run');
+        $this->stepsRunner->expects($this->never())->method('run');
         $this->handler->handle($this->bug, 1, 2);
     }
 
-    public function testRun(): void
+    /**
+     * @dataProvider exceptionProvider
+     */
+    public function testHandle(?Throwable $exception, bool $updateSteps): void
     {
-        $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->bug)
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->stepRunner->expects($this->exactly(4))
-            ->method('run')->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver);
+        $this->stepsRunner->expects($this->once())
+            ->method('run')
+            ->with(
+                $this->newSteps,
+                $this->bug,
+                false,
+                $this->callback(function (callable $exceptionCallback) use ($exception) {
+                    if ($exception) {
+                        $exceptionCallback($exception);
+                    }
+
+                    return true;
+                })
+            );
+        if ($updateSteps) {
+            $this->bugRepository
+                ->expects($this->once())
+                ->method('updateSteps')
+                ->with($this->bug, $this->newSteps);
+            $this->messageBus
+                ->expects($this->once())
+                ->method('dispatch')
+                ->with($this->isInstanceOf(ReduceBugMessage::class))
+                ->willReturn(new Envelope(new \stdClass()));
+        } else {
+            $this->bugRepository->expects($this->never())->method('updateSteps');
+            $this->messageBus->expects($this->never())->method('dispatch');
+        }
         $this->handler->handle($this->bug, 1, 2);
     }
 
-    public function testRunIntoException(): void
+    public function exceptionProvider(): array
     {
-        $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->bug)
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->stepRunner->expects($this->exactly(4))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
-            ->will($this->onConsecutiveCalls(
-                null,
-                null,
-                null,
-                $this->throwException(new RuntimeException('Something else wrong')),
-            ));
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Something else wrong');
-        $this->handler->handle($this->bug, 1, 2);
-    }
-
-    public function testRunFoundSameBug(): void
-    {
-        $this->driver->expects($this->once())->method('quit');
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('getCapabilities')
-            ->with($this->bug)
-            ->willReturn($this->capabilities);
-        $this->selenoidHelper
-            ->expects($this->once())
-            ->method('createDriver')
-            ->with($this->capabilities)
-            ->willReturn($this->driver);
-        $this->entityManager->expects($this->once())->method('refresh')->with($this->bug);
-        $this->entityManager
-            ->expects($this->once())
-            ->method('lock')
-            ->with($this->bug, LockMode::PESSIMISTIC_WRITE);
-        $this->entityManager
-            ->expects($this->once())
-            ->method('transactional')
-            ->with($this->callback(function ($callback) {
-                $callback();
-
-                return true;
-            }));
-        $this->messageBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->isInstanceOf(ReduceBugMessage::class))
-            ->willReturn(new Envelope(new \stdClass()));
-        $this->stepRunner->expects($this->exactly(4))->method('run')
-            ->with($this->isInstanceOf(StepInterface::class), $this->revision, $this->driver)
-            ->will($this->onConsecutiveCalls(
-                null,
-                null,
-                null,
-                $this->throwException(new Exception('Something wrong')),
-            ));
-        $this->handler->handle($this->bug, 1, 2);
-        $this->assertSteps($this->newSteps, $this->bug->getSteps());
-        $this->assertSame(0, $this->bug->getProgress()->getProcessed());
-        $this->assertSame(0, $this->bug->getProgress()->getTotal());
+        return [
+            [null, false],
+            [new RuntimeException('Something else wrong'), false],
+            [new Exception('Something wrong'), true],
+        ];
     }
 }

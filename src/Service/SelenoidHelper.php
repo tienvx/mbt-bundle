@@ -52,6 +52,7 @@ class SelenoidHelper implements SelenoidHelperInterface
             $caps += [
                 'logName' => $this->getLogName($entity),
                 'videoName' => $this->getVideoName($entity),
+                'videoFrameRate' => 60,
             ];
         }
 

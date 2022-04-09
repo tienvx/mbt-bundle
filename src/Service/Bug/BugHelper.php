@@ -2,9 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Bug;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -12,38 +10,32 @@ use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
 
 class BugHelper implements BugHelperInterface
 {
     protected ReducerManagerInterface $reducerManager;
-    protected EntityManagerInterface $entityManager;
+    protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected BugProgressInterface $bugProgress;
-    protected BugNotifierInterface $notifyHelper;
-    protected StepRunnerInterface $stepRunner;
-    protected SelenoidHelperInterface $selenoidHelper;
+    protected BugNotifierInterface $bugNotifier;
+    protected StepsRunnerInterface $stepsRunner;
     protected ConfigInterface $config;
 
     public function __construct(
         ReducerManagerInterface $reducerManager,
-        EntityManagerInterface $entityManager,
+        BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
-        BugProgressInterface $bugProgress,
-        BugNotifierInterface $notifyHelper,
-        StepRunnerInterface $stepRunner,
-        SelenoidHelperInterface $selenoidHelper,
+        BugNotifierInterface $bugNotifier,
+        StepsRunnerInterface $stepsRunner,
         ConfigInterface $config
     ) {
         $this->reducerManager = $reducerManager;
-        $this->entityManager = $entityManager;
+        $this->bugRepository = $bugRepository;
         $this->messageBus = $messageBus;
-        $this->bugProgress = $bugProgress;
-        $this->notifyHelper = $notifyHelper;
-        $this->stepRunner = $stepRunner;
-        $this->selenoidHelper = $selenoidHelper;
+        $this->bugNotifier = $bugNotifier;
+        $this->stepsRunner = $stepsRunner;
         $this->config = $config;
     }
 
@@ -54,7 +46,7 @@ class BugHelper implements BugHelperInterface
         $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $messagesCount = $reducer->dispatch($bug);
         if ($messagesCount > 0) {
-            $this->bugProgress->increaseTotal($bug, $messagesCount);
+            $this->bugRepository->increaseTotal($bug, $messagesCount);
         } elseif ($bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()) {
             $this->recordAndReport($bug);
         }
@@ -72,7 +64,7 @@ class BugHelper implements BugHelperInterface
         $reducer = $this->reducerManager->getReducer($this->config->getReducer());
         $reducer->handle($bug, $from, $to);
 
-        $this->bugProgress->increaseProcessed($bug);
+        $this->bugRepository->increaseProcessed($bug);
         if (
             $bug->getProgress()->getTotal() > 0
             && $bug->getProgress()->getProcessed() === $bug->getProgress()->getTotal()
@@ -84,7 +76,7 @@ class BugHelper implements BugHelperInterface
     public function reportBug(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'report bug');
-        $this->notifyHelper->notify($bug);
+        $this->bugNotifier->notify($bug);
     }
 
     /**
@@ -93,18 +85,7 @@ class BugHelper implements BugHelperInterface
     public function recordVideo(int $bugId): void
     {
         $bug = $this->getBug($bugId, 'record video for bug');
-        $driver = $this->selenoidHelper->createDriver($this->selenoidHelper->getCapabilities($bug, true));
-        try {
-            foreach ($bug->getSteps() as $step) {
-                $this->stepRunner->run($step, $bug->getTask()->getModelRevision(), $driver);
-            }
-        } catch (ExceptionInterface $exception) {
-            throw $exception;
-        } catch (Throwable $throwable) {
-            // Do nothing.
-        } finally {
-            $driver->quit();
-        }
+        $this->stepsRunner->run($bug->getSteps(), $bug, true);
     }
 
     public function createBug(array $steps, string $message): BugInterface
@@ -119,7 +100,7 @@ class BugHelper implements BugHelperInterface
 
     protected function getBug(int $bugId, string $action): BugInterface
     {
-        $bug = $this->entityManager->find(Bug::class, $bugId);
+        $bug = $this->bugRepository->find($bugId);
 
         if (!$bug instanceof BugInterface) {
             throw new UnexpectedValueException(sprintf('Can not %s %d: bug not found', $action, $bugId));

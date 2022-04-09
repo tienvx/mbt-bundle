@@ -9,9 +9,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
+use Tienvx\Bundle\MbtBundle\Repository\BugRepository;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=BugRepository::class)
  * @ORM\HasLifecycleCallbacks
  */
 class Bug extends BugModel
