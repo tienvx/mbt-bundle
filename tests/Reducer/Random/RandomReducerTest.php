@@ -39,6 +39,11 @@ class RandomReducerTest extends TestCase
         $this->assertSame('random', RandomReducer::getName());
     }
 
+    public function testIsSupported(): void
+    {
+        $this->assertTrue(RandomReducer::isSupported());
+    }
+
     public function testDispatch(): void
     {
         $bug = new Bug();
