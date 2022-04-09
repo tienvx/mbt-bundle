@@ -93,6 +93,7 @@ class SelenoidHelperTest extends TestCase
             $debug ? ($hasBug ? "bug-{$this->bug->getId()}.mp4" : "task-{$this->task->getId()}.mp4") : null,
             $capabilities->getCapability('videoName')
         );
+        $this->assertSame($debug ? 60 : null, $capabilities->getCapability('videoFrameRate'));
     }
 
     public function capabilitiesParameterProvider(): array
