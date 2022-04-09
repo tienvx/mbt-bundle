@@ -2,54 +2,34 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Generator;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ServiceLocator;
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManagerInterface;
+use Tienvx\Bundle\MbtBundle\Tests\Plugin\PluginManagerTest;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Generator\GeneratorManager
- * @covers \Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Plugin\PluginManager
  */
-class GeneratorManagerTest extends TestCase
+class GeneratorManagerTest extends PluginManagerTest
 {
-    protected GeneratorManager $generatorManager;
-    protected GeneratorInterface $generator;
-    protected ServiceLocator $locator;
+    protected array $plugins = ['random'];
+    protected string $getMethod = 'getGenerator';
 
-    protected function setUp(): void
+    protected function createPluginManager(): PluginManagerInterface
     {
-        $this->generator = $this->createMock(GeneratorInterface::class);
-        $this->locator = $this->createMock(ServiceLocator::class);
-        $plugins = ['random'];
-        $this->generatorManager = new GeneratorManager($this->locator, $plugins);
+        return new GeneratorManager($this->locator, $this->plugins);
     }
 
-    public function testGet()
+    protected function createPlugin(): PluginInterface
     {
-        $this->locator->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->locator->expects($this->once())->method('get')->with('random')->willReturn($this->generator);
-        $this->assertSame($this->generator, $this->generatorManager->get('random'));
+        return $this->createMock(GeneratorInterface::class);
     }
 
-    public function testAll()
+    protected function getInvalidPluginExceptionMessage(string $plugin): string
     {
-        $this->assertSame(['random'], $this->generatorManager->all());
-    }
-
-    public function testHasRandom()
-    {
-        $this->locator->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->assertTrue($this->generatorManager->has('random'));
-    }
-
-    public function testDoesNotHaveOther(): void
-    {
-        $this->locator->expects($this->never())->method('has');
-        $this->assertFalse($this->generatorManager->has('other'));
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Generator "other" does not exist.');
-        $this->generatorManager->getGenerator('other');
+        return sprintf('Generator "%s" does not exist.', $plugin);
     }
 }

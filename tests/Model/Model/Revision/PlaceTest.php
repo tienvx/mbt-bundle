@@ -25,6 +25,7 @@ class PlaceTest extends TestCase
     {
         $this->setUpCommands();
         $this->place = new Place();
+        $this->place->setLabel('place label');
         $this->place->setCommands([
             $this->command1,
             $this->command2,
@@ -46,7 +47,7 @@ class PlaceTest extends TestCase
     public function testSerialize(): void
     {
         // phpcs:ignore Generic.Files.LineLength
-        $this->assertSame('O:50:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place":2:{s:5:"label";s:0:"";s:8:"commands";a:2:{i:0;a:3:{s:7:"command";s:10:"assertText";s:6:"target";s:10:"css=.title";s:5:"value";s:5:"Hello";}i:1;a:3:{s:7:"command";s:11:"assertAlert";s:6:"target";s:12:"css=.warning";s:5:"value";s:13:"Are you sure?";}}}', serialize($this->place));
+        $this->assertSame('O:50:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place":2:{s:5:"label";s:11:"place label";s:8:"commands";a:2:{i:0;a:3:{s:7:"command";s:10:"assertText";s:6:"target";s:10:"css=.title";s:5:"value";s:5:"Hello";}i:1;a:3:{s:7:"command";s:11:"assertAlert";s:6:"target";s:12:"css=.warning";s:5:"value";s:13:"Are you sure?";}}}', serialize($this->place));
     }
 
     public function testUnerialize(): void

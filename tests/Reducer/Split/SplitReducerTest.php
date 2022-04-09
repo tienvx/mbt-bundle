@@ -39,6 +39,11 @@ class SplitReducerTest extends TestCase
         $this->assertSame('split', SplitReducer::getName());
     }
 
+    public function testIsSupported(): void
+    {
+        $this->assertTrue(SplitReducer::isSupported());
+    }
+
     public function testDispatch(): void
     {
         $bug = new Bug();

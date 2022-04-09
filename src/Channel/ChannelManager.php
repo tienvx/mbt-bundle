@@ -2,17 +2,22 @@
 
 namespace Tienvx\Bundle\MbtBundle\Channel;
 
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManager;
 
-class ChannelManager extends AbstractPluginManager implements ChannelManagerInterface
+class ChannelManager extends PluginManager implements ChannelManagerInterface
 {
     public function getChannel(string $name): ChannelInterface
     {
-        if ($this->has($name) && ($channel = $this->get($name)) && $channel instanceof ChannelInterface) {
-            return $channel;
-        }
+        return parent::get($name);
+    }
 
-        throw new UnexpectedValueException(sprintf('Channel "%s" does not exist.', $name));
+    protected function getPluginInterface(): string
+    {
+        return ChannelInterface::class;
+    }
+
+    protected function getInvalidPluginExceptionMessage(string $name): string
+    {
+        return sprintf('Channel "%s" does not exist.', $name);
     }
 }

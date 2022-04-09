@@ -6,6 +6,7 @@ use Generator;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
@@ -17,6 +18,7 @@ use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
@@ -44,7 +46,7 @@ class ShortestPathStepsBuilderTest extends TestCase
     protected PetrinetInterface $petrinet;
     protected PetrinetDomainLogic $petrinetDomainLogic;
     protected ShortestPathStepsBuilder $stepsBuilder;
-    protected PetrinetHelperInterface $petrinetHelper;
+    protected PetrinetHelperInterface|MockObject $petrinetHelper;
     protected Revision $revision;
     protected Bug $bug;
     protected PlaceInterface $cartEmpty;
@@ -193,24 +195,50 @@ class ShortestPathStepsBuilderTest extends TestCase
         $this->bug->setTask($task);
     }
 
-    protected function geColor(int $number): Color
+    protected function geColor(int $products): Color
     {
-        return new Color(['products' => $number]);
+        return new Color(['products' => $products]);
     }
 
     protected function initStepsBuilder(): void
     {
         $this->petrinetHelper = $this->createMock(PetrinetHelperInterface::class);
+        $this->stepsBuilder = new ShortestPathStepsBuilder($this->petrinetHelper, $this->petrinetDomainLogic);
+    }
+
+    protected function expectsPetrinetHelper(): void
+    {
         $this->petrinetHelper
             ->expects($this->once())
             ->method('build')
             ->with($this->revision)
             ->willReturn($this->petrinet);
-        $this->stepsBuilder = new ShortestPathStepsBuilder($this->petrinetHelper, $this->petrinetDomainLogic);
+    }
+
+    /**
+     * @dataProvider invalidRangeProvider
+     */
+    public function testGetInvalidRange(int $from, int $to): void
+    {
+        $this->expectExceptionObject(new OutOfRangeException('Can not create new steps using invalid range'));
+        iterator_to_array($this->stepsBuilder->create($this->bug, $from, $to));
+    }
+
+    public function invalidRangeProvider(): array
+    {
+        $validMinFrom = 0;
+        $validMaxTo = 16;
+
+        return [
+            [-1, $validMaxTo],
+            [$validMinFrom, 17],
+            [-1, 17],
+        ];
     }
 
     public function testGetShortestPathFromCartEmptyToCheckout(): void
     {
+        $this->expectsPetrinetHelper();
         $nodes = $this->stepsBuilder->create($this->bug, 0, 12);
         $this->assertNodes([
             [
@@ -253,6 +281,7 @@ class ShortestPathStepsBuilderTest extends TestCase
 
     public function testGetShortestPathFromCartHasProductsToShipping(): void
     {
+        $this->expectsPetrinetHelper();
         $nodes = $this->stepsBuilder->create($this->bug, 4, 14);
         $this->assertNodes([
             [

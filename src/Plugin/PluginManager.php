@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Plugin;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 
-abstract class AbstractPluginManager implements PluginManagerInterface
+class PluginManager implements PluginManagerInterface
 {
     protected ServiceLocator $locator;
     protected array $plugins;
@@ -28,11 +28,21 @@ abstract class AbstractPluginManager implements PluginManagerInterface
 
     public function get(string $name): PluginInterface
     {
-        $plugin = $this->locator->has($name) ? $this->locator->get($name) : null;
-        if ($plugin instanceof PluginInterface) {
+        $plugin = $this->has($name) ? $this->locator->get($name) : null;
+        if (is_a($plugin, $this->getPluginInterface())) {
             return $plugin;
         }
 
-        throw new UnexpectedValueException(sprintf('Plugin "%s" does not exist.', $name));
+        throw new UnexpectedValueException($this->getInvalidPluginExceptionMessage($name));
+    }
+
+    protected function getInvalidPluginExceptionMessage(string $name): string
+    {
+        return sprintf('Plugin "%s" does not exist.', $name);
+    }
+
+    protected function getPluginInterface(): string
+    {
+        return PluginInterface::class;
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Fixtures\Plugin;
 
-use Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManager;
 
-class Manager2 extends AbstractPluginManager
+class Manager2 extends PluginManager
 {
 }

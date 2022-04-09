@@ -2,60 +2,34 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ServiceLocator;
-use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginManagerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
+use Tienvx\Bundle\MbtBundle\Tests\Plugin\PluginManagerTest;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Reducer\ReducerManager
- * @covers \Tienvx\Bundle\MbtBundle\Plugin\AbstractPluginManager
+ *
+ * @uses \Tienvx\Bundle\MbtBundle\Plugin\PluginManager
  */
-class ReducerManagerTest extends TestCase
+class ReducerManagerTest extends PluginManagerTest
 {
-    protected ReducerManager $reducerManager;
-    protected ReducerInterface $reducer;
-    protected ServiceLocator $locator;
+    protected array $plugins = ['split', 'random'];
+    protected string $getMethod = 'getReducer';
 
-    protected function setUp(): void
+    protected function createPluginManager(): PluginManagerInterface
     {
-        $this->reducer = $this->createMock(ReducerInterface::class);
-        $this->locator = $this->createMock(ServiceLocator::class);
-        $plugins = ['split', 'random'];
-        $this->reducerManager = new ReducerManager($this->locator, $plugins);
+        return new ReducerManager($this->locator, $this->plugins);
     }
 
-    public function testGet(): void
+    protected function createPlugin(): PluginInterface
     {
-        $this->locator->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->locator->expects($this->once())->method('get')->with('random')->willReturn($this->reducer);
-        $this->assertSame($this->reducer, $this->reducerManager->get('random'));
+        return $this->createMock(ReducerInterface::class);
     }
 
-    public function testAll(): void
+    protected function getInvalidPluginExceptionMessage(string $plugin): string
     {
-        $this->assertSame(['split', 'random'], $this->reducerManager->all());
-    }
-
-    public function testHasSplit(): void
-    {
-        $this->locator->expects($this->once())->method('has')->with('split')->willReturn(true);
-        $this->assertTrue($this->reducerManager->has('split'));
-    }
-
-    public function testHasRandom(): void
-    {
-        $this->locator->expects($this->once())->method('has')->with('random')->willReturn(true);
-        $this->assertTrue($this->reducerManager->has('random'));
-    }
-
-    public function testDoesNotHaveOther(): void
-    {
-        $this->locator->expects($this->never())->method('has');
-        $this->assertFalse($this->reducerManager->has('other'));
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Reducer "other" does not exist.');
-        $this->reducerManager->getReducer('other');
+        return sprintf('Reducer "%s" does not exist.', $plugin);
     }
 }

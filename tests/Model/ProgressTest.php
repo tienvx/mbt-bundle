@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Entity\Progress;
+use Tienvx\Bundle\MbtBundle\Model\Progress;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 
 /**
@@ -15,7 +15,7 @@ class ProgressTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->progress = new Progress();
+        $this->progress = $this->createProgress();
         $this->progress->setTotal(10);
         $this->progress->setProcessed(5);
     }
@@ -39,5 +39,10 @@ class ProgressTest extends TestCase
         $this->progress->setTotal(15);
         $this->assertSame(5, $this->progress->getProcessed());
         $this->assertSame(15, $this->progress->getTotal());
+    }
+
+    protected function createProgress(): ProgressInterface
+    {
+        return new Progress();
     }
 }
