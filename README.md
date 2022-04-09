@@ -25,6 +25,7 @@ vendor/bin/phpunit
 
 ```shell
 phpcs --standard=PSR12 src tests
+php-cs-fixer fix --diff --dry-run
 phpstan analyse src tests
 ```
 
