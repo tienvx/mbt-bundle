@@ -8,8 +8,8 @@ use Tienvx\Bundle\MbtBundle\Tests\Model\ModelTest as ModelModelTest;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Model
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Model
  *
- * @uses \Tienvx\Bundle\MbtBundle\Model\Model
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Model\Revision
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  */
