@@ -17,7 +17,7 @@ class CommandTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->command = new Command();
+        $this->command = $this->createCommand();
         $this->command->setCommand(WindowCommandRunner::OPEN);
         $this->command->setTarget('http://localhost:1234');
         $this->command->setValue('123');
@@ -25,17 +25,24 @@ class CommandTest extends TestCase
 
     public function testSerialize(): void
     {
+        $className = get_class($this->command);
         // phpcs:ignore Generic.Files.LineLength
-        $this->assertSame('O:52:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command":3:{s:7:"command";s:4:"open";s:6:"target";s:21:"http://localhost:1234";s:5:"value";s:3:"123";}', serialize($this->command));
+        $this->assertSame('O:' . strlen($className) . ':"' . $className . '":3:{s:7:"command";s:4:"open";s:6:"target";s:21:"http://localhost:1234";s:5:"value";s:3:"123";}', serialize($this->command));
     }
 
     public function testUnerialize(): void
     {
+        $className = get_class($this->command);
         // phpcs:ignore Generic.Files.LineLength
-        $command = unserialize('O:52:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command":3:{s:7:"command";s:5:"click";s:6:"target";s:11:"css=.button";s:5:"value";N;}');
+        $command = unserialize('O:' . strlen($className) . ':"' . $className . '":3:{s:7:"command";s:5:"click";s:6:"target";s:11:"css=.button";s:5:"value";N;}');
         $this->assertInstanceOf(CommandInterface::class, $command);
         $this->assertSame(MouseCommandRunner::CLICK, $command->getCommand());
         $this->assertSame('css=.button', $command->getTarget());
         $this->assertSame(null, $command->getValue());
+    }
+
+    protected function createCommand(): CommandInterface
+    {
+        return new Command();
     }
 }
