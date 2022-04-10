@@ -33,10 +33,7 @@ abstract class DispatcherTemplate implements DispatcherInterface
         return count($pairs);
     }
 
-    protected function getPairs(array $steps): array
-    {
-        return [];
-    }
+    abstract protected function getPairs(array $steps): array;
 
     protected function maxPairs(array $steps): int
     {

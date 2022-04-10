@@ -3,6 +3,7 @@
 return [
     'mbt' => [
         'model' => [
+            'missing_places' => 'Places are missing.',
             'places_invalid' => 'Places are invalid.',
             'missing_start_transition' => 'Missing start transition.',
             'too_many_start_transitions' => 'There must be only one start transition.',

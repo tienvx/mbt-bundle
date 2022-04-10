@@ -33,6 +33,7 @@ class Revision extends BaseRevision
      *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Place")
      * })
      * @Assert\Valid
+     * @Assert\Count(min=1)
      */
     protected array $places = [];
 
@@ -42,6 +43,7 @@ class Revision extends BaseRevision
      *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition")
      * })
      * @Assert\Valid
+     * @Assert\Count(min=1)
      */
     protected array $transitions = [];
 
@@ -53,12 +55,17 @@ class Revision extends BaseRevision
         foreach ($this->transitions as $index => $transition) {
             if ($transition instanceof TransitionInterface) {
                 $fromPlaces = $transition->getFromPlaces();
+                $toPlaces = $transition->getToPlaces();
+                if (!$fromPlaces && !$toPlaces) {
+                    $context->buildViolation('mbt.model.missing_places')
+                        ->atPath(sprintf('transitions[%d]', $index))
+                        ->addViolation();
+                }
                 if ($fromPlaces && array_diff($fromPlaces, array_keys($this->places))) {
                     $context->buildViolation('mbt.model.places_invalid')
                         ->atPath(sprintf('transitions[%d].fromPlaces', $index))
                         ->addViolation();
                 }
-                $toPlaces = $transition->getToPlaces();
                 if ($toPlaces && array_diff($toPlaces, array_keys($this->places))) {
                     $context->buildViolation('mbt.model.places_invalid')
                         ->atPath(sprintf('transitions[%d].toPlaces', $index))
@@ -73,6 +80,10 @@ class Revision extends BaseRevision
      */
     public function validateStartTransitions(ExecutionContextInterface $context, $payload): void
     {
+        if (0 === count($this->transitions)) {
+            return;
+        }
+
         $startTransitions = array_filter(
             $this->transitions,
             fn ($transition) => $transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())

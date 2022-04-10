@@ -2,67 +2,30 @@
 
 namespace Tienvx\Bundle\MbtBundle\Model\Generator;
 
+use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
+
 class State implements StateInterface
 {
-    protected array $visitedPlaces = [];
-    protected int $totalPlaces;
-    protected array $visitedTransitions = [];
-    protected int $totalTransitions;
-    protected float $transitionCoverage = 0;
-    protected float $placeCoverage = 0;
+    protected float $transitionCoverage = 1;
+    protected float $placeCoverage = 1;
 
     public function __construct(
-        array $visitedTransitions,
-        int $totalPlaces,
-        int $totalTransitions
+        protected array $visitedPlaces = [],
+        protected array $visitedTransitions = [],
+        protected int $totalPlaces = 1,
+        protected int $totalTransitions = 1
     ) {
-        $this->visitedTransitions = $visitedTransitions;
-        $this->totalPlaces = $totalPlaces;
-        $this->totalTransitions = $totalTransitions;
-    }
-
-    public function getVisitedPlaces(): array
-    {
-        return $this->visitedPlaces;
-    }
-
-    public function setVisitedPlaces(array $visitedPlaces): void
-    {
-        $this->visitedPlaces = [];
-
-        foreach ($visitedPlaces as $visitedPlace) {
-            $this->addVisitedPlace($visitedPlace);
+        if ($totalPlaces <= 0 || $totalTransitions <= 0) {
+            throw new OutOfRangeException('State need at least 1 place and 1 transition');
         }
+        $this->updateCoverage();
     }
 
     public function addVisitedPlace(int $placeId)
     {
         if (!in_array($placeId, $this->visitedPlaces)) {
             $this->visitedPlaces[] = $placeId;
-        }
-    }
-
-    public function getTotalPlaces(): int
-    {
-        return $this->totalPlaces;
-    }
-
-    public function setTotalPlaces(int $totalPlaces): void
-    {
-        $this->totalPlaces = $totalPlaces;
-    }
-
-    public function getVisitedTransitions(): array
-    {
-        return $this->visitedTransitions;
-    }
-
-    public function setVisitedTransitions(array $visitedTransitions): void
-    {
-        $this->visitedTransitions = [];
-
-        foreach ($visitedTransitions as $visitedTransition) {
-            $this->addVisitedTransition($visitedTransition);
+            $this->updateCoverage();
         }
     }
 
@@ -70,17 +33,8 @@ class State implements StateInterface
     {
         if (!in_array($transitionId, $this->visitedTransitions)) {
             $this->visitedTransitions[] = $transitionId;
+            $this->updateCoverage();
         }
-    }
-
-    public function getTotalTransitions(): int
-    {
-        return $this->totalTransitions;
-    }
-
-    public function setTotalTransitions(int $totalTransitions): void
-    {
-        $this->totalTransitions = $totalTransitions;
     }
 
     public function getTransitionCoverage(): float
@@ -88,18 +42,14 @@ class State implements StateInterface
         return $this->transitionCoverage;
     }
 
-    public function setTransitionCoverage(float $transitionCoverage): void
-    {
-        $this->transitionCoverage = $transitionCoverage;
-    }
-
     public function getPlaceCoverage(): float
     {
         return $this->placeCoverage;
     }
 
-    public function setPlaceCoverage(float $placeCoverage): void
+    protected function updateCoverage(): void
     {
-        $this->placeCoverage = $placeCoverage;
+        $this->transitionCoverage = count($this->visitedTransitions) / $this->totalTransitions * 100;
+        $this->placeCoverage = count($this->visitedPlaces) / $this->totalPlaces * 100;
     }
 }

@@ -26,7 +26,7 @@ class TransitionTest extends TestCase
     protected function setUp(): void
     {
         $this->setUpCommands();
-        $this->transition = new Transition();
+        $this->transition = $this->createTransition();
         $this->transition->setLabel('transition label');
         $this->transition->setGuard('count > 2');
         $this->transition->setFromPlaces([1, 2, 3]);
@@ -51,14 +51,16 @@ class TransitionTest extends TestCase
 
     public function testSerialize(): void
     {
+        $className = get_class($this->transition);
         // phpcs:ignore Generic.Files.LineLength
-        $this->assertSame('O:55:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition":5:{s:5:"label";s:16:"transition label";s:5:"guard";s:9:"count > 2";s:10:"fromPlaces";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}s:8:"toPlaces";a:2:{i:0;i:12;i:1;i:23;}s:8:"commands";a:2:{i:0;a:3:{s:7:"command";s:4:"type";s:6:"target";s:10:"css=.email";s:5:"value";s:16:"test@example.com";}i:1;a:3:{s:7:"command";s:5:"click";s:6:"target";s:9:"css=.link";s:5:"value";N;}}}', serialize($this->transition));
+        $this->assertSame('O:' . strlen($className) . ':"' . $className . '":5:{s:5:"label";s:16:"transition label";s:5:"guard";s:9:"count > 2";s:10:"fromPlaces";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}s:8:"toPlaces";a:2:{i:0;i:12;i:1;i:23;}s:8:"commands";a:2:{i:0;a:3:{s:7:"command";s:4:"type";s:6:"target";s:10:"css=.email";s:5:"value";s:16:"test@example.com";}i:1;a:3:{s:7:"command";s:5:"click";s:6:"target";s:9:"css=.link";s:5:"value";N;}}}', serialize($this->transition));
     }
 
     public function testUnerialize(): void
     {
+        $className = get_class($this->transition);
         // phpcs:ignore Generic.Files.LineLength
-        $transition = unserialize('O:55:"Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition":5:{s:5:"label";s:10:"Serialized";s:5:"guard";s:10:"count == 3";s:10:"fromPlaces";a:2:{i:0;i:1;i:1;i:4;}s:8:"toPlaces";a:1:{i:0;i:15;}s:8:"commands";a:1:{i:0;a:3:{s:7:"command";s:5:"store";s:6:"target";s:2:"55";s:5:"value";s:6:"number";}}}');
+        $transition = unserialize('O:' . strlen($className) . ':"' . $className . '":5:{s:5:"label";s:10:"Serialized";s:5:"guard";s:10:"count == 3";s:10:"fromPlaces";a:2:{i:0;i:1;i:1;i:4;}s:8:"toPlaces";a:1:{i:0;i:15;}s:8:"commands";a:1:{i:0;a:3:{s:7:"command";s:5:"store";s:6:"target";s:2:"55";s:5:"value";s:6:"number";}}}');
         $this->assertInstanceOf(TransitionInterface::class, $transition);
         $this->assertSame('Serialized', $transition->getLabel());
         $this->assertSame('count == 3', $transition->getGuard());
@@ -68,5 +70,10 @@ class TransitionTest extends TestCase
         $this->assertSame(StoreCommandRunner::STORE, $transition->getCommands()[0]->getCommand());
         $this->assertSame('55', $transition->getCommands()[0]->getTarget());
         $this->assertSame('number', $transition->getCommands()[0]->getValue());
+    }
+
+    protected function createTransition(): TransitionInterface
+    {
+        return new Transition();
     }
 }

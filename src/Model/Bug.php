@@ -5,7 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 
-abstract class Bug implements BugInterface
+class Bug implements BugInterface
 {
     protected ?int $id = null;
     protected string $title;

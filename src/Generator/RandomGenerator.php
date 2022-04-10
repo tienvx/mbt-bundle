@@ -49,6 +49,7 @@ class RandomGenerator extends AbstractGenerator
         $places = $this->modelHelper->getStartPlaceIds($task->getModelRevision());
         $marking = $this->markingHelper->getMarking($petrinet, $places);
         $state = new State(
+            [],
             [$transitionId],
             count($task->getModelRevision()->getPlaces()),
             count($task->getModelRevision()->getTransitions())
@@ -93,10 +94,6 @@ class RandomGenerator extends AbstractGenerator
             }
         }
         $state->addVisitedTransition($transitionId);
-
-        // Update current coverage.
-        $state->setTransitionCoverage(count($state->getVisitedTransitions()) / $state->getTotalTransitions() * 100);
-        $state->setPlaceCoverage(count($state->getVisitedPlaces()) / $state->getTotalPlaces() * 100);
     }
 
     protected function nextTransition(PetrinetInterface $petrinet, MarkingInterface $marking): ?TransitionInterface

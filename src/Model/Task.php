@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
@@ -19,6 +20,11 @@ class Task implements TaskInterface
     protected bool $debug = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
+
+    public function __construct()
+    {
+        $this->bugs = new ArrayCollection();
+    }
 
     public function setId(int $id)
     {
@@ -81,7 +87,7 @@ class Task implements TaskInterface
     }
 
     /**
-     * @return Collection|BugInterface[]
+     * @return Collection<BugInterface>
      */
     public function getBugs(): Collection
     {
