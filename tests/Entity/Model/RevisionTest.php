@@ -81,9 +81,11 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions[1].toPlaces:
         $this->revision->getTransition(0)->setFromPlaces([]);
         $this->revision->getTransition(1)->setFromPlaces([]);
         $violations = $this->validator->validate($this->revision);
-        $this->assertCount(10, $violations);
+        $this->assertCount(11, $violations);
         $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions[0].toPlaces:
     mbt.model.places_invalid
+Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions[1]:
+    mbt.model.missing_places
 Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions:
     mbt.model.too_many_start_transitions
 Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).places[0].label:
@@ -102,6 +104,18 @@ Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions[1].label:
     This value should not be blank. (code c1051bb4-d103-4f74-8988-acbcafc7fdc3)
 Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions[1].toPlaces:
     mbt.model.missing_to_places (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+';
+        $this->assertSame($message, (string) $violations);
+    }
+
+    public function testNoPlacesAndTransitions(): void
+    {
+        $violations = $this->validator->validate($this->createRevision());
+        $this->assertCount(2, $violations);
+        $message = 'Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).places:
+    This collection should contain 1 element or more. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
+Object(Tienvx\Bundle\MbtBundle\Entity\Model\Revision).transitions:
+    This collection should contain 1 element or more. (code bef8e338-6ae5-4caf-b8e2-50e7b0579e69)
 ';
         $this->assertSame($message, (string) $violations);
     }
