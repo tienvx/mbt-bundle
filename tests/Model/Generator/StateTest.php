@@ -3,14 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Generator;
 
 use PHPUnit\Framework\TestCase;
-use SingleColorPetrinet\Model\Color;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
-use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Generator\State;
 use Tienvx\Bundle\MbtBundle\Model\Generator\StateInterface;
-use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Generator\State

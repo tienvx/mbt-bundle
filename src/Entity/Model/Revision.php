@@ -80,7 +80,7 @@ class Revision extends BaseRevision
      */
     public function validateStartTransitions(ExecutionContextInterface $context, $payload): void
     {
-        if (count($this->transitions) === 0) {
+        if (0 === count($this->transitions)) {
             return;
         }
 
