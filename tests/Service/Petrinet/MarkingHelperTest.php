@@ -9,18 +9,27 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
+use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\Place;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
  */
 class MarkingHelperTest extends TestCase
 {
+    protected ColorfulFactoryInterface $factory;
+    protected MarkingHelperInterface $helper;
+
+    protected function setUp(): void
+    {
+        $this->factory = new ColorfulFactory();
+        $this->helper = new MarkingHelper($this->factory);
+    }
+
     public function testGetPlaces(): void
     {
-        $factory = new ColorfulFactory();
-        $helper = new MarkingHelper($factory);
         $pm1 = new PlaceMarking();
         $pm2 = new PlaceMarking();
         $pm1->setPlace($p1 = new Place());
@@ -37,14 +46,12 @@ class MarkingHelperTest extends TestCase
         $this->assertSame([
             1 => 1,
             2 => 3,
-        ], $helper->getPlaces($marking));
+        ], $this->helper->getPlaces($marking));
     }
 
     public function testGetMarking(): void
     {
-        $factory = new ColorfulFactory();
-        $helper = new MarkingHelper($factory);
-        $builder = new SingleColorPetrinetBuilder($factory);
+        $builder = new SingleColorPetrinetBuilder($this->factory);
 
         $petrinet = $builder
             ->connect($place1 = $builder->place(), $transition1 = $builder->transition())
@@ -53,7 +60,7 @@ class MarkingHelperTest extends TestCase
             ->connect($transition2, $place4 = $builder->place())
             ->getPetrinet();
 
-        $marking = $helper->getMarking($petrinet, [0 => 1, 2 => 3], new Color(['key' => 'value']));
+        $marking = $this->helper->getMarking($petrinet, [0 => 1, 2 => 3], new Color(['key' => 'value']));
         $this->assertSame(['key' => 'value'], $marking->getColor()->getValues());
         $this->assertCount(1, $marking->getPlaceMarking($place1)->getTokens());
         $this->assertNull($marking->getPlaceMarking($place2));
