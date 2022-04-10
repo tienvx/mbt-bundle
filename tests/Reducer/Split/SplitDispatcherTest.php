@@ -22,14 +22,16 @@ class SplitDispatcherTest extends DispatcherTestCase
         $this->dispatcher = new SplitDispatcher($this->messageBus);
     }
 
-    protected function assertPairs(): void
+    protected function assertPairs(int $count = 4): void
     {
-        parent::assertPairs();
-        $this->assertSame([
-            [0, 3],
-            [3, 6],
-            [6, 9],
-            [9, 10],
-        ], $this->pairs);
+        parent::assertPairs($count);
+        if (4 === $count) {
+            $this->assertSame([
+                [0, 3],
+                [3, 6],
+                [6, 9],
+                [9, 10],
+            ], $this->pairs);
+        }
     }
 }

@@ -28,6 +28,14 @@ class DispatcherTestCase extends TestCase
         $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 11)));
     }
 
+    public function testDispatchTooShortSteps(): void
+    {
+        $this->bug->setSteps([$this->createMock(StepInterface::class)]);
+        $this->messageBus->expects($this->never())->method('dispatch');
+        $this->assertSame(0, $this->dispatcher->dispatch($this->bug));
+        $this->assertPairs(0);
+    }
+
     public function testDispatch(): void
     {
         $this->messageBus
@@ -63,8 +71,8 @@ class DispatcherTestCase extends TestCase
         });
     }
 
-    protected function assertPairs(): void
+    protected function assertPairs(int $count = 4): void
     {
-        $this->assertCount(4, $this->pairs);
+        $this->assertCount($count, $this->pairs);
     }
 }
