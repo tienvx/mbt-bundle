@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Embedded;
@@ -77,11 +76,6 @@ class Task extends TaskModel
      * @ORM\Column(name="updated_at", type="datetime")
      */
     protected DateTimeInterface $updatedAt;
-
-    public function __construct()
-    {
-        $this->bugs = new ArrayCollection();
-    }
 
     /**
      * @ORM\PrePersist
