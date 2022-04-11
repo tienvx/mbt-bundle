@@ -51,4 +51,18 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
             $bug->getProgress()->setTotal($bug->getProgress()->getTotal() + $total);
         });
     }
+
+    public function startRecording(BugInterface $bug): void
+    {
+        $bug->setRecording(true);
+        $this->getEntityManager()->flush();
+    }
+
+    public function stopRecording(BugInterface $bug): void
+    {
+        $bug->setRecording(false);
+        // Recording bug may take long time. Reconnect to flush changes.
+        $this->getEntityManager()->getConnection()->connect();
+        $this->getEntityManager()->flush();
+    }
 }

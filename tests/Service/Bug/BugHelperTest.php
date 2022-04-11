@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Bug;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
@@ -232,6 +233,15 @@ class BugHelperTest extends TestCase
         $this->helper->recordVideo(123);
     }
 
+    public function testRunTaskAlreadyRunning(): void
+    {
+        $this->expectException(RecoverableMessageHandlingException::class);
+        $this->expectExceptionMessage('Can not record video for bug 123: bug is recording. Will retry later');
+        $this->bug->setRecording(true);
+        $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
+        $this->helper->recordVideo(123);
+    }
+
     public function testRecordVideo(): void
     {
         $this->stepsRunner
@@ -239,6 +249,8 @@ class BugHelperTest extends TestCase
             ->method('run')
             ->with($this->bug->getSteps(), $this->bug, true);
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
+        $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
+        $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
         $this->helper->recordVideo(123);
     }
 }

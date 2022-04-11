@@ -45,6 +45,7 @@ class BugTest extends TestCase
         $this->bug->setMessage('bug message');
         $this->bug->setProgress($this->progress);
         $this->bug->setClosed(true);
+        $this->bug->setRecording(true);
     }
 
     public function testProperties(): void
@@ -56,6 +57,7 @@ class BugTest extends TestCase
         $this->assertSame('bug message', $this->bug->getMessage());
         $this->assertSame($this->progress, $this->bug->getProgress());
         $this->assertSame(true, $this->bug->isClosed());
+        $this->assertSame(true, $this->bug->isRecording());
     }
 
     protected function createBug(): BugInterface

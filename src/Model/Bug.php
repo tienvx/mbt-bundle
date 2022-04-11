@@ -14,6 +14,7 @@ class Bug implements BugInterface
     protected string $message;
     protected ProgressInterface $progress;
     protected bool $closed = false;
+    protected bool $recording = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -98,6 +99,16 @@ class Bug implements BugInterface
     public function setClosed(bool $closed): void
     {
         $this->closed = $closed;
+    }
+
+    public function isRecording(): bool
+    {
+        return $this->recording;
+    }
+
+    public function setRecording(bool $recording): void
+    {
+        $this->recording = $recording;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void
