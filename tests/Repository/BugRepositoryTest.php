@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Repository;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -149,5 +150,24 @@ class BugRepositoryTest extends TestCase
         $this->bugRepository->increaseTotal($this->bug, 3);
         $this->assertSame(5, $this->bug->getProgress()->getProcessed());
         $this->assertSame(13, $this->bug->getProgress()->getTotal());
+    }
+
+    public function testStartRecordingBug(): void
+    {
+        $this->bug->setRecording(false);
+        $this->manager->expects($this->once())->method('flush');
+        $this->bugRepository->startRecording($this->bug);
+        $this->assertTrue($this->bug->isRecording());
+    }
+
+    public function testStopRecordingBug(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())->method('connect');
+        $this->bug->setRecording(true);
+        $this->manager->expects($this->once())->method('flush');
+        $this->manager->expects($this->once())->method('getConnection')->willReturn($connection);
+        $this->bugRepository->stopRecording($this->bug);
+        $this->assertFalse($this->bug->isRecording());
     }
 }

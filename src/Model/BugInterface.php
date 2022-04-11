@@ -40,6 +40,10 @@ interface BugInterface
 
     public function setClosed(bool $closed): void;
 
+    public function isRecording(): bool;
+
+    public function setRecording(bool $recording): void;
+
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 
     public function getCreatedAt(): DateTimeInterface;

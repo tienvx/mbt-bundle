@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Task;
 
+use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
@@ -44,7 +44,9 @@ class TaskHelper implements TaskHelperInterface
         }
 
         if ($task->isRunning()) {
-            throw new RuntimeException(sprintf('Can not run task %d: task is already running', $task->getId()));
+            throw new RecoverableMessageHandlingException(
+                sprintf('Can not run task %d: task is running. Will retry later', $task->getId())
+            );
         }
 
         $this->taskRepository->startRunning($task);

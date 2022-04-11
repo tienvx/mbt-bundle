@@ -5,10 +5,10 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Task;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
+use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
@@ -82,8 +82,8 @@ class TaskHelperTest extends TestCase
 
     public function testRunTaskAlreadyRunning(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Can not run task 123: task is already running');
+        $this->expectException(RecoverableMessageHandlingException::class);
+        $this->expectExceptionMessage('Can not run task 123: task is running. Will retry later');
         $this->task->setRunning(true);
         $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn($this->task);
         $this->taskHelper->run(123);
