@@ -54,15 +54,21 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
 
     public function startRecording(BugInterface $bug): void
     {
-        $bug->setRecording(true);
+        $bug->getVideo()->setRecording(true);
         $this->getEntityManager()->flush();
     }
 
     public function stopRecording(BugInterface $bug): void
     {
-        $bug->setRecording(false);
+        $bug->getVideo()->setRecording(false);
         // Recording bug may take long time. Reconnect to flush changes.
         $this->getEntityManager()->getConnection()->connect();
+        $this->getEntityManager()->flush();
+    }
+
+    public function updateVideoErrorMessage(BugInterface $bug, string $videoErrorMessage): void
+    {
+        $bug->getVideo()->setErrorMessage($videoErrorMessage);
         $this->getEntityManager()->flush();
     }
 }

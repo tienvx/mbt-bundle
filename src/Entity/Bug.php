@@ -6,7 +6,9 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\MbtBundle\Entity\Bug\Video;
 use Tienvx\Bundle\MbtBundle\Model\Bug as BugModel;
+use Tienvx\Bundle\MbtBundle\Model\Bug\VideoInterface;
 use Tienvx\Bundle\MbtBundle\Model\ProgressInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepository;
@@ -61,9 +63,9 @@ class Bug extends BugModel
     protected bool $closed = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Embedded(class="\Tienvx\Bundle\MbtBundle\Entity\Bug\Video")
      */
-    protected bool $recording = false;
+    protected VideoInterface $video;
 
     /**
      * @ORM\Column(name="created_at", type="datetime")
@@ -79,6 +81,7 @@ class Bug extends BugModel
     {
         parent::__construct();
         $this->progress = new Progress();
+        $this->video = new Video();
     }
 
     /**

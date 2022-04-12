@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\Bug\VideoInterface;
 
 interface BugInterface
 {
@@ -40,9 +41,9 @@ interface BugInterface
 
     public function setClosed(bool $closed): void;
 
-    public function isRecording(): bool;
+    public function getVideo(): VideoInterface;
 
-    public function setRecording(bool $recording): void;
+    public function setVideo(VideoInterface $video): void;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

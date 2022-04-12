@@ -2,10 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Bug;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -32,6 +34,7 @@ use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Video
  * @uses \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
  * @uses \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
  */
@@ -237,20 +240,50 @@ class BugHelperTest extends TestCase
     {
         $this->expectException(RecoverableMessageHandlingException::class);
         $this->expectExceptionMessage('Can not record video for bug 123: bug is recording. Will retry later');
-        $this->bug->setRecording(true);
+        $this->bug->getVideo()->setRecording(true);
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
         $this->helper->recordVideo(123);
     }
 
-    public function testRecordVideo(): void
+    /**
+     * @dataProvider exceptionProvider
+     */
+    public function testRecordVideo(?Throwable $exception, bool $updateVideoErrorMessage): void
     {
         $this->stepsRunner
             ->expects($this->once())
             ->method('run')
-            ->with($this->bug->getSteps(), $this->bug, true);
+            ->with(
+                $this->bug->getSteps(),
+                $this->bug,
+                true,
+                $this->callback(function (callable $exceptionCallback) use ($exception) {
+                    if ($exception) {
+                        $exceptionCallback($exception);
+                    }
+
+                    return true;
+                })
+            );
+        if ($exception && $updateVideoErrorMessage) {
+            $this->bugRepository
+                ->expects($this->once())
+                ->method('updateVideoErrorMessage')
+                ->with($this->bug, $exception->getMessage());
+        } else {
+            $this->bugRepository->expects($this->never())->method('updateVideoErrorMessage');
+        }
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
         $this->helper->recordVideo(123);
+    }
+
+    public function exceptionProvider(): array
+    {
+        return [
+            [null, false],
+            [new Exception('Something wrong'), true],
+        ];
     }
 }
