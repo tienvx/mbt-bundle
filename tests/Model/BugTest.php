@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Model;
 
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
+use Tienvx\Bundle\MbtBundle\Entity\Bug\Video;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\Bug;
@@ -28,6 +29,7 @@ class BugTest extends TestCase
     protected array $steps;
     protected TaskInterface $task;
     protected ProgressInterface $progress;
+    protected Bug\VideoInterface $video;
 
     protected function setUp(): void
     {
@@ -37,6 +39,7 @@ class BugTest extends TestCase
         ];
         $this->task = new Task();
         $this->progress = new Progress();
+        $this->video = new Video();
         $this->bug = $this->createBug();
         $this->bug->setId(123);
         $this->bug->setTitle('bug title');
@@ -44,8 +47,8 @@ class BugTest extends TestCase
         $this->bug->setTask($this->task);
         $this->bug->setMessage('bug message');
         $this->bug->setProgress($this->progress);
+        $this->bug->setVideo($this->video);
         $this->bug->setClosed(true);
-        $this->bug->setRecording(true);
     }
 
     public function testProperties(): void
@@ -57,7 +60,7 @@ class BugTest extends TestCase
         $this->assertSame('bug message', $this->bug->getMessage());
         $this->assertSame($this->progress, $this->bug->getProgress());
         $this->assertSame(true, $this->bug->isClosed());
-        $this->assertSame(true, $this->bug->isRecording());
+        $this->assertSame($this->video, $this->bug->getVideo());
     }
 
     protected function createBug(): BugInterface

@@ -21,6 +21,7 @@ use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Video
  */
 class BugRepositoryTest extends TestCase
 {
@@ -154,20 +155,28 @@ class BugRepositoryTest extends TestCase
 
     public function testStartRecordingBug(): void
     {
-        $this->bug->setRecording(false);
+        $this->bug->getVideo()->setRecording(false);
         $this->manager->expects($this->once())->method('flush');
         $this->bugRepository->startRecording($this->bug);
-        $this->assertTrue($this->bug->isRecording());
+        $this->assertTrue($this->bug->getVideo()->isRecording());
     }
 
     public function testStopRecordingBug(): void
     {
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->once())->method('connect');
-        $this->bug->setRecording(true);
+        $this->bug->getVideo()->setRecording(true);
         $this->manager->expects($this->once())->method('flush');
         $this->manager->expects($this->once())->method('getConnection')->willReturn($connection);
         $this->bugRepository->stopRecording($this->bug);
-        $this->assertFalse($this->bug->isRecording());
+        $this->assertFalse($this->bug->getVideo()->isRecording());
+    }
+
+    public function testUpdateVideoErrorMessage(): void
+    {
+        $this->assertNull($this->bug->getVideo()->getErrorMessage());
+        $this->manager->expects($this->once())->method('flush');
+        $this->bugRepository->updateVideoErrorMessage($this->bug, 'Something wrong');
+        $this->assertSame('Something wrong', $this->bug->getVideo()->getErrorMessage());
     }
 }

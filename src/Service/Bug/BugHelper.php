@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Service\Bug;
 
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
@@ -87,14 +88,16 @@ class BugHelper implements BugHelperInterface
     {
         $bug = $this->getBug($bugId, 'record video for bug');
 
-        if ($bug->isRecording()) {
+        if ($bug->getVideo()->isRecording()) {
             throw new RecoverableMessageHandlingException(
                 sprintf('Can not record video for bug %d: bug is recording. Will retry later', $bug->getId())
             );
         }
 
         $this->bugRepository->startRecording($bug);
-        $this->stepsRunner->run($bug->getSteps(), $bug, true);
+        $this->stepsRunner->run($bug->getSteps(), $bug, true, function (Throwable $throwable) use ($bug): void {
+            $this->bugRepository->updateVideoErrorMessage($bug, $throwable->getMessage());
+        });
         $this->bugRepository->stopRecording($bug);
     }
 

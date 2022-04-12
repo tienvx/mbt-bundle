@@ -4,6 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
+use Tienvx\Bundle\MbtBundle\Model\Bug\Video;
+use Tienvx\Bundle\MbtBundle\Model\Bug\VideoInterface;
 
 class Bug implements BugInterface
 {
@@ -14,13 +16,14 @@ class Bug implements BugInterface
     protected string $message;
     protected ProgressInterface $progress;
     protected bool $closed = false;
-    protected bool $recording = false;
+    protected VideoInterface $video;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
     public function __construct()
     {
         $this->progress = new Progress();
+        $this->video = new Video();
     }
 
     public function setId(int $id)
@@ -101,14 +104,14 @@ class Bug implements BugInterface
         $this->closed = $closed;
     }
 
-    public function isRecording(): bool
+    public function getVideo(): VideoInterface
     {
-        return $this->recording;
+        return $this->video;
     }
 
-    public function setRecording(bool $recording): void
+    public function setVideo(VideoInterface $video): void
     {
-        $this->recording = $recording;
+        $this->video = $video;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void
