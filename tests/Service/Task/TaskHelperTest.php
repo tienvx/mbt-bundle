@@ -2,23 +2,19 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Task;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
-use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
-use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
@@ -32,18 +28,17 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class TaskHelperTest extends TestCase
 {
     protected array $steps;
     protected GeneratorManagerInterface $generatorManager;
     protected TaskRepositoryInterface $taskRepository;
-    protected StepsRunnerInterface $stepsRunner;
-    protected BugHelperInterface $bugHelper;
+    protected TaskStepsRunner $stepsRunner;
     protected TaskHelperInterface $taskHelper;
     protected ConfigInterface $config;
     protected TaskInterface $task;
-    protected BugInterface $bug;
 
     protected function setUp(): void
     {
@@ -55,21 +50,18 @@ class TaskHelperTest extends TestCase
         ];
         $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
         $this->taskRepository = $this->createMock(TaskRepositoryInterface::class);
-        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
-        $this->bugHelper = $this->createMock(BugHelperInterface::class);
+        $this->stepsRunner = $this->createMock(TaskStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->taskHelper = new TaskHelper(
             $this->generatorManager,
             $this->taskRepository,
             $this->stepsRunner,
-            $this->bugHelper,
             $this->config
         );
         $this->task = new Task();
         $this->task->setId(123);
         $this->task->setRunning(false);
         $this->task->setDebug(true);
-        $this->bug = new Bug();
     }
 
     public function testRunNoTask(): void
@@ -90,9 +82,9 @@ class TaskHelperTest extends TestCase
     }
 
     /**
-     * @dataProvider stepProvider
+     * @dataProvider bugProvider
      */
-    public function testRun(?Throwable $exception, ?StepInterface $step): void
+    public function testRun(?BugInterface $bug): void
     {
         $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn($this->task);
         $this->taskRepository->expects($this->once())->method('startRunning')->with($this->task);
@@ -107,56 +99,27 @@ class TaskHelperTest extends TestCase
             ->with(
                 $this->steps,
                 $this->task,
-                $this->task->isDebug(),
-                $this->callback(function (callable $exceptionCallback) use ($exception, $step) {
-                    if ($exception) {
-                        $exceptionCallback($exception, $step);
-                    }
-
-                    return true;
-                }),
-                $this->callback(function (callable $runCallback) use ($exception, $step) {
-                    if (!$exception && $step) {
-                        $this->assertFalse($runCallback($step));
+                $this->callback(function (callable $exceptionCallback) use ($bug) {
+                    if ($bug) {
+                        $exceptionCallback($bug);
                     }
 
                     return true;
                 })
             );
-        if ($exception) {
-            $this->bugHelper
-                ->expects($this->once())
-                ->method('createBug')
-                ->with($step ? [$step] : [], $exception->getMessage())
-                ->willReturn($this->bug);
-        } else {
-            $this->bugHelper->expects($this->never())->method('createBug');
-        }
-        if (!$exception && $step) {
-            $this->config
-                ->expects($this->once())
-                ->method('getMaxSteps')
-                ->willReturn(150);
-        } else {
-            $this->config->expects($this->never())->method('getMaxSteps');
-        }
         $this->taskHelper->run(123);
-        if ($exception) {
-            $this->assertSame([$this->bug], $this->task->getBugs()->toArray());
+        if ($bug) {
+            $this->assertSame([$bug], $this->task->getBugs()->toArray());
         } else {
             $this->assertEmpty($this->task->getBugs());
         }
     }
 
-    public function stepProvider(): array
+    public function bugProvider(): array
     {
-        $step = new Step([], new Color(), 0);
-
         return [
-            [null, null],
-            [null, $step],
-            [new Exception('Something wrong'), null],
-            [new Exception('Caught a bug'), $step],
+            [null],
+            [new Bug()],
         ];
     }
 }

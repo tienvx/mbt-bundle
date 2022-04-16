@@ -63,6 +63,16 @@ class BugTest extends TestCase
         $this->assertSame($this->video, $this->bug->getVideo());
     }
 
+    public function testGetLogName(): void
+    {
+        $this->assertSame('bug-123.log', $this->bug->getLogName());
+    }
+
+    public function testGetVideoName(): void
+    {
+        $this->assertSame('bug-123.mp4', $this->bug->getVideoName());
+    }
+
     protected function createBug(): BugInterface
     {
         return new Bug();

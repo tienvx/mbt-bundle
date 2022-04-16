@@ -65,10 +65,4 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
         $this->getEntityManager()->getConnection()->connect();
         $this->getEntityManager()->flush();
     }
-
-    public function updateVideoErrorMessage(BugInterface $bug, string $videoErrorMessage): void
-    {
-        $bug->getVideo()->setErrorMessage($videoErrorMessage);
-        $this->getEntityManager()->flush();
-    }
 }

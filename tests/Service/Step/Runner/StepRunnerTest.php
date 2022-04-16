@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Service;
+namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
@@ -12,13 +12,13 @@ use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Service\StepRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place

@@ -62,12 +62,13 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
-use Tienvx\Bundle\MbtBundle\Service\StepRunner;
-use Tienvx\Bundle\MbtBundle\Service\StepRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
@@ -239,8 +240,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(GeneratorManagerInterface::class),
                 service(TaskRepositoryInterface::class),
-                service(StepsRunnerInterface::class),
-                service(BugHelperInterface::class),
+                service(TaskStepsRunner::class),
                 service(ConfigInterface::class),
             ])
             ->alias(TaskHelperInterface::class, TaskHelper::class)

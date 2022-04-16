@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service;
+namespace Tienvx\Bundle\MbtBundle\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;

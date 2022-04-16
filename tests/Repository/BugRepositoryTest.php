@@ -171,12 +171,4 @@ class BugRepositoryTest extends TestCase
         $this->bugRepository->stopRecording($this->bug);
         $this->assertFalse($this->bug->getVideo()->isRecording());
     }
-
-    public function testUpdateVideoErrorMessage(): void
-    {
-        $this->assertNull($this->bug->getVideo()->getErrorMessage());
-        $this->manager->expects($this->once())->method('flush');
-        $this->bugRepository->updateVideoErrorMessage($this->bug, 'Something wrong');
-        $this->assertSame('Something wrong', $this->bug->getVideo()->getErrorMessage());
-    }
 }

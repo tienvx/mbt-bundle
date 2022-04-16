@@ -12,7 +12,7 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\DispatcherInterface;
 
-class DispatcherTestCase extends TestCase
+abstract class DispatcherTestCase extends TestCase
 {
     protected DispatcherInterface $dispatcher;
     protected MessageBusInterface $messageBus;

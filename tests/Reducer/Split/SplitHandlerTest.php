@@ -16,6 +16,7 @@ use Tienvx\Bundle\MbtBundle\Tests\Reducer\HandlerTestCase;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @uses \Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage
  * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class SplitHandlerTest extends HandlerTestCase
 {
