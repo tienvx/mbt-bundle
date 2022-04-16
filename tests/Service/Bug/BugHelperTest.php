@@ -72,6 +72,7 @@ class BugHelperTest extends TestCase
         $this->progress->setProcessed(9);
         $this->bug = new Bug();
         $this->bug->setProgress($this->progress);
+        $this->bug->setMessage('Something wrong');
         $this->bug->setId(123);
         $this->bug->setSteps([
             $this->createMock(StepInterface::class),
@@ -257,7 +258,7 @@ class BugHelperTest extends TestCase
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
         $this->helper->recordVideo(123);
         $this->assertTrue($this->bug->isDebug());
-        if ($exception) {
+        if ($exception && $exception->getMessage() !== $this->bug->getMessage()) {
             $this->assertSame($exception->getMessage(), $this->bug->getVideo()->getErrorMessage());
         } else {
             $this->assertNull($this->bug->getVideo()->getErrorMessage());
@@ -269,6 +270,7 @@ class BugHelperTest extends TestCase
         return [
             [null],
             [new Exception('Something wrong')],
+            [new Exception('Something else wrong')],
         ];
     }
 }
