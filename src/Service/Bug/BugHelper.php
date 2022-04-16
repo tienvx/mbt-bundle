@@ -96,7 +96,9 @@ class BugHelper implements BugHelperInterface
         $this->bugRepository->startRecording($bug);
         $bug->setDebug(true);
         $this->stepsRunner->run($bug->getSteps(), $bug, function (Throwable $throwable) use ($bug) {
-            $bug->getVideo()->setErrorMessage($throwable->getMessage());
+            $bug->getVideo()->setErrorMessage(
+                $throwable->getMessage() !== $bug->getMessage() ? $throwable->getMessage() : null
+            );
         });
         $this->bugRepository->stopRecording($bug);
     }
