@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -20,6 +21,7 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class SelenoidHelperTest extends TestCase
 {
@@ -31,7 +33,10 @@ class SelenoidHelperTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->selenoidHelper = new SelenoidHelper();
+        $this->selenoidHelper = $this->createPartialMock(
+            SelenoidHelper::class,
+            ['createDriverInternal', 'waitForVideoContainer']
+        );
         $this->selenoidHelper->setWebdriverUri($this->webdriverUri);
         $browser = new Browser();
         $browser->setName('firefox');
@@ -47,11 +52,11 @@ class SelenoidHelperTest extends TestCase
     public function testGetLogUrl(): void
     {
         $this->assertSame(
-            'http://localhost:4444/logs/task-123.log',
+            $this->webdriverUri . '/logs/task-123.log',
             $this->selenoidHelper->getLogUrl($this->task)
         );
         $this->assertSame(
-            'http://localhost:4444/logs/bug-234.log',
+            $this->webdriverUri . '/logs/bug-234.log',
             $this->selenoidHelper->getLogUrl($this->bug)
         );
     }
@@ -59,75 +64,62 @@ class SelenoidHelperTest extends TestCase
     public function testGetVideoUrl(): void
     {
         $this->assertSame(
-            'http://localhost:4444/video/task-123.mp4',
+            $this->webdriverUri . '/video/task-123.mp4',
             $this->selenoidHelper->getVideoUrl($this->task)
         );
         $this->assertSame(
-            'http://localhost:4444/video/bug-234.mp4',
+            $this->webdriverUri . '/video/bug-234.mp4',
             $this->selenoidHelper->getVideoUrl($this->bug)
         );
     }
 
     /**
-     * @dataProvider capabilitiesParameterProvider
+     * @dataProvider entityProvider
      */
-    public function testGetCapabilities(bool $debug, bool $hasBug): void
+    public function testCreateDriver(string $type, bool $debug): void
     {
-        $this->assertCapabilities(
-            $this->selenoidHelper->getCapabilities($hasBug ? $this->bug : $this->task, $debug),
-            $debug,
-            $hasBug
-        );
+        $this->{$type}->setDebug($debug);
+        $driver = $this->createMock(RemoteWebDriver::class);
+        $this->selenoidHelper
+            ->expects($this->once())
+            ->method('createDriverInternal')
+            ->with(
+                $this->webdriverUri . '/wd/hub',
+                $this->callback(function (DesiredCapabilities $capabilities) use ($type, $debug) {
+                    $this->assertCapabilities($capabilities, $type, $debug);
+
+                    return true;
+                })
+            )
+            ->willReturn($driver);
+        $this->selenoidHelper->expects($this->exactly($debug))->method('waitForVideoContainer');
+        $this->assertSame($driver, $this->selenoidHelper->createDriver($this->{$type}));
     }
 
-    private function assertCapabilities(DesiredCapabilities $capabilities, bool $debug, bool $hasBug): void
+    private function assertCapabilities(DesiredCapabilities $capabilities, string $type, bool $debug): void
     {
         $this->assertSame($debug, $capabilities->is('enableVideo'));
         $this->assertSame($debug, $capabilities->is('enableLog'));
         $this->assertSame($this->task->getBrowser()->getVersion(), $capabilities->getVersion());
         $this->assertSame($this->task->getBrowser()->getName(), $capabilities->getBrowserName());
         $this->assertSame(
-            $debug ? ($hasBug ? "bug-{$this->bug->getId()}.log" : "task-{$this->task->getId()}.log") : null,
+            $debug ? "$type-{$this->{$type}->getId()}.log" : null,
             $capabilities->getCapability('logName')
         );
         $this->assertSame(
-            $debug ? ($hasBug ? "bug-{$this->bug->getId()}.mp4" : "task-{$this->task->getId()}.mp4") : null,
+            $debug ? "$type-{$this->{$type}->getId()}.mp4" : null,
             $capabilities->getCapability('videoName')
         );
         $this->assertSame($debug ? 60 : null, $capabilities->getCapability('videoFrameRate'));
     }
 
-    public function capabilitiesParameterProvider(): array
+    public function entityProvider(): array
     {
         return [
-            [true, false],
-            [true, true],
-            [false, false],
-            [false, true],
+            ['task', false],
+            ['task', true],
+            ['bug', false],
+            ['bug', true],
         ];
-    }
-
-    public function testGetLogName(): void
-    {
-        $this->assertSame(
-            'task-123.log',
-            $this->selenoidHelper->getLogName($this->task)
-        );
-        $this->assertSame(
-            'bug-234.log',
-            $this->selenoidHelper->getLogName($this->bug)
-        );
-    }
-
-    public function testGetVideoName(): void
-    {
-        $this->assertSame(
-            'task-123.mp4',
-            $this->selenoidHelper->getVideoName($this->task)
-        );
-        $this->assertSame(
-            'bug-234.mp4',
-            $this->selenoidHelper->getVideoName($this->bug)
-        );
     }
 }

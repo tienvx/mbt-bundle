@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Debug
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
@@ -55,6 +56,17 @@ class TaskTest extends TestCase
         $this->assertSame($this->browser, $this->task->getBrowser());
         $this->assertSame($this->bugs, $this->task->getBugs()->toArray());
         $this->assertSame(true, $this->task->isDebug());
+        $this->assertSame($this->task, $this->task->getTask());
+    }
+
+    public function testGetLogName(): void
+    {
+        $this->assertSame('task-123.log', $this->task->getLogName());
+    }
+
+    public function testGetVideoName(): void
+    {
+        $this->assertSame('task-123.mp4', $this->task->getVideoName());
     }
 
     protected function createTask(): TaskInterface

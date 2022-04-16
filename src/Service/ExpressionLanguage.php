@@ -8,6 +8,6 @@ class ExpressionLanguage extends BaseExpressionLanguage
 {
     protected function registerFunctions()
     {
-        // Don't register const function
+        // Don't register constant function
     }
 }

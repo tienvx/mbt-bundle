@@ -8,8 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
 
-class Task implements TaskInterface
+class Task extends Debug implements TaskInterface
 {
+    protected const TASK = 'task';
+
     protected ?int $id = null;
     protected string $title = '';
     protected RevisionInterface $modelRevision;
@@ -17,7 +19,6 @@ class Task implements TaskInterface
     protected bool $running = false;
     protected BrowserInterface $browser;
     protected Collection $bugs;
-    protected bool $debug = false;
     protected DateTimeInterface $updatedAt;
     protected DateTimeInterface $createdAt;
 
@@ -102,14 +103,19 @@ class Task implements TaskInterface
         }
     }
 
-    public function isDebug(): bool
+    public function getLogName(): string
     {
-        return $this->debug;
+        return sprintf('%s-%d.log', static::TASK, $this->getId());
     }
 
-    public function setDebug(bool $debug): void
+    public function getVideoName(): string
     {
-        $this->debug = $debug;
+        return sprintf('%s-%d.mp4', static::TASK, $this->getId());
+    }
+
+    public function getTask(): TaskInterface
+    {
+        return $this;
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

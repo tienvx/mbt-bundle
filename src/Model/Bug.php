@@ -7,8 +7,10 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Video;
 use Tienvx\Bundle\MbtBundle\Model\Bug\VideoInterface;
 
-class Bug implements BugInterface
+class Bug extends Debug implements BugInterface
 {
+    protected const BUG = 'bug';
+
     protected ?int $id = null;
     protected string $title;
     protected array $steps = [];
@@ -112,6 +114,16 @@ class Bug implements BugInterface
     public function setVideo(VideoInterface $video): void
     {
         $this->video = $video;
+    }
+
+    public function getLogName(): string
+    {
+        return sprintf('%s-%d.log', static::BUG, $this->getId());
+    }
+
+    public function getVideoName(): string
+    {
+        return sprintf('%s-%d.mp4', static::BUG, $this->getId());
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): void

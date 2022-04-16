@@ -6,7 +6,7 @@ use DateTimeInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\VideoInterface;
 
-interface BugInterface
+interface BugInterface extends DebugInterface
 {
     public function setId(int $id);
 
@@ -24,8 +24,6 @@ interface BugInterface
     public function setSteps(array $steps): void;
 
     public function addStep(StepInterface $step): void;
-
-    public function getTask(): TaskInterface;
 
     public function setTask(TaskInterface $task): void;
 

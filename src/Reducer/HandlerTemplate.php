@@ -7,20 +7,20 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected StepsRunnerInterface $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
 
     public function __construct(
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
-        StepsRunnerInterface $stepsRunner,
+        BugStepsRunner $stepsRunner,
         StepsBuilderInterface $stepsBuilder
     ) {
         $this->bugRepository = $bugRepository;
@@ -36,7 +36,8 @@ abstract class HandlerTemplate implements HandlerInterface
             return;
         }
 
-        $this->stepsRunner->run($newSteps, $bug, false, function (Throwable $throwable) use ($bug, $newSteps): void {
+        $bug->setDebug(false);
+        $this->stepsRunner->run($newSteps, $bug, function (Throwable $throwable) use ($bug, $newSteps): void {
             if ($throwable->getMessage() === $bug->getMessage()) {
                 $this->bugRepository->updateSteps($bug, $newSteps);
                 $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));

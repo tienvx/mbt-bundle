@@ -15,6 +15,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Debug
  *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
@@ -49,6 +50,7 @@ class BugTest extends TestCase
         $this->bug->setProgress($this->progress);
         $this->bug->setVideo($this->video);
         $this->bug->setClosed(true);
+        $this->bug->setDebug(true);
     }
 
     public function testProperties(): void
@@ -61,6 +63,17 @@ class BugTest extends TestCase
         $this->assertSame($this->progress, $this->bug->getProgress());
         $this->assertSame(true, $this->bug->isClosed());
         $this->assertSame($this->video, $this->bug->getVideo());
+        $this->assertSame(true, $this->bug->isDebug());
+    }
+
+    public function testGetLogName(): void
+    {
+        $this->assertSame('bug-123.log', $this->bug->getLogName());
+    }
+
+    public function testGetVideoName(): void
+    {
+        $this->assertSame('bug-123.mp4', $this->bug->getVideoName());
     }
 
     protected function createBug(): BugInterface

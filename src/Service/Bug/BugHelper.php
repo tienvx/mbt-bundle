@@ -5,7 +5,6 @@ namespace Tienvx\Bundle\MbtBundle\Service\Bug;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
@@ -14,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 class BugHelper implements BugHelperInterface
 {
@@ -22,7 +21,7 @@ class BugHelper implements BugHelperInterface
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
-    protected StepsRunnerInterface $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
 
     public function __construct(
@@ -30,7 +29,7 @@ class BugHelper implements BugHelperInterface
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
         BugNotifierInterface $bugNotifier,
-        StepsRunnerInterface $stepsRunner,
+        BugStepsRunner $stepsRunner,
         ConfigInterface $config
     ) {
         $this->reducerManager = $reducerManager;
@@ -95,20 +94,11 @@ class BugHelper implements BugHelperInterface
         }
 
         $this->bugRepository->startRecording($bug);
-        $this->stepsRunner->run($bug->getSteps(), $bug, true, function (Throwable $throwable) use ($bug): void {
-            $this->bugRepository->updateVideoErrorMessage($bug, $throwable->getMessage());
+        $bug->setDebug(true);
+        $this->stepsRunner->run($bug->getSteps(), $bug, function (Throwable $throwable) use ($bug) {
+            $bug->getVideo()->setErrorMessage($throwable->getMessage());
         });
         $this->bugRepository->stopRecording($bug);
-    }
-
-    public function createBug(array $steps, string $message): BugInterface
-    {
-        $bug = new Bug();
-        $bug->setTitle('');
-        $bug->setSteps($steps);
-        $bug->setMessage($message);
-
-        return $bug;
     }
 
     protected function getBug(int $bugId, string $action): BugInterface

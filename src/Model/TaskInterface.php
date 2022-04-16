@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Task\BrowserInterface;
 
-interface TaskInterface
+interface TaskInterface extends DebugInterface
 {
     public function setId(int $id);
 
@@ -36,10 +36,6 @@ interface TaskInterface
     public function getBugs(): Collection;
 
     public function addBug(BugInterface $bug): void;
-
-    public function isDebug(): bool;
-
-    public function setDebug(bool $debug): void;
 
     public function setCreatedAt(DateTimeInterface $createdAt): void;
 

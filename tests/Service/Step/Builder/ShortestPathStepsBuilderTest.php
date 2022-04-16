@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Service;
+namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Builder;
 
 use Generator;
 use Petrinet\Model\PetrinetInterface;
@@ -24,10 +24,10 @@ use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
-use Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Service\ShortestPathStepsBuilder
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder
  *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task

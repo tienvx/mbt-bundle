@@ -23,7 +23,7 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper
@@ -37,6 +37,7 @@ use Tienvx\Bundle\MbtBundle\Service\StepsRunnerInterface;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Video
  * @uses \Tienvx\Bundle\MbtBundle\Message\ReportBugMessage
  * @uses \Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class BugHelperTest extends TestCase
 {
@@ -44,7 +45,7 @@ class BugHelperTest extends TestCase
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
-    protected StepsRunnerInterface $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
     protected BugHelperInterface $helper;
     protected BugInterface $bug;
@@ -56,7 +57,7 @@ class BugHelperTest extends TestCase
         $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugNotifier = $this->createMock(BugNotifierInterface::class);
-        $this->stepsRunner = $this->createMock(StepsRunnerInterface::class);
+        $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->helper = new BugHelper(
             $this->reducerManager,
@@ -77,20 +78,7 @@ class BugHelperTest extends TestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
-    }
-
-    public function testCreateBug(): void
-    {
-        $steps = [
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-        ];
-        $bug = $this->helper->createBug($steps, 'Something wrong');
-        $this->assertInstanceOf(BugInterface::class, $bug);
-        $this->assertSame($steps, $bug->getSteps());
-        $this->assertSame('', $bug->getTitle());
-        $this->assertSame('Something wrong', $bug->getMessage());
+        $this->bug->setDebug(false);
     }
 
     public function testReduceMissingBug(): void
@@ -248,7 +236,7 @@ class BugHelperTest extends TestCase
     /**
      * @dataProvider exceptionProvider
      */
-    public function testRecordVideo(?Throwable $exception, bool $updateVideoErrorMessage): void
+    public function testRecordVideo(?Throwable $exception): void
     {
         $this->stepsRunner
             ->expects($this->once())
@@ -256,7 +244,6 @@ class BugHelperTest extends TestCase
             ->with(
                 $this->bug->getSteps(),
                 $this->bug,
-                true,
                 $this->callback(function (callable $exceptionCallback) use ($exception) {
                     if ($exception) {
                         $exceptionCallback($exception);
@@ -265,25 +252,23 @@ class BugHelperTest extends TestCase
                     return true;
                 })
             );
-        if ($exception && $updateVideoErrorMessage) {
-            $this->bugRepository
-                ->expects($this->once())
-                ->method('updateVideoErrorMessage')
-                ->with($this->bug, $exception->getMessage());
-        } else {
-            $this->bugRepository->expects($this->never())->method('updateVideoErrorMessage');
-        }
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
         $this->helper->recordVideo(123);
+        $this->assertTrue($this->bug->isDebug());
+        if ($exception) {
+            $this->assertSame($exception->getMessage(), $this->bug->getVideo()->getErrorMessage());
+        } else {
+            $this->assertNull($this->bug->getVideo()->getErrorMessage());
+        }
     }
 
     public function exceptionProvider(): array
     {
         return [
-            [null, false],
-            [new Exception('Something wrong'), true],
+            [null],
+            [new Exception('Something wrong')],
         ];
     }
 }
