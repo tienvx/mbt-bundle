@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Tests\Model\TaskTest as TaskModelTest;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Task
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Debug
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
@@ -17,7 +18,6 @@ use Tienvx\Bundle\MbtBundle\Tests\Model\TaskTest as TaskModelTest;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task\Browser
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
- * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class TaskTest extends TaskModelTest
 {

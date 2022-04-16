@@ -10,6 +10,7 @@ use Tienvx\Bundle\MbtBundle\Tests\Model\BugTest as BugModelTest;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Entity\Bug
  * @covers \Tienvx\Bundle\MbtBundle\Model\Bug
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Debug
  *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task

@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Model\Task
+ * @covers \Tienvx\Bundle\MbtBundle\Model\Debug
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
@@ -19,7 +20,6 @@ use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task\Browser
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task\Browser
- * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
 class TaskTest extends TestCase
 {
@@ -56,6 +56,7 @@ class TaskTest extends TestCase
         $this->assertSame($this->browser, $this->task->getBrowser());
         $this->assertSame($this->bugs, $this->task->getBugs()->toArray());
         $this->assertSame(true, $this->task->isDebug());
+        $this->assertSame($this->task, $this->task->getTask());
     }
 
     public function testGetLogName(): void
