@@ -8,6 +8,8 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 
 abstract class DispatcherTemplate implements DispatcherInterface
 {
+    protected const MIN_PAIR_LENGTH = 2; // 3 steps
+
     protected MessageBusInterface $messageBus;
 
     public function __construct(MessageBusInterface $messageBus)
@@ -19,7 +21,7 @@ abstract class DispatcherTemplate implements DispatcherInterface
     {
         $steps = $bug->getSteps();
 
-        if (count($steps) <= 2) {
+        if (count($steps) < $this->minSteps()) {
             return 0;
         }
 
@@ -39,4 +41,6 @@ abstract class DispatcherTemplate implements DispatcherInterface
     {
         return ceil(sqrt(count($steps)));
     }
+
+    abstract protected function minSteps(): int;
 }

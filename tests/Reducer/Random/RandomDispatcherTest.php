@@ -21,4 +21,30 @@ class RandomDispatcherTest extends DispatcherTestCase
         parent::setUp();
         $this->dispatcher = new RandomDispatcher($this->messageBus);
     }
+
+    public function stepsProvider(): array
+    {
+        return [
+            [0, []],
+            [1, []],
+            [2, []],
+            [3, [
+                [0, 2],
+            ]],
+            [4, range(1, 2)],
+            [5, range(1, 3)],
+            [6, range(1, 3)],
+            [9, range(1, 3)],
+            [11, range(1, 4)],
+        ];
+    }
+
+    protected function assertPairs(array $expectedPairs): void
+    {
+        if (count($expectedPairs) > 1) {
+            $this->assertCount(count($expectedPairs), $this->pairs);
+        } else {
+            $this->assertSame($expectedPairs, $this->pairs);
+        }
+    }
 }
