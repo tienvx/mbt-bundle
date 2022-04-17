@@ -96,4 +96,9 @@ class Transition implements TransitionInterface
             'commands' => array_map(fn (CommandInterface $command) => $command->toArray(), $this->commands),
         ];
     }
+
+    public function isStart(): bool
+    {
+        return empty($this->fromPlaces);
+    }
 }

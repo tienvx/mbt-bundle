@@ -14,7 +14,7 @@ class ModelHelper implements ModelHelperInterface
     public function getStartTransitionId(RevisionInterface $revision): int
     {
         foreach ($revision->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
+            if ($transition instanceof TransitionInterface && $transition->isStart()) {
                 return $index;
             }
         }
@@ -28,7 +28,7 @@ class ModelHelper implements ModelHelperInterface
     public function getStartPlaceIds(RevisionInterface $revision): array
     {
         foreach ($revision->getTransitions() as $transition) {
-            if ($transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())) {
+            if ($transition instanceof TransitionInterface && $transition->isStart()) {
                 return array_fill_keys($transition->getToPlaces(), 1);
             }
         }

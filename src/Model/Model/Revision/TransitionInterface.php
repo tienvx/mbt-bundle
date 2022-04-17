@@ -31,4 +31,6 @@ interface TransitionInterface
     public function addToPlace(int $toPlace): void;
 
     public function toArray(): array;
+
+    public function isStart(): bool;
 }

@@ -49,6 +49,13 @@ class TransitionTest extends TestCase
         $this->command2->setValue(null);
     }
 
+    public function testStartTransition(): void
+    {
+        $this->assertFalse($this->transition->isStart());
+        $this->transition->setFromPlaces([]);
+        $this->assertTrue($this->transition->isStart());
+    }
+
     public function testSerialize(): void
     {
         $className = get_class($this->transition);
@@ -70,6 +77,7 @@ class TransitionTest extends TestCase
         $this->assertSame(StoreCommandRunner::STORE, $transition->getCommands()[0]->getCommand());
         $this->assertSame('55', $transition->getCommands()[0]->getTarget());
         $this->assertSame('number', $transition->getCommands()[0]->getValue());
+        $this->assertFalse($transition->isStart());
     }
 
     protected function createTransition(): TransitionInterface
