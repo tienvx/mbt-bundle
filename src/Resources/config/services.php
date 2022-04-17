@@ -268,6 +268,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(SelenoidHelperInterface::class),
                 service(StepRunnerInterface::class),
+                service(ConfigInterface::class),
             ])
         ->set(BugStepsRunner::class)
             ->args([
