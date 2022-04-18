@@ -256,13 +256,19 @@ class BugHelperTest extends TestCase
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
+        if ($exception) {
+            $this->bugRepository
+                ->expects($this->once())
+                ->method('updateVideoErrorMessage')
+                ->with(
+                    $this->bug,
+                    $exception->getMessage() !== $this->bug->getMessage() ? $exception->getMessage() : null
+                );
+        } else {
+            $this->bugRepository->expects($this->never())->method('updateVideoErrorMessage');
+        }
         $this->helper->recordVideo(123);
         $this->assertTrue($this->bug->isDebug());
-        if ($exception && $exception->getMessage() !== $this->bug->getMessage()) {
-            $this->assertSame($exception->getMessage(), $this->bug->getVideo()->getErrorMessage());
-        } else {
-            $this->assertNull($this->bug->getVideo()->getErrorMessage());
-        }
     }
 
     public function exceptionProvider(): array

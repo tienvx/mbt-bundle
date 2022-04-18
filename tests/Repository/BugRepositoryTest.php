@@ -28,6 +28,7 @@ class BugRepositoryTest extends TestCase
     protected EntityManagerDecorator $manager;
     protected BugInterface $bug;
     protected BugRepositoryInterface $bugRepository;
+    protected Connection $connection;
 
     protected function setUp(): void
     {
@@ -54,6 +55,7 @@ class BugRepositoryTest extends TestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
+        $this->connection = $this->createMock(Connection::class);
     }
 
     public function testUpdateSteps(): void
@@ -156,6 +158,7 @@ class BugRepositoryTest extends TestCase
     public function testStartRecordingBug(): void
     {
         $this->bug->getVideo()->setRecording(false);
+        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
         $this->manager->expects($this->once())->method('flush');
         $this->bugRepository->startRecording($this->bug);
         $this->assertTrue($this->bug->getVideo()->isRecording());
@@ -163,12 +166,23 @@ class BugRepositoryTest extends TestCase
 
     public function testStopRecordingBug(): void
     {
-        $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())->method('connect');
+        $this->connection->expects($this->once())->method('connect');
         $this->bug->getVideo()->setRecording(true);
+        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
         $this->manager->expects($this->once())->method('flush');
-        $this->manager->expects($this->once())->method('getConnection')->willReturn($connection);
+        $this->manager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->bugRepository->stopRecording($this->bug);
         $this->assertFalse($this->bug->getVideo()->isRecording());
+    }
+
+    public function testUpdateVideoErrorMessage(): void
+    {
+        $this->connection->expects($this->once())->method('connect');
+        $this->bug->getVideo()->setErrorMessage(null);
+        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
+        $this->manager->expects($this->once())->method('flush');
+        $this->manager->expects($this->once())->method('getConnection')->willReturn($this->connection);
+        $this->bugRepository->updateVideoErrorMessage($this->bug, 'New error');
+        $this->assertSame('New error', $this->bug->getVideo()->getErrorMessage());
     }
 }
