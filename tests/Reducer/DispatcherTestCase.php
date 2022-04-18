@@ -25,54 +25,43 @@ abstract class DispatcherTestCase extends TestCase
         $this->bug = new Bug();
         $this->bug->setId(123);
         $this->bug->setMessage('Something wrong');
-        $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(1, 11)));
     }
 
-    public function testDispatchTooShortSteps(): void
+    /**
+     * @dataProvider stepsProvider
+     */
+    public function testDispatch(int $length, array $expectedPairs): void
     {
-        $this->bug->setSteps([$this->createMock(StepInterface::class)]);
-        $this->messageBus->expects($this->never())->method('dispatch');
-        $this->assertSame(0, $this->dispatcher->dispatch($this->bug));
-        $this->assertPairs(0);
-    }
-
-    public function testDispatch(): void
-    {
+        if ($length > 0) {
+            $this->bug->setSteps(array_map(fn () => $this->createMock(StepInterface::class), range(0, $length - 1)));
+        }
         $this->messageBus
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(count($expectedPairs)))
             ->method('dispatch')
-            ->with($this->assertMessage())
+            ->with($this->assertMessage($length))
             ->willReturn(new Envelope(new \stdClass()));
-        $this->assertSame(4, $this->dispatcher->dispatch($this->bug));
-        $this->assertPairs();
+        $this->assertSame(count($expectedPairs), $this->dispatcher->dispatch($this->bug));
+        $this->assertPairs($expectedPairs);
     }
 
-    protected function assertMessage(): Callback
+    protected function assertMessage(int $length): Callback
     {
-        return $this->callback(function ($message) {
+        return $this->callback(function ($message) use ($length) {
             if (!$message instanceof ReduceStepsMessage) {
-                return false;
-            }
-            if (
-                $message->getBugId() !== $this->bug->getId()
-                || $message->getFrom() >= $message->getTo()
-                || 11 !== $message->getLength()
-            ) {
                 return false;
             }
             $pair = [$message->getFrom(), $message->getTo()];
             if (!in_array($pair, $this->pairs)) {
                 $this->pairs[] = $pair;
-
-                return true;
             }
 
-            return false;
+            return $message->getBugId() === $this->bug->getId() &&
+                $message->getFrom() + 2 <= $message->getTo() &&
+                $length === $message->getLength();
         });
     }
 
-    protected function assertPairs(int $count = 4): void
-    {
-        $this->assertCount($count, $this->pairs);
-    }
+    abstract protected function assertPairs(array $expectedPairs): void;
+
+    abstract public function stepsProvider(): array;
 }

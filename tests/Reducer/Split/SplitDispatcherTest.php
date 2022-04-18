@@ -22,16 +22,56 @@ class SplitDispatcherTest extends DispatcherTestCase
         $this->dispatcher = new SplitDispatcher($this->messageBus);
     }
 
-    protected function assertPairs(int $count = 4): void
+    public function stepsProvider(): array
     {
-        parent::assertPairs($count);
-        if (4 === $count) {
-            $this->assertSame([
+        return [
+            [0, []],
+            [1, []],
+            [2, []],
+            [3, []],
+            [4, []],
+            [5, [
+                [0, 2],
+                [2, 4],
+            ]],
+            [6, [
+                [0, 2],
+                [2, 4],
+            ]],
+            [7, [
+                [0, 3],
+                [3, 6],
+            ]],
+            [8, [
+                [0, 3],
+                [3, 6],
+            ]],
+            [9, [
+                [0, 3],
+                [3, 6],
+                [6, 8],
+            ]],
+            [10, [
                 [0, 3],
                 [3, 6],
                 [6, 9],
-                [9, 10],
-            ], $this->pairs);
-        }
+            ]],
+            [11, [
+                [0, 3],
+                [3, 6],
+                [6, 9],
+            ]],
+            [12, [
+                [0, 3],
+                [3, 6],
+                [6, 9],
+                [9, 11],
+            ]],
+        ];
+    }
+
+    protected function assertPairs(array $expectedPairs): void
+    {
+        $this->assertSame($expectedPairs, $this->pairs);
     }
 }
