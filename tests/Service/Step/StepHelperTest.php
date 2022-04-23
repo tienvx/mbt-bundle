@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step;
 
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
+use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelper;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
@@ -15,6 +16,21 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
  */
 class StepHelperTest extends TestCase
 {
+    protected StepHelper $stepHelper;
+
+    protected function setUp(): void
+    {
+        $this->stepHelper = new StepHelper();
+    }
+
+    public function testCloneInvalidSteps(): void
+    {
+        $this->expectExceptionObject(
+            new UnexpectedValueException(sprintf('Step must be instance of "%s".', StepInterface::class))
+        );
+        $this->stepHelper->cloneStepsAndResetColor([new \stdClass()]);
+    }
+
     public function testCloneStepsAndResetColor(): void
     {
         $steps = [
@@ -23,8 +39,7 @@ class StepHelperTest extends TestCase
             new Step([2], new Color(), 2),
             new Step([3], new Color(), 3),
         ];
-        $stepHelper = new StepHelper();
-        $newSteps = $stepHelper->cloneStepsAndResetColor($steps);
+        $newSteps = $this->stepHelper->cloneStepsAndResetColor($steps);
         $this->assertCount(count($steps), $newSteps);
         foreach ($newSteps as $index => $newStep) {
             $this->assertInstanceOf(StepInterface::class, $newStep);
