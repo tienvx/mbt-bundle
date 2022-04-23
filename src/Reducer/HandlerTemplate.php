@@ -9,6 +9,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
@@ -16,17 +17,20 @@ abstract class HandlerTemplate implements HandlerInterface
     protected MessageBusInterface $messageBus;
     protected BugStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
+    protected StepHelperInterface $stepHelper;
 
     public function __construct(
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
         BugStepsRunner $stepsRunner,
-        StepsBuilderInterface $stepsBuilder
+        StepsBuilderInterface $stepsBuilder,
+        StepHelperInterface $stepHelper
     ) {
         $this->bugRepository = $bugRepository;
         $this->messageBus = $messageBus;
         $this->stepsRunner = $stepsRunner;
         $this->stepsBuilder = $stepsBuilder;
+        $this->stepHelper = $stepHelper;
     }
 
     public function handle(BugInterface $bug, int $from, int $to): void
@@ -37,11 +41,15 @@ abstract class HandlerTemplate implements HandlerInterface
         }
 
         $bug->setDebug(false);
-        $this->stepsRunner->run($newSteps, $bug, function (Throwable $throwable) use ($bug, $newSteps): void {
-            if ($throwable->getMessage() === $bug->getMessage()) {
-                $this->bugRepository->updateSteps($bug, $newSteps);
-                $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
+        $this->stepsRunner->run(
+            $this->stepHelper->cloneStepsAndResetColor($newSteps),
+            $bug,
+            function (Throwable $throwable) use ($bug, $newSteps): void {
+                if ($throwable->getMessage() === $bug->getMessage()) {
+                    $this->bugRepository->updateSteps($bug, $newSteps);
+                    $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
+                }
             }
-        });
+        );
     }
 }

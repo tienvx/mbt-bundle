@@ -16,6 +16,4 @@ interface BugRepositoryInterface extends ObjectRepository
     public function startRecording(BugInterface $bug): void;
 
     public function stopRecording(BugInterface $bug): void;
-
-    public function updateVideoErrorMessage(BugInterface $bug, ?string $errorMessage): void;
 }

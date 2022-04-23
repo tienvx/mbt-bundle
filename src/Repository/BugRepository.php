@@ -21,7 +21,7 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
             // Refresh the bug for the latest steps's length.
             $this->getEntityManager()->refresh($bug);
 
-            if (count($newSteps) <= count($bug->getSteps())) {
+            if (count($newSteps) < count($bug->getSteps())) {
                 $this->getEntityManager()->lock($bug, LockMode::PESSIMISTIC_WRITE);
                 $bug->getProgress()->setTotal(0);
                 $bug->getProgress()->setProcessed(0);
@@ -66,16 +66,6 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
         // Refresh so we don't update other fields while recording.
         $this->getEntityManager()->refresh($bug);
         $bug->getVideo()->setRecording(false);
-        $this->getEntityManager()->flush();
-    }
-
-    public function updateVideoErrorMessage(BugInterface $bug, ?string $errorMessage): void
-    {
-        // Recording bug may take long time. Reconnect to flush changes.
-        $this->getEntityManager()->getConnection()->connect();
-        // Refresh so we don't update other fields while recording.
-        $this->getEntityManager()->refresh($bug);
-        $bug->getVideo()->setErrorMessage($errorMessage);
         $this->getEntityManager()->flush();
     }
 }

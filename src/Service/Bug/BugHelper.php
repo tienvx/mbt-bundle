@@ -14,6 +14,7 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 class BugHelper implements BugHelperInterface
 {
@@ -21,6 +22,7 @@ class BugHelper implements BugHelperInterface
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
+    protected StepHelperInterface $stepHelper;
     protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
 
@@ -29,6 +31,7 @@ class BugHelper implements BugHelperInterface
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
         BugNotifierInterface $bugNotifier,
+        StepHelperInterface $stepHelper,
         BugStepsRunner $stepsRunner,
         ConfigInterface $config
     ) {
@@ -36,6 +39,7 @@ class BugHelper implements BugHelperInterface
         $this->bugRepository = $bugRepository;
         $this->messageBus = $messageBus;
         $this->bugNotifier = $bugNotifier;
+        $this->stepHelper = $stepHelper;
         $this->stepsRunner = $stepsRunner;
         $this->config = $config;
     }
@@ -95,12 +99,15 @@ class BugHelper implements BugHelperInterface
 
         $this->bugRepository->startRecording($bug);
         $bug->setDebug(true);
-        $this->stepsRunner->run($bug->getSteps(), $bug, function (Throwable $throwable) use ($bug) {
-            $this->bugRepository->updateVideoErrorMessage(
-                $bug,
-                $throwable->getMessage() !== $bug->getMessage() ? $throwable->getMessage() : null
-            );
-        });
+        $this->stepsRunner->run(
+            $this->stepHelper->cloneStepsAndResetColor($bug->getSteps()),
+            $bug,
+            function (Throwable $throwable) use ($bug) {
+                $bug->getVideo()->setErrorMessage(
+                    $throwable->getMessage() !== $bug->getMessage() ? $throwable->getMessage() : null
+                );
+            }
+        );
         $this->bugRepository->stopRecording($bug);
     }
 
