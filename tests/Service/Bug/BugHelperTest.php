@@ -24,6 +24,7 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper
@@ -45,6 +46,7 @@ class BugHelperTest extends TestCase
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
+    protected StepHelperInterface $stepHelper;
     protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
     protected BugHelperInterface $helper;
@@ -57,6 +59,7 @@ class BugHelperTest extends TestCase
         $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugNotifier = $this->createMock(BugNotifierInterface::class);
+        $this->stepHelper = $this->createMock(StepHelperInterface::class);
         $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->helper = new BugHelper(
@@ -64,6 +67,7 @@ class BugHelperTest extends TestCase
             $this->bugRepository,
             $this->messageBus,
             $this->bugNotifier,
+            $this->stepHelper,
             $this->stepsRunner,
             $this->config
         );
@@ -225,7 +229,7 @@ class BugHelperTest extends TestCase
         $this->helper->recordVideo(123);
     }
 
-    public function testRunTaskAlreadyRunning(): void
+    public function testRecordVideoAlreadyRecording(): void
     {
         $this->expectException(RecoverableMessageHandlingException::class);
         $this->expectExceptionMessage('Can not record video for bug 123: bug is recording. Will retry later');
@@ -237,7 +241,7 @@ class BugHelperTest extends TestCase
     /**
      * @dataProvider exceptionProvider
      */
-    public function testRecordVideo(?Throwable $exception): void
+    public function testRecordVideo(?Throwable $exception, ?string $expectedVideoErrorMessage): void
     {
         $this->stepsRunner
             ->expects($this->once())
@@ -254,29 +258,24 @@ class BugHelperTest extends TestCase
                 })
             );
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
+        $this->stepHelper
+            ->expects($this->once())
+            ->method('cloneStepsAndResetColor')
+            ->with($this->bug->getSteps())
+            ->willReturnArgument(0);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
-        if ($exception) {
-            $this->bugRepository
-                ->expects($this->once())
-                ->method('updateVideoErrorMessage')
-                ->with(
-                    $this->bug,
-                    $exception->getMessage() !== $this->bug->getMessage() ? $exception->getMessage() : null
-                );
-        } else {
-            $this->bugRepository->expects($this->never())->method('updateVideoErrorMessage');
-        }
         $this->helper->recordVideo(123);
         $this->assertTrue($this->bug->isDebug());
+        $this->assertSame($expectedVideoErrorMessage, $this->bug->getVideo()->getErrorMessage());
     }
 
     public function exceptionProvider(): array
     {
         return [
-            [null],
-            [new Exception('Something wrong')],
-            [new Exception('Something else wrong')],
+            [null, null],
+            [new Exception('Something wrong'), null],
+            [new Exception('Something else wrong'), 'Something else wrong'],
         ];
     }
 }

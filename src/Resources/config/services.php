@@ -68,6 +68,8 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunnerInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelper;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
@@ -136,6 +138,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
+                service(StepHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -153,6 +156,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
+                service(StepHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -230,6 +234,7 @@ return static function (ContainerConfigurator $container): void {
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
                 service(BugNotifierInterface::class),
+                service(StepHelperInterface::class),
                 service(BugStepsRunner::class),
                 service(ConfigInterface::class),
             ])
@@ -257,6 +262,9 @@ return static function (ContainerConfigurator $container): void {
                 service(MarkingHelperInterface::class),
             ])
             ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
+
+        ->set(StepHelperInterface::class)
+            ->alias(StepHelperInterface::class, StepHelper::class)
 
         ->set(StepRunner::class)
             ->args([

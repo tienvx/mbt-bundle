@@ -58,16 +58,17 @@ class BugRepositoryTest extends TestCase
         $this->connection = $this->createMock(Connection::class);
     }
 
-    public function testUpdateSteps(): void
+    /**
+     * @dataProvider stepsProvider
+     */
+    public function testUpdateSteps(int $length, int $expectedLength, int $expectedProcessed, int $expectedTotal): void
     {
-        $newSteps = [
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
-        ];
+        $newSteps = array_map(fn () => $this->createMock(StepInterface::class), range(0, $length - 1));
         $this->manager->expects($this->once())->method('refresh')->with($this->bug);
-        $this->manager->expects($this->never())->method('lock');
+        $this->manager
+            ->expects($this->exactly(count($this->bug->getSteps()) !== $expectedLength))
+            ->method('lock')
+            ->with($this->bug, LockMode::PESSIMISTIC_WRITE);
         $this->manager
             ->expects($this->once())
             ->method('wrapInTransaction')
@@ -77,31 +78,18 @@ class BugRepositoryTest extends TestCase
                 return true;
             }));
         $this->bugRepository->updateSteps($this->bug, $newSteps);
-        $this->assertNotSame($newSteps, $this->bug->getSteps());
-        $this->assertSame(5, $this->bug->getProgress()->getProcessed());
-        $this->assertSame(10, $this->bug->getProgress()->getTotal());
+        $this->assertCount($expectedLength, $this->bug->getSteps());
+        $this->assertSame($expectedProcessed, $this->bug->getProgress()->getProcessed());
+        $this->assertSame($expectedTotal, $this->bug->getProgress()->getTotal());
     }
 
-    public function testUpdateStepsWithShorterSteps(): void
+    public function stepsProvider(): array
     {
-        $newSteps = [
-            $this->createMock(StepInterface::class),
-            $this->createMock(StepInterface::class),
+        return [
+            [4, 3, 5, 10],
+            [3, 3, 5, 10],
+            [2, 2, 0, 0],
         ];
-        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
-        $this->manager->expects($this->once())->method('lock')->with($this->bug, LockMode::PESSIMISTIC_WRITE);
-        $this->manager
-            ->expects($this->once())
-            ->method('wrapInTransaction')
-            ->with($this->callback(function ($callback) {
-                $callback();
-
-                return true;
-            }));
-        $this->bugRepository->updateSteps($this->bug, $newSteps);
-        $this->assertSame($newSteps, $this->bug->getSteps());
-        $this->assertSame(0, $this->bug->getProgress()->getProcessed());
-        $this->assertSame(0, $this->bug->getProgress()->getTotal());
     }
 
     public function testIncreaseProcessed(): void
@@ -173,16 +161,5 @@ class BugRepositoryTest extends TestCase
         $this->manager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->bugRepository->stopRecording($this->bug);
         $this->assertFalse($this->bug->getVideo()->isRecording());
-    }
-
-    public function testUpdateVideoErrorMessage(): void
-    {
-        $this->connection->expects($this->once())->method('connect');
-        $this->bug->getVideo()->setErrorMessage(null);
-        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
-        $this->manager->expects($this->once())->method('flush');
-        $this->manager->expects($this->once())->method('getConnection')->willReturn($this->connection);
-        $this->bugRepository->updateVideoErrorMessage($this->bug, 'New error');
-        $this->assertSame('New error', $this->bug->getVideo()->getErrorMessage());
     }
 }

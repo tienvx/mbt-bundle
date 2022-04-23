@@ -27,7 +27,8 @@ class SplitHandlerTest extends HandlerTestCase
             $this->bugRepository,
             $this->messageBus,
             $this->stepsRunner,
-            $this->stepsBuilder
+            $this->stepsBuilder,
+            $this->stepHelper
         );
     }
 }

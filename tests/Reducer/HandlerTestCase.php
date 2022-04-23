@@ -16,6 +16,7 @@ use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 abstract class HandlerTestCase extends TestCase
 {
@@ -24,6 +25,7 @@ abstract class HandlerTestCase extends TestCase
     protected MessageBusInterface $messageBus;
     protected BugStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
+    protected StepHelperInterface $stepHelper;
     protected array $newSteps;
     protected BugInterface $bug;
 
@@ -33,6 +35,7 @@ abstract class HandlerTestCase extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
+        $this->stepHelper = $this->createMock(StepHelperInterface::class);
         $this->newSteps = [
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -73,6 +76,11 @@ abstract class HandlerTestCase extends TestCase
      */
     public function testHandle(?Throwable $exception, bool $updateSteps): void
     {
+        $this->stepHelper
+            ->expects($this->once())
+            ->method('cloneStepsAndResetColor')
+            ->with($this->newSteps)
+            ->willReturnArgument(0);
         $this->stepsRunner->expects($this->once())
             ->method('run')
             ->with(
