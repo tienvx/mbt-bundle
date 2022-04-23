@@ -263,7 +263,7 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
 
-        ->set(StepHelperInterface::class)
+        ->set(StepHelper::class)
             ->alias(StepHelperInterface::class, StepHelper::class)
 
         ->set(StepRunner::class)
