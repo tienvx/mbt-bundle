@@ -9,7 +9,9 @@ use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Message\RecordVideoMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReportBugMessage;
@@ -23,7 +25,7 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 /**
@@ -47,9 +49,10 @@ class BugHelperTest extends TestCase
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
     protected StepHelperInterface $stepHelper;
-    protected BugStepsRunner $stepsRunner;
+    protected RecordStepsRunner $stepsRunner;
     protected ConfigInterface $config;
     protected BugHelperInterface $helper;
+    protected Revision $revision;
     protected BugInterface $bug;
     protected ProgressInterface $progress;
 
@@ -60,7 +63,7 @@ class BugHelperTest extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugNotifier = $this->createMock(BugNotifierInterface::class);
         $this->stepHelper = $this->createMock(StepHelperInterface::class);
-        $this->stepsRunner = $this->createMock(BugStepsRunner::class);
+        $this->stepsRunner = $this->createMock(RecordStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->helper = new BugHelper(
             $this->reducerManager,
@@ -84,6 +87,10 @@ class BugHelperTest extends TestCase
             $this->createMock(StepInterface::class),
         ]);
         $this->bug->setDebug(false);
+        $this->revision = new Revision();
+        $task = new Task();
+        $task->setModelRevision($this->revision);
+        $this->bug->setTask($task);
     }
 
     public function testReduceMissingBug(): void
@@ -260,8 +267,8 @@ class BugHelperTest extends TestCase
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
         $this->stepHelper
             ->expects($this->once())
-            ->method('cloneStepsAndResetColor')
-            ->with($this->bug->getSteps())
+            ->method('cloneAndResetSteps')
+            ->with($this->bug->getSteps(), $this->revision)
             ->willReturnArgument(0);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);

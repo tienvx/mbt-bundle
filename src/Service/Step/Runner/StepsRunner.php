@@ -33,8 +33,7 @@ abstract class StepsRunner implements StepsRunnerInterface
                 if (!$step instanceof StepInterface) {
                     throw new UnexpectedValueException(sprintf('Step must be instance of "%s".', StepInterface::class));
                 }
-                $this->runStep($step, $entity->getTask()->getModelRevision(), $driver);
-                if ($this->canStop($step)) {
+                if (!$this->runStep($step, $entity->getTask()->getModelRevision(), $driver)) {
                     break;
                 }
             }
@@ -52,14 +51,11 @@ abstract class StepsRunner implements StepsRunnerInterface
         return $this->selenoidHelper->createDriver($entity);
     }
 
-    protected function runStep(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): void
+    protected function runStep(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): bool
     {
         $this->stepRunner->run($step, $revision, $driver);
-    }
 
-    protected function canStop(StepInterface $step): bool
-    {
-        return false;
+        return true;
     }
 
     abstract protected function catchException(

@@ -14,7 +14,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
@@ -35,7 +35,7 @@ class TaskHelperTest extends TestCase
     protected array $steps;
     protected GeneratorManagerInterface $generatorManager;
     protected TaskRepositoryInterface $taskRepository;
-    protected TaskStepsRunner $stepsRunner;
+    protected ExploreStepsRunner $stepsRunner;
     protected TaskHelperInterface $taskHelper;
     protected ConfigInterface $config;
     protected TaskInterface $task;
@@ -50,7 +50,7 @@ class TaskHelperTest extends TestCase
         ];
         $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
         $this->taskRepository = $this->createMock(TaskRepositoryInterface::class);
-        $this->stepsRunner = $this->createMock(TaskStepsRunner::class);
+        $this->stepsRunner = $this->createMock(ExploreStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->taskHelper = new TaskHelper(
             $this->generatorManager,

@@ -13,7 +13,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 class BugHelper implements BugHelperInterface
@@ -23,7 +23,7 @@ class BugHelper implements BugHelperInterface
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
     protected StepHelperInterface $stepHelper;
-    protected BugStepsRunner $stepsRunner;
+    protected RecordStepsRunner $stepsRunner;
     protected ConfigInterface $config;
 
     public function __construct(
@@ -32,7 +32,7 @@ class BugHelper implements BugHelperInterface
         MessageBusInterface $messageBus,
         BugNotifierInterface $bugNotifier,
         StepHelperInterface $stepHelper,
-        BugStepsRunner $stepsRunner,
+        RecordStepsRunner $stepsRunner,
         ConfigInterface $config
     ) {
         $this->reducerManager = $reducerManager;
@@ -100,7 +100,7 @@ class BugHelper implements BugHelperInterface
         $this->bugRepository->startRecording($bug);
         $bug->setDebug(true);
         $this->stepsRunner->run(
-            $this->stepHelper->cloneStepsAndResetColor($bug->getSteps()),
+            $this->stepHelper->cloneAndResetSteps($bug->getSteps(), $bug->getTask()->getModelRevision()),
             $bug,
             function (Throwable $throwable) use ($bug) {
                 $bug->getVideo()->setErrorMessage(

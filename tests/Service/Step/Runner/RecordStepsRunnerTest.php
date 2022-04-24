@@ -2,10 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Runner;
 
-use Exception;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
 
 /**
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner
  * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner
  * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepsRunner
  *
@@ -17,19 +17,11 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
-class BugStepsRunnerTest extends StepsRunnerTestCase
+class RecordStepsRunnerTest extends BugStepsRunnerTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        $this->stepsRunner = new BugStepsRunner($this->selenoidHelper, $this->stepRunner);
-    }
-
-    protected function assertHandlingException(Exception $exception, array $bugSteps = []): void
-    {
-        $this->handleException
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($exception);
+        $this->stepsRunner = new RecordStepsRunner($this->selenoidHelper, $this->stepRunner);
     }
 }

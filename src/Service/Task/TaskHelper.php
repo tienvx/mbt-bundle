@@ -9,19 +9,19 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
 
 class TaskHelper implements TaskHelperInterface
 {
     protected GeneratorManagerInterface $generatorManager;
     protected TaskRepositoryInterface $taskRepository;
-    protected TaskStepsRunner $stepsRunner;
+    protected ExploreStepsRunner $stepsRunner;
     protected ConfigInterface $config;
 
     public function __construct(
         GeneratorManagerInterface $generatorManager,
         TaskRepositoryInterface $taskRepository,
-        TaskStepsRunner $stepsRunner,
+        ExploreStepsRunner $stepsRunner,
         ConfigInterface $config
     ) {
         $this->generatorManager = $generatorManager;

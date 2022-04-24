@@ -8,10 +8,11 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
+use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
-class TaskStepsRunner extends StepsRunner
+class ExploreStepsRunner extends StepsRunner
 {
     protected array $steps;
     protected ConfigInterface $config;
@@ -47,11 +48,12 @@ class TaskStepsRunner extends StepsRunner
         $this->steps = [];
     }
 
-    protected function canStop(StepInterface $step): bool
+    protected function runStep(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): bool
     {
+        parent::runStep($step, $revision, $driver);
         $this->steps[] = clone $step;
 
-        return count($this->steps) >= $this->config->getMaxSteps();
+        return count($this->steps) < $this->config->getMaxSteps();
     }
 
     protected function createBug(array $steps, string $message): BugInterface
