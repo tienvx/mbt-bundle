@@ -64,10 +64,11 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ReduceStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelper;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
@@ -136,7 +137,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(BugStepsRunner::class),
+                service(ReduceStepsRunner::class),
                 service(StepsBuilderInterface::class),
                 service(StepHelperInterface::class),
             ])
@@ -154,7 +155,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(BugStepsRunner::class),
+                service(ReduceStepsRunner::class),
                 service(StepsBuilderInterface::class),
                 service(StepHelperInterface::class),
             ])
@@ -235,7 +236,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugNotifierInterface::class),
                 service(StepHelperInterface::class),
-                service(BugStepsRunner::class),
+                service(RecordStepsRunner::class),
                 service(ConfigInterface::class),
             ])
             ->alias(BugHelperInterface::class, BugHelper::class)
@@ -244,7 +245,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(GeneratorManagerInterface::class),
                 service(TaskRepositoryInterface::class),
-                service(TaskStepsRunner::class),
+                service(ExploreStepsRunner::class),
                 service(ConfigInterface::class),
             ])
             ->alias(TaskHelperInterface::class, TaskHelper::class)
@@ -264,6 +265,9 @@ return static function (ContainerConfigurator $container): void {
             ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
 
         ->set(StepHelper::class)
+            ->args([
+                service(ModelHelperInterface::class),
+            ])
             ->alias(StepHelperInterface::class, StepHelper::class)
 
         ->set(StepRunner::class)
@@ -272,13 +276,21 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
 
-        ->set(TaskStepsRunner::class)
+        ->set(ExploreStepsRunner::class)
             ->args([
                 service(SelenoidHelperInterface::class),
                 service(StepRunnerInterface::class),
                 service(ConfigInterface::class),
             ])
-        ->set(BugStepsRunner::class)
+        ->set(ReduceStepsRunner::class)
+            ->args([
+                service(SelenoidHelperInterface::class),
+                service(StepRunnerInterface::class),
+                service(PetrinetHelperInterface::class),
+                service(MarkingHelperInterface::class),
+                service(GuardedTransitionServiceInterface::class),
+            ])
+        ->set(RecordStepsRunner::class)
             ->args([
                 service(SelenoidHelperInterface::class),
                 service(StepRunnerInterface::class),

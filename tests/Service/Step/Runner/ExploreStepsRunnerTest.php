@@ -7,10 +7,10 @@ use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner
  * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepsRunner
  *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
@@ -21,7 +21,7 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\TaskStepsRunner;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
-class TaskStepsRunnerTest extends StepsRunnerTestCase
+class ExploreStepsRunnerTest extends StepsRunnerTestCase
 {
     protected ConfigInterface $config;
 
@@ -29,7 +29,7 @@ class TaskStepsRunnerTest extends StepsRunnerTestCase
     {
         parent::setUp();
         $this->config = $this->createMock(ConfigInterface::class);
-        $this->stepsRunner = new TaskStepsRunner($this->selenoidHelper, $this->stepRunner, $this->config);
+        $this->stepsRunner = new ExploreStepsRunner($this->selenoidHelper, $this->stepRunner, $this->config);
     }
 
     /**

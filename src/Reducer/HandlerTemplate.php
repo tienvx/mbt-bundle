@@ -8,21 +8,21 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ReduceStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected BugStepsRunner $stepsRunner;
+    protected ReduceStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
     protected StepHelperInterface $stepHelper;
 
     public function __construct(
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
-        BugStepsRunner $stepsRunner,
+        ReduceStepsRunner $stepsRunner,
         StepsBuilderInterface $stepsBuilder,
         StepHelperInterface $stepHelper
     ) {
@@ -42,7 +42,7 @@ abstract class HandlerTemplate implements HandlerInterface
 
         $bug->setDebug(false);
         $this->stepsRunner->run(
-            $this->stepHelper->cloneStepsAndResetColor($newSteps),
+            $this->stepHelper->cloneAndResetSteps($newSteps, $bug->getTask()->getModelRevision()),
             $bug,
             function (Throwable $throwable) use ($bug, $newSteps): void {
                 if ($throwable->getMessage() === $bug->getMessage()) {

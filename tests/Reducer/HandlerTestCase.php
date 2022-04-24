@@ -8,6 +8,8 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
+use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
@@ -15,7 +17,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ReduceStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 
 abstract class HandlerTestCase extends TestCase
@@ -23,17 +25,18 @@ abstract class HandlerTestCase extends TestCase
     protected HandlerInterface $handler;
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected BugStepsRunner $stepsRunner;
+    protected ReduceStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
     protected StepHelperInterface $stepHelper;
     protected array $newSteps;
+    protected Revision $revision;
     protected BugInterface $bug;
 
     protected function setUp(): void
     {
         $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->stepsRunner = $this->createMock(BugStepsRunner::class);
+        $this->stepsRunner = $this->createMock(ReduceStepsRunner::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
         $this->stepHelper = $this->createMock(StepHelperInterface::class);
         $this->newSteps = [
@@ -53,6 +56,10 @@ abstract class HandlerTestCase extends TestCase
             $this->createMock(StepInterface::class),
         ]);
         $this->bug->setDebug(true);
+        $this->revision = new Revision();
+        $task = new Task();
+        $task->setModelRevision($this->revision);
+        $this->bug->setTask($task);
         $this->stepsBuilder
             ->expects($this->once())
             ->method('create')
@@ -78,8 +85,8 @@ abstract class HandlerTestCase extends TestCase
     {
         $this->stepHelper
             ->expects($this->once())
-            ->method('cloneStepsAndResetColor')
-            ->with($this->newSteps)
+            ->method('cloneAndResetSteps')
+            ->with($this->newSteps, $this->revision)
             ->willReturnArgument(0);
         $this->stepsRunner->expects($this->once())
             ->method('run')
