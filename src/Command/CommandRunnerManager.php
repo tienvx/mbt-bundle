@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class CommandRunnerManager implements CommandRunnerManagerInterface
 {
@@ -43,11 +43,11 @@ class CommandRunnerManager implements CommandRunnerManagerInterface
         return false;
     }
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         foreach ($this->runners as $runner) {
             if ($runner instanceof CommandRunnerInterface && $runner->supports($command)) {
-                $runner->run($this->commandPreprocessor->process($command, $color), $color, $driver);
+                $runner->run($this->commandPreprocessor->process($command, $values), $values, $driver);
                 break;
             }
         }

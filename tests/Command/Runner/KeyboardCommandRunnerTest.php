@@ -36,7 +36,7 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
                 && 'name' === $selector->getMechanism()
                 && 'age' === $selector->getValue();
         }))->willReturn($element);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSendKeys(): void
@@ -53,7 +53,7 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && '.quantity' === $selector->getValue();
         }))->willReturn($element);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function targetProvider(): array

@@ -2,10 +2,10 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 interface CommandPreprocessorInterface
 {
-    public function process(CommandInterface $command, ColorInterface $color): CommandInterface;
+    public function process(CommandInterface $command, ValuesInterface $values): CommandInterface;
 }

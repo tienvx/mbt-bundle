@@ -33,7 +33,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $command->setCommand(WindowCommandRunner::OPEN);
         $command->setTarget('https://demo.sylius.com/en_US/');
         $this->driver->expects($this->once())->method('get')->with('https://demo.sylius.com/en_US/');
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSetWindowSize(): void
@@ -50,7 +50,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $options = $this->createMock(WebDriverOptions::class);
         $options->expects($this->once())->method('window')->willReturn($window);
         $this->driver->expects($this->once())->method('manage')->willReturn($options);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelectWindow(): void
@@ -61,7 +61,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('window')->with('testing');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testClose(): void
@@ -69,7 +69,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $command = new Command();
         $command->setCommand(WindowCommandRunner::CLOSE);
         $this->driver->expects($this->once())->method('close');
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelectFrameRelativeTop(): void
@@ -80,7 +80,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('defaultContent');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelectFrameRelativeParent(): void
@@ -91,7 +91,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('parent');
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelectFrameIndex(): void
@@ -102,7 +102,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
         $targetLocator = $this->createMock(RemoteTargetLocator::class);
         $targetLocator->expects($this->once())->method('frame')->with(123);
         $this->driver->expects($this->once())->method('switchTo')->willReturn($targetLocator);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelectFrameSelector(): void
@@ -125,7 +125,7 @@ class WindowCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function targetProvider(): array

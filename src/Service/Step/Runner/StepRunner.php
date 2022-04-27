@@ -3,13 +3,13 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
+use Tienvx\Bundle\MbtBundle\Model\Values;
 
 class StepRunner implements StepRunnerInterface
 {
@@ -24,21 +24,22 @@ class StepRunner implements StepRunnerInterface
     {
         $transition = $revision->getTransition($step->getTransition());
         if ($transition instanceof TransitionInterface) {
-            $this->executeCommands($transition->getCommands(), $step->getColor(), $driver);
+            $this->runCommands($transition->getCommands(), $driver);
         }
         foreach ($step->getPlaces() as $place => $tokens) {
             $place = $revision->getPlace($place);
             if ($place instanceof PlaceInterface) {
-                $this->executeCommands($place->getCommands(), $step->getColor(), $driver);
+                $this->runCommands($place->getCommands(), $driver);
             }
         }
     }
 
-    protected function executeCommands(array $commands, ColorInterface $color, RemoteWebDriver $driver): void
+    protected function runCommands(array $commands, RemoteWebDriver $driver): void
     {
+        $values = new Values();
         foreach ($commands as $command) {
             if ($command instanceof CommandInterface) {
-                $this->commandRunnerManager->run($command, $color, $driver);
+                $this->commandRunnerManager->run($command, $values, $driver);
             }
         }
     }

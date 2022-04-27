@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class StoreCommandRunner extends CommandRunner
 {
@@ -58,48 +58,48 @@ class StoreCommandRunner extends CommandRunner
         ];
     }
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::STORE:
-                $color->setValue($command->getValue(), $command->getTarget());
+                $values->setValue($command->getValue(), $command->getTarget());
                 break;
             case self::STORE_ATTRIBUTE:
                 list($elementLocator, $attributeName) = explode('@', $command->getTarget(), 2);
-                $color->setValue(
+                $values->setValue(
                     $command->getValue(),
                     $driver->findElement($this->getSelector($elementLocator))->getAttribute($attributeName)
                 );
                 break;
             case self::STORE_ELEMENT_COUNT:
-                $color->setValue(
+                $values->setValue(
                     $command->getValue(),
                     count($driver->findElements($this->getSelector($command->getTarget())))
                 );
                 break;
             case self::STORE_JSON:
-                $color->setValue(
+                $values->setValue(
                     $command->getValue(),
                     json_decode($command->getTarget())
                 );
                 break;
             case self::STORE_TEXT:
-                $color->setValue(
+                $values->setValue(
                     $command->getValue(),
                     $driver->findElement($this->getSelector($command->getTarget()))->getText()
                 );
                 break;
             case self::STORE_TITLE:
-                $color->setValue($command->getTarget(), $driver->getTitle());
+                $values->setValue($command->getTarget(), $driver->getTitle());
                 break;
             case self::STORE_VALUE:
-                $color->setValue(
+                $values->setValue(
                     $command->getValue(),
                     $driver->findElement($this->getSelector($command->getTarget()))->getAttribute('value')
                 );
                 break;
             case self::STORE_WINDOW_HANDLE:
-                $color->setValue($command->getTarget(), $driver->getWindowHandle());
+                $values->setValue($command->getTarget(), $driver->getWindowHandle());
                 break;
             default:
                 break;

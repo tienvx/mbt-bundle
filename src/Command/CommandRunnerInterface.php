@@ -3,8 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 interface CommandRunnerInterface
 {
@@ -35,5 +35,5 @@ interface CommandRunnerInterface
 
     public function supports(CommandInterface $command): bool;
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void;
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void;
 }

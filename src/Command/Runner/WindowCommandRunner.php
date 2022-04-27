@@ -6,9 +6,9 @@ use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class WindowCommandRunner extends CommandRunner
 {
@@ -44,7 +44,7 @@ class WindowCommandRunner extends CommandRunner
         return [];
     }
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::OPEN:

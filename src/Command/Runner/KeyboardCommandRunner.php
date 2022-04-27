@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class KeyboardCommandRunner extends CommandRunner
 {
@@ -30,7 +30,7 @@ class KeyboardCommandRunner extends CommandRunner
         return [];
     }
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::TYPE:

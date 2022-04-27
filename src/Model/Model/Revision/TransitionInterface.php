@@ -12,6 +12,10 @@ interface TransitionInterface
 
     public function setGuard(?string $guard): void;
 
+    public function getExpression(): ?string;
+
+    public function setExpression(?string $expression): void;
+
     public function getCommands(): array;
 
     public function setCommands(array $commands): void;

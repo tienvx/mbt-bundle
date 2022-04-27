@@ -50,6 +50,7 @@ class PetrinetHelperTest extends TestCase
         $transition1->setToPlaces([1, 2]);
         $transition2->setFromPlaces([2]);
         $transition2->setToPlaces([1]);
+        $transition3->setExpression('{count: count + 1, status: "open"}');
         $transition3->setFromPlaces([1]);
         $transition3->setToPlaces([0, 2]);
 
@@ -112,6 +113,13 @@ class PetrinetHelperTest extends TestCase
                 $this->assertFalse($guardCallback(new Color(['count' => 0])));
             } else {
                 $this->assertNull($transition->getGuard());
+            }
+            if (2 === $index) {
+                $this->assertIsCallable($expressionCallback = $transition->getExpression());
+                $this->assertSame(['count' => 2, 'status' => 'open'], $expressionCallback(new Color(['count' => 1])));
+                $this->assertSame(['count' => 1, 'status' => 'open'], $expressionCallback(new Color(['count' => 0])));
+            } else {
+                $this->assertNull($transition->getExpression());
             }
         }
     }
