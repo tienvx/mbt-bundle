@@ -42,7 +42,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('selectByIndex')->with(123);
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     public function testAddSelectionByValue(): void
@@ -61,7 +61,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('selectByValue')->with('en_GB');
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     public function testAddSelectionByLabel(): void
@@ -80,7 +80,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('selectByVisibleText')->with('English (UK)');
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     public function testRemoveSelectionByIndex(): void
@@ -99,7 +99,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('deselectByIndex')->with(123);
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     public function testRemoveSelectionByValue(): void
@@ -118,7 +118,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('deselectByValue')->with('en_GB');
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     public function testRemoveSelectionByLabel(): void
@@ -137,7 +137,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $select->expects($this->once())->method('deselectByVisibleText')->with('English (UK)');
         $runner = $this->createPartialMock(MouseCommandRunner::class, ['getSelect']);
         $runner->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
-        $runner->run($command, $this->color, $this->driver);
+        $runner->run($command, $this->values, $this->driver);
     }
 
     /**
@@ -156,7 +156,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'language' === $selector->getValue();
         }))->willReturn($element);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     /**
@@ -175,7 +175,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'language' === $selector->getValue();
         }))->willReturn($element);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testClick(): void
@@ -190,7 +190,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'id' === $selector->getMechanism()
                 && 'add-to-cart' === $selector->getValue();
         }))->willReturn($element);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testClickAt(): void
@@ -210,7 +210,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('click')->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testDoubleClick(): void
@@ -228,7 +228,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('doubleClick')->with($element)->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testDoubleClickAt(): void
@@ -248,7 +248,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('doubleClick')->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testDragAndDropToObject(): void
@@ -278,7 +278,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $action->expects($this->once())->method('dragAndDrop')->with($source, $target)->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseDown(): void
@@ -297,7 +297,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseDown')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseDownAt(): void
@@ -318,7 +318,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10)->willReturnSelf();
         $mouse->expects($this->once())->method('mouseDown');
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseMoveAt(): void
@@ -338,7 +338,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseOutTop(): void
@@ -364,7 +364,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
             $rect = (object) ['top' => 1, 'height' => 2],
             $vp = (object) [],
         ]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseOutRight(): void
@@ -390,7 +390,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
             $rect = (object) ['top' => 0, 'right' => 2],
             $vp = (object) ['width' => 3],
         ]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseOutBottom(): void
@@ -416,7 +416,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
             $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'height' => 4],
             $vp = (object) ['width' => 2, 'height' => 2],
         ]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseOutLeft(): void
@@ -442,7 +442,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
             $rect = (object) ['top' => 0, 'right' => 2, 'bottom' => 1, 'left' => 1],
             $vp = (object) ['width' => 2, 'height' => 1],
         ]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testUnableMouseOut(): void
@@ -467,7 +467,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         ]);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unable to perform mouse out as the element takes up the entire viewport');
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseOver(): void
@@ -486,7 +486,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseMove')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseUp(): void
@@ -505,7 +505,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse = $this->createMock(RemoteMouse::class);
         $mouse->expects($this->once())->method('mouseUp')->with($coord);
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testMouseUpAt(): void
@@ -526,7 +526,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
         $mouse->expects($this->once())->method('mouseMove')->with($coord, 5, 10)->willReturnSelf();
         $mouse->expects($this->once())->method('mouseUp');
         $this->driver->expects($this->once())->method('getMouse')->willReturn($mouse);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testSelect(): void
@@ -548,7 +548,7 @@ class MouseCommandRunnerTest extends RunnerTestCase
                 && 'css selector' === $selector->getMechanism()
                 && 'option[value=en_US]' === $selector->getValue();
         }))->willReturn($option);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function checkDataProvider(): array

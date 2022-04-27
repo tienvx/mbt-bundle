@@ -67,7 +67,13 @@ class PetrinetHelper implements PetrinetHelperInterface
                         $color->getValues()
                     )
                     : null;
-                $transitions[$index] = $builder->transition($guardCallback);
+                $expressionCallback = $transition->getExpression()
+                    ? fn (ColorInterface $color): array => (array) $this->expressionLanguage->evaluate(
+                        $transition->getExpression(),
+                        $color->getValues()
+                    )
+                    : null;
+                $transitions[$index] = $builder->transition($guardCallback, $expressionCallback);
                 $transitions[$index]->setId($index);
             }
         }

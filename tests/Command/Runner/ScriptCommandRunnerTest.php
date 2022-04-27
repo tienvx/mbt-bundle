@@ -24,12 +24,12 @@ class ScriptCommandRunnerTest extends RunnerTestCase
         $command = new Command();
         $command->setCommand(ScriptCommandRunner::RUN_SCRIPT);
         $command->setTarget('alert("Hello World!")');
-        $this->color->expects($this->never())->method('getValues');
+        $this->values->expects($this->never())->method('getValues');
         $this->driver->expects($this->once())->method('executeScript')->with(
             'alert("Hello World!")',
             [],
         );
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testExecuteScript(): void
@@ -38,13 +38,13 @@ class ScriptCommandRunnerTest extends RunnerTestCase
         $command->setCommand(ScriptCommandRunner::EXECUTE_SCRIPT);
         $command->setTarget('return 2 + 1;');
         $command->setValue('total');
-        $this->color->expects($this->never())->method('getValues');
-        $this->color->expects($this->once())->method('setValue')->with('total', 3);
+        $this->values->expects($this->never())->method('getValues');
+        $this->values->expects($this->once())->method('setValue')->with('total', 3);
         $this->driver->expects($this->once())->method('executeScript')->with(
             'return 2 + 1;',
             [],
         )->willReturn(3);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testExecuteAsyncScript(): void
@@ -53,13 +53,13 @@ class ScriptCommandRunnerTest extends RunnerTestCase
         $command->setCommand(ScriptCommandRunner::EXECUTE_ASYNC_SCRIPT);
         $command->setTarget('window.setTimeout(function() { return "Hello";}, 1000);');
         $command->setValue('message');
-        $this->color->expects($this->never())->method('getValues');
-        $this->color->expects($this->once())->method('setValue')->with('message', 'Hello');
+        $this->values->expects($this->never())->method('getValues');
+        $this->values->expects($this->once())->method('setValue')->with('message', 'Hello');
         $this->driver->expects($this->once())->method('executeAsyncScript')->with(
             'window.setTimeout(function() { return "Hello";}, 1000);',
             [],
         )->willReturn('Hello');
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function targetProvider(): array

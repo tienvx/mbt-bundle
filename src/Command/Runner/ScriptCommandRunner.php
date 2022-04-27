@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class ScriptCommandRunner extends CommandRunner
 {
@@ -35,7 +35,7 @@ class ScriptCommandRunner extends CommandRunner
         ];
     }
 
-    public function run(CommandInterface $command, ColorInterface $color, RemoteWebDriver $driver): void
+    public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
             case self::RUN_SCRIPT:
@@ -44,13 +44,13 @@ class ScriptCommandRunner extends CommandRunner
             case self::EXECUTE_SCRIPT:
                 $value = $driver->executeScript($command->getTarget());
                 if ($command->getValue()) {
-                    $color->setValue($command->getValue(), $value);
+                    $values->setValue($command->getValue(), $value);
                 }
                 break;
             case self::EXECUTE_ASYNC_SCRIPT:
                 $value = $driver->executeAsyncScript($command->getTarget());
                 if ($command->getValue()) {
-                    $color->setValue($command->getValue(), $value);
+                    $values->setValue($command->getValue(), $value);
                 }
                 break;
             default:

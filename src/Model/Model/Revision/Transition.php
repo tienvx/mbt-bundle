@@ -11,6 +11,7 @@ class Transition implements TransitionInterface
 
     protected string $label = '';
     protected ?string $guard = null;
+    protected ?string $expression = null;
     protected array $fromPlaces = [];
     protected array $toPlaces = [];
 
@@ -23,6 +24,7 @@ class Transition implements TransitionInterface
     {
         $this->label = $data['label'];
         $this->guard = $data['guard'];
+        $this->expression = $data['expression'];
         $this->fromPlaces = $data['fromPlaces'];
         $this->toPlaces = $data['toPlaces'];
         $this->commands = array_map([CommandFactory::class, 'createFromArray'], $data['commands']);
@@ -46,6 +48,16 @@ class Transition implements TransitionInterface
     public function setGuard(?string $guard): void
     {
         $this->guard = $guard;
+    }
+
+    public function getExpression(): ?string
+    {
+        return $this->expression;
+    }
+
+    public function setExpression(?string $expression): void
+    {
+        $this->expression = $expression;
     }
 
     public function getFromPlaces(): array
@@ -91,6 +103,7 @@ class Transition implements TransitionInterface
         return [
             'label' => $this->label,
             'guard' => $this->guard,
+            'expression' => $this->expression,
             'fromPlaces' => $this->fromPlaces,
             'toPlaces' => $this->toPlaces,
             'commands' => array_map(fn (CommandInterface $command) => $command->toArray(), $this->commands),

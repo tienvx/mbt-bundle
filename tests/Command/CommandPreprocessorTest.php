@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
-use SingleColorPetrinet\Model\Color;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
 use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
@@ -11,11 +10,13 @@ use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
+use Tienvx\Bundle\MbtBundle\Model\Values;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Values
  */
 class CommandPreprocessorTest extends TestCase
 {
@@ -34,10 +35,8 @@ class CommandPreprocessorTest extends TestCase
         $command->setCommand($commandString);
         $command->setTarget($target);
         $command->setValue($value);
-        $color = new Color();
-        $color->setValues($values);
         $preprocessor = new CommandPreprocessor();
-        $newCommand = $preprocessor->process($command, $color);
+        $newCommand = $preprocessor->process($command, new Values($values));
         $this->assertSame($commandString, $newCommand->getCommand());
         $this->assertSame($newTarget, $newCommand->getTarget());
         $this->assertSame($newValue, $newCommand->getValue());

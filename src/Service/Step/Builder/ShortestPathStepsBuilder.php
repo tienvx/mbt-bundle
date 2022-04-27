@@ -29,19 +29,9 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
      */
     public function create(BugInterface $bug, int $from, int $to): Generator
     {
-        foreach ($bug->getSteps() as $index => $step) {
-            if ($index < $from) {
-                yield $step;
-            }
-        }
-
+        yield from array_slice($bug->getSteps(), 0, $from);
         yield from $this->getSteps($bug, $from, $to);
-
-        foreach ($bug->getSteps() as $index => $step) {
-            if ($index > $to) {
-                yield $step;
-            }
-        }
+        yield from array_slice($bug->getSteps(), $to + 1);
     }
 
     protected function getSteps(BugInterface $bug, int $from, int $to): iterable

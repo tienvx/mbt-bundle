@@ -12,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
@@ -26,6 +27,7 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @uses \Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Values
  */
 class StepRunnerTest extends TestCase
 {
@@ -34,6 +36,7 @@ class StepRunnerTest extends TestCase
     protected CommandRunnerManager $commandRunnerManager;
     protected RemoteWebDriver $driver;
     protected ColorInterface $color;
+    protected array $valuesInstances = [];
 
     protected function setUp(): void
     {
@@ -60,12 +63,19 @@ class StepRunnerTest extends TestCase
             $command5 = CommandFactory::create(AssertionRunner::ASSERT_TEXT),
         ]);
         $this->revision->setPlaces($places);
+        $assertValuesInstance = function (ValuesInterface $values) {
+            if (!in_array($values, $this->valuesInstances, true)) {
+                $this->valuesInstances[] = $values;
+            }
+
+            return true;
+        };
         $this->commands = [
-            [$command1, $this->color, $this->driver],
-            [$command2, $this->color, $this->driver],
-            [$command3, $this->color, $this->driver],
-            [$command4, $this->color, $this->driver],
-            [$command5, $this->color, $this->driver],
+            [$command1, $this->callback($assertValuesInstance), $this->driver],
+            [$command2, $this->callback($assertValuesInstance), $this->driver],
+            [$command3, $this->callback($assertValuesInstance), $this->driver],
+            [$command4, $this->callback($assertValuesInstance), $this->driver],
+            [$command5, $this->callback($assertValuesInstance), $this->driver],
         ];
 
         $this->commandRunnerManager = $this->createMock(CommandRunnerManager::class);
@@ -77,5 +87,6 @@ class StepRunnerTest extends TestCase
         $this->commandRunnerManager->expects($this->exactly(5))->method('run')->withConsecutive(...$this->commands);
         $stepRunner = new StepRunner($this->commandRunnerManager);
         $stepRunner->run($step, $this->revision, $this->driver);
+        $this->assertCount(3, $this->valuesInstances);
     }
 }

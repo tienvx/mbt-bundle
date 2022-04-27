@@ -2,24 +2,24 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command;
 
-use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
+use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
 class CommandPreprocessor implements CommandPreprocessorInterface
 {
-    public function process(CommandInterface $command, ColorInterface $color): CommandInterface
+    public function process(CommandInterface $command, ValuesInterface $values): CommandInterface
     {
         $processed = new Command();
         $processed->setCommand($command->getCommand());
         $processed->setTarget(
             $command->getTarget()
-                ? $this->replaceVariables($command->getTarget(), $color->getValues())
+                ? $this->replaceVariables($command->getTarget(), $values->getValues())
                 : $command->getTarget()
         );
         $processed->setValue(
             $command->getValue()
-                ? $this->replaceVariables($command->getValue(), $color->getValues())
+                ? $this->replaceVariables($command->getValue(), $values->getValues())
                 : $command->getValue()
         );
 
@@ -28,8 +28,10 @@ class CommandPreprocessor implements CommandPreprocessorInterface
 
     protected function replaceVariables(string $text, array $values): string
     {
-        return preg_replace_callback('/\$\{(.*?)\}/', function ($matches) use ($values) {
-            return $values[$matches[1]] ?? $matches[1];
-        }, $text);
+        return preg_replace_callback(
+            '/\$\{(.*?)\}/',
+            fn (array $matches): string => $values[$matches[1]] ?? $matches[1],
+            $text
+        );
     }
 }

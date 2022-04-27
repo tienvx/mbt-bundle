@@ -48,7 +48,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => true, 'readonly' => false]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testWaitForElementNotEditable(): void
@@ -74,7 +74,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
             ->method('executeScript')
             ->with('return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };', [$element])
             ->willReturn((object) ['enabled' => false, 'readonly' => true]);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testWaitForElementPresent(): void
@@ -94,7 +94,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testNoElementsPresent(): void
@@ -108,7 +108,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && 'button' === $selector->getValue();
         }))->willReturn([]);
         $this->driver->expects($this->never())->method('wait');
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testWaitForElementNotPresent(): void
@@ -132,7 +132,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testWaitForElementVisible(): void
@@ -153,7 +153,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function testWaitForElementNotVisible(): void
@@ -174,7 +174,7 @@ class WaitCommandRunnerTest extends RunnerTestCase
                 && call_user_func($condition->getApply(), $this->driver);
         }));
         $this->driver->expects($this->once())->method('wait')->willReturn($wait);
-        $this->runner->run($command, $this->color, $this->driver);
+        $this->runner->run($command, $this->values, $this->driver);
     }
 
     public function targetProvider(): array
