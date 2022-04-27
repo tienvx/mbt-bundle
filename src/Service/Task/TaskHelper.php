@@ -44,16 +44,18 @@ class TaskHelper implements TaskHelperInterface
             );
         }
 
-        $this->taskRepository->startRunning($task);
+        try {
+            $this->taskRepository->startRunning($task);
 
-        $this->stepsRunner->run(
-            $this->generatorManager->getGenerator($this->config->getGenerator())->generate($task),
-            $task,
-            function (BugInterface $bug) use ($task) {
-                $task->addBug($bug);
-            }
-        );
-
-        $this->taskRepository->stopRunning($task);
+            $this->stepsRunner->run(
+                $this->generatorManager->getGenerator($this->config->getGenerator())->generate($task),
+                $task,
+                function (BugInterface $bug) use ($task) {
+                    $task->addBug($bug);
+                }
+            );
+        } finally {
+            $this->taskRepository->stopRunning($task);
+        }
     }
 }

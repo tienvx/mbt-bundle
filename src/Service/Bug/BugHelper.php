@@ -97,18 +97,21 @@ class BugHelper implements BugHelperInterface
             );
         }
 
-        $this->bugRepository->startRecording($bug);
-        $bug->setDebug(true);
-        $this->stepsRunner->run(
-            $this->stepHelper->cloneAndResetSteps($bug->getSteps(), $bug->getTask()->getModelRevision()),
-            $bug,
-            function (Throwable $throwable) use ($bug) {
-                $bug->getVideo()->setErrorMessage(
-                    $throwable->getMessage() !== $bug->getMessage() ? $throwable->getMessage() : null
-                );
-            }
-        );
-        $this->bugRepository->stopRecording($bug);
+        try {
+            $this->bugRepository->startRecording($bug);
+            $bug->setDebug(true);
+            $this->stepsRunner->run(
+                $this->stepHelper->cloneAndResetSteps($bug->getSteps(), $bug->getTask()->getModelRevision()),
+                $bug,
+                function (Throwable $throwable) use ($bug) {
+                    $bug->getVideo()->setErrorMessage(
+                        $throwable->getMessage() !== $bug->getMessage() ? $throwable->getMessage() : null
+                    );
+                }
+            );
+        } finally {
+            $this->bugRepository->stopRecording($bug);
+        }
     }
 
     protected function getBug(int $bugId, string $action): BugInterface
