@@ -29,7 +29,7 @@
         "symfony/http-kernel": "^5.4",
         "symfony/messenger": "^5.4",
         "symfony/validator": "^5.4",
-        "tienvx/single-color-petrinet": "^1.3"
+        "tienvx/single-color-petrinet": "^1.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"

@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Service\AStar;
 
 use JMGQ\AStar\DomainLogicInterface;
-use Petrinet\Model\PetrinetInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 
 interface PetrinetDomainLogicInterface extends DomainLogicInterface
 {

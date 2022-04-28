@@ -56,23 +56,32 @@ class PetrinetHelperTest extends TestCase
 
         // Petrinet
         $petrinet = $helper->build($revision);
-        $this->assertCount(3, $petrinet->getPlaces());
+        $this->assertCount(4, $petrinet->getPlaces());
         $places = [
             0 => [
-                'input' => [3],
-                'output' => [1],
+                'id' => -1,
+                'input' => [],
+                'output' => [0],
             ],
             1 => [
+                'id' => 0,
+                'input' => [0, 3],
+                'output' => [1],
+            ],
+            2 => [
+                'id' => 1,
                 'input' => [1, 2],
                 'output' => [3],
             ],
-            2 => [
+            3 => [
+                'id' => 2,
                 'input' => [1, 3],
                 'output' => [2],
             ],
         ];
         foreach ($petrinet->getPlaces() as $index => $place) {
             $this->assertInstanceOf(PetrinetPlace::class, $place);
+            $this->assertSame($places[$index]['id'], $place->getId());
             $this->assertSame(
                 $places[$index]['input'],
                 array_map(fn (ArcInterface $arc) => $arc->getTransition()->getId(), $place->getInputArcs()->toArray()),
@@ -82,23 +91,32 @@ class PetrinetHelperTest extends TestCase
                 array_map(fn (ArcInterface $arc) => $arc->getTransition()->getId(), $place->getOutputArcs()->toArray()),
             );
         }
-        $this->assertCount(3, $petrinet->getTransitions());
+        $this->assertCount(4, $petrinet->getTransitions());
         $transitions = [
             0 => [
+                'id' => 0,
+                'input' => [-1],
+                'output' => [0],
+            ],
+            1 => [
+                'id' => 1,
                 'input' => [0],
                 'output' => [1, 2],
             ],
-            1 => [
+            2 => [
+                'id' => 2,
                 'input' => [2],
                 'output' => [1],
             ],
-            2 => [
+            3 => [
+                'id' => 3,
                 'input' => [1],
                 'output' => [0, 2],
             ],
         ];
         foreach ($petrinet->getTransitions() as $index => $transition) {
             $this->assertInstanceOf(PetrinetTransition::class, $transition);
+            $this->assertSame($transitions[$index]['id'], $transition->getId());
             $this->assertSame(
                 $transitions[$index]['input'],
                 array_map(fn (ArcInterface $arc) => $arc->getPlace()->getId(), $transition->getInputArcs()->toArray()),
@@ -107,14 +125,14 @@ class PetrinetHelperTest extends TestCase
                 $transitions[$index]['output'],
                 array_map(fn (ArcInterface $arc) => $arc->getPlace()->getId(), $transition->getOutputArcs()->toArray()),
             );
-            if (0 === $index) {
+            if (1 === $index) {
                 $this->assertIsCallable($guardCallback = $transition->getGuard());
                 $this->assertTrue($guardCallback(new Color(['count' => 1])));
                 $this->assertFalse($guardCallback(new Color(['count' => 0])));
             } else {
                 $this->assertNull($transition->getGuard());
             }
-            if (2 === $index) {
+            if (3 === $index) {
                 $this->assertIsCallable($expressionCallback = $transition->getExpression());
                 $this->assertSame(['count' => 2, 'status' => 'open'], $expressionCallback(new Color(['count' => 1])));
                 $this->assertSame(['count' => 1, 'status' => 'open'], $expressionCallback(new Color(['count' => 0])));

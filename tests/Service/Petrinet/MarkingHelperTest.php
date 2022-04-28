@@ -54,13 +54,13 @@ class MarkingHelperTest extends TestCase
         $builder = new SingleColorPetrinetBuilder($this->factory);
 
         $petrinet = $builder
-            ->connect($place1 = $builder->place(), $transition1 = $builder->transition())
-            ->connect($transition1, $place2 = $builder->place())
-            ->connect($place3 = $builder->place(), $transition2 = $builder->transition())
-            ->connect($transition2, $place4 = $builder->place())
+            ->connect($place1 = $builder->place(1), $transition1 = $builder->transition())
+            ->connect($transition1, $place2 = $builder->place(2))
+            ->connect($place3 = $builder->place(3), $transition2 = $builder->transition())
+            ->connect($transition2, $place4 = $builder->place(4))
             ->getPetrinet();
 
-        $marking = $this->helper->getMarking($petrinet, [0 => 1, 2 => 3], new Color(['key' => 'value']));
+        $marking = $this->helper->getMarking($petrinet, [1 => 1, 3 => 3], new Color(['key' => 'value']));
         $this->assertSame(['key' => 'value'], $marking->getColor()->getValues());
         $this->assertCount(1, $marking->getPlaceMarking($place1)->getTokens());
         $this->assertNull($marking->getPlaceMarking($place2));

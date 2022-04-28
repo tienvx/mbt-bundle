@@ -3,12 +3,12 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\AStar;
 
 use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\PetrinetInterface;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulMarking;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\GuardedTransition;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;

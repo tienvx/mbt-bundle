@@ -3,14 +3,15 @@
 namespace Tienvx\Bundle\MbtBundle\Generator;
 
 use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Generator\State;
 use Tienvx\Bundle\MbtBundle\Model\Generator\StateInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Service\Model\ModelHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 
@@ -44,36 +45,31 @@ class RandomGenerator extends AbstractGenerator
     public function generate(TaskInterface $task): iterable
     {
         $petrinet = $this->petrinetHelper->build($task->getModelRevision());
-        $transition = null;
-        $transitionId = $this->modelHelper->getStartTransitionId($task->getModelRevision());
-        $places = $this->modelHelper->getStartPlaceIds($task->getModelRevision());
-        $marking = $this->markingHelper->getMarking($petrinet, $places);
+        $transition = $petrinet->getTransitionById(
+            $this->modelHelper->getStartTransitionId($task->getModelRevision())
+        );
+        $marking = $this->markingHelper->getMarking($petrinet, [PetrinetHelper::FAKE_START_PLACE_ID => 1]);
         $state = new State(
             [],
-            [$transitionId],
+            [],
             count($task->getModelRevision()->getPlaces()),
             count($task->getModelRevision()->getTransitions())
         );
 
         while ($this->canContinue($state)) {
-            if ($transition) {
-                $this->transitionService->fire($transition, $marking);
-                $places = $this->markingHelper->getPlaces($marking);
-            }
-            $this->update($state, $marking, $transitionId);
+            $this->transitionService->fire($transition, $marking);
+            $this->update($state, $marking, $transition->getId());
 
             yield new Step(
-                $places,
+                $this->markingHelper->getPlaces($marking),
                 $marking->getColor(),
-                $transitionId
+                $transition->getId()
             );
 
             $transition = $this->nextTransition($petrinet, $marking);
             if (!$transition) {
                 break;
             }
-
-            $transitionId = $transition->getId();
         }
     }
 
