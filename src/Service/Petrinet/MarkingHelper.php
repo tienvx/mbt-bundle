@@ -4,11 +4,11 @@ namespace Tienvx\Bundle\MbtBundle\Service\Petrinet;
 
 use Petrinet\Builder\MarkingBuilder;
 use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\PlaceMarkingInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Model\ColorInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 
 class MarkingHelper implements MarkingHelperInterface
@@ -45,7 +45,7 @@ class MarkingHelper implements MarkingHelperInterface
     ): ColorfulMarkingInterface {
         $markingBuilder = new MarkingBuilder($this->colorfulFactory);
         foreach ($places as $place => $tokens) {
-            $markingBuilder->mark($petrinet->getPlaces()[$place], $tokens);
+            $markingBuilder->mark($petrinet->getPlaceById($place), $tokens);
         }
 
         $marking = $markingBuilder->getMarking();

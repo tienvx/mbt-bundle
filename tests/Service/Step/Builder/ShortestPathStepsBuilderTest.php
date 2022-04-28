@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Builder;
 
 use Generator;
-use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,6 +12,7 @@ use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;

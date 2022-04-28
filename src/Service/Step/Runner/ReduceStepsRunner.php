@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Petrinet\Model\PetrinetInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
@@ -48,7 +48,7 @@ class ReduceStepsRunner extends BugStepsRunner
     protected function runStep(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): bool
     {
         $marking = $this->markingHelper->getMarking($this->petrinet, $step->getPlaces(), $step->getColor());
-        $transition = $this->petrinet->getTransitions()[$step->getTransition()];
+        $transition = $this->petrinet->getTransitionById($step->getTransition());
         if ($this->transitionService->isEnabled($transition, $marking)) {
             return parent::runStep($step, $revision, $driver);
         }

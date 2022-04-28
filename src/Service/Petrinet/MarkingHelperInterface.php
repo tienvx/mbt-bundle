@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Petrinet;
 
 use Petrinet\Model\MarkingInterface;
-use Petrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Model\ColorInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 
 interface MarkingHelperInterface
 {

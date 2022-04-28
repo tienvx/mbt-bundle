@@ -2,7 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Petrinet;
 
-use Petrinet\Model\PetrinetInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 
 interface PetrinetHelperInterface

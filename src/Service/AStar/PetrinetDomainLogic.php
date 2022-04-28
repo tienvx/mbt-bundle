@@ -2,8 +2,8 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\AStar;
 
-use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;

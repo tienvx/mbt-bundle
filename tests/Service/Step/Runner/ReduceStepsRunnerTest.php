@@ -3,9 +3,9 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Runner;
 
 use Exception;
-use Petrinet\Model\PetrinetInterface;
-use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
+use SingleColorPetrinet\Model\GuardedTransitionInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
@@ -56,10 +56,10 @@ class ReduceStepsRunnerTest extends BugStepsRunnerTestCase
             ->willReturn($this->petrinet);
         $this->marking = $this->createMock(ColorfulMarkingInterface::class);
         $this->transitions = [
-            0 => $this->createMock(TransitionInterface::class),
-            1 => $this->createMock(TransitionInterface::class),
-            2 => $this->createMock(TransitionInterface::class),
-            3 => $this->createMock(TransitionInterface::class),
+            0 => $this->createMock(GuardedTransitionInterface::class),
+            1 => $this->createMock(GuardedTransitionInterface::class),
+            2 => $this->createMock(GuardedTransitionInterface::class),
+            3 => $this->createMock(GuardedTransitionInterface::class),
         ];
     }
 
@@ -95,8 +95,8 @@ class ReduceStepsRunnerTest extends BugStepsRunnerTestCase
             ->willReturn($this->marking);
         $this->petrinet
             ->expects($this->exactly(count($steps) + $nextStepDisabled))
-            ->method('getTransitions')
-            ->willReturn($this->transitions);
+            ->method('getTransitionById')
+            ->willReturnCallback(fn (int $id) => $this->transitions[$id]);
         if (count($steps) < count($this->steps)) {
             $this->transitionService
                 ->expects($this->exactly(count($steps) + $nextStepDisabled))

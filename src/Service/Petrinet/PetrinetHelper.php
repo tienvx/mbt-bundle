@@ -2,12 +2,12 @@
 
 namespace Tienvx\Bundle\MbtBundle\Service\Petrinet;
 
-use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\PlaceInterface as PetrinetPlaceInterface;
 use Petrinet\Model\TransitionInterface as PetrinetTransitionInterface;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
@@ -15,6 +15,8 @@ use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 
 class PetrinetHelper implements PetrinetHelperInterface
 {
+    public const FAKE_START_PLACE_ID = -1;
+
     protected ColorfulFactoryInterface $colorfulFactory;
     protected ExpressionLanguage $expressionLanguage;
 
@@ -30,12 +32,16 @@ class PetrinetHelper implements PetrinetHelperInterface
         $places = $this->getPlaces($revision, $builder);
         $transitions = $this->getTransitions($revision, $builder);
         foreach ($revision->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface && !$transition->isStart()) {
-                $this->connectPlacesToTransition(
-                    array_intersect_key($places, array_flip($transition->getFromPlaces())),
-                    $transitions[$index],
-                    $builder
-                );
+            if ($transition instanceof TransitionInterface) {
+                if ($transition->isStart()) {
+                    $builder->connect($places[self::FAKE_START_PLACE_ID], $transitions[$index], 1);
+                } else {
+                    $this->connectPlacesToTransition(
+                        array_intersect_key($places, array_flip($transition->getFromPlaces())),
+                        $transitions[$index],
+                        $builder
+                    );
+                }
                 $this->connectTransitionToPlaces($transitions[$index], $transition->getToPlaces(), $places, $builder);
             }
         }
@@ -46,10 +52,10 @@ class PetrinetHelper implements PetrinetHelperInterface
     protected function getPlaces(RevisionInterface $revision, SingleColorPetrinetBuilder $builder): array
     {
         $places = [];
+        $places[self::FAKE_START_PLACE_ID] = $builder->place(self::FAKE_START_PLACE_ID);
         foreach ($revision->getPlaces() as $index => $place) {
             if ($place instanceof PlaceInterface) {
-                $places[$index] = $builder->place();
-                $places[$index]->setId($index);
+                $places[$index] = $builder->place($index);
             }
         }
 
@@ -60,21 +66,22 @@ class PetrinetHelper implements PetrinetHelperInterface
     {
         $transitions = [];
         foreach ($revision->getTransitions() as $index => $transition) {
-            if ($transition instanceof TransitionInterface && !$transition->isStart()) {
-                $guardCallback = $transition->getGuard()
-                    ? fn (ColorInterface $color): bool => (bool) $this->expressionLanguage->evaluate(
-                        $transition->getGuard(),
-                        $color->getValues()
-                    )
-                    : null;
-                $expressionCallback = $transition->getExpression()
-                    ? fn (ColorInterface $color): array => (array) $this->expressionLanguage->evaluate(
-                        $transition->getExpression(),
-                        $color->getValues()
-                    )
-                    : null;
-                $transitions[$index] = $builder->transition($guardCallback, $expressionCallback);
-                $transitions[$index]->setId($index);
+            if ($transition instanceof TransitionInterface) {
+                $transitions[$index] = $builder->transition(
+                    $transition->getGuard()
+                        ? fn (ColorInterface $color): bool => (bool) $this->expressionLanguage->evaluate(
+                            $transition->getGuard(),
+                            $color->getValues()
+                        )
+                        : null,
+                    $transition->getExpression()
+                        ? fn (ColorInterface $color): array => (array) $this->expressionLanguage->evaluate(
+                            $transition->getExpression(),
+                            $color->getValues()
+                        )
+                        : null,
+                    $index
+                );
             }
         }
 
