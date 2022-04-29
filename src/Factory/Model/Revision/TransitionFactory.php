@@ -12,6 +12,7 @@ class TransitionFactory
         $transition = new Transition();
         $transition->setLabel($data['label'] ?? '');
         $transition->setGuard($data['guard'] ?? null);
+        $transition->setExpression($data['expression'] ?? null);
         $transition->setCommands(
             array_map([CommandFactory::class, 'createFromArray'], ($data['commands'] ?? []))
         );
