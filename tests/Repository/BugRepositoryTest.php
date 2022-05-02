@@ -156,7 +156,6 @@ class BugRepositoryTest extends TestCase
     {
         $this->connection->expects($this->once())->method('connect');
         $this->bug->getVideo()->setRecording(true);
-        $this->manager->expects($this->once())->method('refresh')->with($this->bug);
         $this->manager->expects($this->once())->method('flush');
         $this->manager->expects($this->once())->method('getConnection')->willReturn($this->connection);
         $this->bugRepository->stopRecording($this->bug);

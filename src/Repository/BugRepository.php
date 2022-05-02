@@ -63,8 +63,6 @@ class BugRepository extends ServiceEntityRepository implements BugRepositoryInte
     {
         // Recording bug may take long time. Reconnect to flush changes.
         $this->getEntityManager()->getConnection()->connect();
-        // Refresh so we don't update other fields while recording.
-        $this->getEntityManager()->refresh($bug);
         $bug->getVideo()->setRecording(false);
         $this->getEntityManager()->flush();
     }
