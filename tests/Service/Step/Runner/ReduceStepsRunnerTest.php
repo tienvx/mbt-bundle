@@ -106,6 +106,18 @@ class ReduceStepsRunnerTest extends BugStepsRunnerTestCase
                     array_slice($this->steps, 0, count($steps) + $nextStepDisabled)
                 ))
                 ->willReturnOnConsecutiveCalls(...[...array_fill(0, count($steps), true), !$nextStepDisabled]);
+            $this->transitionService
+                ->expects($this->exactly(count($steps)))
+                ->method('fire')
+                ->withConsecutive(...array_map(
+                    fn (StepInterface $step) => [$this->transitions[$step->getTransition()], $this->marking],
+                    array_slice($this->steps, 0, count($steps))
+                ));
+            $this->markingHelper
+                ->expects($this->exactly(count($steps)))
+                ->method('getPlaces')
+                ->with($this->marking)
+                ->willReturn([]);
         } else {
             $this->transitionService
                 ->expects($this->exactly(count($this->steps)))

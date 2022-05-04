@@ -50,6 +50,9 @@ class ReduceStepsRunner extends BugStepsRunner
         $marking = $this->markingHelper->getMarking($this->petrinet, $step->getPlaces(), $step->getColor());
         $transition = $this->petrinet->getTransitionById($step->getTransition());
         if ($this->transitionService->isEnabled($transition, $marking)) {
+            $this->transitionService->fire($transition, $marking);
+            $step->setPlaces($this->markingHelper->getPlaces($marking));
+
             return parent::runStep($step, $revision, $driver);
         }
 
