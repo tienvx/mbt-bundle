@@ -1,6 +1,6 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Tests\Service\AStar;
+namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Builder;
 
 use Petrinet\Model\MarkingInterface;
 use PHPUnit\Framework\TestCase;
@@ -13,12 +13,11 @@ use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\PetrinetDomainLogic;
 
 /**
- * @covers \Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic
+ * @covers \Tienvx\Bundle\MbtBundle\Service\Step\Builder\PetrinetDomainLogic
  *
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  */
@@ -27,7 +26,7 @@ class PetrinetDomainLogicTest extends TestCase
     protected GuardedTransitionServiceInterface $transitionService;
     protected MarkingHelperInterface $markingHelper;
     protected PetrinetInterface $petrinet;
-    protected PetrinetDomainLogicInterface $petrinetDomainLogic;
+    protected PetrinetDomainLogic $petrinetDomainLogic;
     protected array $transitions;
     protected array $markings;
     protected array $places;
@@ -36,8 +35,12 @@ class PetrinetDomainLogicTest extends TestCase
     {
         $this->transitionService = $this->createMock(GuardedTransitionServiceInterface::class);
         $this->markingHelper = $this->createMock(MarkingHelperInterface::class);
-        $this->petrinetDomainLogic = new PetrinetDomainLogic($this->transitionService, $this->markingHelper);
         $this->petrinet = $this->createMock(PetrinetInterface::class);
+        $this->petrinetDomainLogic = new PetrinetDomainLogic(
+            $this->transitionService,
+            $this->markingHelper,
+            $this->petrinet
+        );
         $this->transitions = [
             $transition1 = new GuardedTransition(),
             $transition2 = new GuardedTransition(),
@@ -98,19 +101,11 @@ class PetrinetDomainLogicTest extends TestCase
     public function estimatedCostProvider(): array
     {
         $color = new Color(['key' => 'value']);
-        $differentColor = new Color(['different key' => 'different value']);
 
         return [
             [$this->getStep([0 => 1, 1 => 5, 2 => 3], $color), $this->getStep([], $color), 9],
             [$this->getStep([], $color), $this->getStep([0 => 3, 1 => 2, 2 => 2, 3 => 1], $color), 8],
             [$this->getStep([0 => 2, 1 => 4], $color), $this->getStep([1 => 5, 2 => 3, 3 => 1], $color), 7],
-            [$this->getStep([0 => 4, 1 => 1, 2 => 2], $color), $this->getStep([2 => 5], $differentColor), 16],
-            [$this->getStep([], $color), $this->getStep([0 => 4, 1 => 1], $differentColor), 10],
-            [
-                $this->getStep([0 => 3, 1 => 2, 2 => 2], $color),
-                $this->getStep([1 => 7, 2 => 2, 3 => 3], $differentColor),
-                22,
-            ],
         ];
     }
 
@@ -125,16 +120,9 @@ class PetrinetDomainLogicTest extends TestCase
         $this->petrinetDomainLogic->getAdjacentNodes('invalid');
     }
 
-    public function testGetAdjacentNodesWithoutPetrinet(): void
-    {
-        $this->expectExceptionObject(new RuntimeException('Petrinet is required'));
-        $this->petrinetDomainLogic->getAdjacentNodes($this->getStep([], new Color()));
-    }
-
     public function testGetAdjacentNodes(): void
     {
         $node = $this->getStep([12 => 34], new Color(['key' => 'value']));
-        $this->petrinetDomainLogic->setPetrinet($this->petrinet);
         $this->markingHelper
             ->expects($this->exactly(count($this->transitions) + 1))
             ->method('getMarking')

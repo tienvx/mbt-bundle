@@ -4,24 +4,31 @@ namespace Tienvx\Bundle\MbtBundle\Service\Step\Builder;
 
 use Generator;
 use JMGQ\AStar\AStar;
+use RuntimeException;
+use SingleColorPetrinet\Model\PetrinetInterface;
+use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
+use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
+use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 
 class ShortestPathStepsBuilder implements StepsBuilderInterface
 {
     protected PetrinetHelperInterface $petrinetHelper;
-    protected PetrinetDomainLogicInterface $petrinetDomainLogic;
+    protected GuardedTransitionServiceInterface $transitionService;
+    protected MarkingHelperInterface $markingHelper;
 
     public function __construct(
         PetrinetHelperInterface $petrinetHelper,
-        PetrinetDomainLogicInterface $petrinetDomainLogic
+        GuardedTransitionServiceInterface $transitionService,
+        MarkingHelperInterface $markingHelper
     ) {
         $this->petrinetHelper = $petrinetHelper;
-        $this->petrinetDomainLogic = $petrinetDomainLogic;
+        $this->transitionService = $transitionService;
+        $this->markingHelper = $markingHelper;
     }
 
     /**
@@ -30,23 +37,46 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
     public function create(BugInterface $bug, int $from, int $to): Generator
     {
         yield from array_slice($bug->getSteps(), 0, $from);
-        yield from $this->getSteps($bug, $from, $to);
-        yield from array_slice($bug->getSteps(), $to + 1);
+        $petrinet = $this->petrinetHelper->build($bug->getTask()->getModelRevision());
+        $shortestSteps = $this->getShortestSteps($bug->getSteps(), $from, $to, $petrinet);
+        $lastStep = end($shortestSteps);
+        reset($shortestSteps);
+        yield from $shortestSteps;
+        yield from $this->getRemainingSteps(array_slice($bug->getSteps(), $to + 1), $lastStep, $petrinet);
     }
 
-    protected function getSteps(BugInterface $bug, int $from, int $to): iterable
+    protected function getShortestSteps(array $steps, int $from, int $to, PetrinetInterface $petrinet): iterable
     {
-        $fromStep = $bug->getSteps()[$from] ?? null;
-        $toStep = $bug->getSteps()[$to] ?? null;
+        $fromStep = $steps[$from] ?? null;
+        $toStep = $steps[$to] ?? null;
 
         if (!$fromStep instanceof StepInterface || !$toStep instanceof StepInterface) {
-            throw new OutOfRangeException('Can not create new steps using invalid range');
+            throw new OutOfRangeException('Can not create shortest steps between invalid range');
         }
 
-        $this->petrinetDomainLogic->setPetrinet($this->petrinetHelper->build($bug->getTask()->getModelRevision()));
+        return (new AStar(new PetrinetDomainLogic($this->transitionService, $this->markingHelper, $petrinet)))->run(
+            $fromStep,
+            $toStep
+        );
+    }
 
-        yield from (new AStar($this->petrinetDomainLogic))->run($fromStep, $toStep);
-
-        $this->petrinetDomainLogic->setPetrinet(null);
+    protected function getRemainingSteps(array $steps, StepInterface $lastStep, PetrinetInterface $petrinet): iterable
+    {
+        $marking = $this->markingHelper->getMarking($petrinet, $lastStep->getPlaces(), $lastStep->getColor());
+        foreach ($steps as $step) {
+            if (!$step instanceof StepInterface) {
+                throw new OutOfRangeException('Remaining steps contains invalid step');
+            }
+            $transition = $petrinet->getTransitionById($step->getTransition());
+            if (!$this->transitionService->isEnabled($transition, $marking)) {
+                throw new RuntimeException('Can not connect remaining steps');
+            }
+            $this->transitionService->fire($transition, $marking);
+            yield new Step(
+                $this->markingHelper->getPlaces($marking),
+                $marking->getColor(),
+                $step->getTransition()
+            );
+        }
     }
 }

@@ -55,13 +55,10 @@ class StepTest extends TestCase
     /**
      * @dataProvider nodeIdProvider
      */
-    public function testGetUniqueNodeId(?array $places, ?ColorInterface $color, string $id): void
+    public function testGetUniqueNodeId(?array $places, string $id): void
     {
         if ($places) {
             $this->step->setPlaces($places);
-        }
-        if ($color) {
-            $this->step->setColor($color);
         }
         $this->assertSame($id, $this->step->getUniqueNodeId());
     }
@@ -69,10 +66,8 @@ class StepTest extends TestCase
     public function nodeIdProvider(): array
     {
         return [
-            [null, null, 'f179bfa0d0b5b6751e353f049461eda8'],
-            [null, new Color(['key1' => 'value1']), 'e13d72c92c38781375d3a400df07d43a'],
-            [[0 => 2, 1 => 1], null, 'e1b90c9311d5bd1d7fc90fd43d9bd49f'],
-            [[0 => 1, 1 => 1], new Color(['key2' => 'value2']), '61a579e02eb3ae787ef03ad40feb9a7d'],
+            [null, '89fefb193877ee62e29d1da5975dcc47'],
+            [[0 => 2, 1 => 1], '02878487ecf2302bf7ba2cc919514889'],
         ];
     }
 

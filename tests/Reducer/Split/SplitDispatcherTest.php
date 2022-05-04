@@ -28,8 +28,13 @@ class SplitDispatcherTest extends DispatcherTestCase
             [0, []],
             [1, []],
             [2, []],
-            [3, []],
-            [4, []],
+            [3, [
+                [0, 2],
+            ]],
+            [4, [
+                [0, 2],
+                [2, 3],
+            ]],
             [5, [
                 [0, 2],
                 [2, 4],
@@ -37,6 +42,7 @@ class SplitDispatcherTest extends DispatcherTestCase
             [6, [
                 [0, 2],
                 [2, 4],
+                [4, 5],
             ]],
             [7, [
                 [0, 3],
@@ -45,6 +51,7 @@ class SplitDispatcherTest extends DispatcherTestCase
             [8, [
                 [0, 3],
                 [3, 6],
+                [6, 7],
             ]],
             [9, [
                 [0, 3],
@@ -60,6 +67,7 @@ class SplitDispatcherTest extends DispatcherTestCase
                 [0, 3],
                 [3, 6],
                 [6, 9],
+                [9, 10],
             ]],
             [12, [
                 [0, 3],

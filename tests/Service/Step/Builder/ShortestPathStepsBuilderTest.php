@@ -7,6 +7,7 @@ use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
@@ -20,10 +21,10 @@ use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Builder\PetrinetDomainLogic;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
 
 /**
@@ -34,7 +35,7 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
- * @uses \Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic
+ * @uses \Tienvx\Bundle\MbtBundle\Service\Step\Builder\PetrinetDomainLogic
  * @uses \Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage
  * @uses \Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper
  */
@@ -67,6 +68,7 @@ class ShortestPathStepsBuilderTest extends TestCase
     protected TransitionInterface $chooseShipping;
     protected TransitionInterface $choosePayment;
     protected TransitionInterface $confirmOrder;
+    protected array $fromEmptyCartToConfirmOrderNodes;
 
     protected function setUp(): void
     {
@@ -77,9 +79,9 @@ class ShortestPathStepsBuilderTest extends TestCase
         $this->initPlaces($builder);
         $this->initTransitions($builder);
         $this->initPetrinet($builder);
-        $this->initPetrinetDomainLogic();
         $this->initBug();
         $this->initStepsBuilder();
+        $this->initResults();
     }
 
     protected function initPlaces(SingleColorPetrinetBuilder $builder): void
@@ -161,12 +163,6 @@ class ShortestPathStepsBuilderTest extends TestCase
             ->getPetrinet();
     }
 
-    protected function initPetrinetDomainLogic(): void
-    {
-        $this->petrinetDomainLogic = new PetrinetDomainLogic($this->transitionService, $this->markingHelper);
-        $this->petrinetDomainLogic->setPetrinet($this->petrinet);
-    }
-
     protected function initBug(): void
     {
         $this->bug = new Bug();
@@ -203,44 +199,16 @@ class ShortestPathStepsBuilderTest extends TestCase
     protected function initStepsBuilder(): void
     {
         $this->petrinetHelper = $this->createMock(PetrinetHelperInterface::class);
-        $this->stepsBuilder = new ShortestPathStepsBuilder($this->petrinetHelper, $this->petrinetDomainLogic);
+        $this->stepsBuilder = new ShortestPathStepsBuilder(
+            $this->petrinetHelper,
+            $this->transitionService,
+            $this->markingHelper
+        );
     }
 
-    protected function expectsPetrinetHelper(): void
+    protected function initResults(): void
     {
-        $this->petrinetHelper
-            ->expects($this->once())
-            ->method('build')
-            ->with($this->revision)
-            ->willReturn($this->petrinet);
-    }
-
-    /**
-     * @dataProvider invalidRangeProvider
-     */
-    public function testGetInvalidRange(int $from, int $to): void
-    {
-        $this->expectExceptionObject(new OutOfRangeException('Can not create new steps using invalid range'));
-        iterator_to_array($this->stepsBuilder->create($this->bug, $from, $to));
-    }
-
-    public function invalidRangeProvider(): array
-    {
-        $validMinFrom = 0;
-        $validMaxTo = 16;
-
-        return [
-            [-1, $validMaxTo],
-            [$validMinFrom, 17],
-            [-1, 17],
-        ];
-    }
-
-    public function testGetShortestPathFromCartEmptyToCheckout(): void
-    {
-        $this->expectsPetrinetHelper();
-        $nodes = $this->stepsBuilder->create($this->bug, 0, 12);
-        $this->assertNodes([
+        $this->fromEmptyCartToConfirmOrderNodes = [
             [
                 'transition' => $this->clearCart->getId(),
                 'places' => [$this->cartEmpty->getId() => 1],
@@ -276,7 +244,58 @@ class ShortestPathStepsBuilderTest extends TestCase
                 'places' => [$this->order->getId() => 1],
                 'color' => ['products' => 1],
             ],
-        ], $nodes);
+        ];
+    }
+
+    protected function expectsPetrinetHelper(): void
+    {
+        $this->petrinetHelper
+            ->expects($this->once())
+            ->method('build')
+            ->with($this->revision)
+            ->willReturn($this->petrinet);
+    }
+
+    /**
+     * @dataProvider invalidRangeProvider
+     */
+    public function testGetInvalidRange(int $from, int $to): void
+    {
+        $this->expectExceptionObject(new OutOfRangeException('Can not create shortest steps between invalid range'));
+        iterator_to_array($this->stepsBuilder->create($this->bug, $from, $to));
+    }
+
+    public function invalidRangeProvider(): array
+    {
+        $validMinFrom = 0;
+        $validMaxTo = 16;
+
+        return [
+            [-1, $validMaxTo],
+            [$validMinFrom, 17],
+            [-1, 17],
+        ];
+    }
+
+    public function testGetShortestPathFromCartEmptyToCheckout(): void
+    {
+        $this->expectsPetrinetHelper();
+        $nodes = $this->stepsBuilder->create($this->bug, 0, 12);
+        $this->assertNodes($this->fromEmptyCartToConfirmOrderNodes, $nodes);
+    }
+
+    public function testGetShortestPathBetweenSameSteps(): void
+    {
+        $this->expectsPetrinetHelper();
+        $nodes = $this->stepsBuilder->create($this->bug, 0, 10);
+        $this->assertNodes($this->fromEmptyCartToConfirmOrderNodes, $nodes);
+    }
+
+    public function testGetShortestPathFromCartEmptyToFourProductsInCart(): void
+    {
+        $this->expectsPetrinetHelper();
+        $this->expectExceptionObject(new RuntimeException('Can not connect remaining steps'));
+        iterator_to_array($this->stepsBuilder->create($this->bug, 0, 6));
     }
 
     public function testGetShortestPathFromCartHasProductsToShipping(): void
@@ -310,39 +329,29 @@ class ShortestPathStepsBuilderTest extends TestCase
                 'color' => ['products' => 4],
             ],
             [
-                'transition' => $this->clearCart->getId(),
-                'places' => [$this->cartEmpty->getId() => 1],
-                'color' => ['products' => 0],
-            ],
-            [
-                'transition' => $this->addFirstProduct->getId(),
-                'places' => [$this->cartHasProducts->getId() => 1],
-                'color' => ['products' => 1],
-            ],
-            [
                 'transition' => $this->goToCheckout->getId(),
                 'places' => [$this->checkout->getId() => 1],
-                'color' => ['products' => 1],
+                'color' => ['products' => 4],
             ],
             [
                 'transition' => $this->fillAddress->getId(),
                 'places' => [$this->address->getId() => 1],
-                'color' => ['products' => 1],
+                'color' => ['products' => 4],
             ],
             [
                 'transition' => $this->chooseShipping->getId(),
                 'places' => [$this->shipping->getId() => 1],
-                'color' => ['products' => 1],
+                'color' => ['products' => 4],
             ],
             [
                 'transition' => $this->choosePayment->getId(),
                 'places' => [$this->payment->getId() => 1],
-                'color' => ['products' => 1],
+                'color' => ['products' => 4],
             ],
             [
                 'transition' => $this->confirmOrder->getId(),
                 'places' => [$this->order->getId() => 1],
-                'color' => ['products' => 1],
+                'color' => ['products' => 4],
             ],
         ], $nodes);
     }
