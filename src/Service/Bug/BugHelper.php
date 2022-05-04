@@ -13,8 +13,7 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 class BugHelper implements BugHelperInterface
 {
@@ -22,8 +21,7 @@ class BugHelper implements BugHelperInterface
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
-    protected StepHelperInterface $stepHelper;
-    protected RecordStepsRunner $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
 
     public function __construct(
@@ -31,15 +29,13 @@ class BugHelper implements BugHelperInterface
         BugRepositoryInterface $bugRepository,
         MessageBusInterface $messageBus,
         BugNotifierInterface $bugNotifier,
-        StepHelperInterface $stepHelper,
-        RecordStepsRunner $stepsRunner,
+        BugStepsRunner $stepsRunner,
         ConfigInterface $config
     ) {
         $this->reducerManager = $reducerManager;
         $this->bugRepository = $bugRepository;
         $this->messageBus = $messageBus;
         $this->bugNotifier = $bugNotifier;
-        $this->stepHelper = $stepHelper;
         $this->stepsRunner = $stepsRunner;
         $this->config = $config;
     }
@@ -101,7 +97,7 @@ class BugHelper implements BugHelperInterface
             $this->bugRepository->startRecording($bug);
             $bug->setDebug(true);
             $this->stepsRunner->run(
-                $this->stepHelper->cloneAndResetSteps($bug->getSteps(), $bug->getTask()->getModelRevision()),
+                $bug->getSteps(),
                 $bug,
                 function (Throwable $throwable) use ($bug) {
                     $bug->getVideo()->setErrorMessage(

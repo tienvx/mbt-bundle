@@ -25,8 +25,7 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper
@@ -48,8 +47,7 @@ class BugHelperTest extends TestCase
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
     protected BugNotifierInterface $bugNotifier;
-    protected StepHelperInterface $stepHelper;
-    protected RecordStepsRunner $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected ConfigInterface $config;
     protected BugHelperInterface $helper;
     protected Revision $revision;
@@ -62,15 +60,13 @@ class BugHelperTest extends TestCase
         $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->bugNotifier = $this->createMock(BugNotifierInterface::class);
-        $this->stepHelper = $this->createMock(StepHelperInterface::class);
-        $this->stepsRunner = $this->createMock(RecordStepsRunner::class);
+        $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->helper = new BugHelper(
             $this->reducerManager,
             $this->bugRepository,
             $this->messageBus,
             $this->bugNotifier,
-            $this->stepHelper,
             $this->stepsRunner,
             $this->config
         );
@@ -265,11 +261,6 @@ class BugHelperTest extends TestCase
                 })
             );
         $this->bugRepository->expects($this->once())->method('find')->with(123)->willReturn($this->bug);
-        $this->stepHelper
-            ->expects($this->once())
-            ->method('cloneAndResetSteps')
-            ->with($this->bug->getSteps(), $this->revision)
-            ->willReturnArgument(0);
         $this->bugRepository->expects($this->once())->method('startRecording')->with($this->bug);
         $this->bugRepository->expects($this->once())->method('stopRecording')->with($this->bug);
         $this->helper->recordVideo(123);

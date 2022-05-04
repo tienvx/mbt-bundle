@@ -64,13 +64,10 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\ShortestPathStepsBuilder;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\RecordStepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ReduceStepsRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunner;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\StepRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\StepHelper;
-use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelper;
 use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 use Tienvx\Bundle\MbtBundle\Validator\TagsValidator;
@@ -137,9 +134,8 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(ReduceStepsRunner::class),
+                service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
-                service(StepHelperInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -155,9 +151,8 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
-                service(ReduceStepsRunner::class),
+                service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
-                service(StepHelperInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -235,8 +230,7 @@ return static function (ContainerConfigurator $container): void {
                 service(BugRepositoryInterface::class),
                 service(MessageBusInterface::class),
                 service(BugNotifierInterface::class),
-                service(StepHelperInterface::class),
-                service(RecordStepsRunner::class),
+                service(BugStepsRunner::class),
                 service(ConfigInterface::class),
             ])
             ->alias(BugHelperInterface::class, BugHelper::class)
@@ -264,12 +258,6 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
 
-        ->set(StepHelper::class)
-            ->args([
-                service(ModelHelperInterface::class),
-            ])
-            ->alias(StepHelperInterface::class, StepHelper::class)
-
         ->set(StepRunner::class)
             ->args([
                 service(CommandRunnerManagerInterface::class),
@@ -282,15 +270,7 @@ return static function (ContainerConfigurator $container): void {
                 service(StepRunnerInterface::class),
                 service(ConfigInterface::class),
             ])
-        ->set(ReduceStepsRunner::class)
-            ->args([
-                service(SelenoidHelperInterface::class),
-                service(StepRunnerInterface::class),
-                service(PetrinetHelperInterface::class),
-                service(MarkingHelperInterface::class),
-                service(GuardedTransitionServiceInterface::class),
-            ])
-        ->set(RecordStepsRunner::class)
+        ->set(BugStepsRunner::class)
             ->args([
                 service(SelenoidHelperInterface::class),
                 service(StepRunnerInterface::class),
