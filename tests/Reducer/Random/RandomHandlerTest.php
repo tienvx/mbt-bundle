@@ -27,8 +27,7 @@ class RandomHandlerTest extends HandlerTestCase
             $this->bugRepository,
             $this->messageBus,
             $this->stepsRunner,
-            $this->stepsBuilder,
-            $this->stepHelper
+            $this->stepsBuilder
         );
     }
 }

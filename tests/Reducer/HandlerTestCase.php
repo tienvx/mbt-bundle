@@ -17,17 +17,15 @@ use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
-use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ReduceStepsRunner;
-use Tienvx\Bundle\MbtBundle\Service\Step\StepHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 abstract class HandlerTestCase extends TestCase
 {
     protected HandlerInterface $handler;
     protected BugRepositoryInterface $bugRepository;
     protected MessageBusInterface $messageBus;
-    protected ReduceStepsRunner $stepsRunner;
+    protected BugStepsRunner $stepsRunner;
     protected StepsBuilderInterface $stepsBuilder;
-    protected StepHelperInterface $stepHelper;
     protected array $newSteps;
     protected Revision $revision;
     protected BugInterface $bug;
@@ -36,9 +34,8 @@ abstract class HandlerTestCase extends TestCase
     {
         $this->bugRepository = $this->createMock(BugRepositoryInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->stepsRunner = $this->createMock(ReduceStepsRunner::class);
+        $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
-        $this->stepHelper = $this->createMock(StepHelperInterface::class);
         $this->newSteps = [
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -83,11 +80,6 @@ abstract class HandlerTestCase extends TestCase
      */
     public function testHandle(?Throwable $exception, bool $updateSteps): void
     {
-        $this->stepHelper
-            ->expects($this->once())
-            ->method('cloneAndResetSteps')
-            ->with($this->newSteps, $this->revision)
-            ->willReturnArgument(0);
         $this->stepsRunner->expects($this->once())
             ->method('run')
             ->with(
