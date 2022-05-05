@@ -42,15 +42,9 @@ class Step implements StepInterface, NodeIdentifierInterface
 
     public function getUniqueNodeId(): string
     {
-        $places = $this->places;
-        ksort($places);
-        $colorValues = $this->color->getValues();
-        ksort($colorValues);
+        ksort($this->places);
 
-        return md5(serialize([
-            'places' => $places,
-            'color' => $colorValues,
-        ]));
+        return md5(serialize($this->places));
     }
 
     public function setColor(ColorInterface $color): void

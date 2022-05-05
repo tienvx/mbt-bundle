@@ -1,7 +1,8 @@
 <?php
 
-namespace Tienvx\Bundle\MbtBundle\Service\AStar;
+namespace Tienvx\Bundle\MbtBundle\Service\Step\Builder;
 
+use JMGQ\AStar\DomainLogicInterface;
 use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
@@ -9,22 +10,19 @@ use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
-class PetrinetDomainLogic implements PetrinetDomainLogicInterface
+class PetrinetDomainLogic implements DomainLogicInterface
 {
     protected GuardedTransitionServiceInterface $transitionService;
     protected MarkingHelperInterface $markingHelper;
-    protected ?PetrinetInterface $petrinet = null;
+    protected PetrinetInterface $petrinet;
 
     public function __construct(
         GuardedTransitionServiceInterface $transitionService,
-        MarkingHelperInterface $markingHelper
+        MarkingHelperInterface $markingHelper,
+        PetrinetInterface $petrinet
     ) {
         $this->transitionService = $transitionService;
         $this->markingHelper = $markingHelper;
-    }
-
-    public function setPetrinet(?PetrinetInterface $petrinet): void
-    {
         $this->petrinet = $petrinet;
     }
 
@@ -46,8 +44,8 @@ class PetrinetDomainLogic implements PetrinetDomainLogicInterface
                 $tokensDiff += abs($toNode->getPlaces()[$place] - $fromNode->getPlaces()[$place]);
             }
         }
-        // Estimate it will took N transitions to move N tokens if color is the same, twice if color is not the same.
-        return $tokensDiff * (($fromNode->getColor()->getValues() != $toNode->getColor()->getValues()) + 1);
+        // Estimate it will took N transitions to move N tokens.
+        return $tokensDiff;
     }
 
     public function calculateRealCost(mixed $node, mixed $adjacent): float|int
@@ -60,10 +58,6 @@ class PetrinetDomainLogic implements PetrinetDomainLogicInterface
     {
         if (!$node instanceof Step) {
             throw new RuntimeException('The provided node is invalid');
-        }
-
-        if (!$this->petrinet instanceof PetrinetInterface) {
-            throw new RuntimeException('Petrinet is required');
         }
 
         $adjacents = [];

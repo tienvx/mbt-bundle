@@ -56,7 +56,6 @@ abstract class DispatcherTestCase extends TestCase
             }
 
             return $message->getBugId() === $this->bug->getId() &&
-                $message->getFrom() + 2 <= $message->getTo() &&
                 $length === $message->getLength();
         });
     }

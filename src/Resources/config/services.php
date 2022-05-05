@@ -45,8 +45,6 @@ use Tienvx\Bundle\MbtBundle\Repository\BugRepository;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepository;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogic;
-use Tienvx\Bundle\MbtBundle\Service\AStar\PetrinetDomainLogicInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelper;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 use Tienvx\Bundle\MbtBundle\Service\Bug\BugNotifierInterface;
@@ -247,16 +245,10 @@ return static function (ContainerConfigurator $container): void {
         ->set(ShortestPathStepsBuilder::class)
             ->args([
                 service(PetrinetHelperInterface::class),
-                service(PetrinetDomainLogicInterface::class),
-            ])
-            ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
-
-        ->set(PetrinetDomainLogic::class)
-            ->args([
                 service(GuardedTransitionServiceInterface::class),
                 service(MarkingHelperInterface::class),
             ])
-            ->alias(PetrinetDomainLogicInterface::class, PetrinetDomainLogic::class)
+            ->alias(StepsBuilderInterface::class, ShortestPathStepsBuilder::class)
 
         ->set(StepRunner::class)
             ->args([

@@ -17,16 +17,9 @@ class SplitDispatcher extends DispatcherTemplate
             $range[] = $length - 1;
         }
         for ($i = 0; $i < count($range) - 1; ++$i) {
-            if ($range[$i + 1] - $range[$i] >= static::MIN_PAIR_LENGTH) {
-                $pairs[] = [$range[$i], $range[$i + 1]];
-            }
+            $pairs[] = [$range[$i], $range[$i + 1]];
         }
 
         return $pairs;
-    }
-
-    protected function minSteps(): int
-    {
-        return 5;
     }
 }
