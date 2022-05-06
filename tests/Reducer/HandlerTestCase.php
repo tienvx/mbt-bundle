@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
 use Exception;
+use PHPUnit\Framework\MockObject\Stub\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -11,6 +12,7 @@ use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
+use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -64,6 +66,13 @@ abstract class HandlerTestCase extends TestCase
             ->willReturn((fn () => yield from $this->newSteps)());
     }
 
+    public function testHandleNotConnectedSteps(): void
+    {
+        $this->expectStepsBuilder($this->throwException(new StepsNotConnectedException()));
+        $this->stepsRunner->expects($this->never())->method('run');
+        $this->handler->handle($this->bug, 1, 2);
+    }
+
     public function testHandleOldBug(): void
     {
         $this->bug->setSteps([
@@ -71,6 +80,7 @@ abstract class HandlerTestCase extends TestCase
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
         ]);
+        $this->expectStepsBuilder($this->returnValue((fn () => yield from $this->newSteps)()));
         $this->stepsRunner->expects($this->never())->method('run');
         $this->handler->handle($this->bug, 1, 2);
     }
@@ -80,6 +90,7 @@ abstract class HandlerTestCase extends TestCase
      */
     public function testHandle(?Throwable $exception, bool $updateSteps): void
     {
+        $this->expectStepsBuilder($this->returnValue((fn () => yield from $this->newSteps)()));
         $this->stepsRunner->expects($this->once())
             ->method('run')
             ->with(
@@ -118,5 +129,14 @@ abstract class HandlerTestCase extends TestCase
             [new RuntimeException('Something else wrong'), false],
             [new Exception('Something wrong'), true],
         ];
+    }
+
+    protected function expectStepsBuilder(Stub $will): void
+    {
+        $this->stepsBuilder
+            ->expects($this->once())
+            ->method('create')
+            ->with($this->bug, 1, 2)
+            ->will($will);
     }
 }

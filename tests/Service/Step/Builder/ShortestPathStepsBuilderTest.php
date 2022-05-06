@@ -15,11 +15,11 @@ use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
+use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelper;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
@@ -294,7 +294,7 @@ class ShortestPathStepsBuilderTest extends TestCase
     public function testGetShortestPathFromCartEmptyToFourProductsInCart(): void
     {
         $this->expectsPetrinetHelper();
-        $this->expectExceptionObject(new UnrecoverableMessageHandlingException('Can not connect remaining steps'));
+        $this->expectExceptionObject(new StepsNotConnectedException('Can not connect remaining steps'));
         iterator_to_array($this->stepsBuilder->create($this->bug, 0, 6));
     }
 
