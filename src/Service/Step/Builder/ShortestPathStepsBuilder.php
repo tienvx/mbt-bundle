@@ -6,9 +6,9 @@ use Generator;
 use JMGQ\AStar\AStar;
 use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
-use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Tienvx\Bundle\MbtBundle\Exception\ExceptionInterface;
 use Tienvx\Bundle\MbtBundle\Exception\OutOfRangeException;
+use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
 use Tienvx\Bundle\MbtBundle\Model\Bug\Step;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
@@ -69,7 +69,7 @@ class ShortestPathStepsBuilder implements StepsBuilderInterface
             }
             $transition = $petrinet->getTransitionById($step->getTransition());
             if (!$this->transitionService->isEnabled($transition, $marking)) {
-                throw new UnrecoverableMessageHandlingException('Can not connect remaining steps');
+                throw new StepsNotConnectedException('Can not connect remaining steps');
             }
             $this->transitionService->fire($transition, $marking);
             yield new Step(

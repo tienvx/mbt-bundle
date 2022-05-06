@@ -4,6 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Reducer;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
+use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
@@ -31,7 +32,12 @@ abstract class HandlerTemplate implements HandlerInterface
 
     public function handle(BugInterface $bug, int $from, int $to): void
     {
-        $newSteps = iterator_to_array($this->stepsBuilder->create($bug, $from, $to));
+        try {
+            $newSteps = iterator_to_array($this->stepsBuilder->create($bug, $from, $to));
+        } catch (StepsNotConnectedException $exception) {
+            return;
+        }
+
         if (count($newSteps) >= count($bug->getSteps())) {
             return;
         }
