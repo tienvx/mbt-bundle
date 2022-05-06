@@ -7,7 +7,6 @@ use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
@@ -16,6 +15,7 @@ use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
@@ -294,7 +294,7 @@ class ShortestPathStepsBuilderTest extends TestCase
     public function testGetShortestPathFromCartEmptyToFourProductsInCart(): void
     {
         $this->expectsPetrinetHelper();
-        $this->expectExceptionObject(new RuntimeException('Can not connect remaining steps'));
+        $this->expectExceptionObject(new UnrecoverableMessageHandlingException('Can not connect remaining steps'));
         iterator_to_array($this->stepsBuilder->create($this->bug, 0, 6));
     }
 
