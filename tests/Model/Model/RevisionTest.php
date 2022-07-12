@@ -70,7 +70,7 @@ class RevisionTest extends TestCase
         $t1->setLabel('t1');
         $t1->setFromPlaces([1]);
         $t1->setToPlaces([1, 2]);
-        $t1->setExpression('{count: count + 1}');
+        $t1->setExpression('count = count + 1');
         $t2->setLabel('');
         $t2->setFromPlaces([1, 2]);
         $t2->setToPlaces([]);
@@ -144,7 +144,7 @@ class RevisionTest extends TestCase
                 0 => [
                     'label' => 't1',
                     'guard' => null,
-                    'expression' => '{count: count + 1}',
+                    'expression' => 'count = count + 1',
                     'fromPlaces' => [
                         0 => 1,
                     ],
