@@ -12,7 +12,7 @@ class PlaceFactory
         $place = new Place();
         $place->setLabel($data['label'] ?? '');
         $place->setCommands(
-            array_map([CommandFactory::class, 'createFromArray'], ($data['commands'] ?? []))
+            array_map([CommandFactory::class, 'createFromArray'], $data['commands'] ?? [])
         );
 
         return $place;

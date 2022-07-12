@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\ValueObject\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Tienvx\Bundle\AssignmentsEvaluatorBundle\Validator\AssignmentsSyntax;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition as TransitionModel;
 
 class Transition extends TransitionModel
@@ -23,7 +24,7 @@ class Transition extends TransitionModel
     /**
      * @Assert\AtLeastOneOf({
      *     @Assert\IsNull,
-     *     @Assert\ExpressionLanguageSyntax
+     *     @AssignmentsSyntax
      * })
      */
     protected ?string $expression = null;
