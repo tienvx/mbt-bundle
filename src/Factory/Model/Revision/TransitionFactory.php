@@ -14,7 +14,7 @@ class TransitionFactory
         $transition->setGuard($data['guard'] ?? null);
         $transition->setExpression($data['expression'] ?? null);
         $transition->setCommands(
-            array_map([CommandFactory::class, 'createFromArray'], ($data['commands'] ?? []))
+            array_map([CommandFactory::class, 'createFromArray'], $data['commands'] ?? [])
         );
         $transition->setFromPlaces($data['fromPlaces'] ?? []);
         $transition->setToPlaces($data['toPlaces'] ?? []);

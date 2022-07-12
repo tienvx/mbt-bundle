@@ -134,9 +134,9 @@ class BugHelperTest extends TestCase
             ->method('dispatch')
             ->with($this->callback(function ($message) {
                 return (
-                        $message instanceof RecordVideoMessage
-                        || $message instanceof ReportBugMessage
-                    )
+                    $message instanceof RecordVideoMessage
+                    || $message instanceof ReportBugMessage
+                )
                     && 123 === $message->getBugId();
             }))
             ->willReturn(new Envelope(new \stdClass()));

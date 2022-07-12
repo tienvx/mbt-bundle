@@ -33,7 +33,7 @@ abstract class CommandRunner implements CommandRunnerInterface
             case static::MECHANISM_LINK_TEXT:
             case static::MECHANISM_PARTIAL_LINK_TEXT:
             case static::MECHANISM_XPATH:
-                return WebDriverBy::{$mechanism}($value);
+                return WebDriverBy::$mechanism($value);
             case static::MECHANISM_CSS:
                 return WebDriverBy::cssSelector($value);
             default:
