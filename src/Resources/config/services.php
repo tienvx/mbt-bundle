@@ -9,6 +9,7 @@ use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Tienvx\AssignmentsEvaluator\AssignmentsEvaluator;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
@@ -278,6 +279,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(ColorfulFactoryInterface::class),
                 service(ExpressionLanguage::class),
+                service(AssignmentsEvaluator::class),
             ])
             ->alias(PetrinetHelperInterface::class, PetrinetHelper::class)
 
