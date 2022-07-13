@@ -213,6 +213,7 @@ return static function (ContainerConfigurator $container): void {
 
         // Services
         ->set(ExpressionLanguage::class)
+        ->set('assignments_evaluator.expression_language', ExpressionLanguage::class)
 
         ->set(SelenoidHelper::class)
             ->alias(SelenoidHelperInterface::class, SelenoidHelper::class)
