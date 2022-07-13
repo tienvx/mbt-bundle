@@ -8,6 +8,7 @@ use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactory;
 use SingleColorPetrinet\Model\GuardedTransition as PetrinetTransition;
 use SingleColorPetrinet\Model\Place as PetrinetPlace;
+use Tienvx\AssignmentsEvaluator\AssignmentsEvaluator;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Service\ExpressionLanguage;
 use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelper;
@@ -28,7 +29,8 @@ class PetrinetHelperTest extends TestCase
     {
         $factory = new ColorfulFactory();
         $expressionLanguage = new ExpressionLanguage();
-        $helper = new PetrinetHelper($factory, $expressionLanguage);
+        $assignmentsEvaluator = new AssignmentsEvaluator($expressionLanguage);
+        $helper = new PetrinetHelper($factory, $expressionLanguage, $assignmentsEvaluator);
 
         // Model revision
         $revision = new Revision();
@@ -50,7 +52,7 @@ class PetrinetHelperTest extends TestCase
         $transition1->setToPlaces([1, 2]);
         $transition2->setFromPlaces([2]);
         $transition2->setToPlaces([1]);
-        $transition3->setExpression('{count: count + 1, status: "open"}');
+        $transition3->setExpression('count = count + 1; status = "open"');
         $transition3->setFromPlaces([1]);
         $transition3->setToPlaces([0, 2]);
 

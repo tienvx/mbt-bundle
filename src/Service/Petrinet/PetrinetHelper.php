@@ -8,6 +8,7 @@ use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\PetrinetInterface;
+use Tienvx\AssignmentsEvaluator\AssignmentsEvaluator;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
@@ -19,11 +20,16 @@ class PetrinetHelper implements PetrinetHelperInterface
 
     protected ColorfulFactoryInterface $colorfulFactory;
     protected ExpressionLanguage $expressionLanguage;
+    protected AssignmentsEvaluator $assignmentsEvaluator;
 
-    public function __construct(ColorfulFactoryInterface $colorfulFactory, ExpressionLanguage $expressionLanguage)
-    {
+    public function __construct(
+        ColorfulFactoryInterface $colorfulFactory,
+        ExpressionLanguage $expressionLanguage,
+        AssignmentsEvaluator $assignmentsEvaluator
+    ) {
         $this->colorfulFactory = $colorfulFactory;
         $this->expressionLanguage = $expressionLanguage;
+        $this->assignmentsEvaluator = $assignmentsEvaluator;
     }
 
     public function build(RevisionInterface $revision): PetrinetInterface
@@ -75,7 +81,7 @@ class PetrinetHelper implements PetrinetHelperInterface
                         )
                         : null,
                     $transition->getExpression()
-                        ? fn (ColorInterface $color): array => (array) $this->expressionLanguage->evaluate(
+                        ? fn (ColorInterface $color): array => $this->assignmentsEvaluator->evaluate(
                             $transition->getExpression(),
                             $color->getValues()
                         )
