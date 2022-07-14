@@ -8,47 +8,35 @@ use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition as TransitionModel;
 
 class Transition extends TransitionModel
 {
-    /**
-     * @Assert\NotBlank
-     */
+    #[Assert\NotBlank]
     protected string $label = '';
 
-    /**
-     * @Assert\AtLeastOneOf({
-     *     @Assert\IsNull,
-     *     @Assert\ExpressionLanguageSyntax
-     * })
-     */
+    #[Assert\AtLeastOneOf([
+        new Assert\IsNull(),
+        new Assert\ExpressionSyntax(),
+    ])]
     protected ?string $guard = null;
 
-    /**
-     * @Assert\AtLeastOneOf({
-     *     @Assert\IsNull,
-     *     @AssignmentsSyntax
-     * })
-     */
+    #[Assert\AtLeastOneOf([
+        new Assert\IsNull(),
+        new AssignmentsSyntax(),
+    ])]
     protected ?string $expression = null;
 
-    /**
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
-     * })
-     * @Assert\Valid
-     */
+    #[Assert\All([
+        new Assert\Type(Command::class),
+    ])]
+    #[Assert\Valid]
     protected array $commands = [];
 
-    /**
-     * @Assert\All({
-     *     @Assert\Type("integer")
-     * })
-     */
+    #[Assert\All([
+        new Assert\Type('integer'),
+    ])]
     protected array $fromPlaces = [];
 
-    /**
-     * @Assert\All({
-     *     @Assert\Type("integer")
-     * })
-     * @Assert\Count(min=1, minMessage="mbt.model.missing_to_places")
-     */
+    #[Assert\All([
+        new Assert\Type('integer'),
+    ])]
+    #[Assert\Count(min: 1, minMessage: 'mbt.model.missing_to_places')]
     protected array $toPlaces = [];
 }

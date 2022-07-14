@@ -7,16 +7,12 @@ use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place as PlaceModel;
 
 class Place extends PlaceModel
 {
-    /**
-     * @Assert\NotBlank
-     */
+    #[Assert\NotBlank]
     protected string $label = '';
 
-    /**
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Command")
-     * })
-     * @Assert\Valid
-     */
+    #[Assert\All([
+        new Assert\Type(type: Command::class),
+    ])]
+    #[Assert\Valid]
     protected array $commands = [];
 }
