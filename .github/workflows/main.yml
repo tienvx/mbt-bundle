@@ -7,22 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.0']
-    name: PHP ${{ matrix.php-versions }}
+        php-versions: ['8.0', '8.1']
+        dependency-versions: ['lowest', 'highest']
+    name: PHP ${{ matrix.php-versions }} with ${{ matrix.dependency-versions }} versions of Composer dependencies
     steps:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: pcov
-        tools: phpstan, phpcs, php-cs-fixer:3, phpunit, composer:v2
-        #extensions: mbstring, intl
+        tools: phpstan, phpcs, php-cs-fixer:3
 
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: Install
-      run: composer install
+      uses: "ramsey/composer-install@v2"
+      with:
+        dependency-versions: ${{ matrix.dependency-versions }}
 
     - name: Run PHP CS
       run: phpcs --standard=PSR12 src tests
@@ -34,7 +36,7 @@ jobs:
       run: phpstan analyse src tests
 
     - name: Test & Generate Code Coverage
-      run: phpunit
+      run: ./vendor/bin/phpunit
 
     - name: Upload coverage results to Coveralls
       env:
