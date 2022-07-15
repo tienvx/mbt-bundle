@@ -44,4 +44,4 @@ jobs:
       run: |
         composer global require php-coveralls/php-coveralls
         php-coveralls --coverage_clover=clover.xml -v
-      if: matrix.php-versions == '8.0'
+      if: matrix.php-versions == '8.1'
