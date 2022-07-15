@@ -72,6 +72,7 @@ class Revision extends BaseRevision
         if (0 === count($this->transitions)) {
             return;
         }
+
         $startTransitions = array_filter(
             $this->transitions,
             fn ($transition) => $transition instanceof TransitionInterface && 0 === count($transition->getFromPlaces())
