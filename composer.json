@@ -29,7 +29,7 @@
         "symfony/messenger": "^6.1",
         "symfony/validator": "^6.1",
         "tienvx/single-color-petrinet": "^1.5",
-        "tienvx/assignments-evaluator-bundle": "^1.0"
+        "tienvx/assignments-evaluator-bundle": "^1.0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
