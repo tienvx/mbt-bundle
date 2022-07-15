@@ -602,4 +602,42 @@ class AssertionRunnerTest extends RunnerTestCase
             [AssertionRunner::ASSERT, 'anything', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            AssertionRunner::ASSERT,
+            AssertionRunner::ASSERT_ALERT,
+            AssertionRunner::ASSERT_CONFIRMATION,
+            AssertionRunner::ASSERT_PROMPT,
+            AssertionRunner::ASSERT_TITLE,
+            AssertionRunner::ASSERT_TEXT,
+            AssertionRunner::ASSERT_NOT_TEXT,
+            AssertionRunner::ASSERT_VALUE,
+            AssertionRunner::ASSERT_EDITABLE,
+            AssertionRunner::ASSERT_NOT_EDITABLE,
+            AssertionRunner::ASSERT_ELEMENT_PRESENT,
+            AssertionRunner::ASSERT_ELEMENT_NOT_PRESENT,
+            AssertionRunner::ASSERT_CHECKED,
+            AssertionRunner::ASSERT_NOT_CHECKED,
+            AssertionRunner::ASSERT_SELECTED_VALUE,
+            AssertionRunner::ASSERT_NOT_SELECTED_VALUE,
+            AssertionRunner::ASSERT_SELECTED_LABEL,
+            AssertionRunner::ASSERT_NOT_SELECTED_LABEL,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            AssertionRunner::ASSERT,
+            AssertionRunner::ASSERT_TEXT,
+            AssertionRunner::ASSERT_NOT_TEXT,
+            AssertionRunner::ASSERT_VALUE,
+            AssertionRunner::ASSERT_SELECTED_VALUE,
+            AssertionRunner::ASSERT_NOT_SELECTED_VALUE,
+            AssertionRunner::ASSERT_SELECTED_LABEL,
+            AssertionRunner::ASSERT_NOT_SELECTED_LABEL,
+        ];
+    }
 }

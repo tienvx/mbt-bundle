@@ -58,4 +58,9 @@ abstract class CommandRunner implements CommandRunnerInterface
     {
         return new WebDriverSelect($element);
     }
+
+    public function validateTarget(CommandInterface $command): bool
+    {
+        return $command->getTarget() && $this->isValidSelector($command->getTarget());
+    }
 }

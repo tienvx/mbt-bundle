@@ -219,11 +219,6 @@ class MouseCommandRunner extends CommandRunner
         }
     }
 
-    public function validateTarget(CommandInterface $command): bool
-    {
-        return $command->getTarget() && $this->isValidSelector($command->getTarget());
-    }
-
     protected function getPoint(string $target): WebDriverPoint
     {
         list($x, $y) = explode(',', $target);

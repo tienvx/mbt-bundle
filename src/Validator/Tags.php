@@ -4,9 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Tags extends Constraint
 {
     public const IS_TAGS_INVALID_ERROR = '628fca96-35f8-11eb-adc1-0242ac120002';

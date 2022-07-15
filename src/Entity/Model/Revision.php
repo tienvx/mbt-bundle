@@ -5,51 +5,42 @@ namespace Tienvx\Bundle\MbtBundle\Entity\Model;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Tienvx\Bundle\MbtBundle\Entity\Model;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision as BaseRevision;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\TransitionInterface;
 use Tienvx\Bundle\MbtBundle\Model\ModelInterface;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Place;
+use Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Revision extends BaseRevision
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Tienvx\Bundle\MbtBundle\Entity\Model", inversedBy="revisions")
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     */
+    #[ORM\ManyToOne(targetEntity: Model::class, inversedBy: 'revisions')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?ModelInterface $model = null;
 
-    /**
-     * @ORM\Column(type="array")
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Place")
-     * })
-     * @Assert\Valid
-     * @Assert\Count(min=1)
-     */
+    #[ORM\Column(type: 'array')]
+    #[Assert\All([
+        new Assert\Type(type: Place::class),
+    ])]
+    #[Assert\Valid]
+    #[Assert\Count(min: 1)]
     protected array $places = [];
 
-    /**
-     * @ORM\Column(type="array")
-     * @Assert\All({
-     *     @Assert\Type("\Tienvx\Bundle\MbtBundle\ValueObject\Model\Transition")
-     * })
-     * @Assert\Valid
-     * @Assert\Count(min=1)
-     */
+    #[ORM\Column(type: 'array')]
+    #[Assert\All([
+        new Assert\Type(type: Transition::class),
+    ])]
+    #[Assert\Valid]
+    #[Assert\Count(min: 1)]
     protected array $transitions = [];
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validatePlacesInTransitions(ExecutionContextInterface $context, $payload): void
     {
         foreach ($this->transitions as $index => $transition) {
@@ -75,9 +66,7 @@ class Revision extends BaseRevision
         }
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validateStartTransitions(ExecutionContextInterface $context, $payload): void
     {
         if (0 === count($this->transitions)) {

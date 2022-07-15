@@ -4,9 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
+#[\Attribute(\Attribute::TARGET_CLASS)]
 class ValidCommand extends Constraint
 {
     public const IS_COMMAND_INVALID_ERROR = 'ba5fd751-cbdf-45ab-a1e7-37045d5ef44b';
@@ -20,7 +18,7 @@ class ValidCommand extends Constraint
     public string $targetInvalidMessage = 'mbt.model.command.invalid_target';
     public string $valueRequiredMessage = 'mbt.model.command.required_value';
 
-    public function getTargets()
+    public function getTargets(): string|array
     {
         return self::CLASS_CONSTRAINT;
     }

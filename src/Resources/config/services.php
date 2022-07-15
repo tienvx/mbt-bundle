@@ -19,6 +19,7 @@ use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
+use Tienvx\Bundle\MbtBundle\Command\Runner\CustomCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
@@ -195,6 +196,8 @@ return static function (ContainerConfigurator $container): void {
         ->set(WaitCommandRunner::class)
             ->autoconfigure(true)
         ->set(WindowCommandRunner::class)
+            ->autoconfigure(true)
+        ->set(CustomCommandRunner::class)
             ->autoconfigure(true)
 
         // Repositories

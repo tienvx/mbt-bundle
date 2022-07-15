@@ -7,26 +7,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Tienvx\Bundle\MbtBundle\Model\Progress as ProgressModel;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 class Progress extends ProgressModel
 {
-    /**
-     * @ORM\Column(type="integer", options={"default": 0})
-     * @Assert\Positive
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Assert\Positive]
     protected int $total = 0;
 
-    /**
-     * @ORM\Column(type="integer", options={"default": 0})
-     * @Assert\Positive
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Assert\Positive]
     protected int $processed = 0;
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         if ($this->processed > $this->total) {

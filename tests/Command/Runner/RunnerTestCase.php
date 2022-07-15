@@ -53,4 +53,18 @@ abstract class RunnerTestCase extends TestCase
     }
 
     abstract public function targetProvider(): array;
+
+    public function testGetCommandsRequireTarget(): void
+    {
+        $this->assertSame($this->commandsRequireTarget(), $this->runner->getCommandsRequireTarget());
+    }
+
+    abstract public function commandsRequireTarget(): array;
+
+    public function testGetCommandsRequireValue(): void
+    {
+        $this->assertSame($this->commandsRequireValue(), $this->runner->getCommandsRequireValue());
+    }
+
+    abstract public function commandsRequireValue(): array;
 }

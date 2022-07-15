@@ -2,21 +2,24 @@
 
 namespace Tienvx\Bundle\MbtBundle\Command\Runner;
 
+use Facebook\WebDriver\Remote\LocalFileDetector;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
-class KeyboardCommandRunner extends CommandRunner
+class CustomCommandRunner extends CommandRunner
 {
-    public const TYPE = 'type';
-    public const SEND_KEYS = 'sendKeys';
+    public const UPLOAD = 'upload';
+
+    public function __construct(protected string $uploadDir)
+    {
+    }
 
     public function getAllCommands(): array
     {
         return [
-            self::TYPE,
-            self::SEND_KEYS,
+            self::UPLOAD,
         ];
     }
 
@@ -27,35 +30,25 @@ class KeyboardCommandRunner extends CommandRunner
 
     public function getCommandsRequireValue(): array
     {
-        return [];
+        return $this->getAllCommands();
     }
 
     public function run(CommandInterface $command, ValuesInterface $values, RemoteWebDriver $driver): void
     {
         switch ($command->getCommand()) {
-            case self::TYPE:
+            case self::UPLOAD:
                 $driver
                     ->findElement($this->getSelector($command->getTarget()))
-                    ->click()
-                    ->clear()
-                    ->sendKeys($this->sanitizeValue($command));
-                break;
-            case self::SEND_KEYS:
-                $driver
-                    ->findElement($this->getSelector($command->getTarget()))
-                    ->click()
-                    ->sendKeys($this->sanitizeValue($command));
+                    ->setFileDetector(new LocalFileDetector())
+                    ->sendKeys($this->getFilePath($command));
                 break;
             default:
                 break;
         }
     }
 
-    /**
-     * Don't allow to upload local file.
-     */
-    protected function sanitizeValue(CommandInterface $command): array
+    protected function getFilePath(CommandInterface $command): string
     {
-        return [(string) $command->getValue()];
+        return $this->uploadDir . DIRECTORY_SEPARATOR . (string) $command->getValue();
     }
 }

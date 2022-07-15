@@ -145,4 +145,30 @@ class StoreCommandRunnerTest extends RunnerTestCase
             [StoreCommandRunner::STORE_JSON, '{"key": "value"}', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            StoreCommandRunner::STORE_ATTRIBUTE,
+            StoreCommandRunner::STORE_ELEMENT_COUNT,
+            StoreCommandRunner::STORE_JSON,
+            StoreCommandRunner::STORE_TEXT,
+            StoreCommandRunner::STORE_TITLE,
+            StoreCommandRunner::STORE_VALUE,
+            StoreCommandRunner::STORE_WINDOW_HANDLE,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            StoreCommandRunner::STORE,
+            StoreCommandRunner::STORE_ATTRIBUTE,
+            StoreCommandRunner::STORE_ELEMENT_COUNT,
+            StoreCommandRunner::STORE_JSON,
+            StoreCommandRunner::STORE_TEXT,
+            StoreCommandRunner::STORE_TITLE,
+            StoreCommandRunner::STORE_VALUE,
+        ];
+    }
 }

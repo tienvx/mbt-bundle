@@ -64,4 +64,17 @@ class KeyboardCommandRunnerTest extends RunnerTestCase
             [KeyboardCommandRunner::SEND_KEYS, 'xpath=//path/to/element', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            KeyboardCommandRunner::TYPE,
+            KeyboardCommandRunner::SEND_KEYS,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [];
+    }
 }

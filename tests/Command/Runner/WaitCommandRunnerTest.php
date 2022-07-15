@@ -185,4 +185,28 @@ class WaitCommandRunnerTest extends RunnerTestCase
             [WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE, 'xpath=//path/to/element', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            WaitCommandRunner::WAIT_FOR_ELEMENT_EDITABLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_EDITABLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_PRESENT,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_PRESENT,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_VISIBLE,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            WaitCommandRunner::WAIT_FOR_ELEMENT_EDITABLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_EDITABLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_PRESENT,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_PRESENT,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_VISIBLE,
+            WaitCommandRunner::WAIT_FOR_ELEMENT_NOT_VISIBLE,
+        ];
+    }
 }
