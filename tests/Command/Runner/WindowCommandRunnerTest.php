@@ -148,4 +148,19 @@ class WindowCommandRunnerTest extends RunnerTestCase
             [WindowCommandRunner::SELECT_FRAME, 'xpath=//path/to/element', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            WindowCommandRunner::OPEN,
+            WindowCommandRunner::SET_WINDOW_SIZE,
+            WindowCommandRunner::SELECT_WINDOW,
+            WindowCommandRunner::SELECT_FRAME,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [];
+    }
 }

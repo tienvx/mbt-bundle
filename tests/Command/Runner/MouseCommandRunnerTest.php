@@ -575,4 +575,42 @@ class MouseCommandRunnerTest extends RunnerTestCase
             [MouseCommandRunner::CLICK, 'xpath=//path/to/element', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            MouseCommandRunner::ADD_SELECTION,
+            MouseCommandRunner::REMOVE_SELECTION,
+            MouseCommandRunner::CHECK,
+            MouseCommandRunner::UNCHECK,
+            MouseCommandRunner::CLICK,
+            MouseCommandRunner::CLICK_AT,
+            MouseCommandRunner::DOUBLE_CLICK,
+            MouseCommandRunner::DOUBLE_CLICK_AT,
+            MouseCommandRunner::DRAG_AND_DROP_TO_OBJECT,
+            MouseCommandRunner::MOUSE_DOWN,
+            MouseCommandRunner::MOUSE_DOWN_AT,
+            MouseCommandRunner::MOUSE_MOVE_AT,
+            MouseCommandRunner::MOUSE_OUT,
+            MouseCommandRunner::MOUSE_OVER,
+            MouseCommandRunner::MOUSE_UP,
+            MouseCommandRunner::MOUSE_UP_AT,
+            MouseCommandRunner::SELECT,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            MouseCommandRunner::ADD_SELECTION,
+            MouseCommandRunner::REMOVE_SELECTION,
+            MouseCommandRunner::CLICK_AT,
+            MouseCommandRunner::DOUBLE_CLICK_AT,
+            MouseCommandRunner::DRAG_AND_DROP_TO_OBJECT,
+            MouseCommandRunner::MOUSE_DOWN_AT,
+            MouseCommandRunner::MOUSE_MOVE_AT,
+            MouseCommandRunner::MOUSE_UP_AT,
+            MouseCommandRunner::SELECT,
+        ];
+    }
 }

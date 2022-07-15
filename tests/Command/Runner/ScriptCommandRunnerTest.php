@@ -68,4 +68,21 @@ class ScriptCommandRunnerTest extends RunnerTestCase
             [ScriptCommandRunner::RUN_SCRIPT, 'anything', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            ScriptCommandRunner::RUN_SCRIPT,
+            ScriptCommandRunner::EXECUTE_SCRIPT,
+            ScriptCommandRunner::EXECUTE_ASYNC_SCRIPT,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            ScriptCommandRunner::EXECUTE_SCRIPT,
+            ScriptCommandRunner::EXECUTE_ASYNC_SCRIPT,
+        ];
+    }
 }

@@ -54,4 +54,18 @@ class CustomCommandRunnerTest extends RunnerTestCase
             [CustomCommandRunner::UPLOAD, 'xpath=//path/to/element', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            CustomCommandRunner::UPLOAD,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [
+            CustomCommandRunner::UPLOAD,
+        ];
+    }
 }

@@ -87,4 +87,16 @@ class AlertCommandRunnerTest extends RunnerTestCase
             [AlertCommandRunner::ANSWER_PROMPT, 'anything', true],
         ];
     }
+
+    public function commandsRequireTarget(): array
+    {
+        return [
+            AlertCommandRunner::ANSWER_PROMPT,
+        ];
+    }
+
+    public function commandsRequireValue(): array
+    {
+        return [];
+    }
 }
