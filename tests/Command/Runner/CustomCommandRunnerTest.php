@@ -174,6 +174,47 @@ class CustomCommandRunnerTest extends RunnerTestCase
         $this->runner->run($command, $this->values, $this->driver);
     }
 
+    public function testUpdateClipboard(): void
+    {
+        $command = new Command();
+        $command->setCommand(CustomCommandRunner::UPDATE_CLIPBOARD);
+        $command->setTarget('clipboard');
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())->method('getStatusCode')->willReturn(123);
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->sessionId);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                $this->webdriverUri . '/clipboard/' . $this->sessionId,
+                ['body' => 'clipboard']
+            )
+            ->willReturn($response);
+        $this->runner->run($command, $this->values, $this->driver);
+    }
+
+    public function testUpdateClipboardThrowException(): void
+    {
+        $command = new Command();
+        $command->setCommand(CustomCommandRunner::UPDATE_CLIPBOARD);
+        $command->setTarget('text');
+        $this->runner->setWebdriverUri($this->webdriverUri);
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->sessionId);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                $this->webdriverUri . '/clipboard/' . $this->sessionId,
+                ['body' => 'text']
+            )
+            ->willThrowException(new HttpClientException('Something wrong'));
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can not update clipboard: Something wrong');
+        $this->runner->run($command, $this->values, $this->driver);
+    }
+
     public function targetProvider(): array
     {
         return [
@@ -189,6 +230,7 @@ class CustomCommandRunnerTest extends RunnerTestCase
             CustomCommandRunner::UPLOAD,
             CustomCommandRunner::ASSERT_FILE_DOWNLOADED,
             CustomCommandRunner::ASSERT_CLIPBOARD,
+            CustomCommandRunner::UPDATE_CLIPBOARD,
         ];
     }
 
