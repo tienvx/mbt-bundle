@@ -16,6 +16,7 @@ class CustomCommandRunner extends CommandRunner
 {
     public const UPLOAD = 'upload';
     public const ASSERT_FILE_DOWNLOADED = 'assertFileDownloaded';
+    public const ASSERT_CLIPBOARD = 'assertClipboard';
 
     protected string $uploadDir;
     protected string $webdriverUri;
@@ -39,6 +40,7 @@ class CustomCommandRunner extends CommandRunner
         return [
             self::UPLOAD,
             self::ASSERT_FILE_DOWNLOADED,
+            self::ASSERT_CLIPBOARD,
         ];
     }
 
@@ -75,12 +77,35 @@ class CustomCommandRunner extends CommandRunner
                         )
                     )->getStatusCode();
                     if (200 !== $code) {
-                        throw new Exception(sprintf('File %s is not downloaded', $command->getTarget()));
+                        throw new Exception(sprintf(
+                            'Failed expecting that file %s is downloaded',
+                            $command->getTarget()
+                        ));
                     }
                 } catch (ExceptionInterface $e) {
                     throw new RuntimeException(sprintf(
-                        'Can not verify file %s is downloaded: %s',
+                        'Can not get downloaded file %s: %s',
                         $command->getTarget(),
+                        $e->getMessage()
+                    ));
+                }
+                break;
+            case self::ASSERT_CLIPBOARD:
+                try {
+                    $clipboard = $this->httpClient->request(
+                        'GET',
+                        sprintf('%s/clipboard/%s', rtrim($this->webdriverUri, '/'), $driver->getSessionID())
+                    )->getContent();
+                    if ($command->getTarget() !== $clipboard) {
+                        throw new Exception(sprintf(
+                            "Failed expecting that clipboard's content equals '%s', actual value '%s'",
+                            $command->getTarget(),
+                            $clipboard
+                        ));
+                    }
+                } catch (ExceptionInterface $e) {
+                    throw new RuntimeException(sprintf(
+                        'Can not get clipboard: %s',
                         $e->getMessage()
                     ));
                 }

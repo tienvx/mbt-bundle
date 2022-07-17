@@ -25,6 +25,7 @@ class CustomCommandRunnerTest extends RunnerTestCase
     protected string $webdriverUri = 'http://localhost:4444';
     protected string $uploadDir = '/path/to/upload-directory';
     protected string $sessionId = 'abc123';
+    protected string $clipboard = 'text 1';
     protected HttpClientInterface|MockObject $httpClient;
 
     protected function createRunner(): CustomCommandRunner
@@ -82,7 +83,7 @@ class CustomCommandRunnerTest extends RunnerTestCase
             ->willReturn($response);
         if (200 !== $code) {
             $this->expectException(Exception::class);
-            $this->expectExceptionMessage('File file.txt is not downloaded');
+            $this->expectExceptionMessage('Failed expecting that file file.txt is downloaded');
         }
         $this->runner->run($command, $this->values, $this->driver);
     }
@@ -111,7 +112,65 @@ class CustomCommandRunnerTest extends RunnerTestCase
             )
             ->willThrowException(new HttpClientException('Something wrong'));
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Can not verify file file.txt is downloaded: Something wrong');
+        $this->expectExceptionMessage('Can not get downloaded file file.txt: Something wrong');
+        $this->runner->run($command, $this->values, $this->driver);
+    }
+
+    /**
+     * @dataProvider clipboardProvider
+     */
+    public function testAssertClipbard(string $clipboard): void
+    {
+        $command = new Command();
+        $command->setCommand(CustomCommandRunner::ASSERT_CLIPBOARD);
+        $command->setTarget($this->clipboard);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())->method('getContent')->willReturn($clipboard);
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->sessionId);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                $this->webdriverUri . '/clipboard/' . $this->sessionId
+            )
+            ->willReturn($response);
+        if ($clipboard !== $this->clipboard) {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessage(sprintf(
+                "Failed expecting that clipboard's content equals '%s', actual value '%s'",
+                $this->clipboard,
+                $clipboard
+            ));
+        }
+        $this->runner->run($command, $this->values, $this->driver);
+    }
+
+    public function clipboardProvider(): array
+    {
+        return [
+            [$this->clipboard],
+            ['text 2'],
+        ];
+    }
+
+    public function testAssertClipboardThrowException(): void
+    {
+        $command = new Command();
+        $command->setCommand(CustomCommandRunner::ASSERT_CLIPBOARD);
+        $command->setTarget($this->clipboard);
+        $this->runner->setWebdriverUri($this->webdriverUri);
+        $this->driver->expects($this->once())->method('getSessionID')->willReturn($this->sessionId);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                $this->webdriverUri . '/clipboard/' . $this->sessionId
+            )
+            ->willThrowException(new HttpClientException('Something wrong'));
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can not get clipboard: Something wrong');
         $this->runner->run($command, $this->values, $this->driver);
     }
 
@@ -129,6 +188,7 @@ class CustomCommandRunnerTest extends RunnerTestCase
         return [
             CustomCommandRunner::UPLOAD,
             CustomCommandRunner::ASSERT_FILE_DOWNLOADED,
+            CustomCommandRunner::ASSERT_CLIPBOARD,
         ];
     }
 
