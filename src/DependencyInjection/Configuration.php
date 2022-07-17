@@ -8,6 +8,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     public const WEBDRIVER_URI = 'webdriver_uri';
+    public const UPLOAD_DIR = 'upload_dir';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -20,6 +21,15 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                     ->defaultValue('http://localhost:4444')
+                ->end()
+            ->end()
+        ;
+
+        $rootNode
+            ->children()
+                ->scalarNode(static::UPLOAD_DIR)
+                    ->isRequired()
+                    ->cannotBeEmpty()
                 ->end()
             ->end()
         ;

@@ -9,6 +9,7 @@ use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 use SingleColorPetrinet\Service\GuardedTransitionServiceInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tienvx\AssignmentsEvaluator\AssignmentsEvaluator;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
@@ -199,6 +200,9 @@ return static function (ContainerConfigurator $container): void {
             ->autoconfigure(true)
         ->set(CustomCommandRunner::class)
             ->autoconfigure(true)
+            ->args([
+                service(HttpClientInterface::class),
+            ])
 
         // Repositories
         ->set(BugRepository::class)

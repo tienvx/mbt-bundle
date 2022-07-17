@@ -3,6 +3,8 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverElement;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
@@ -10,15 +12,17 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 abstract class RunnerTestCase extends TestCase
 {
-    protected RemoteWebDriver $driver;
+    protected RemoteWebDriver|MockObject $driver;
     protected CommandRunner $runner;
-    protected ValuesInterface $values;
+    protected ValuesInterface|MockObject $values;
+    protected WebDriverElement|MockObject $element;
 
     protected function setUp(): void
     {
         $this->driver = $this->createMock(RemoteWebDriver::class);
         $this->runner = $this->createRunner();
         $this->values = $this->createMock(ValuesInterface::class);
+        $this->element = $this->createMock(WebDriverElement::class);
     }
 
     abstract protected function createRunner(): CommandRunner;
