@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Command\Runner\CustomCommandRunner;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
@@ -33,6 +34,11 @@ class TienvxMbtExtension extends Extension
 
         $container->findDefinition(SelenoidHelperInterface::class)
             ->addMethodCall('setWebdriverUri', [$config[Configuration::WEBDRIVER_URI]])
+        ;
+
+        $container->findDefinition(CustomCommandRunner::class)
+            ->addMethodCall('setWebdriverUri', [$config[Configuration::WEBDRIVER_URI]])
+            ->addMethodCall('setUploadDir', [$config[Configuration::UPLOAD_DIR]])
         ;
 
         $this->registerForAutoconfiguration($container);

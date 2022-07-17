@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
+use Tienvx\Bundle\MbtBundle\Command\Runner\CustomCommandRunner;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Configuration;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\TienvxMbtExtension;
 use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
@@ -19,6 +20,7 @@ class TienvxMbtExtensionTest extends TestCase
 {
     protected const CONFIGS = [[
         Configuration::WEBDRIVER_URI => 'http://localhost:4444',
+        Configuration::UPLOAD_DIR => '/path/to/var/uploads',
     ]];
 
     protected ContainerBuilder $container;
@@ -43,6 +45,10 @@ class TienvxMbtExtensionTest extends TestCase
         $this->assertSame([
             ['setWebdriverUri', [static::CONFIGS[0][Configuration::WEBDRIVER_URI]]],
         ], $this->container->findDefinition(SelenoidHelperInterface::class)->getMethodCalls());
+        $this->assertSame([
+            ['setWebdriverUri', [static::CONFIGS[0][Configuration::WEBDRIVER_URI]]],
+            ['setUploadDir', [static::CONFIGS[0][Configuration::UPLOAD_DIR]]],
+        ], $this->container->findDefinition(CustomCommandRunner::class)->getMethodCalls());
     }
 
     public function testRegisterForAutoconfiguration(): void
