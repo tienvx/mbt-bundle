@@ -14,7 +14,7 @@ class PluginPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         $allPlugins = [];
-        foreach ($container->findTaggedServiceIds(PluginInterface::TAG, true) as $serviceId => $attributes) {
+        foreach (array_keys($container->findTaggedServiceIds(PluginInterface::TAG, true)) as $serviceId) {
             $definition = $container->getDefinition($serviceId);
             $class = $definition->getClass();
             if (is_subclass_of($class, PluginInterface::class) && $class::isSupported()) {

@@ -3,9 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Command;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\ValuesInterface;
 
+#[Autoconfigure(tags: [CommandRunnerInterface::TAG], lazy: true)]
 interface CommandRunnerInterface
 {
     public const MECHANISM_ID = 'id';
