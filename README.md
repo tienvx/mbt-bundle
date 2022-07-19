@@ -4,8 +4,8 @@ This Bundle is a core library for [Sicope Model][sicope-model], a Model-Based Te
 
 ## Requirements
 
-* PHP 8.0
-* Symfony 5.3
+* PHP 8.1
+* Symfony 6.1
 * See also the `require` section of [composer.json](composer.json)
 
 ## Installation
@@ -66,7 +66,7 @@ This package is available under the [MIT license](LICENSE).
 [version-image]: https://img.shields.io/github/v/release/tienvx/mbt-bundle?include_prereleases
 
 [php-version-url]: https://packagist.org/packages/tienvx/mbt-bundle
-[php-version-image]: http://img.shields.io/badge/php-8.0.0+-ff69b4.svg
+[php-version-image]: http://img.shields.io/badge/php-8.1.0+-ff69b4.svg
 
 [contributors]: https://github.com/tienvx/mbt-bundle/graphs/contributors
 [pulls]: https://github.com/tienvx/mbt-bundle/pulls
