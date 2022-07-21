@@ -3,9 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model\Revision;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Transition;
@@ -42,10 +39,10 @@ class TransitionTest extends TestCase
     {
         $this->command1 = new Command();
         $this->command2 = new Command();
-        $this->command1->setCommand(KeyboardCommandRunner::TYPE);
+        $this->command1->setCommand('type');
         $this->command1->setTarget('css=.email');
         $this->command1->setValue('test@example.com');
-        $this->command2->setCommand(MouseCommandRunner::CLICK);
+        $this->command2->setCommand('click');
         $this->command2->setTarget('css=.link');
         $this->command2->setValue(null);
     }
@@ -76,7 +73,7 @@ class TransitionTest extends TestCase
         $this->assertSame([1, 4], $transition->getFromPlaces());
         $this->assertSame([15], $transition->getToPlaces());
         $this->assertInstanceOf(CommandInterface::class, $transition->getCommands()[0]);
-        $this->assertSame(StoreCommandRunner::STORE, $transition->getCommands()[0]->getCommand());
+        $this->assertSame('store', $transition->getCommands()[0]->getCommand());
         $this->assertSame('55', $transition->getCommands()[0]->getTarget());
         $this->assertSame('number', $transition->getCommands()[0]->getValue());
         $this->assertFalse($transition->isStart());

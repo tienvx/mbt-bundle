@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model\Revision;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place;
@@ -36,10 +35,10 @@ class PlaceTest extends TestCase
     {
         $this->command1 = new Command();
         $this->command2 = new Command();
-        $this->command1->setCommand(AssertionRunner::ASSERT_TEXT);
+        $this->command1->setCommand('assertText');
         $this->command1->setTarget('css=.title');
         $this->command1->setValue('Hello');
-        $this->command2->setCommand(AssertionRunner::ASSERT_ALERT);
+        $this->command2->setCommand('assertAlert');
         $this->command2->setTarget('css=.warning');
         $this->command2->setValue('Are you sure?');
     }
@@ -59,7 +58,7 @@ class PlaceTest extends TestCase
         $this->assertInstanceOf(PlaceInterface::class, $place);
         $this->assertSame('Serialized', $place->getLabel());
         $this->assertInstanceOf(CommandInterface::class, $place->getCommands()[0]);
-        $this->assertSame(AssertionRunner::ASSERT_SELECTED_VALUE, $place->getCommands()[0]->getCommand());
+        $this->assertSame('assertSelectedValue', $place->getCommands()[0]->getCommand());
         $this->assertSame('css=.country', $place->getCommands()[0]->getTarget());
         $this->assertSame('vn', $place->getCommands()[0]->getValue());
     }

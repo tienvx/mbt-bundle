@@ -13,11 +13,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tienvx\AssignmentsEvaluator\AssignmentsEvaluator;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManager;
 use Tienvx\Bundle\MbtBundle\Channel\ChannelManagerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
-use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandRunnerInterface;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandManager;
+use Tienvx\Bundle\MbtBundle\Command\CommandManagerInterface;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
 use Tienvx\Bundle\MbtBundle\Command\Runner\CustomCommandRunner;
@@ -166,43 +164,18 @@ return static function (ContainerConfigurator $container): void {
         ->set(TagsValidator::class)
         ->set(ValidCommandValidator::class)
             ->args([
-                service(CommandRunnerManagerInterface::class),
+                service(CommandManagerInterface::class),
             ])
             ->tag('validator.constraint_validator', [
                 'alias' => ValidCommandValidator::class,
             ])
 
         // Commands
-        ->set(CommandPreprocessor::class)
-            ->alias(CommandPreprocessorInterface::class, CommandPreprocessor::class)
-        ->set(CommandRunnerManager::class)
-            ->args([
-                tagged_iterator(CommandRunnerInterface::TAG),
-                service(CommandPreprocessorInterface::class),
-            ])
-            ->alias(CommandRunnerManagerInterface::class, CommandRunnerManager::class)
-
-        ->set(AlertCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(AssertionRunner::class)
-            ->autoconfigure(true)
-        ->set(KeyboardCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(MouseCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(ScriptCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(StoreCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(WaitCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(WindowCommandRunner::class)
-            ->autoconfigure(true)
-        ->set(CustomCommandRunner::class)
-            ->autoconfigure(true)
+        ->set(CommandManager::class)
             ->args([
                 service(HttpClientInterface::class),
             ])
+            ->alias(CommandManagerInterface::class, CommandManager::class)
 
         // Repositories
         ->set(BugRepository::class)
@@ -261,7 +234,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(StepRunner::class)
             ->args([
-                service(CommandRunnerManagerInterface::class),
+                service(CommandManagerInterface::class),
             ])
             ->alias(StepRunnerInterface::class, StepRunner::class)
 

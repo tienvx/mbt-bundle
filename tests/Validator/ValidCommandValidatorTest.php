@@ -2,20 +2,13 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Validator;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
-use Tienvx\Bundle\MbtBundle\Command\CommandPreprocessor;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager;
-use Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandManager;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommand;
 use Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
@@ -23,35 +16,29 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 /**
  * @covers \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  *
- * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
- * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\CommandManager
+ * @uses \Tienvx\Bundle\MbtBundle\Command\AbstractCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\AbstractMousePointCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\ClickAtCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\ClickCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Window\AbstractWindowCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Window\OpenCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\DragAndDropToObjectCommand
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  */
 class ValidCommandValidatorTest extends ConstraintValidatorTestCase
 {
+    protected HttpClientInterface|MockObject $httpClient;
+
+    protected function setUp(): void
+    {
+        $this->httpClient = $this->createMock(HttpClientInterface::class);
+        parent::setUp();
+    }
+
     protected function createValidator()
     {
-        return new ValidCommandValidator(new CommandRunnerManager(
-            [
-                new AlertCommandRunner(),
-                new AssertionRunner(),
-                new KeyboardCommandRunner(),
-                new MouseCommandRunner(),
-                new ScriptCommandRunner(),
-                new StoreCommandRunner(),
-                new WaitCommandRunner(),
-                new WindowCommandRunner(),
-            ],
-            new CommandPreprocessor()
-        ));
+        return new ValidCommandValidator(new CommandManager($this->httpClient));
     }
 
     /**
@@ -67,7 +54,7 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
     public function validCommandsProvider(): array
     {
         $command = new Command();
-        $command->setCommand(MouseCommandRunner::CLICK_AT);
+        $command->setCommand('clickAt');
         $command->setTarget('css=.button');
         $command->setValue('123,234');
 
@@ -80,7 +67,7 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
     public function testInvalidCommand()
     {
         $constraint = new ValidCommand([
-            'commandMessage' => 'invalid command',
+            'invalidCommandMessage' => 'invalid command',
         ]);
 
         $command = new Command();
@@ -101,7 +88,7 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
         ]);
 
         $command = new Command();
-        $command->setCommand(MouseCommandRunner::CLICK);
+        $command->setCommand('click');
         $command->setTarget(null);
         $this->validator->validate($command, $constraint);
 
@@ -118,7 +105,7 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
         ]);
 
         $command = new Command();
-        $command->setCommand(MouseCommandRunner::CLICK_AT);
+        $command->setCommand('clickAt');
         $command->setTarget('css=.button');
         $command->setValue(null);
         $this->validator->validate($command, $constraint);
@@ -136,13 +123,31 @@ class ValidCommandValidatorTest extends ConstraintValidatorTestCase
         ]);
 
         $command = new Command();
-        $command->setCommand(WindowCommandRunner::OPEN);
+        $command->setCommand('open');
         $command->setTarget('testing');
         $this->validator->validate($command, $constraint);
 
         $this->buildViolation('invalid target')
             ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
             ->atPath('property.path.target')
+            ->assertRaised();
+    }
+
+    public function testInvalidValue()
+    {
+        $constraint = new ValidCommand([
+            'valueInvalidMessage' => 'invalid value',
+        ]);
+
+        $command = new Command();
+        $command->setCommand('dragAndDropToObject');
+        $command->setTarget('css=.from');
+        $command->setValue('.to');
+        $this->validator->validate($command, $constraint);
+
+        $this->buildViolation('invalid value')
+            ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+            ->atPath('property.path.value')
             ->assertRaised();
     }
 

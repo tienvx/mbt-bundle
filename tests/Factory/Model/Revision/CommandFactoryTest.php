@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Factory\Model\Revision;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner;
 use Tienvx\Bundle\MbtBundle\Factory\Model\Revision\CommandFactory;
 
 /**
@@ -18,7 +17,7 @@ class CommandFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->data = [
-            'command' => StoreCommandRunner::STORE,
+            'command' => 'store',
             'target' => '123',
             'value' => 'var',
         ];
