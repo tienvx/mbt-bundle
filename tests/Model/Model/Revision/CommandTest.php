@@ -3,8 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Model\Model\Revision;
 
 use PHPUnit\Framework\TestCase;
-use Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner;
-use Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 
@@ -18,7 +16,7 @@ class CommandTest extends TestCase
     protected function setUp(): void
     {
         $this->command = $this->createCommand();
-        $this->command->setCommand(WindowCommandRunner::OPEN);
+        $this->command->setCommand('open');
         $this->command->setTarget('http://localhost:1234');
         $this->command->setValue('123');
     }
@@ -36,7 +34,7 @@ class CommandTest extends TestCase
         // phpcs:ignore Generic.Files.LineLength
         $command = unserialize('O:' . strlen($className) . ':"' . $className . '":3:{s:7:"command";s:5:"click";s:6:"target";s:11:"css=.button";s:5:"value";N;}');
         $this->assertInstanceOf(CommandInterface::class, $command);
-        $this->assertSame(MouseCommandRunner::CLICK, $command->getCommand());
+        $this->assertSame('click', $command->getCommand());
         $this->assertSame('css=.button', $command->getTarget());
         $this->assertSame(null, $command->getValue());
     }

@@ -6,16 +6,13 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandManagerInterface;
 use Tienvx\Bundle\MbtBundle\ValueObject\Model\Command;
 
 class ValidCommandValidator extends ConstraintValidator
 {
-    protected CommandRunnerManagerInterface $commandRunnerManager;
-
-    public function __construct(CommandRunnerManagerInterface $commandRunnerManager)
+    public function __construct(protected CommandManagerInterface $commandManager)
     {
-        $this->commandRunnerManager = $commandRunnerManager;
     }
 
     public function validate($value, Constraint $constraint)
@@ -32,32 +29,32 @@ class ValidCommandValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, Command::class);
         }
 
-        if (!in_array($value->getCommand(), $this->commandRunnerManager->getAllCommands())) {
-            $this->context->buildViolation($constraint->commandMessage)
+        if (!$this->commandManager->hasCommand($value->getCommand())) {
+            $this->context->buildViolation($constraint->invalidCommandMessage)
                 ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
                 ->atPath('command')
                 ->addViolation();
         }
 
-        if (in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireTarget())) {
-            if (is_null($value->getTarget())) {
-                $this->context->buildViolation($constraint->targetRequiredMessage)
-                    ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
-                    ->atPath('target')
-                    ->addViolation();
-            } elseif (!$this->commandRunnerManager->validateTarget($value)) {
-                $this->context->buildViolation($constraint->targetInvalidMessage)
-                    ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
-                    ->atPath('target')
-                    ->addViolation();
-            }
+        if ($this->commandManager->isTargetMissing($value->getCommand(), $value->getTarget())) {
+            $this->context->buildViolation($constraint->targetRequiredMessage)
+                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('target')
+                ->addViolation();
+        } elseif ($this->commandManager->isTargetNotValid($value->getCommand(), $value->getTarget())) {
+            $this->context->buildViolation($constraint->targetInvalidMessage)
+                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('target')
+                ->addViolation();
         }
 
-        if (
-            in_array($value->getCommand(), $this->commandRunnerManager->getCommandsRequireValue())
-            && is_null($value->getValue())
-        ) {
+        if ($this->commandManager->isValueMissing($value->getCommand(), $value->getValue())) {
             $this->context->buildViolation($constraint->valueRequiredMessage)
+                ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
+                ->atPath('value')
+                ->addViolation();
+        } elseif ($this->commandManager->isValueNotValid($value->getCommand(), $value->getValue())) {
+            $this->context->buildViolation($constraint->valueInvalidMessage)
                 ->setCode(ValidCommand::IS_COMMAND_INVALID_ERROR)
                 ->atPath('value')
                 ->addViolation();

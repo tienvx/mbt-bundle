@@ -6,7 +6,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Tienvx\Bundle\MbtBundle\Command\Runner\CustomCommandRunner;
+use Tienvx\Bundle\MbtBundle\Command\CommandManagerInterface;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
@@ -34,8 +34,7 @@ class TienvxMbtBundle extends AbstractBundle
             ->call('setWebdriverUri', [$config[static::WEBDRIVER_URI]])
         ;
         $container->services()
-            ->get(CustomCommandRunner::class)
-            ->call('setWebdriverUri', [$config[static::WEBDRIVER_URI]])
+            ->get(CommandManagerInterface::class)
             ->call('setUploadDir', [$config[static::UPLOAD_DIR]])
         ;
     }

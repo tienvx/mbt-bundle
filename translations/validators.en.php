@@ -13,6 +13,7 @@ return [
                 'required_target' => 'The target is required.',
                 'invalid_target' => 'The target is not valid.',
                 'required_value' => 'The value is required.',
+                'invalid_value' => 'The value is not valid.',
             ],
         ],
         'bug' => [

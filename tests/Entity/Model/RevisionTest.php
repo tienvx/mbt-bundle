@@ -15,16 +15,10 @@ use Tienvx\Bundle\MbtBundle\Tests\Model\Model\RevisionTest as RevisionModelTest;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Model
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model
- * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\CommandRunnerManager
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AlertCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\AssertionRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\KeyboardCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\MouseCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\ScriptCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\StoreCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WaitCommandRunner
- * @uses \Tienvx\Bundle\MbtBundle\Command\Runner\WindowCommandRunner
+ * @uses \Tienvx\Bundle\MbtBundle\Command\CommandManager
+ * @uses \Tienvx\Bundle\MbtBundle\Command\AbstractCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\ClickAtCommand
+ * @uses \Tienvx\Bundle\MbtBundle\Command\Mouse\ClickCommand
  * @uses \Tienvx\Bundle\MbtBundle\Validator\ValidCommandValidator
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Command
  * @uses \Tienvx\Bundle\MbtBundle\Model\Model\Revision\Place

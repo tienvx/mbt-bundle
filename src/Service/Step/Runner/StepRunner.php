@@ -3,7 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Tienvx\Bundle\MbtBundle\Command\CommandRunnerManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandManagerInterface;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\CommandInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\Revision\PlaceInterface;
@@ -13,11 +13,11 @@ use Tienvx\Bundle\MbtBundle\Model\Values;
 
 class StepRunner implements StepRunnerInterface
 {
-    protected CommandRunnerManagerInterface $commandRunnerManager;
+    protected CommandManagerInterface $commandManager;
 
-    public function __construct(CommandRunnerManagerInterface $commandRunnerManager)
+    public function __construct(CommandManagerInterface $commandManager)
     {
-        $this->commandRunnerManager = $commandRunnerManager;
+        $this->commandManager = $commandManager;
     }
 
     public function run(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): void
@@ -39,7 +39,13 @@ class StepRunner implements StepRunnerInterface
         $values = new Values();
         foreach ($commands as $command) {
             if ($command instanceof CommandInterface) {
-                $this->commandRunnerManager->run($command, $values, $driver);
+                $this->commandManager->run(
+                    $command->getCommand(),
+                    $command->getTarget(),
+                    $command->getValue(),
+                    $values,
+                    $driver
+                );
             }
         }
     }
