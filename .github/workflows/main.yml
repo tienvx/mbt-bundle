@@ -27,13 +27,13 @@ jobs:
         dependency-versions: ${{ matrix.dependency-versions }}
 
     - name: Run PHP CS
-      run: phpcs --standard=PSR12 src tests
+      run: phpcs --standard=PSR12 src tests config
 
     - name: Run PHP CS Fixer
       run: php-cs-fixer fix --diff --dry-run
 
     - name: Run PHPStan
-      run: phpstan analyse src tests
+      run: phpstan analyse src tests config
 
     - name: Test & Generate Code Coverage
       run: ./vendor/bin/phpunit
