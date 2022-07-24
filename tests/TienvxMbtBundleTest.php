@@ -5,11 +5,13 @@ namespace Tienvx\Bundle\MbtBundle\Tests;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-// use Symfony\Component\DependencyInjection\Loader\Configurator\ServiceConfigurator;
-// use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Tienvx\Bundle\MbtBundle\Command\CommandManager;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\TienvxMbtBundle;
 
 /**
@@ -23,14 +25,12 @@ class TienvxMbtBundleTest extends TestCase
     ];
 
     protected ContainerBuilder $builder;
-    // protected ContainerConfigurator|MockObject $container;
     protected DefinitionConfigurator|MockObject $definition;
     protected TienvxMbtBundle $bundle;
 
     protected function setUp(): void
     {
         $this->builder = new ContainerBuilder();
-        // $this->container = $this->createMock(ContainerConfigurator::class);
         $this->definition = $this->createMock(DefinitionConfigurator::class);
         $this->bundle = new TienvxMbtBundle();
     }
@@ -56,25 +56,22 @@ class TienvxMbtBundleTest extends TestCase
         $this->bundle->configure($this->definition);
     }
 
-    /*public function testLoadExtension(): void
+    public function testLoadExtension(): void
     {
-        $this->container->expects($this->once())->method('import')->with('../config/services.php');
-        $services = $this->createMock(ServicesConfigurator::class);
-        $selenoidHelper = $this->createMock(ServiceConfigurator::class);
-        $customCommandRunner = $this->createMock(ServiceConfigurator::class);
-        $services->expects($this->exactly(2))->method('get')->willReturnMap([
-            [SelenoidHelperInterface::class, $selenoidHelper],
-            [CustomCommandRunner::class, $customCommandRunner],
-        ]);
-        $selenoidHelper
-            ->expects($this->once())
-            ->method('call')
-            ->with('setWebdriverUri', [static::CONFIG[TienvxMbtBundle::WEBDRIVER_URI]]);
-        $customCommandRunner->expects($this->exactly(2))->method('call')->withConsecutive([
+        $instanceof = [];
+        $container = new ContainerConfigurator(
+            $this->builder,
+            new PhpFileLoader($this->builder, new FileLocator(\dirname(__DIR__) . '/config')),
+            $instanceof,
+            '',
+            ''
+        );
+        $this->bundle->loadExtension(static::CONFIG, $container, $this->builder);
+        $this->assertSame([
             ['setWebdriverUri', [static::CONFIG[TienvxMbtBundle::WEBDRIVER_URI]]],
+        ], $this->builder->findDefinition(SelenoidHelper::class)->getMethodCalls());
+        $this->assertSame([
             ['setUploadDir', [static::CONFIG[TienvxMbtBundle::UPLOAD_DIR]]],
-        ]);
-        $this->container->expects($this->exactly(2))->method('services')->willReturn($services);
-        $this->bundle->loadExtension(static::CONFIG, $this->container, $this->builder);
-    }*/
+        ], $this->builder->findDefinition(CommandManager::class)->getMethodCalls());
+    }
 }

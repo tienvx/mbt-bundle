@@ -6,9 +6,9 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Tienvx\Bundle\MbtBundle\Command\CommandManagerInterface;
+use Tienvx\Bundle\MbtBundle\Command\CommandManager;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
-use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
+use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 
 class TienvxMbtBundle extends AbstractBundle
 {
@@ -30,11 +30,11 @@ class TienvxMbtBundle extends AbstractBundle
         $container->import('../config/services.php');
 
         $container->services()
-            ->get(SelenoidHelperInterface::class)
+            ->get(SelenoidHelper::class)
             ->call('setWebdriverUri', [$config[static::WEBDRIVER_URI]])
         ;
         $container->services()
-            ->get(CommandManagerInterface::class)
+            ->get(CommandManager::class)
             ->call('setUploadDir', [$config[static::UPLOAD_DIR]])
         ;
     }
