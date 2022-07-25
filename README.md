@@ -24,9 +24,9 @@ vendor/bin/phpunit
 ## Validate code with coding standards
 
 ```shell
-phpcs --standard=PSR12 src tests
+phpcs --standard=PSR12 src tests config
 php-cs-fixer fix --diff --dry-run
-phpstan analyse src tests
+phpstan analyse src tests config
 ```
 
 ## Built With
