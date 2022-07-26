@@ -6,7 +6,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepository;
@@ -17,10 +19,12 @@ use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
  *
  * @uses \Tienvx\Bundle\MbtBundle\Entity\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
+ * @uses \Tienvx\Bundle\MbtBundle\Entity\Bug
+ * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  */
 class TaskRepositoryTest extends TestCase
 {
-    protected EntityManagerDecorator $manager;
+    protected EntityManagerDecorator|MockObject $manager;
     protected TaskInterface $task;
     protected TaskRepositoryInterface $taskRepository;
 
@@ -59,5 +63,14 @@ class TaskRepositoryTest extends TestCase
         $this->manager->expects($this->once())->method('getConnection')->willReturn($connection);
         $this->taskRepository->stopRunning($this->task);
         $this->assertFalse($this->task->isRunning());
+    }
+
+    public function testAddBug(): void
+    {
+        $bug = new Bug();
+        $this->assertEmpty($this->task->getBugs());
+        $this->manager->expects($this->once())->method('flush');
+        $this->taskRepository->addBug($this->task, $bug);
+        $this->assertSame([$bug], $this->task->getBugs()->toArray());
     }
 }

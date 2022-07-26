@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
+use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 
 class TaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
@@ -25,6 +26,12 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
         $task->setRunning(false);
         // Running task take long time. Reconnect to flush changes.
         $this->getEntityManager()->getConnection()->connect();
+        $this->getEntityManager()->flush();
+    }
+
+    public function addBug(TaskInterface $task, BugInterface $bug): void
+    {
+        $task->addBug($bug);
         $this->getEntityManager()->flush();
     }
 }

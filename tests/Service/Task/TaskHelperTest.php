@@ -2,15 +2,18 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Task;
 
+use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorInterface;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
@@ -29,15 +32,17 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
+ * @uses \Tienvx\Bundle\MbtBundle\Message\CreateBugMessage
  */
 class TaskHelperTest extends TestCase
 {
     protected array $steps;
-    protected GeneratorManagerInterface $generatorManager;
-    protected TaskRepositoryInterface $taskRepository;
-    protected ExploreStepsRunner $stepsRunner;
+    protected GeneratorManagerInterface|MockObject $generatorManager;
+    protected TaskRepositoryInterface|MockObject $taskRepository;
+    protected MessageBusInterface|MockObject $messageBus;
+    protected ExploreStepsRunner|MockObject $stepsRunner;
     protected TaskHelperInterface $taskHelper;
-    protected ConfigInterface $config;
+    protected ConfigInterface|MockObject $config;
     protected TaskInterface $task;
 
     protected function setUp(): void
@@ -50,11 +55,13 @@ class TaskHelperTest extends TestCase
         ];
         $this->generatorManager = $this->createMock(GeneratorManagerInterface::class);
         $this->taskRepository = $this->createMock(TaskRepositoryInterface::class);
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->stepsRunner = $this->createMock(ExploreStepsRunner::class);
         $this->config = $this->createMock(ConfigInterface::class);
         $this->taskHelper = new TaskHelper(
             $this->generatorManager,
             $this->taskRepository,
+            $this->messageBus,
             $this->stepsRunner,
             $this->config
         );
@@ -82,9 +89,9 @@ class TaskHelperTest extends TestCase
     }
 
     /**
-     * @dataProvider bugProvider
+     * @dataProvider exceptionProvider
      */
-    public function testRun(?BugInterface $bug): void
+    public function testRun(?Exception $exception): void
     {
         $this->taskRepository->expects($this->once())->method('find')->with(123)->willReturn($this->task);
         $this->taskRepository->expects($this->once())->method('startRunning')->with($this->task);
@@ -99,27 +106,36 @@ class TaskHelperTest extends TestCase
             ->with(
                 $this->steps,
                 $this->task,
-                $this->callback(function (callable $exceptionCallback) use ($bug) {
-                    if ($bug) {
-                        $exceptionCallback($bug);
+                $this->callback(function (callable $exceptionCallback) use ($exception) {
+                    if ($exception) {
+                        $exceptionCallback($exception, $this->steps);
                     }
 
                     return true;
                 })
             );
-        $this->taskHelper->run(123);
-        if ($bug) {
-            $this->assertSame([$bug], $this->task->getBugs()->toArray());
+        if ($exception) {
+            $this->messageBus
+                ->expects($this->once())
+                ->method('dispatch')
+                ->with($this->callback(function ($message) use ($exception) {
+                    return $message instanceof CreateBugMessage &&
+                        $message->getMessage() === $exception->getMessage() &&
+                        $message->getSteps() === $this->steps &&
+                        123 === $message->getTaskId();
+                }))
+                ->willReturn(new Envelope(new \stdClass()));
         } else {
-            $this->assertEmpty($this->task->getBugs());
+            $this->messageBus->expects($this->never())->method('dispatch');
         }
+        $this->taskHelper->run(123);
     }
 
-    public function bugProvider(): array
+    public function exceptionProvider(): array
     {
         return [
             [null],
-            [new Bug()],
+            [new Exception('Something wrong')],
         ];
     }
 }

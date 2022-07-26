@@ -11,4 +11,8 @@ interface ConfigInterface
     public function shouldReportBug(): bool;
 
     public function getMaxSteps(): int;
+
+    public function shouldCreateNewBugWhileReducing(): bool;
+
+    public function getDefaultBugTitle(): string;
 }

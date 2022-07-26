@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Message\RunTaskMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RunTaskMessageHandler;
@@ -13,7 +14,7 @@ use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
  */
 class RunTaskMessageHandlerTest extends TestCase
 {
-    protected TaskHelperInterface $taskHelper;
+    protected TaskHelperInterface|MockObject $taskHelper;
     protected RunTaskMessageHandler $handler;
     protected RunTaskMessage $message;
 

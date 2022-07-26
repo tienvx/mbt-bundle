@@ -23,10 +23,10 @@ use Tienvx\Bundle\MbtBundle\ValueObject\Bug\Step;
 abstract class StepsRunnerTestCase extends TestCase
 {
     protected array $steps;
-    protected StepRunnerInterface $stepRunner;
+    protected StepRunnerInterface|MockObject $stepRunner;
     protected StepsRunnerInterface $stepsRunner;
-    protected SelenoidHelperInterface $selenoidHelper;
-    protected RemoteWebDriver $driver;
+    protected SelenoidHelperInterface|MockObject $selenoidHelper;
+    protected RemoteWebDriver|MockObject $driver;
     protected Revision $revision;
     protected TaskInterface $task;
     protected BugInterface $bug;

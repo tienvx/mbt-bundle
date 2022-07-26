@@ -5,6 +5,7 @@ namespace Tienvx\Bundle\MbtBundle\Reducer;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
+use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
@@ -43,6 +44,12 @@ abstract class HandlerTemplate implements HandlerInterface
                 if ($throwable->getMessage() === $bug->getMessage()) {
                     $this->bugRepository->updateSteps($bug, $newSteps);
                     $this->messageBus->dispatch(new ReduceBugMessage($bug->getId()));
+                } elseif ($this->config->shouldCreateNewBugWhileReducing()) {
+                    $this->messageBus->dispatch(new CreateBugMessage(
+                        $bug->getTask()->getId(),
+                        $newSteps,
+                        $throwable->getMessage()
+                    ));
                 }
             }
         );
