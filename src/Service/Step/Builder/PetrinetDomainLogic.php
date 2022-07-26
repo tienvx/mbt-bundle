@@ -12,18 +12,11 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\MarkingHelperInterface;
 
 class PetrinetDomainLogic implements DomainLogicInterface
 {
-    protected GuardedTransitionServiceInterface $transitionService;
-    protected MarkingHelperInterface $markingHelper;
-    protected PetrinetInterface $petrinet;
-
     public function __construct(
-        GuardedTransitionServiceInterface $transitionService,
-        MarkingHelperInterface $markingHelper,
-        PetrinetInterface $petrinet
+        protected GuardedTransitionServiceInterface $transitionService,
+        protected MarkingHelperInterface $markingHelper,
+        protected PetrinetInterface $petrinet
     ) {
-        $this->transitionService = $transitionService;
-        $this->markingHelper = $markingHelper;
-        $this->petrinet = $petrinet;
     }
 
     public function calculateEstimatedCost(mixed $fromNode, mixed $toNode): float|int

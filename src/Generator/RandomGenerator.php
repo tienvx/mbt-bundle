@@ -20,21 +20,12 @@ class RandomGenerator extends AbstractGenerator
     public const MAX_TRANSITION_COVERAGE = 100;
     public const MAX_PLACE_COVERAGE = 100;
 
-    protected PetrinetHelperInterface $petrinetHelper;
-    protected MarkingHelperInterface $markingHelper;
-    protected ModelHelperInterface $modelHelper;
-    protected GuardedTransitionServiceInterface $transitionService;
-
     public function __construct(
-        PetrinetHelperInterface $petrinetHelper,
-        MarkingHelperInterface $markingHelper,
-        ModelHelperInterface $modelHelper,
-        GuardedTransitionServiceInterface $transitionService
+        protected PetrinetHelperInterface $petrinetHelper,
+        protected MarkingHelperInterface $markingHelper,
+        protected ModelHelperInterface $modelHelper,
+        protected GuardedTransitionServiceInterface $transitionService
     ) {
-        $this->petrinetHelper = $petrinetHelper;
-        $this->markingHelper = $markingHelper;
-        $this->modelHelper = $modelHelper;
-        $this->transitionService = $transitionService;
     }
 
     public static function getName(): string

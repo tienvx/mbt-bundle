@@ -13,21 +13,12 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
 
 class TaskHelper implements TaskHelperInterface
 {
-    protected GeneratorManagerInterface $generatorManager;
-    protected TaskRepositoryInterface $taskRepository;
-    protected ExploreStepsRunner $stepsRunner;
-    protected ConfigInterface $config;
-
     public function __construct(
-        GeneratorManagerInterface $generatorManager,
-        TaskRepositoryInterface $taskRepository,
-        ExploreStepsRunner $stepsRunner,
-        ConfigInterface $config
+        protected GeneratorManagerInterface $generatorManager,
+        protected TaskRepositoryInterface $taskRepository,
+        protected ExploreStepsRunner $stepsRunner,
+        protected ConfigInterface $config
     ) {
-        $this->generatorManager = $generatorManager;
-        $this->taskRepository = $taskRepository;
-        $this->stepsRunner = $stepsRunner;
-        $this->config = $config;
     }
 
     public function run(int $taskId): void

@@ -13,13 +13,10 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 
 abstract class StepsRunner implements StepsRunnerInterface
 {
-    protected SelenoidHelperInterface $selenoidHelper;
-    protected StepRunnerInterface $stepRunner;
-
-    public function __construct(SelenoidHelperInterface $selenoidHelper, StepRunnerInterface $stepRunner)
-    {
-        $this->selenoidHelper = $selenoidHelper;
-        $this->stepRunner = $stepRunner;
+    public function __construct(
+        protected SelenoidHelperInterface $selenoidHelper,
+        protected StepRunnerInterface $stepRunner
+    ) {
     }
 
     /**

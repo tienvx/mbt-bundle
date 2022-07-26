@@ -8,26 +8,19 @@ use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 abstract class HandlerTemplate implements HandlerInterface
 {
-    protected BugRepositoryInterface $bugRepository;
-    protected MessageBusInterface $messageBus;
-    protected BugStepsRunner $stepsRunner;
-    protected StepsBuilderInterface $stepsBuilder;
-
     public function __construct(
-        BugRepositoryInterface $bugRepository,
-        MessageBusInterface $messageBus,
-        BugStepsRunner $stepsRunner,
-        StepsBuilderInterface $stepsBuilder
+        protected BugRepositoryInterface $bugRepository,
+        protected MessageBusInterface $messageBus,
+        protected BugStepsRunner $stepsRunner,
+        protected StepsBuilderInterface $stepsBuilder,
+        protected ConfigInterface $config
     ) {
-        $this->bugRepository = $bugRepository;
-        $this->messageBus = $messageBus;
-        $this->stepsRunner = $stepsRunner;
-        $this->stepsBuilder = $stepsBuilder;
     }
 
     public function handle(BugInterface $bug, int $from, int $to): void

@@ -4,11 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class ReduceBugMessage implements MessageInterface
 {
-    protected int $id;
-
-    public function __construct(int $id)
+    public function __construct(protected int $id)
     {
-        $this->id = $id;
     }
 
     public function getId(): int

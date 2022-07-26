@@ -15,15 +15,13 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 class ExploreStepsRunner extends StepsRunner
 {
     protected array $steps;
-    protected ConfigInterface $config;
 
     public function __construct(
         SelenoidHelperInterface $selenoidHelper,
         StepRunnerInterface $stepRunner,
-        ConfigInterface $config
+        protected ConfigInterface $config
     ) {
         parent::__construct($selenoidHelper, $stepRunner);
-        $this->config = $config;
     }
 
     protected function start(DebugInterface $entity): RemoteWebDriver

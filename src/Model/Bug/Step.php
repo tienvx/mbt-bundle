@@ -8,10 +8,6 @@ use SingleColorPetrinet\Model\ColorInterface;
 
 class Step implements StepInterface, NodeIdentifierInterface
 {
-    protected ColorInterface $color;
-    protected array $places;
-    protected int $transition;
-
     public function __serialize(): array
     {
         return [
@@ -28,11 +24,12 @@ class Step implements StepInterface, NodeIdentifierInterface
         $this->transition = $data['transition'];
     }
 
-    public function __construct(array $places, ColorInterface $color, int $transition)
-    {
+    public function __construct(
+        protected array $places,
+        protected ColorInterface $color,
+        protected int $transition
+    ) {
         $this->setPlaces($places);
-        $this->setColor($color);
-        $this->setTransition($transition);
     }
 
     public function __clone()

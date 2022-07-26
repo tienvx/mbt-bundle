@@ -8,11 +8,8 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
 
 class ReportBugMessageHandler implements MessageHandlerInterface
 {
-    protected BugHelperInterface $bugHelper;
-
-    public function __construct(BugHelperInterface $bugHelper)
+    public function __construct(protected BugHelperInterface $bugHelper)
     {
-        $this->bugHelper = $bugHelper;
     }
 
     public function __invoke(ReportBugMessage $message): void

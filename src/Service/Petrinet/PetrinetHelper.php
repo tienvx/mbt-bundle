@@ -18,18 +18,11 @@ class PetrinetHelper implements PetrinetHelperInterface
 {
     public const FAKE_START_PLACE_ID = -1;
 
-    protected ColorfulFactoryInterface $colorfulFactory;
-    protected ExpressionLanguage $expressionLanguage;
-    protected AssignmentsEvaluator $assignmentsEvaluator;
-
     public function __construct(
-        ColorfulFactoryInterface $colorfulFactory,
-        ExpressionLanguage $expressionLanguage,
-        AssignmentsEvaluator $assignmentsEvaluator
+        protected ColorfulFactoryInterface $colorfulFactory,
+        protected ExpressionLanguage $expressionLanguage,
+        protected AssignmentsEvaluator $assignmentsEvaluator
     ) {
-        $this->colorfulFactory = $colorfulFactory;
-        $this->expressionLanguage = $expressionLanguage;
-        $this->assignmentsEvaluator = $assignmentsEvaluator;
     }
 
     public function build(RevisionInterface $revision): PetrinetInterface
