@@ -19,6 +19,7 @@ use Tienvx\Bundle\MbtBundle\EventListener\EntitySubscriber;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManager;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
 use Tienvx\Bundle\MbtBundle\Generator\RandomGenerator;
+use Tienvx\Bundle\MbtBundle\MessageHandler\CreateBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\RecordVideoMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceBugMessageHandler;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
@@ -111,10 +112,16 @@ return static function (ContainerConfigurator $container): void {
                 service(BugHelperInterface::class),
             ])
             ->autoconfigure(true)
-        ->set(ReducerManager::class)
-            ->alias(ReducerManagerInterface::class, ReducerManager::class)
+        ->set(CreateBugMessageHandler::class)
+            ->args([
+                service(ConfigInterface::class),
+                service(TaskRepositoryInterface::class),
+            ])
+            ->autoconfigure(true)
 
         // Reducers
+        ->set(ReducerManager::class)
+            ->alias(ReducerManagerInterface::class, ReducerManager::class)
         ->set(RandomDispatcher::class)
             ->args([
                 service(MessageBusInterface::class),
@@ -125,6 +132,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
+                service(ConfigInterface::class),
             ])
         ->set(RandomReducer::class)
             ->args([
@@ -142,6 +150,7 @@ return static function (ContainerConfigurator $container): void {
                 service(MessageBusInterface::class),
                 service(BugStepsRunner::class),
                 service(StepsBuilderInterface::class),
+                service(ConfigInterface::class),
             ])
         ->set(SplitReducer::class)
             ->args([
@@ -209,6 +218,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([
                 service(GeneratorManagerInterface::class),
                 service(TaskRepositoryInterface::class),
+                service(MessageBusInterface::class),
                 service(ExploreStepsRunner::class),
                 service(ConfigInterface::class),
             ])
