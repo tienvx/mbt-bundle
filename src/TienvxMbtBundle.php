@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Tienvx\Bundle\MbtBundle\Command\CommandManager;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 
 class TienvxMbtBundle extends AbstractBundle
@@ -37,5 +38,8 @@ class TienvxMbtBundle extends AbstractBundle
             ->get(CommandManager::class)
             ->call('setUploadDir', [$config[static::UPLOAD_DIR]])
         ;
+        $builder->registerForAutoconfiguration(PluginInterface::class)
+            ->setLazy(true)
+            ->addTag(PluginInterface::TAG);
     }
 }

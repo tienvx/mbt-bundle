@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Tienvx\Bundle\MbtBundle\Command\CommandManager;
 use Tienvx\Bundle\MbtBundle\DependencyInjection\Compiler\PluginPass;
+use Tienvx\Bundle\MbtBundle\Plugin\PluginInterface;
 use Tienvx\Bundle\MbtBundle\Service\SelenoidHelper;
 use Tienvx\Bundle\MbtBundle\TienvxMbtBundle;
 
@@ -73,5 +74,8 @@ class TienvxMbtBundleTest extends TestCase
         $this->assertSame([
             ['setUploadDir', [static::CONFIG[TienvxMbtBundle::UPLOAD_DIR]]],
         ], $this->builder->findDefinition(CommandManager::class)->getMethodCalls());
+        $autoConfigured = $this->builder->getAutoconfiguredInstanceof()[PluginInterface::class];
+        $this->assertTrue($autoConfigured->hasTag(PluginInterface::TAG));
+        $this->assertTrue($autoConfigured->isLazy());
     }
 }
