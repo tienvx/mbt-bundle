@@ -35,7 +35,6 @@ class AssertSelectedValueCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -44,13 +43,13 @@ class AssertSelectedValueCommandTest extends CommandTestCase
                     && 'partial link text' === $selector->getMechanism()
                     && 'Language' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $option = $this->createMock(WebDriverElement::class);
         $option->expects($this->once())->method('getAttribute')->with('value')->willReturn($actual);
         $select = $this->createMock(WebDriverSelect::class);
         $select->expects($this->once())->method('getFirstSelectedOption')->willReturn($option);
         $command = $this->createPartialMock(AssertSelectedValueCommand::class, ['getSelect']);
-        $command->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
+        $command->expects($this->once())->method('getSelect')->with($this->element)->willReturn($select);
         $command->run('partialLinkText=Language', 'en_GB', $this->values, $this->driver);
     }
 

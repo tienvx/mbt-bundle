@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Store;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Store\StoreAttributeCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -31,8 +30,7 @@ class StoreAttributeCommandTest extends CommandTestCase
             ->expects($this->once())
             ->method('setValue')
             ->with('readmoreLink', 'http://example.com');
-        $element = $this->createMock(WebDriverElement::class);
-        $element
+        $this->element
             ->expects($this->once())
             ->method('getAttribute')
             ->with('href')
@@ -45,7 +43,7 @@ class StoreAttributeCommandTest extends CommandTestCase
                     && 'css selector' === $selector->getMechanism()
                     && '.readmore' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('css=.readmore@href', 'readmoreLink', $this->values, $this->driver);
     }
 

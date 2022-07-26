@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Bug;
 
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
@@ -43,12 +44,12 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
  */
 class BugHelperTest extends TestCase
 {
-    protected ReducerManagerInterface $reducerManager;
-    protected BugRepositoryInterface $bugRepository;
-    protected MessageBusInterface $messageBus;
-    protected BugNotifierInterface $bugNotifier;
-    protected BugStepsRunner $stepsRunner;
-    protected ConfigInterface $config;
+    protected ReducerManagerInterface|MockObject $reducerManager;
+    protected BugRepositoryInterface|MockObject $bugRepository;
+    protected MessageBusInterface|MockObject $messageBus;
+    protected BugNotifierInterface|MockObject $bugNotifier;
+    protected BugStepsRunner|MockObject $stepsRunner;
+    protected ConfigInterface|MockObject $config;
     protected BugHelperInterface $helper;
     protected Revision $revision;
     protected BugInterface $bug;

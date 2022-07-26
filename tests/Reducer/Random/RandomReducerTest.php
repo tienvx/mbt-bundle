@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer\Random;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Reducer\Random\RandomDispatcher;
@@ -18,8 +19,8 @@ use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
  */
 class RandomReducerTest extends TestCase
 {
-    protected RandomDispatcher $dispatcher;
-    protected RandomHandler $handler;
+    protected RandomDispatcher|MockObject $dispatcher;
+    protected RandomHandler|MockObject $handler;
     protected RandomReducer $reducer;
 
     protected function setUp(): void

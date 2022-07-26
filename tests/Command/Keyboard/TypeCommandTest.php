@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Keyboard;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Keyboard\TypeCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -27,10 +26,9 @@ class TypeCommandTest extends CommandTestCase
 
     public function testRun(): void
     {
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('click')->willReturnSelf();
-        $element->expects($this->once())->method('clear')->willReturnSelf();
-        $element->expects($this->once())->method('sendKeys')->with('20 years old');
+        $this->element->expects($this->once())->method('click')->willReturnSelf();
+        $this->element->expects($this->once())->method('clear')->willReturnSelf();
+        $this->element->expects($this->once())->method('sendKeys')->with('20 years old');
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -39,7 +37,7 @@ class TypeCommandTest extends CommandTestCase
                     && 'name' === $selector->getMechanism()
                     && 'age' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('name=age', '20 years old', $this->values, $this->driver);
     }
 

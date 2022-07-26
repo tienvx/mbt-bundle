@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Assert;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Assert\AssertValueCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -34,8 +33,7 @@ class AssertValueCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
-        $element
+        $this->element
             ->expects($this->once())
             ->method('getAttribute')
             ->with('value')
@@ -48,7 +46,7 @@ class AssertValueCommandTest extends CommandTestCase
                     && 'css selector' === $selector->getMechanism()
                     && '.quality' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('css=.quality', '14', $this->values, $this->driver);
     }
 

@@ -7,6 +7,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Progress;
@@ -25,7 +26,7 @@ use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
  */
 class BugRepositoryTest extends TestCase
 {
-    protected EntityManagerDecorator $manager;
+    protected EntityManagerDecorator|MockObject $manager;
     protected BugInterface $bug;
     protected BugRepositoryInterface $bugRepository;
     protected Connection $connection;

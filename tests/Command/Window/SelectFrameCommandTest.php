@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Window;
 
 use Facebook\WebDriver\Remote\RemoteTargetLocator;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Tienvx\Bundle\MbtBundle\Command\Window\SelectFrameCommand;
@@ -34,7 +33,6 @@ class SelectFrameCommandTest extends CommandTestCase
     public function testRun(string $target, string $method, ?array $params): void
     {
         if (is_null($params)) {
-            $element = $this->createMock(WebDriverElement::class);
             $this->driver
                 ->expects($this->exactly(2))
                 ->method('findElement')
@@ -43,8 +41,8 @@ class SelectFrameCommandTest extends CommandTestCase
                         && 'link text' === $selector->getMechanism()
                         && 'Read More' === $selector->getValue();
                 }))
-                ->willReturn($element);
-            $params = [$element];
+                ->willReturn($this->element);
+            $params = [$this->element];
             $wait = $this->createMock(WebDriverWait::class);
             $wait
                 ->expects($this->once())

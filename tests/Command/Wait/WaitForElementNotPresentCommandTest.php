@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Wait;
 
 use Facebook\WebDriver\Exception\StaleElementReferenceException;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Tienvx\Bundle\MbtBundle\Command\Wait\WaitForElementNotPresentCommand;
@@ -26,7 +25,7 @@ class WaitForElementNotPresentCommandTest extends WaitTestCase
      */
     public function testRun(int $elementsCount, bool $stale): void
     {
-        $elements = array_fill(0, $elementsCount, $this->createMock(WebDriverElement::class));
+        $elements = array_fill(0, $elementsCount, $this->element);
         $this->driver
             ->expects($this->once())
             ->method('findElements')

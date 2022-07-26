@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Builder;
 
 use Petrinet\Model\MarkingInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulMarking;
@@ -23,9 +24,9 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Builder\PetrinetDomainLogic;
  */
 class PetrinetDomainLogicTest extends TestCase
 {
-    protected GuardedTransitionServiceInterface $transitionService;
-    protected MarkingHelperInterface $markingHelper;
-    protected PetrinetInterface $petrinet;
+    protected GuardedTransitionServiceInterface|MockObject $transitionService;
+    protected MarkingHelperInterface|MockObject $markingHelper;
+    protected PetrinetInterface|MockObject $petrinet;
     protected PetrinetDomainLogic $petrinetDomainLogic;
     protected array $transitions;
     protected array $markings;

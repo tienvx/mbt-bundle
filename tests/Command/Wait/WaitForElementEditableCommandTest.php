@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Wait;
 
 use Closure;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverWait;
 use Tienvx\Bundle\MbtBundle\Command\Wait\WaitForElementEditableCommand;
 
@@ -25,7 +24,6 @@ class WaitForElementEditableCommandTest extends WaitTestCase
      */
     public function testRun(bool $enabled, bool $readonly, bool $editable): void
     {
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -34,7 +32,7 @@ class WaitForElementEditableCommandTest extends WaitTestCase
                     && 'id' === $selector->getMechanism()
                     && 'name' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $wait = $this->createMock(WebDriverWait::class);
         $wait
             ->expects($this->once())
@@ -48,7 +46,7 @@ class WaitForElementEditableCommandTest extends WaitTestCase
             ->method('executeScript')
             ->with(
                 'return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };',
-                [$element]
+                [$this->element]
             )
             ->willReturn((object) ['enabled' => $enabled, 'readonly' => $readonly]);
         $this->command->run('id=name', 123, $this->values, $this->driver);

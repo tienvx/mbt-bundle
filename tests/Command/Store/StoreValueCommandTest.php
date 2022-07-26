@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Store;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Store\StoreValueCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -28,8 +27,7 @@ class StoreValueCommandTest extends CommandTestCase
     public function testRun(): void
     {
         $this->values->expects($this->once())->method('setValue')->with('age', 23);
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('getAttribute')->with('value')->willReturn(23);
+        $this->element->expects($this->once())->method('getAttribute')->with('value')->willReturn(23);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -38,7 +36,7 @@ class StoreValueCommandTest extends CommandTestCase
                     && 'css selector' === $selector->getMechanism()
                     && '.age' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('css=.age', 'age', $this->values, $this->driver);
     }
 

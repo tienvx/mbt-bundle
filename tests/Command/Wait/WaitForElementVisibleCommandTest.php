@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Wait;
 
 use Facebook\WebDriver\Exception\StaleElementReferenceException;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Tienvx\Bundle\MbtBundle\Command\Wait\WaitForElementVisibleCommand;
@@ -26,7 +25,6 @@ class WaitForElementVisibleCommandTest extends WaitTestCase
      */
     public function testRun(bool $displayed, bool $stale): void
     {
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -35,8 +33,8 @@ class WaitForElementVisibleCommandTest extends WaitTestCase
                     && 'id' === $selector->getMechanism()
                     && 'title' === $selector->getValue();
             }))
-            ->willReturn($element);
-        $mock = $element
+            ->willReturn($this->element);
+        $mock = $this->element
             ->expects($this->once())
             ->method('isDisplayed');
         if ($stale) {

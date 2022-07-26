@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
 use PHPUnit\Framework\Constraint\Callback;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -15,7 +16,7 @@ use Tienvx\Bundle\MbtBundle\Reducer\DispatcherInterface;
 abstract class DispatcherTestCase extends TestCase
 {
     protected DispatcherInterface $dispatcher;
-    protected MessageBusInterface $messageBus;
+    protected MessageBusInterface|MockObject $messageBus;
     protected BugInterface $bug;
     protected array $pairs = [];
 
