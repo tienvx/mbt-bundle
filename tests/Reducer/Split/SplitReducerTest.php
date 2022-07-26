@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer\Split;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Reducer\ReducerManager;
@@ -18,8 +19,8 @@ use Tienvx\Bundle\MbtBundle\Reducer\Split\SplitReducer;
  */
 class SplitReducerTest extends TestCase
 {
-    protected SplitDispatcher $dispatcher;
-    protected SplitHandler $handler;
+    protected SplitDispatcher|MockObject $dispatcher;
+    protected SplitHandler|MockObject $handler;
     protected SplitReducer $reducer;
 
     protected function setUp(): void

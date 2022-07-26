@@ -7,13 +7,10 @@ use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 
 class PluginManager implements PluginManagerInterface
 {
-    protected ServiceLocator $locator;
-    protected array $plugins;
-
-    public function __construct(ServiceLocator $locator, array $plugins)
-    {
-        $this->locator = $locator;
-        $this->plugins = $plugins;
+    public function __construct(
+        protected ServiceLocator $locator,
+        protected array $plugins
+    ) {
     }
 
     public function all(): array

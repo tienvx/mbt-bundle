@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Assert;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Assert\AssertEditableCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -34,7 +33,6 @@ class AssertEditableCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -43,13 +41,13 @@ class AssertEditableCommandTest extends CommandTestCase
                     && 'name' === $selector->getMechanism()
                     && 'username' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->driver
             ->expects($this->once())
             ->method('executeScript')
             ->with(
                 'return { enabled: !arguments[0].disabled, readonly: arguments[0].readOnly };',
-                [$element]
+                [$this->element]
             )
             ->willReturn((object) ['enabled' => $enabled, 'readonly' => $readonly]);
         $this->command->run('name=username', null, $this->values, $this->driver);

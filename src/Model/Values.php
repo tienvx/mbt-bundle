@@ -4,9 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Model;
 
 class Values implements ValuesInterface
 {
-    protected array $values = [];
-
-    public function __construct(array $values = [])
+    public function __construct(protected array $values = [])
     {
         $this->values = [];
 

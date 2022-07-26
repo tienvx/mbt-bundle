@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Reducer;
 
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
@@ -11,23 +12,25 @@ use Throwable;
 use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Entity\Model\Revision;
 use Tienvx\Bundle\MbtBundle\Entity\Task;
-use Tienvx\Bundle\MbtBundle\Exception\RuntimeException;
 use Tienvx\Bundle\MbtBundle\Exception\StepsNotConnectedException;
+use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
 use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Reducer\HandlerInterface;
 use Tienvx\Bundle\MbtBundle\Repository\BugRepositoryInterface;
+use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Builder\StepsBuilderInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 abstract class HandlerTestCase extends TestCase
 {
     protected HandlerInterface $handler;
-    protected BugRepositoryInterface $bugRepository;
-    protected MessageBusInterface $messageBus;
-    protected BugStepsRunner $stepsRunner;
-    protected StepsBuilderInterface $stepsBuilder;
+    protected BugRepositoryInterface|MockObject $bugRepository;
+    protected MessageBusInterface|MockObject $messageBus;
+    protected BugStepsRunner|MockObject $stepsRunner;
+    protected StepsBuilderInterface|MockObject $stepsBuilder;
+    protected ConfigInterface|MockObject $config;
     protected array $newSteps;
     protected Revision $revision;
     protected BugInterface $bug;
@@ -38,6 +41,7 @@ abstract class HandlerTestCase extends TestCase
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->stepsRunner = $this->createMock(BugStepsRunner::class);
         $this->stepsBuilder = $this->createMock(StepsBuilderInterface::class);
+        $this->config = $this->createMock(ConfigInterface::class);
         $this->newSteps = [
             $this->createMock(StepInterface::class),
             $this->createMock(StepInterface::class),
@@ -57,6 +61,7 @@ abstract class HandlerTestCase extends TestCase
         $this->bug->setDebug(true);
         $this->revision = new Revision();
         $task = new Task();
+        $task->setId(123);
         $task->setModelRevision($this->revision);
         $this->bug->setTask($task);
         $this->stepsBuilder
@@ -88,7 +93,7 @@ abstract class HandlerTestCase extends TestCase
     /**
      * @dataProvider exceptionProvider
      */
-    public function testHandle(?Throwable $exception, bool $updateSteps): void
+    public function testHandle(?Throwable $exception, bool $updateSteps, bool $createNewBug): void
     {
         $this->expectStepsBuilder($this->returnValue((fn () => yield from $this->newSteps)()));
         $this->stepsRunner->expects($this->once())
@@ -112,11 +117,34 @@ abstract class HandlerTestCase extends TestCase
             $this->messageBus
                 ->expects($this->once())
                 ->method('dispatch')
-                ->with($this->isInstanceOf(ReduceBugMessage::class))
+                ->with($this->callback(function ($message) {
+                    return $message instanceof ReduceBugMessage && $message->getId() === $this->bug->getId();
+                }))
                 ->willReturn(new Envelope(new \stdClass()));
         } else {
             $this->bugRepository->expects($this->never())->method('updateSteps');
-            $this->messageBus->expects($this->never())->method('dispatch');
+            if ($exception) {
+                $this->config
+                    ->expects($this->once())
+                    ->method('shouldCreateNewBugWhileReducing')
+                    ->willReturn($createNewBug);
+                if ($createNewBug) {
+                    $this->messageBus
+                        ->expects($this->once())
+                        ->method('dispatch')
+                        ->with($this->callback(function ($message) use ($exception) {
+                            return $message instanceof CreateBugMessage &&
+                                $message->getMessage() === $exception->getMessage() &&
+                                $message->getSteps() === $this->newSteps &&
+                                123 === $message->getTaskId();
+                        }))
+                        ->willReturn(new Envelope(new \stdClass()));
+                } else {
+                    $this->messageBus->expects($this->never())->method('dispatch');
+                }
+            } else {
+                $this->messageBus->expects($this->never())->method('dispatch');
+            }
         }
         $this->handler->handle($this->bug, 1, 2);
         $this->assertFalse($this->bug->isDebug());
@@ -125,9 +153,10 @@ abstract class HandlerTestCase extends TestCase
     public function exceptionProvider(): array
     {
         return [
-            [null, false],
-            [new RuntimeException('Something else wrong'), false],
-            [new Exception('Something wrong'), true],
+            [null, false, false],
+            [new Exception('Something else wrong'), false, false],
+            [new Exception('Something else wrong'), false, true],
+            [new Exception('Something wrong'), true, false],
         ];
     }
 

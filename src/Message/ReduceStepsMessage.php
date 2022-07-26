@@ -4,17 +4,12 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class ReduceStepsMessage implements MessageInterface
 {
-    protected int $bugId;
-    protected int $length;
-    protected int $from;
-    protected int $to;
-
-    public function __construct(int $bugId, int $length, int $from, int $to)
-    {
-        $this->bugId = $bugId;
-        $this->length = $length;
-        $this->from = $from;
-        $this->to = $to;
+    public function __construct(
+        protected int $bugId,
+        protected int $length,
+        protected int $from,
+        protected int $to
+    ) {
     }
 
     public function getBugId(): int

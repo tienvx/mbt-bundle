@@ -8,11 +8,8 @@ use Tienvx\Bundle\MbtBundle\Service\Task\TaskHelperInterface;
 
 class RunTaskMessageHandler implements MessageHandlerInterface
 {
-    protected TaskHelperInterface $taskHelper;
-
-    public function __construct(TaskHelperInterface $taskHelper)
+    public function __construct(protected TaskHelperInterface $taskHelper)
     {
-        $this->taskHelper = $taskHelper;
     }
 
     public function __invoke(RunTaskMessage $message): void

@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Mouse;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Mouse\CheckCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -30,9 +29,8 @@ class CheckCommandTest extends CommandTestCase
      */
     public function testRun(bool $selected, bool $checked): void
     {
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('isSelected')->willReturn($selected);
-        $element->expects($this->exactly(+$checked))->method('click');
+        $this->element->expects($this->once())->method('isSelected')->willReturn($selected);
+        $this->element->expects($this->exactly(+$checked))->method('click');
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -41,7 +39,7 @@ class CheckCommandTest extends CommandTestCase
                     && 'id' === $selector->getMechanism()
                     && 'language' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('id=language', null, $this->values, $this->driver);
     }
 

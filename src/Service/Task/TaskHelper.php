@@ -3,9 +3,11 @@
 namespace Tienvx\Bundle\MbtBundle\Service\Task;
 
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 use Tienvx\Bundle\MbtBundle\Generator\GeneratorManagerInterface;
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use Tienvx\Bundle\MbtBundle\Message\CreateBugMessage;
 use Tienvx\Bundle\MbtBundle\Model\TaskInterface;
 use Tienvx\Bundle\MbtBundle\Repository\TaskRepositoryInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
@@ -13,21 +15,13 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
 
 class TaskHelper implements TaskHelperInterface
 {
-    protected GeneratorManagerInterface $generatorManager;
-    protected TaskRepositoryInterface $taskRepository;
-    protected ExploreStepsRunner $stepsRunner;
-    protected ConfigInterface $config;
-
     public function __construct(
-        GeneratorManagerInterface $generatorManager,
-        TaskRepositoryInterface $taskRepository,
-        ExploreStepsRunner $stepsRunner,
-        ConfigInterface $config
+        protected GeneratorManagerInterface $generatorManager,
+        protected TaskRepositoryInterface $taskRepository,
+        protected MessageBusInterface $messageBus,
+        protected ExploreStepsRunner $stepsRunner,
+        protected ConfigInterface $config
     ) {
-        $this->generatorManager = $generatorManager;
-        $this->taskRepository = $taskRepository;
-        $this->stepsRunner = $stepsRunner;
-        $this->config = $config;
     }
 
     public function run(int $taskId): void
@@ -50,8 +44,12 @@ class TaskHelper implements TaskHelperInterface
             $this->stepsRunner->run(
                 $this->generatorManager->getGenerator($this->config->getGenerator())->generate($task),
                 $task,
-                function (BugInterface $bug) use ($task) {
-                    $task->addBug($bug);
+                function (Throwable $throwable, array $steps) use ($taskId) {
+                    $this->messageBus->dispatch(new CreateBugMessage(
+                        $taskId,
+                        $steps,
+                        $throwable->getMessage()
+                    ));
                 }
             );
         } finally {

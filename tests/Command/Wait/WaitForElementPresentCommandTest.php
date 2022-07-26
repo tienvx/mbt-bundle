@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Wait;
 
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Tienvx\Bundle\MbtBundle\Command\Wait\WaitForElementPresentCommand;
@@ -26,7 +25,6 @@ class WaitForElementPresentCommandTest extends WaitTestCase
      */
     public function testRun(bool $present): void
     {
-        $element = $this->createMock(WebDriverElement::class);
         $mock = $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -36,7 +34,7 @@ class WaitForElementPresentCommandTest extends WaitTestCase
                     && 'title' === $selector->getValue();
             }));
         if ($present) {
-            $mock->willReturn($element);
+            $mock->willReturn($this->element);
         } else {
             $mock->willThrowException(new NoSuchElementException('Element missing'));
         }

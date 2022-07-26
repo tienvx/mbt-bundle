@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Assert;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Assert\AssertNotTextCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -34,8 +33,7 @@ class AssertNotTextCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('getText')->willReturn($actual);
+        $this->element->expects($this->once())->method('getText')->willReturn($actual);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -44,7 +42,7 @@ class AssertNotTextCommandTest extends CommandTestCase
                     && 'xpath' === $selector->getMechanism()
                     && '//h4[@href="#"]' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('xpath=//h4[@href="#"]', 'Welcome to our store', $this->values, $this->driver);
     }
 

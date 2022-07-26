@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Keyboard;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Keyboard\SendKeysCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -27,14 +26,13 @@ class SendKeysCommandTest extends CommandTestCase
 
     public function testRun(): void
     {
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('click')->willReturnSelf();
-        $element->expects($this->once())->method('sendKeys')->with('123');
+        $this->element->expects($this->once())->method('click')->willReturnSelf();
+        $this->element->expects($this->once())->method('sendKeys')->with('123');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
             return $selector instanceof WebDriverBy
                 && 'css selector' === $selector->getMechanism()
                 && '.quantity' === $selector->getValue();
-        }))->willReturn($element);
+        }))->willReturn($this->element);
         $this->command->run('css=.quantity', '123', $this->values, $this->driver);
     }
 

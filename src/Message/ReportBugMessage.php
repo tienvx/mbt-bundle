@@ -4,11 +4,8 @@ namespace Tienvx\Bundle\MbtBundle\Message;
 
 class ReportBugMessage implements MessageInterface
 {
-    protected int $bugId;
-
-    public function __construct(int $bugId)
+    public function __construct(protected int $bugId)
     {
-        $this->bugId = $bugId;
     }
 
     public function getBugId(): int

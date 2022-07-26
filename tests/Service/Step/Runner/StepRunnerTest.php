@@ -3,6 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\ColorInterface;
 use Tienvx\Bundle\MbtBundle\Command\CommandManager;
@@ -30,9 +31,9 @@ class StepRunnerTest extends TestCase
 {
     protected RevisionInterface $revision;
     protected array $commands = [];
-    protected CommandManager $commandManager;
+    protected CommandManager|MockObject $commandManager;
     protected RemoteWebDriver $driver;
-    protected ColorInterface $color;
+    protected ColorInterface|MockObject $color;
     protected array $valuesInstances = [];
 
     protected function setUp(): void

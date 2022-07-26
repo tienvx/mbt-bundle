@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Mouse;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverSelect;
 use Tienvx\Bundle\MbtBundle\Command\Mouse\AddSelectionCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
@@ -32,7 +31,6 @@ class AddSelectionCommandTest extends CommandTestCase
      */
     public function testRun(string $value, string $method, string|int $with): void
     {
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -41,11 +39,11 @@ class AddSelectionCommandTest extends CommandTestCase
                     && 'partial link text' === $selector->getMechanism()
                     && 'Language' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $select = $this->createMock(WebDriverSelect::class);
         $select->expects($this->once())->method($method)->with($with);
         $command = $this->createPartialMock(AddSelectionCommand::class, ['getSelect']);
-        $command->expects($this->once())->method('getSelect')->with($element)->willReturn($select);
+        $command->expects($this->once())->method('getSelect')->with($this->element)->willReturn($select);
         $command->run('partialLinkText=Language', $value, $this->values, $this->driver);
     }
 

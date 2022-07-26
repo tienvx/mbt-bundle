@@ -17,18 +17,11 @@ use Tienvx\Bundle\MbtBundle\Service\Petrinet\PetrinetHelperInterface;
 
 class ShortestPathStepsBuilder implements StepsBuilderInterface
 {
-    protected PetrinetHelperInterface $petrinetHelper;
-    protected GuardedTransitionServiceInterface $transitionService;
-    protected MarkingHelperInterface $markingHelper;
-
     public function __construct(
-        PetrinetHelperInterface $petrinetHelper,
-        GuardedTransitionServiceInterface $transitionService,
-        MarkingHelperInterface $markingHelper
+        protected PetrinetHelperInterface $petrinetHelper,
+        protected GuardedTransitionServiceInterface $transitionService,
+        protected MarkingHelperInterface $markingHelper
     ) {
-        $this->petrinetHelper = $petrinetHelper;
-        $this->transitionService = $transitionService;
-        $this->markingHelper = $markingHelper;
     }
 
     /**

@@ -11,13 +11,10 @@ use Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage;
 
 class EntitySubscriber implements EventSubscriber
 {
-    protected MessageBusInterface $messageBus;
-
     protected string $reducer;
 
-    public function __construct(MessageBusInterface $messageBus)
+    public function __construct(protected MessageBusInterface $messageBus)
     {
-        $this->messageBus = $messageBus;
     }
 
     public function postPersist(LifecycleEventArgs $args): void

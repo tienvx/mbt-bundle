@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Mouse;
 
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Mouse\DoubleClickCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -28,14 +27,13 @@ class DoubleClickCommandTest extends CommandTestCase
 
     public function testRun(): void
     {
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
             return $selector instanceof WebDriverBy
                 && 'id' === $selector->getMechanism()
                 && 'cart' === $selector->getValue();
-        }))->willReturn($element);
+        }))->willReturn($this->element);
         $action = $this->createMock(WebDriverActions::class);
-        $action->expects($this->once())->method('doubleClick')->with($element)->willReturnSelf();
+        $action->expects($this->once())->method('doubleClick')->with($this->element)->willReturnSelf();
         $action->expects($this->once())->method('perform');
         $this->driver->expects($this->once())->method('action')->willReturn($action);
         $this->command->run('id=cart', null, $this->values, $this->driver);

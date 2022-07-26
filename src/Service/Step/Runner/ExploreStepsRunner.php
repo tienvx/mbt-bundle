@@ -4,9 +4,7 @@ namespace Tienvx\Bundle\MbtBundle\Service\Step\Runner;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Throwable;
-use Tienvx\Bundle\MbtBundle\Entity\Bug;
 use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
 use Tienvx\Bundle\MbtBundle\Model\Model\RevisionInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
@@ -15,15 +13,13 @@ use Tienvx\Bundle\MbtBundle\Service\SelenoidHelperInterface;
 class ExploreStepsRunner extends StepsRunner
 {
     protected array $steps;
-    protected ConfigInterface $config;
 
     public function __construct(
         SelenoidHelperInterface $selenoidHelper,
         StepRunnerInterface $stepRunner,
-        ConfigInterface $config
+        protected ConfigInterface $config
     ) {
         parent::__construct($selenoidHelper, $stepRunner);
-        $this->config = $config;
     }
 
     protected function start(DebugInterface $entity): RemoteWebDriver
@@ -39,7 +35,7 @@ class ExploreStepsRunner extends StepsRunner
             // Last step cause the bug, we can't capture it. We capture it here.
             $this->steps[] = clone $step;
         }
-        $handleException($this->createBug($this->steps, $throwable->getMessage()));
+        $handleException($throwable, $this->steps);
     }
 
     protected function stop(?RemoteWebDriver $driver): void
@@ -54,15 +50,5 @@ class ExploreStepsRunner extends StepsRunner
         $this->steps[] = clone $step;
 
         return count($this->steps) < $this->config->getMaxSteps();
-    }
-
-    protected function createBug(array $steps, string $message): BugInterface
-    {
-        $bug = new Bug();
-        $bug->setTitle('');
-        $bug->setSteps($steps);
-        $bug->setMessage($message);
-
-        return $bug;
     }
 }

@@ -3,7 +3,6 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Command\Mouse;
 
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Mouse\ClickCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -27,13 +26,12 @@ class ClickCommandTest extends CommandTestCase
 
     public function testRun(): void
     {
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('click');
+        $this->element->expects($this->once())->method('click');
         $this->driver->expects($this->once())->method('findElement')->with($this->callback(function ($selector) {
             return $selector instanceof WebDriverBy
                 && 'id' === $selector->getMechanism()
                 && 'add-to-cart' === $selector->getValue();
-        }))->willReturn($element);
+        }))->willReturn($this->element);
         $this->command->run('id=add-to-cart', null, $this->values, $this->driver);
     }
 

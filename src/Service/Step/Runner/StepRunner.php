@@ -13,11 +13,8 @@ use Tienvx\Bundle\MbtBundle\Model\Values;
 
 class StepRunner implements StepRunnerInterface
 {
-    protected CommandManagerInterface $commandManager;
-
-    public function __construct(CommandManagerInterface $commandManager)
+    public function __construct(protected CommandManagerInterface $commandManager)
     {
-        $this->commandManager = $commandManager;
     }
 
     public function run(StepInterface $step, RevisionInterface $revision, RemoteWebDriver $driver): void

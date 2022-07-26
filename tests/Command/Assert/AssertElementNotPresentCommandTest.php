@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Assert;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Assert\AssertElementNotPresentCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -34,7 +33,6 @@ class AssertElementNotPresentCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
         $this->driver
             ->expects($this->once())
             ->method('findElements')
@@ -45,7 +43,7 @@ class AssertElementNotPresentCommandTest extends CommandTestCase
                         && '.cart' === $selector->getValue();
                 })
             )
-            ->willReturn(array_fill(0, $count, $element));
+            ->willReturn(array_fill(0, $count, $this->element));
         $this->command->run('css=.cart', null, $this->values, $this->driver);
     }
 

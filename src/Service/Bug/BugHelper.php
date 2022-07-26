@@ -17,27 +17,14 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\BugStepsRunner;
 
 class BugHelper implements BugHelperInterface
 {
-    protected ReducerManagerInterface $reducerManager;
-    protected BugRepositoryInterface $bugRepository;
-    protected MessageBusInterface $messageBus;
-    protected BugNotifierInterface $bugNotifier;
-    protected BugStepsRunner $stepsRunner;
-    protected ConfigInterface $config;
-
     public function __construct(
-        ReducerManagerInterface $reducerManager,
-        BugRepositoryInterface $bugRepository,
-        MessageBusInterface $messageBus,
-        BugNotifierInterface $bugNotifier,
-        BugStepsRunner $stepsRunner,
-        ConfigInterface $config
+        protected ReducerManagerInterface $reducerManager,
+        protected BugRepositoryInterface $bugRepository,
+        protected MessageBusInterface $messageBus,
+        protected BugNotifierInterface $bugNotifier,
+        protected BugStepsRunner $stepsRunner,
+        protected ConfigInterface $config
     ) {
-        $this->reducerManager = $reducerManager;
-        $this->bugRepository = $bugRepository;
-        $this->messageBus = $messageBus;
-        $this->bugNotifier = $bugNotifier;
-        $this->stepsRunner = $stepsRunner;
-        $this->config = $config;
     }
 
     public function reduceBug(int $bugId): void

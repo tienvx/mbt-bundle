@@ -15,6 +15,7 @@ use Tienvx\Bundle\MbtBundle\Tests\Reducer\HandlerTestCase;
  * @uses \Tienvx\Bundle\MbtBundle\Model\Task
  * @uses \Tienvx\Bundle\MbtBundle\Model\Bug\Step
  * @uses \Tienvx\Bundle\MbtBundle\Message\ReduceBugMessage
+ * @uses \Tienvx\Bundle\MbtBundle\Message\CreateBugMessage
  * @uses \Tienvx\Bundle\MbtBundle\Model\Progress
  * @uses \Tienvx\Bundle\MbtBundle\Model\Debug
  */
@@ -27,7 +28,8 @@ class RandomHandlerTest extends HandlerTestCase
             $this->bugRepository,
             $this->messageBus,
             $this->stepsRunner,
-            $this->stepsBuilder
+            $this->stepsBuilder,
+            $this->config
         );
     }
 }

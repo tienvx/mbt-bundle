@@ -2,6 +2,7 @@
 
 namespace Tienvx\Bundle\MbtBundle\Tests\MessageHandler;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tienvx\Bundle\MbtBundle\Message\ReduceStepsMessage;
 use Tienvx\Bundle\MbtBundle\MessageHandler\ReduceStepsMessageHandler;
@@ -13,7 +14,7 @@ use Tienvx\Bundle\MbtBundle\Service\Bug\BugHelperInterface;
  */
 class ReduceStepsMessageHandlerTest extends TestCase
 {
-    protected BugHelperInterface $bugHelper;
+    protected BugHelperInterface|MockObject $bugHelper;
     protected ReduceStepsMessageHandler $handler;
     protected ReduceStepsMessage $message;
 

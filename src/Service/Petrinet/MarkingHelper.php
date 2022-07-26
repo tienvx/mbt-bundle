@@ -13,11 +13,8 @@ use Tienvx\Bundle\MbtBundle\Exception\UnexpectedValueException;
 
 class MarkingHelper implements MarkingHelperInterface
 {
-    protected ColorfulFactoryInterface $colorfulFactory;
-
-    public function __construct(ColorfulFactoryInterface $colorfulFactory)
+    public function __construct(protected ColorfulFactoryInterface $colorfulFactory)
     {
-        $this->colorfulFactory = $colorfulFactory;
     }
 
     /**

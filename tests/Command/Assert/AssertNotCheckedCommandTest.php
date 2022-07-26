@@ -4,7 +4,6 @@ namespace Tienvx\Bundle\MbtBundle\Tests\Command\Assert;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Tienvx\Bundle\MbtBundle\Command\Assert\AssertNotCheckedCommand;
 use Tienvx\Bundle\MbtBundle\Tests\Command\CommandTestCase;
 
@@ -34,8 +33,7 @@ class AssertNotCheckedCommandTest extends CommandTestCase
         if ($exception) {
             $this->expectExceptionObject($exception);
         }
-        $element = $this->createMock(WebDriverElement::class);
-        $element->expects($this->once())->method('isSelected')->willReturn($isSelected);
+        $this->element->expects($this->once())->method('isSelected')->willReturn($isSelected);
         $this->driver
             ->expects($this->once())
             ->method('findElement')
@@ -44,7 +42,7 @@ class AssertNotCheckedCommandTest extends CommandTestCase
                     && 'css selector' === $selector->getMechanism()
                     && '.term-and-condition' === $selector->getValue();
             }))
-            ->willReturn($element);
+            ->willReturn($this->element);
         $this->command->run('css=.term-and-condition', null, $this->values, $this->driver);
     }
 

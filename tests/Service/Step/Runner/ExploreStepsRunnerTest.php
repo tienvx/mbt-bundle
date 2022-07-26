@@ -3,8 +3,7 @@
 namespace Tienvx\Bundle\MbtBundle\Tests\Service\Step\Runner;
 
 use Exception;
-use Tienvx\Bundle\MbtBundle\Model\Bug\StepInterface;
-use Tienvx\Bundle\MbtBundle\Model\BugInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tienvx\Bundle\MbtBundle\Model\DebugInterface;
 use Tienvx\Bundle\MbtBundle\Service\ConfigInterface;
 use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
@@ -23,7 +22,7 @@ use Tienvx\Bundle\MbtBundle\Service\Step\Runner\ExploreStepsRunner;
  */
 class ExploreStepsRunnerTest extends StepsRunnerTestCase
 {
-    protected ConfigInterface $config;
+    protected ConfigInterface|MockObject $config;
 
     protected function setUp(): void
     {
@@ -53,16 +52,7 @@ class ExploreStepsRunnerTest extends StepsRunnerTestCase
         $this->handleException
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->callback(fn (object $bug) => $bug instanceof BugInterface &&
-                '' === $bug->getTitle() &&
-                $bug->getMessage() === $exception->getMessage() &&
-                !array_udiff(
-                    $bug->getSteps(),
-                    $bugSteps,
-                    fn (StepInterface $step1, StepInterface $step2) => $step1->getPlaces() === $step2->getPlaces() &&
-                        $step1->getTransition() === $step2->getTransition() &&
-                        $step1->getColor()->getValues() === $step2->getColor()->getValues()
-                )));
+            ->with($exception, $bugSteps);
     }
 
     protected function assertRunSteps(array $steps = [], ?Exception $exception = null, int $maxSteps = 99): void

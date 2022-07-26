@@ -10,11 +10,8 @@ abstract class DispatcherTemplate implements DispatcherInterface
 {
     protected const MIN_STEPS = 3;
 
-    protected MessageBusInterface $messageBus;
-
-    public function __construct(MessageBusInterface $messageBus)
+    public function __construct(protected MessageBusInterface $messageBus)
     {
-        $this->messageBus = $messageBus;
     }
 
     public function dispatch(BugInterface $bug): int
